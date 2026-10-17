@@ -354,7 +354,7 @@ window.PETS = [
   "number": 36,
   "pet": "Platform Platypus",
   "program": "Mirror Pool",
-  "stage": "pipeline",
+  "stage": "registered",
   "repo": "platform-platypus",
   "repo_exists": true,
   "text": "Keeps Astra's pages working on iPhone, Android, iPad and desktop: shows a page on every device at once, checks it, tracks what each watched site still needs, and compares screenshots from two platforms.",
