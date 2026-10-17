@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pick a draft · findastra</title>
+<style>
+  :root { --bg: #0b0b10; --fg: #ececf3; --dim: #8b8ba3; --line: #262636; --hi: #ff6fcf; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.5 system-ui, sans-serif; padding: 40px 16px; }
+  main { max-width: 1100px; margin: 0 auto; }
+  h1 { font-size: 2rem; margin: 0 0 4px; }
+  p.lead { color: var(--dim); margin: 0 0 28px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+  a.d { display: block; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; color: inherit; text-decoration: none; background: #12121a; transition: border-color .2s, transform .2s; }
+  a.d:hover { border-color: var(--hi); transform: translateY(-3px); }
+  .frame { position: relative; height: 210px; overflow: hidden; background: #000; }
+  .frame iframe { width: 1280px; height: 840px; border: 0; transform: scale(.25); transform-origin: 0 0; pointer-events: none; }
+  .meta { padding: 12px 14px 16px; }
+  .meta b { font-size: 1.1rem; }
+  .meta span { display: block; color: var(--dim); font-size: 13px; margin-top: 4px; }
+  .tag { display: inline-block; font-size: 11px; border: 1px solid var(--line); border-radius: 99px; padding: 1px 8px; margin: 8px 4px 0 0; color: var(--dim); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Pick a draft</h1>
+  <p class="lead">Seven versions of the portfolio. Each one says the same true things, has a placeholder for your hand lettering, and has something to play with. Click one to open it full size.</p>
+  <div class="grid" id="grid"></div>
+</main>
+<script>
+  const drafts = [
+    ['1-whoami.html', '1 · whoami', 'A terminal. Boots as Audra’s plain résumé; sudo unmask glitches it into Astra. Commands pop out worlds, photos, pets.', ['hacky', 'cyberpunk', 'game: password hack']],
+    ['2-hallway.html', '2 · The Hallway', 'A liminal fluorescent corridor. Each door is a part of you; open it to step in. Ends at a find-the-exit door shuffle.', ['liminal', 'simple', 'game: find the exit']],
+    ['3-i-am.html', '3 · I AM', 'A slideshow of huge statements: I’m Audra. I’m also Astra. I’m a dancer… Photos pop in. Ends with a rhythm game.', ['strong message', 'slideshow', 'game: rhythm']],
+    ['4-two-names.html', '4 · Two Names', 'A split mirror you drag between Audra and Astra. Flip cards, a mirror-drawing canvas, pet memory match.', ['magical', 'interactive art', 'game: memory']],
+    ['5-star-map.html', '5 · Star Map', 'A night sky where every world, project and pet is a star. Hover to pop out, drag to draw constellations, catch falling stars.', ['magical', 'organized', 'game: catch stars']],
+    ['6-astra-os.html', '6 · astraOS', 'A cyberdeck desktop. Draggable windows: audra.txt, astra.exe, worlds, photos, pets, a pixel paint app and snake.', ['cyberpunk', 'organized', 'games: snake + paint']],
+    ['../parchment.html', '0 · Parchment', 'The first draft: layered parchment, lace, cool colors and pink, typewriter lettering.', ['soft', 'scrapbook']],
+  ];
+  const grid = document.getElementById('grid');
+  for (const [href, name, text, tags] of drafts) {
+    const a = document.createElement('a'); a.className = 'd'; a.href = href;
+    const f = document.createElement('div'); f.className = 'frame';
+    const ifr = document.createElement('iframe'); ifr.src = href; ifr.loading = 'lazy'; ifr.tabIndex = -1; ifr.title = name + ' preview'; f.append(ifr);
+    const m = document.createElement('div'); m.className = 'meta';
+    const b = document.createElement('b'); b.textContent = name; const s = document.createElement('span'); s.textContent = text; m.append(b, s);
+    for (const t of tags) { const g = document.createElement('span'); g.className = 'tag'; g.textContent = t; m.append(g); }
+    a.append(f, m); grid.append(a);
+  }
+</script>
+</body>
+</html>

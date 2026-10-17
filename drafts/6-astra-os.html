@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>astraOS · findastra</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=Silkscreen&display=swap">
+<style>
+  :root { --bg: #0a0614; --glass: rgba(18, 12, 38, .88); --line: #3d2b7a; --cyan: #5ef2ff; --pink: #ff4fb8; --text: #e8e2ff; --dim: #8f84b8; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; overflow: hidden; color: var(--text); font-family: "Chakra Petch", system-ui, sans-serif; }
+  body { background:
+      radial-gradient(circle at 80% 20%, rgba(255, 79, 184, .25), transparent 40%),
+      radial-gradient(circle at 15% 85%, rgba(94, 242, 255, .18), transparent 45%),
+      linear-gradient(rgba(94, 242, 255, .06) 1px, transparent 1px) 0 0 / 40px 40px,
+      linear-gradient(90deg, rgba(94, 242, 255, .06) 1px, transparent 1px) 0 0 / 40px 40px,
+      var(--bg); }
+  .wall { position: fixed; right: 5vw; bottom: 12vh; text-align: right; pointer-events: none; }
+  .wall h1 { margin: 0; font-family: Silkscreen, monospace; font-weight: 400; font-size: clamp(1.6rem, 5vw, 3.6rem); line-height: 1.05; color: transparent; -webkit-text-stroke: 1px rgba(94, 242, 255, .5); }
+  .wall h1 span:last-child { -webkit-text-stroke-color: var(--pink); }
+  .wall p { margin: 8px 0 0; color: var(--dim); letter-spacing: .2em; font-size: 12px; text-transform: uppercase; }
+  /* icons */
+  .icons { position: fixed; left: 14px; top: 14px; bottom: 60px; display: grid; grid-auto-flow: column; grid-template-rows: repeat(auto-fill, 92px); gap: 6px; z-index: 1; }
+  .icon { width: 86px; border: 0; background: none; color: var(--text); text-align: center; cursor: pointer; font: 12px "Chakra Petch"; padding: 4px; border-radius: 6px; }
+  .icon:hover, .icon:focus-visible { background: rgba(94, 242, 255, .12); outline: none; }
+  .icon .g { display: grid; place-items: center; width: 46px; height: 46px; margin: 0 auto 4px; border: 1px solid var(--line); background: var(--glass); font-family: Silkscreen; font-size: 18px; color: var(--cyan); box-shadow: 0 0 14px rgba(94, 242, 255, .2); }
+  .icon img { width: 46px; height: 46px; image-rendering: pixelated; display: block; margin: 0 auto 4px; }
+  /* windows */
+  .win { position: fixed; min-width: 280px; max-width: 92vw; max-height: 78vh; display: flex; flex-direction: column; background: var(--glass); border: 1px solid var(--line); box-shadow: 0 20px 60px rgba(0,0,0,.6), 0 0 0 1px rgba(94,242,255,.08) inset; backdrop-filter: blur(6px); animation: open .25s cubic-bezier(.2, 1.5, .4, 1); }
+  .win.focus { border-color: var(--cyan); box-shadow: 0 20px 60px rgba(0,0,0,.6), 0 0 24px rgba(94, 242, 255, .25); }
+  @keyframes open { from { transform: scale(.85); opacity: 0; } }
+  .bar { display: flex; align-items: center; gap: 8px; padding: 6px 8px 6px 12px; border-bottom: 1px solid var(--line); cursor: move; font-family: Silkscreen; font-size: 12px; color: var(--cyan); user-select: none; touch-action: none; }
+  .bar span { flex: 1; }
+  .bar button { width: 22px; height: 22px; border: 1px solid var(--line); background: transparent; color: var(--pink); cursor: pointer; font: 12px Silkscreen; }
+  .body { padding: 14px; overflow: auto; font-size: 14px; line-height: 1.55; }
+  .body h2 { margin: 0 0 6px; font-size: 1.6rem; }
+  .body a { color: var(--cyan); }
+  .slot { display: inline-block; border: 1px dashed var(--pink); padding: 14px 20px; font-family: Silkscreen; font-size: clamp(1.1rem, 3vw, 1.8rem); color: var(--pink); }
+  .slot small { display: block; font: 10px "Chakra Petch"; letter-spacing: .2em; color: var(--dim); }
+  .gal { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+  .gal a { display: block; color: var(--text); text-decoration: none; border: 1px solid var(--line); padding: 6px; transition: transform .2s; }
+  .gal a:hover { transform: scale(1.04) rotate(-1deg); border-color: var(--pink); }
+  .gal img { display: block; width: 100%; aspect-ratio: 16/10; object-fit: cover; margin-bottom: 4px; }
+  .petgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 8px; text-align: center; font-size: 11px; }
+  .petgrid a { color: var(--text); text-decoration: none; }
+  .petgrid img { width: 56px; height: 56px; image-rendering: pixelated; }
+  .repo { padding: 6px 0; border-bottom: 1px solid rgba(61, 43, 122, .6); }
+  .repo small { color: var(--dim); display: block; }
+  canvas.px { image-rendering: pixelated; border: 1px solid var(--line); background: #fff; cursor: crosshair; touch-action: none; display: block; }
+  .palette { display: flex; gap: 4px; margin: 8px 0; flex-wrap: wrap; }
+  .palette button { width: 22px; height: 22px; border: 1px solid var(--line); cursor: pointer; }
+  .palette button.on { outline: 2px solid var(--cyan); }
+  .btn { font: 12px Silkscreen; background: transparent; color: var(--cyan); border: 1px solid var(--line); padding: 4px 8px; cursor: pointer; }
+  /* taskbar */
+  .task { position: fixed; left: 0; right: 0; bottom: 0; height: 44px; display: flex; align-items: center; gap: 6px; padding: 0 10px; background: rgba(10, 6, 20, .92); border-top: 1px solid var(--line); z-index: 999; }
+  .task .start { font: 13px Silkscreen; background: linear-gradient(90deg, var(--cyan), var(--pink)); color: #0a0614; border: 0; padding: 6px 12px; cursor: pointer; }
+  .task .open { font: 11px "Chakra Petch"; color: var(--text); background: rgba(94,242,255,.08); border: 1px solid var(--line); padding: 4px 10px; cursor: pointer; max-width: 140px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .task .clock { margin-left: auto; font: 12px Silkscreen; color: var(--cyan); }
+  /* boot */
+  .boot { position: fixed; inset: 0; z-index: 2000; background: #000; color: var(--cyan); font: 14px Silkscreen; padding: 6vh 6vw; transition: opacity .6s; }
+  .boot.gone { opacity: 0; pointer-events: none; }
+  .boot .logo { font-size: clamp(2rem, 8vw, 5rem); background: linear-gradient(90deg, var(--cyan), var(--pink)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  @media (max-width: 640px) { .win { left: 3vw !important; width: 94vw !important; top: 8vh !important; } .wall { display: none; } }
+  @media (prefers-reduced-motion: reduce) { .win { animation: none; } .boot { transition: none; } }
+</style>
+</head>
+<body>
+<div class="boot" id="boot"><div class="logo">astraOS</div><div id="bootlog"></div></div>
+<div class="wall"><h1><span>one person.</span><br><span>two names.</span><br><span>both real.</span></h1><p>astraOS · findastra</p></div>
+<nav class="icons" id="icons" aria-label="Desktop"></nav>
+<div class="task"><button class="start" id="start">✦ astra</button><div id="tasks" style="display:flex;gap:6px;overflow:hidden"></div><span class="clock" id="clock"></span></div>
+
+<script src="../profile-data.js"></script>
+<script src="../site-data.js"></script>
+<script src="common.js"></script>
+<script>
+(() => {
+  const A = window.ASTRA, $ = (id) => document.getElementById(id);
+  let z = 10, offset = 0; const open = new Map();
+
+  function win(id, title, w, build) {
+    if (open.has(id)) { focus(open.get(id)); return; }
+    const el = A.el('section', 'win'); el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', title);
+    const narrow = innerWidth < 640;
+    el.style.width = Math.min(w, innerWidth * .92) + 'px';
+    el.style.left = (narrow ? 12 : 120 + (offset % 6) * 34) + 'px'; el.style.top = (narrow ? 50 : 40 + (offset % 6) * 30) + 'px'; offset++;
+    const bar = A.el('div', 'bar'); bar.append(A.el('span', null, title)); const x = A.el('button', null, 'x'); x.setAttribute('aria-label', 'close'); bar.append(x);
+    const body = A.el('div', 'body'); el.append(bar, body); document.body.append(el); build(body, el);
+    const tab = A.el('button', 'open', title); tab.onclick = () => focus(el); $('tasks').append(tab);
+    open.set(id, el); el._tab = tab; focus(el);
+    x.onclick = () => { el._stop && el._stop(); el.remove(); tab.remove(); open.delete(id); };
+    el.addEventListener('pointerdown', () => focus(el));
+    let d = null;
+    bar.addEventListener('pointerdown', (e) => { if (e.target === x) return; d = [e.clientX - el.offsetLeft, e.clientY - el.offsetTop]; bar.setPointerCapture(e.pointerId); });
+    bar.addEventListener('pointermove', (e) => { if (!d) return; el.style.left = Math.max(-200, Math.min(innerWidth - 80, e.clientX - d[0])) + 'px'; el.style.top = Math.max(0, Math.min(innerHeight - 80, e.clientY - d[1])) + 'px'; });
+    bar.addEventListener('pointerup', () => (d = null));
+  }
+  function focus(el) { document.querySelectorAll('.win').forEach((w) => w.classList.remove('focus')); el.classList.add('focus'); el.style.zIndex = ++z; }
+
+  const apps = [
+    ['audra.txt', 'TXT', 460, (b) => {
+      b.append(A.el('h2', null, 'Audra'));
+      A.about.forEach((t) => b.append(A.el('p', null, t)));
+      b.append(A.el('p', null, 'Languages: ' + A.languages.join(', ')));
+      const ul = A.el('ul'); A.skills.forEach((s) => ul.append(A.el('li', null, s))); b.append(ul);
+      b.append(A.el('p', null, A.positions.length ? '' : 'Work: being written up. It goes here once I have read every word.'));
+    }],
+    ['astra.exe', '✦', 440, (b) => {
+      const s = A.el('div', 'slot', A.lettering); s.append(A.el('small', null, 'hand lettering goes here')); b.append(s);
+      const im = A.el('img'); im.src = A.avatar; im.alt = "Astra's avatar"; im.style.cssText = 'display:block;width:180px;height:180px;object-fit:cover;margin:14px 0;border:1px solid var(--pink);box-shadow:0 0 30px rgba(255,79,184,.4)'; b.append(im);
+      b.append(A.el('p', null, A.tagline));
+    }],
+    ['worlds/', 'DIR', 620, (b) => {
+      const g = A.el('div', 'gal'); A.worlds.forEach((w) => { const a = A.link(w.href); if (w.img) { const i = A.el('img'); i.src = w.img; i.alt = ''; a.append(i); } a.append(A.el('b', null, w.name), A.el('div', null, w.text)); g.append(a); }); b.append(g);
+    }],
+    ['photos/', 'IMG', 620, (b) => {
+      const g = A.el('div', 'gal'); A.photos.forEach((p) => { const a = A.link(p.href); const i = A.el('img'); i.src = p.src; i.alt = p.caption; a.append(i, A.el('div', null, p.caption)); g.append(a); }); b.append(g);
+    }],
+    ['projects/', 'GIT', 520, (b) => {
+      const n = A.el('p'); b.append(n); const list = A.el('div'); b.append(list);
+      A.liveRepos((repos, live) => { n.textContent = (live ? 'live from github · ' : 'snapshot · ') + repos.length + ' repos'; list.replaceChildren(...repos.map((r) => { const d = A.el('div', 'repo'); d.append(A.link('https://github.com/findastra/' + r.name, null, r.name), A.el('small', null, r.description || '')); return d; })); });
+    }],
+    ['pets/', 'PET', 520, (b) => {
+      const g = A.el('div', 'petgrid'); A.pets.forEach((p) => { const a = A.link(p.href); a.title = p.job; const i = A.el('img'); i.src = p.img; i.alt = ''; a.append(i, A.el('div', null, p.pet)); g.append(a); }); b.append(g);
+    }],
+    ['paint.exe', 'ART', 380, (b) => paint(b)],
+    ['snake.exe', 'GAME', 380, (b, el) => snake(b, el)],
+    ['links.url', 'URL', 300, (b) => A.links.forEach((l) => { const p = A.el('p'); p.append(A.link(l.href, null, l.name + ' ↗')); b.append(p); })],
+  ];
+  apps.forEach(([name, glyph, w, build]) => {
+    const btn = A.el('button', 'icon'); const g = A.el('span', 'g', glyph); btn.append(g, A.el('div', null, name));
+    btn.ondblclick = btn.onclick = () => win(name, name, w, build);
+    $('icons').append(btn);
+  });
+  $('start').onclick = () => win('astra.exe', 'astra.exe', 440, apps[1][3]);
+
+  // pixel paint: 32x32
+  function paint(b) {
+    const N = 32, S = 10, cv = A.el('canvas', 'px'); cv.width = N; cv.height = N; cv.style.width = cv.style.height = N * S + 'px';
+    const cx = cv.getContext('2d'); cx.fillStyle = '#fff'; cx.fillRect(0, 0, N, N);
+    let color = '#ff4fb8', down = false;
+    const pal = A.el('div', 'palette');
+    ['#0a0614', '#ffffff', '#ff4fb8', '#5ef2ff', '#9b6bff', '#ffe066', '#7dff9b', '#ff7a59'].forEach((c, i) => { const p = A.el('button'); p.style.background = c; p.setAttribute('aria-label', c); if (!i) p.classList.add('on'); p.onclick = () => { color = c; pal.querySelectorAll('button').forEach((x) => x.classList.toggle('on', x === p)); }; pal.append(p); });
+    color = '#0a0614';
+    const dot = (e) => { const r = cv.getBoundingClientRect(); const x = Math.floor((e.clientX - r.left) / r.width * N), y = Math.floor((e.clientY - r.top) / r.height * N); cx.fillStyle = color; cx.fillRect(x, y, 1, 1); };
+    cv.onpointerdown = (e) => { down = true; cv.setPointerCapture(e.pointerId); dot(e); }; cv.onpointermove = (e) => down && dot(e); cv.onpointerup = () => (down = false);
+    const clear = A.el('button', 'btn', 'clear'); clear.onclick = () => { cx.fillStyle = '#fff'; cx.fillRect(0, 0, N, N); };
+    const save = A.el('button', 'btn', 'save png'); save.onclick = () => { const a = document.createElement('a'); a.download = 'astra-pixel.png'; a.href = cv.toDataURL(); a.click(); };
+    b.append(A.el('p', null, 'Draw a pet.'), pal, cv, A.el('p'), clear, document.createTextNode(' '), save);
+  }
+
+  // snake: the head is a pet, the food is the next pet
+  function snake(b, el) {
+    const N = 18, S = 18, cv = A.el('canvas'); cv.width = N * S; cv.height = N * S; cv.style.cssText = 'display:block;max-width:100%;background:#05030b;border:1px solid var(--line);touch-action:none';
+    const info = A.el('p', null, 'arrows / WASD / swipe · eat the pets'); b.append(info, cv);
+    const imgs = A.pets.map((p) => { const i = new Image(); i.src = p.img; return i; });
+    let body, dir, next, food, foodPet, score, best = 0, alive, timer;
+    const place = () => { do { food = [Math.floor(Math.random() * N), Math.floor(Math.random() * N)]; } while (body.some((c) => c[0] === food[0] && c[1] === food[1])); foodPet = Math.floor(Math.random() * imgs.length); };
+    const reset = () => { body = [[8, 9], [7, 9], [6, 9]]; dir = next = [1, 0]; score = 0; alive = true; place(); };
+    const draw = () => {
+      const cx = cv.getContext('2d'); cx.fillStyle = '#05030b'; cx.fillRect(0, 0, cv.width, cv.height);
+      cx.strokeStyle = 'rgba(94,242,255,.06)'; for (let i = 0; i <= N; i++) { cx.beginPath(); cx.moveTo(i * S, 0); cx.lineTo(i * S, N * S); cx.moveTo(0, i * S); cx.lineTo(N * S, i * S); cx.stroke(); }
+      cx.imageSmoothingEnabled = false;
+      cx.drawImage(imgs[foodPet], food[0] * S - 3, food[1] * S - 3, S + 6, S + 6);
+      body.forEach((c, i) => { if (i === 0) cx.drawImage(imgs[13] || imgs[0], c[0] * S - 4, c[1] * S - 4, S + 8, S + 8); else { cx.fillStyle = i % 2 ? '#ff4fb8' : '#5ef2ff'; cx.fillRect(c[0] * S + 3, c[1] * S + 3, S - 6, S - 6); } });
+      if (!alive) { cx.fillStyle = 'rgba(5,3,11,.75)'; cx.fillRect(0, 0, cv.width, cv.height); cx.fillStyle = '#ff4fb8'; cx.font = '18px Silkscreen'; cx.textAlign = 'center'; cx.fillText('game over · ' + score, cv.width / 2, cv.height / 2); cx.font = '11px Silkscreen'; cx.fillText('press space or tap', cv.width / 2, cv.height / 2 + 24); }
+    };
+    const step = () => {
+      if (!alive) return; dir = next;
+      const h = [(body[0][0] + dir[0] + N) % N, (body[0][1] + dir[1] + N) % N];
+      if (body.some((c) => c[0] === h[0] && c[1] === h[1])) { alive = false; best = Math.max(best, score); info.textContent = `score ${score} · best ${best}`; draw(); return; }
+      body.unshift(h);
+      if (h[0] === food[0] && h[1] === food[1]) { score++; info.textContent = `score ${score} · best ${best}`; place(); } else body.pop();
+      draw();
+    };
+    const key = (e) => {
+      if (!open.has('snake.exe') || !el.classList.contains('focus')) return;
+      const m = { ArrowUp: [0, -1], w: [0, -1], ArrowDown: [0, 1], s: [0, 1], ArrowLeft: [-1, 0], a: [-1, 0], ArrowRight: [1, 0], d: [1, 0] }[e.key];
+      if (m && (m[0] !== -dir[0] || m[1] !== -dir[1])) { next = m; e.preventDefault(); }
+      if (e.key === ' ' && !alive) { reset(); e.preventDefault(); }
+    };
+    let sx; cv.addEventListener('pointerdown', (e) => { sx = [e.clientX, e.clientY]; if (!alive) reset(); });
+    cv.addEventListener('pointerup', (e) => { if (!sx) return; const dx = e.clientX - sx[0], dy = e.clientY - sx[1]; if (Math.max(Math.abs(dx), Math.abs(dy)) > 20) { const m = Math.abs(dx) > Math.abs(dy) ? [Math.sign(dx), 0] : [0, Math.sign(dy)]; if (m[0] !== -dir[0] || m[1] !== -dir[1]) next = m; } });
+    addEventListener('keydown', key);
+    reset(); draw(); timer = setInterval(step, 130);
+    el._stop = () => { clearInterval(timer); removeEventListener('keydown', key); };
+  }
+
+  const tick = () => ($('clock').textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+  tick(); setInterval(tick, 10000);
+
+  // boot
+  const lines = ['bios ok', 'mounting /audra', 'mounting /astra', 'linking both names ...... ok', 'waking ' + A.pets.length + ' pets', 'ready'];
+  let i = 0; const log = $('bootlog');
+  const go = () => { if (i < lines.length) { log.append(A.el('div', null, '> ' + lines[i++])); setTimeout(go, A.reduced ? 0 : 220); } else setTimeout(() => { $('boot').classList.add('gone'); win('astra.exe', 'astra.exe', 440, apps[1][3]); win('audra.txt', 'audra.txt', 460, apps[0][3]); }, A.reduced ? 0 : 400); };
+  go();
+})();
+</script>
+</body>
+</html>

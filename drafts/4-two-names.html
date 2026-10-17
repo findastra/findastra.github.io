@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>two names · findastra</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,700&family=Syne:wght@500;800&family=DM+Mono&display=swap">
+<style>
+  :root { --paper: #f7f5f0; --ink: #141414; --night: #07060d; --neon: #7cf3ff; --pink: #ff5fc8; --violet: #9b6bff; --seam: 50%; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--night); color: #eee; font-family: Syne, system-ui, sans-serif; }
+  .mono { font-family: "DM Mono", monospace; font-size: 12px; letter-spacing: .18em; text-transform: uppercase; }
+  /* the mirror */
+  .mirror { position: relative; height: 100vh; height: 100svh; overflow: hidden; cursor: ew-resize; user-select: none; touch-action: pan-y; }
+  .side { position: absolute; inset: 0; display: grid; align-content: center; padding: 0 7vw; }
+  .audra { background: var(--paper); color: var(--ink); font-family: Fraunces, Georgia, serif; }
+  .astra { background: radial-gradient(circle at 70% 40%, #1b0f33, var(--night) 60%); clip-path: inset(0 0 0 var(--seam)); text-align: right; }
+  .side .name { font-size: clamp(4rem, 16vw, 13rem); line-height: .85; margin: 0; letter-spacing: -.04em; }
+  .audra .name { font-weight: 300; }
+  .astra .name { font-family: Syne, sans-serif; font-weight: 800; background: linear-gradient(120deg, var(--neon), var(--violet), var(--pink)); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 0 30px rgba(155, 107, 255, .5)); }
+  .side p:not(.name) { max-width: 34ch; font-size: 1.05rem; line-height: 1.5; }
+  .astra p { margin-left: auto; }
+  .seam { position: absolute; top: 0; bottom: 0; left: var(--seam); width: 2px; background: linear-gradient(var(--neon), var(--pink)); box-shadow: 0 0 20px var(--pink); transform: translateX(-1px); }
+  .seam::after { content: "⟷"; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 44px; height: 44px; display: grid; place-items: center; border-radius: 50%; background: var(--night); color: var(--neon); border: 1px solid var(--neon); }
+  .banner { position: absolute; left: 0; right: 0; bottom: 5vh; text-align: center; pointer-events: none; mix-blend-mode: difference; color: #fff; }
+  .banner b { font-size: clamp(1.2rem, 3vw, 2rem); letter-spacing: .02em; }
+  /* sections */
+  section.block { max-width: 1100px; margin: 0 auto; padding: 12vh 6vw; }
+  h2 { font-size: clamp(2.2rem, 6vw, 4rem); margin: 0 0 .3em; letter-spacing: -.03em; }
+  .slot { display: inline-block; border: 1px dashed var(--pink); padding: 18px 28px; font-size: clamp(1.8rem, 5vw, 3rem); font-weight: 800; color: var(--pink); }
+  .slot small { display: block; color: #888; }
+  /* flip cards: Audra on the front, Astra on the back */
+  .flips { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 16px; perspective: 1200px; }
+  .flip { height: 260px; position: relative; transform-style: preserve-3d; transition: transform .7s cubic-bezier(.3, 1.4, .4, 1); cursor: pointer; }
+  .flip:hover, .flip:focus-within, .flip.turned { transform: rotateY(180deg); }
+  .face { position: absolute; inset: 0; backface-visibility: hidden; padding: 18px; display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden; }
+  .front { background: var(--paper); color: var(--ink); font-family: Fraunces, serif; }
+  .back { background: #120b22; border: 1px solid var(--violet); transform: rotateY(180deg); }
+  .back img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .55; }
+  .back > * { position: relative; }
+  .back a { color: var(--neon); }
+  .face b { font-size: 1.3rem; }
+  /* kaleidoscope canvas */
+  .art { position: relative; height: 70vh; border: 1px solid #2a2140; border-radius: 6px; overflow: hidden; }
+  .art canvas { width: 100%; height: 100%; display: block; touch-action: none; cursor: crosshair; }
+  .art .tools { position: absolute; left: 12px; top: 12px; display: flex; gap: 8px; }
+  .art button, .game button.ctl { font: 12px "DM Mono", monospace; background: #120b22; color: #eee; border: 1px solid #3c2d63; padding: 6px 10px; cursor: pointer; }
+  /* memory game */
+  .board { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; max-width: 640px; }
+  .tile { aspect-ratio: 1; perspective: 600px; }
+  .tile button { width: 100%; height: 100%; position: relative; border: 0; padding: 0; background: none; cursor: pointer; transform-style: preserve-3d; transition: transform .4s; }
+  .tile.open button, .tile.done button { transform: rotateY(180deg); }
+  .tile .t { position: absolute; inset: 0; backface-visibility: hidden; display: grid; place-items: center; border-radius: 8px; }
+  .tile .t1 { background: linear-gradient(135deg, #1d1236, #0d0a19); border: 1px solid #3c2d63; color: var(--violet); font-size: 1.4rem; }
+  .tile .t2 { background: var(--paper); transform: rotateY(180deg); }
+  .tile .t2 img { width: 80%; image-rendering: pixelated; }
+  .tile.done .t2 { box-shadow: 0 0 0 2px var(--neon), 0 0 18px var(--neon); }
+  .pets { display: flex; flex-wrap: wrap; gap: 8px; }
+  .pets img { width: 52px; height: 52px; image-rendering: pixelated; }
+  footer { text-align: center; padding: 8vh 6vw; color: #999; }
+  footer a { color: var(--neon); margin: 0 10px; }
+  @media (max-width: 600px) { .board { grid-template-columns: repeat(4, minmax(0, 1fr)); } .astra { text-align: left; } .astra p { margin-left: 0; } }
+  @media (prefers-reduced-motion: reduce) { .flip, .tile button { transition: none; } }
+</style>
+</head>
+<body>
+<header class="mirror" id="mirror" aria-label="Drag to move between Audra and Astra">
+  <div class="side audra">
+    <p class="mono">the plain version</p>
+    <h1 class="name">Audra</h1>
+    <p id="about"></p>
+  </div>
+  <div class="side astra" aria-hidden="false">
+    <p class="mono" style="color:var(--neon)">the other version</p>
+    <p class="name">Astra</p>
+    <p id="tag"></p>
+  </div>
+  <div class="seam" aria-hidden="true"></div>
+  <div class="banner"><b>One person. Two names. Both real.</b><br><span class="mono">drag the line</span></div>
+</header>
+
+<section class="block">
+  <div class="slot" id="slot"></div>
+</section>
+
+<section class="block">
+  <p class="mono" style="color:var(--neon)">hover or tap to turn over</p>
+  <h2>Both sides</h2>
+  <div class="flips" id="flips"></div>
+</section>
+
+<section class="block">
+  <p class="mono" style="color:var(--neon)">interactive art · draw on one side, the mirror draws the other</p>
+  <h2>Mirror</h2>
+  <div class="art"><canvas id="cv"></canvas><div class="tools"><button id="clear">clear</button><button id="fold">folds: 6</button></div></div>
+</section>
+
+<section class="block game">
+  <p class="mono" style="color:var(--neon)">a game · find the pairs</p>
+  <h2>Pet memory</h2>
+  <p id="mstat" class="mono"></p>
+  <div class="board" id="board"></div>
+  <p><button class="ctl" id="again">new board</button></p>
+</section>
+
+<section class="block">
+  <h2>Everything else</h2>
+  <p class="mono" id="repostat"></p>
+  <div id="repos" style="columns: 2 260px"></div>
+  <h2 style="margin-top:8vh">Pets</h2>
+  <div class="pets" id="pets"></div>
+</section>
+<footer id="links"></footer>
+
+<script src="../profile-data.js"></script>
+<script src="../site-data.js"></script>
+<script src="common.js"></script>
+<script>
+(() => {
+  const A = window.ASTRA, $ = (id) => document.getElementById(id);
+  $('about').textContent = A.about.join(' ') + ' ' + A.languages.join(', ') + '.';
+  $('tag').textContent = A.tagline;
+  $('slot').textContent = A.lettering; $('slot').append(A.el('small', 'mono', 'hand lettering goes here'));
+
+  // the seam follows the pointer and can be dragged; it drifts gently until touched
+  const mirror = $('mirror'); let touched = false;
+  const setSeam = (x) => mirror.style.setProperty('--seam', Math.max(0, Math.min(100, x)) + '%');
+  mirror.addEventListener('pointermove', (e) => { touched = true; setSeam((e.clientX / innerWidth) * 100); });
+  mirror.addEventListener('pointerdown', (e) => { touched = true; setSeam((e.clientX / innerWidth) * 100); });
+  if (!A.reduced) (function drift(t) { if (!touched) { setSeam(50 + Math.sin(t / 1400) * 18); requestAnimationFrame(drift); } })(0);
+
+  // flip cards
+  const pairs = [
+    ['Languages', A.languages.join(', '), 'Worlds', A.worlds[0]],
+    ['Skills', A.skills[0], 'Infinite Pole', A.worlds[0]],
+    ['Web apps', A.skills[1], "Mommy's", A.worlds[2]],
+    ['Tools', A.skills[2], 'Piranesi House', A.worlds[1]],
+    ['AI assistants', A.skills[3], 'AI Astra', A.worlds[3]],
+    ['Records', A.skills[4], 'The pets', { href: 'https://github.com/findastra/astras-pet-os', text: A.pets.length + ' small apps, each with a pixel pet.' }],
+  ];
+  pairs.forEach(([fa, ft, ba, w], i) => {
+    const f = A.el('div', 'flip'); f.tabIndex = 0;
+    const front = A.el('div', 'face front'); front.append(A.el('span', 'mono', 'audra'), A.el('b', null, fa), A.el('span', null, ft || ''));
+    const back = A.el('div', 'face back');
+    if (w.img) { const im = A.el('img'); im.src = w.img; im.alt = ''; back.append(im); }
+    back.append(A.el('span', 'mono', 'astra'), A.el('b', null, ba), A.el('span', null, w.text || ''), A.link(w.href, 'mono', 'open ↗'));
+    f.append(front, back); f.addEventListener('click', () => f.classList.toggle('turned'));
+    $('flips').append(f);
+  });
+
+  // kaleidoscope: every stroke is repeated around the centre and mirrored
+  const cv = $('cv'), cx = cv.getContext('2d'); let folds = 6, drawing = false, last = null, hue = 190;
+  const fit = () => { const r = cv.getBoundingClientRect(); cv.width = r.width * devicePixelRatio; cv.height = r.height * devicePixelRatio; cx.fillStyle = '#07060d'; cx.fillRect(0, 0, cv.width, cv.height); };
+  fit(); addEventListener('resize', fit);
+  const pt = (e) => { const r = cv.getBoundingClientRect(); return [(e.clientX - r.left) * devicePixelRatio - cv.width / 2, (e.clientY - r.top) * devicePixelRatio - cv.height / 2]; };
+  const stroke = (a, b) => {
+    hue = (hue + 1.2) % 360; cx.strokeStyle = `hsl(${hue} 100% 65%)`; cx.lineWidth = 3 * devicePixelRatio; cx.lineCap = 'round'; cx.shadowBlur = 12; cx.shadowColor = cx.strokeStyle;
+    for (let i = 0; i < folds; i++) for (const m of [1, -1]) {
+      cx.save(); cx.translate(cv.width / 2, cv.height / 2); cx.rotate((i * 2 * Math.PI) / folds); cx.scale(1, m);
+      cx.beginPath(); cx.moveTo(a[0], a[1]); cx.lineTo(b[0], b[1]); cx.stroke(); cx.restore();
+    }
+  };
+  cv.addEventListener('pointerdown', (e) => { drawing = true; last = pt(e); cv.setPointerCapture(e.pointerId); });
+  cv.addEventListener('pointermove', (e) => { if (!drawing) return; const p = pt(e); stroke(last, p); last = p; });
+  addEventListener('pointerup', () => (drawing = false));
+  $('clear').onclick = fit;
+  $('fold').onclick = () => { folds = folds === 12 ? 3 : folds + 3; $('fold').textContent = 'folds: ' + folds; };
+
+  // memory game with the pets
+  function deal() {
+    const pick = [...A.pets].sort(() => Math.random() - .5).slice(0, 6);
+    const cards = [...pick, ...pick].sort(() => Math.random() - .5);
+    let open = [], found = 0, moves = 0, lock = false; const t0 = Date.now();
+    const stat = () => ($('mstat').textContent = `moves ${moves} · pairs ${found}/6`);
+    $('board').replaceChildren(...cards.map((p) => {
+      const tile = A.el('div', 'tile'), b = A.el('button'); b.setAttribute('aria-label', 'card');
+      const t1 = A.el('span', 't t1', '✦'), t2 = A.el('span', 't t2'); const im = A.el('img'); im.src = p.img; im.alt = p.pet; t2.append(im); b.append(t1, t2); tile.append(b);
+      b.onclick = () => {
+        if (lock || tile.classList.contains('open') || tile.classList.contains('done')) return;
+        tile.classList.add('open'); open.push([tile, p]);
+        if (open.length === 2) {
+          moves++; const [[ta, pa], [tb, pb]] = open; open = [];
+          if (pa.art === pb.art) { ta.classList.add('done'); tb.classList.add('done'); found++; if (found === 6) $('mstat').textContent = `all pairs in ${moves} moves, ${Math.round((Date.now() - t0) / 1000)}s ✦`; else stat(); }
+          else { lock = true; setTimeout(() => { ta.classList.remove('open'); tb.classList.remove('open'); lock = false; }, 700); stat(); }
+        }
+      };
+      return tile;
+    }));
+    stat();
+  }
+  $('again').onclick = deal; deal();
+
+  A.liveRepos((repos, live) => {
+    $('repostat').textContent = (live ? 'live from github · ' : 'snapshot · ') + repos.length + ' repos';
+    $('repos').replaceChildren(...repos.map((r) => { const p = A.el('p'); p.style.margin = '0 0 8px'; p.append(A.link('https://github.com/findastra/' + r.name, null, r.name)); p.append(A.el('br'), A.el('span', null, r.description || '')); p.lastChild.style.color = '#999'; return p; }));
+  });
+  A.pets.forEach((p) => { const a = A.link(p.href); a.title = p.pet; const i = A.el('img'); i.src = p.img; i.alt = p.pet; a.append(i); $('pets').append(a); });
+  A.links.forEach((l) => $('links').append(A.link(l.href, null, l.name)));
+})();
+</script>
+</body>
+</html>

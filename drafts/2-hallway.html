@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>the hallway · findastra</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;500;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root { --wall: #d9d3a4; --wall2: #c9c28d; --floor: #8f8a62; --ceil: #e9e5c3; --ink: #1d1b12; --hum: #fffbe0; --accent: #2b48ff; }
+  * { box-sizing: border-box; }
+  html { scroll-snap-type: y mandatory; }
+  body { margin: 0; background: #11100a; color: var(--ink); font-family: "Inter Tight", system-ui, sans-serif; }
+  .room { position: relative; height: 100vh; height: 100svh; scroll-snap-align: start; overflow: hidden; display: grid; place-items: center; perspective: 900px; }
+  /* one-point perspective corridor */
+  .corridor { position: absolute; inset: 0; }
+  .corridor i { position: absolute; inset: 0; }
+  .corridor .ceil  { background: linear-gradient(var(--ceil), #cfc99f); clip-path: polygon(0 0, 100% 0, 62% 34%, 38% 34%); }
+  .corridor .floor { background: repeating-linear-gradient(90deg, rgba(0,0,0,.05) 0 2px, transparent 2px 60px), linear-gradient(#77724f, var(--floor)); clip-path: polygon(38% 70%, 62% 70%, 100% 100%, 0 100%); }
+  .corridor .left  { background: linear-gradient(90deg, var(--wall2), var(--wall)); clip-path: polygon(0 0, 38% 34%, 38% 70%, 0 100%); }
+  .corridor .right { background: linear-gradient(-90deg, var(--wall2), var(--wall)); clip-path: polygon(100% 0, 62% 34%, 62% 70%, 100% 100%); }
+  .corridor .end   { background: #b9b383; clip-path: polygon(38% 34%, 62% 34%, 62% 70%, 38% 70%); }
+  .corridor .light { background: linear-gradient(var(--hum), transparent 40%); clip-path: polygon(44% 4%, 56% 4%, 54% 8%, 46% 8%); filter: blur(.5px); animation: flicker 7s infinite; }
+  .corridor .glow  { background: radial-gradient(ellipse 40% 30% at 50% 8%, rgba(255, 251, 224, .55), transparent 70%); animation: flicker 7s infinite; }
+  @keyframes flicker { 0%, 92%, 100% { opacity: 1; } 93% { opacity: .3; } 94% { opacity: 1; } 96% { opacity: .5; } }
+  /* the door at the end */
+  .door {
+    position: relative; width: min(22vw, 150px); aspect-ratio: 1 / 2; margin-top: 8vh;
+    background: linear-gradient(#8a7f55, #6f6643); border: 3px solid #4d4630; cursor: pointer;
+    transform-origin: left center; transition: transform .9s cubic-bezier(.6, 0, .2, 1);
+    box-shadow: inset 0 0 0 6px rgba(0,0,0,.08);
+  }
+  .door::after { content: ""; position: absolute; right: 12%; top: 52%; width: 9px; height: 9px; border-radius: 50%; background: #d9c779; }
+  .door .sign { position: absolute; left: 50%; top: 18%; transform: translateX(-50%); background: var(--hum); padding: 3px 8px; font: 500 11px "IBM Plex Mono", monospace; letter-spacing: .15em; white-space: nowrap; }
+  .room.open .door { transform: rotateY(-100deg); }
+  .door:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }
+  /* what is behind the door */
+  .inside {
+    position: absolute; inset: 6vh 4vw; z-index: 3; overflow: auto; padding: clamp(20px, 4vw, 48px);
+    background: rgba(255, 252, 232, .96); border: 1px solid #b9b383;
+    opacity: 0; pointer-events: none; transform: scale(.4); transition: opacity .4s .5s, transform .6s .5s cubic-bezier(.2, 1.3, .4, 1);
+  }
+  .room.open .inside { opacity: 1; pointer-events: auto; transform: none; }
+  .close { position: sticky; top: 0; float: right; font: 500 12px "IBM Plex Mono", monospace; background: var(--ink); color: var(--hum); border: 0; padding: 6px 10px; cursor: pointer; }
+  h1, h2 { font-weight: 800; letter-spacing: -.03em; line-height: .95; margin: 0 0 .4em; }
+  h1 { font-size: clamp(2.6rem, 9vw, 6rem); }
+  h2 { font-size: clamp(2rem, 6vw, 3.6rem); }
+  .label { font: 500 12px "IBM Plex Mono", monospace; letter-spacing: .2em; text-transform: uppercase; color: #6b6440; }
+  .hint { position: absolute; bottom: 4vh; left: 0; right: 0; text-align: center; font: 12px "IBM Plex Mono", monospace; color: var(--hum); opacity: .75; letter-spacing: .2em; text-transform: uppercase; z-index: 2; }
+  .msg { position: absolute; top: 12vh; left: 0; right: 0; text-align: center; z-index: 2; color: var(--ink); }
+  .msg h1 span { display: block; }
+  .slot { display: inline-block; border: 2px dashed var(--accent); padding: 14px 22px; font-size: clamp(1.6rem, 5vw, 2.8rem); font-weight: 800; color: var(--accent); }
+  .slot small { display: block; font: 11px "IBM Plex Mono", monospace; letter-spacing: .15em; color: #6b6440; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
+  .card { display: block; padding: 14px; background: #fff; border: 1px solid #d8d2a8; color: inherit; text-decoration: none; transition: transform .2s; }
+  .card:hover { transform: translateY(-4px) rotate(-.6deg); box-shadow: 0 10px 0 #d9d3a4; }
+  .card img { width: 100%; aspect-ratio: 16/10; object-fit: cover; display: block; margin-bottom: 8px; }
+  .card b { display: block; font-size: 1.2rem; }
+  .pets { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 10px; }
+  .pets a { text-align: center; color: inherit; text-decoration: none; font-size: 12px; }
+  .pets img { width: 64px; height: 64px; image-rendering: pixelated; transition: transform .2s; }
+  .pets a:hover img { transform: translateY(-6px) scale(1.15); }
+  ul.repo { columns: 2 260px; padding-left: 1.1em; }
+  ul.repo li { break-inside: avoid; margin-bottom: 6px; }
+  a { color: var(--accent); }
+  /* exit game */
+  .exits { display: flex; gap: clamp(12px, 4vw, 40px); justify-content: center; margin-top: 4vh; position: relative; z-index: 2; }
+  .exits button { width: min(20vw, 110px); aspect-ratio: 1/2; background: linear-gradient(#8a7f55, #6f6643); border: 3px solid #4d4630; cursor: pointer; position: relative; transition: transform .35s ease; }
+  .exits button span { position: absolute; left: 50%; top: 14%; transform: translateX(-50%); background: var(--hum); padding: 2px 6px; font: 500 10px "IBM Plex Mono", monospace; }
+  .exits button.win { background: linear-gradient(#fff, #fffbe0); box-shadow: 0 0 60px 20px rgba(255, 251, 224, .8); }
+  .exits button.lose { background: #2a2718; }
+  .score { position: relative; z-index: 2; text-align: center; font: 13px "IBM Plex Mono", monospace; color: var(--hum); margin-top: 16px; min-height: 2em; }
+  .nav { position: fixed; right: 14px; top: 50%; transform: translateY(-50%); z-index: 10; display: flex; flex-direction: column; gap: 8px; }
+  .nav a { width: 10px; height: 10px; border-radius: 50%; background: rgba(255, 251, 224, .4); }
+  .nav a.on { background: var(--hum); box-shadow: 0 0 10px var(--hum); }
+  @media (prefers-reduced-motion: reduce) { .corridor .light, .corridor .glow { animation: none; } .door, .inside, .exits button { transition: none; } }
+</style>
+</head>
+<body>
+<nav class="nav" id="nav" aria-label="Rooms"></nav>
+
+<section class="room" id="r0" data-name="entrance">
+  <div class="corridor" aria-hidden="true"><i class="ceil"></i><i class="left"></i><i class="right"></i><i class="floor"></i><i class="end"></i><i class="glow"></i><i class="light"></i></div>
+  <div class="msg"><p class="label">findastra · the hallway</p><h1><span>One person.</span><span>Two names.</span><span>Both real.</span></h1></div>
+  <p class="hint">scroll to walk · click a door to open it</p>
+</section>
+
+<template id="room-t">
+  <section class="room">
+    <div class="corridor" aria-hidden="true"><i class="ceil"></i><i class="left"></i><i class="right"></i><i class="floor"></i><i class="end"></i><i class="glow"></i><i class="light"></i></div>
+    <button class="door"><span class="sign"></span></button>
+    <div class="inside" role="dialog"><button class="close">close the door ✕</button><div class="body"></div></div>
+  </section>
+</template>
+
+<section class="room" id="exit" data-name="exit">
+  <div class="corridor" aria-hidden="true"><i class="ceil"></i><i class="left"></i><i class="right"></i><i class="floor"></i><i class="end"></i><i class="glow"></i><i class="light"></i></div>
+  <div style="position:relative;z-index:2;text-align:center;color:var(--hum)">
+    <p class="label" style="color:var(--hum)">the end of the hall</p>
+    <h2 style="color:var(--hum)">Find the exit.</h2>
+    <p style="font:13px 'IBM Plex Mono',monospace">One door leads out. Watch them shuffle, then pick.</p>
+    <div class="exits" id="exits"></div>
+    <p class="score" id="score">press start</p>
+    <button id="start" style="font:500 13px 'IBM Plex Mono',monospace;padding:8px 16px;cursor:pointer;position:relative;z-index:2">start</button>
+  </div>
+</section>
+
+<script src="../profile-data.js"></script>
+<script src="../site-data.js"></script>
+<script src="common.js"></script>
+<script>
+(() => {
+  const A = window.ASTRA, $ = (s, r = document) => r.querySelector(s);
+  const rooms = [
+    ['AUDRA', (b) => {
+      b.append(A.el('p', 'label', 'room 1 · the plain version'), A.el('h2', null, 'Audra'));
+      A.about.forEach((t) => b.append(A.el('p', null, t)));
+      b.append(A.el('p', 'label', 'languages'), A.el('p', null, A.languages.join(' · ')), A.el('p', 'label', 'skills'));
+      const ul = A.el('ul'); A.skills.forEach((s) => ul.append(A.el('li', null, s))); b.append(ul);
+      b.append(A.el('p', 'label', 'work'), A.el('p', null, A.positions.length ? '' : 'Being written up. It goes here once I have read every word.'));
+    }],
+    ['ASTRA', (b) => {
+      b.append(A.el('p', 'label', 'room 2 · the other version'));
+      const slot = A.el('div', 'slot', A.lettering); slot.append(A.el('small', null, 'hand lettering goes here')); b.append(slot);
+      b.append(A.el('p', null, A.tagline));
+      const img = A.el('img'); img.src = A.avatar; img.alt = "Astra's avatar"; img.style.cssText = 'width:200px;height:200px;object-fit:cover;border-radius:50%;margin-top:16px'; b.append(img);
+    }],
+    ['WORLDS', (b) => {
+      b.append(A.el('p', 'label', 'room 3'), A.el('h2', null, 'Worlds'));
+      const g = A.el('div', 'cards');
+      A.worlds.forEach((w) => { const a = A.link(w.href, 'card'); if (w.img) { const i = A.el('img'); i.src = w.img; i.alt = ''; a.append(i); } a.append(A.el('span', 'label', w.kind), A.el('b', null, w.name), A.el('span', null, w.text)); g.append(a); });
+      b.append(g);
+    }],
+    ['PHOTOS', (b) => {
+      b.append(A.el('p', 'label', 'room 4'), A.el('h2', null, 'Photos'));
+      const g = A.el('div', 'cards');
+      A.photos.forEach((p) => { const a = A.link(p.href, 'card'); const i = A.el('img'); i.src = p.src; i.alt = p.caption; a.append(i, A.el('span', null, p.caption)); g.append(a); });
+      b.append(g);
+    }],
+    ['PROJECTS', (b) => {
+      b.append(A.el('p', 'label', 'room 5'), A.el('h2', null, 'Projects'));
+      const note = A.el('p', 'label'), ul = A.el('ul', 'repo'); b.append(note, ul);
+      A.liveRepos((repos, live) => { note.textContent = live ? 'live from github' : 'snapshot'; ul.replaceChildren(...repos.map((r) => { const li = A.el('li'); li.append(A.link('https://github.com/findastra/' + r.name, null, r.name), document.createTextNode(' — ' + (r.description || ''))); return li; })); });
+    }],
+    ['PETS', (b) => {
+      b.append(A.el('p', 'label', 'room 6'), A.el('h2', null, 'Pets'), A.el('p', null, 'Small apps, each with a pixel pet.'));
+      const g = A.el('div', 'pets');
+      A.pets.forEach((p) => { const a = A.link(p.href); a.title = p.job; const i = A.el('img'); i.src = p.img; i.alt = ''; a.append(i, A.el('div', null, p.pet)); g.append(a); });
+      b.append(g);
+    }],
+  ];
+
+  const t = $('#room-t'), exit = $('#exit');
+  rooms.forEach(([name, fill], i) => {
+    const node = t.content.firstElementChild.cloneNode(true);
+    node.id = 'r' + (i + 1); node.dataset.name = name.toLowerCase();
+    $('.sign', node).textContent = name;
+    $('.door', node).setAttribute('aria-label', 'open the ' + name + ' door');
+    fill($('.body', node));
+    $('.door', node).onclick = () => node.classList.add('open');
+    $('.close', node).onclick = () => node.classList.remove('open');
+    exit.before(node);
+  });
+
+  // side dots
+  const nav = $('#nav'), all = [...document.querySelectorAll('.room')];
+  all.forEach((r) => { const a = A.el('a'); a.href = '#' + r.id; a.title = r.dataset.name; nav.append(a); });
+  const io = new IntersectionObserver((es) => es.forEach((e) => {
+    if (e.isIntersecting) [...nav.children].forEach((a, i) => a.classList.toggle('on', all[i] === e.target));
+  }), { threshold: .6 });
+  all.forEach((r) => io.observe(r));
+
+  // the shell game
+  const box = $('#exits'), score = $('#score');
+  let wins = 0, plays = 0, winner = 0, ready = false;
+  const doors = [0, 1, 2].map((i) => { const b = A.el('button'); b.append(A.el('span', null, 'EXIT?')); b.setAttribute('aria-label', 'door ' + (i + 1)); box.append(b); return b; });
+  // order[slot] = which door stands in that slot; each door slides from its home slot to its new one.
+  const place = (order) => order.forEach((d, slot) => (doors[d].style.transform = `translateX(calc(${slot - d} * (100% + clamp(12px, 4vw, 40px))))`));
+  $('#start').onclick = async () => {
+    doors.forEach((d) => d.classList.remove('win', 'lose'));
+    winner = Math.floor(Math.random() * 3); ready = false;
+    doors[winner].classList.add('win'); score.textContent = 'that one is the exit. watch it.';
+    let order = [0, 1, 2]; place(order);
+    await new Promise((r) => setTimeout(r, 900));
+    doors[winner].classList.remove('win');
+    const swaps = 6 + plays * 2, speed = Math.max(140, 380 - plays * 40);
+    for (let s = 0; s < swaps; s++) {
+      const a = Math.floor(Math.random() * 3), b = (a + 1 + Math.floor(Math.random() * 2)) % 3;
+      [order[a], order[b]] = [order[b], order[a]]; place(order);
+      await new Promise((r) => setTimeout(r, A.reduced ? 0 : speed));
+    }
+    ready = true; score.textContent = 'which door is the exit?';
+  };
+  doors.forEach((d, i) => (d.onclick = () => {
+    if (!ready) return; ready = false; plays++;
+    doors[winner].classList.add('win');
+    if (i === winner) { wins++; score.textContent = `you got out. ${wins}/${plays} · it gets faster.`; }
+    else { d.classList.add('lose'); score.textContent = `that door led back into the hall. ${wins}/${plays}`; }
+  }));
+})();
+</script>
+</body>
+</html>
