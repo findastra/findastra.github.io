@@ -1,27 +1,33 @@
 {
  "tool": "github-aquarium-v1.0-project-image-generator-v1.0",
  "owner": "findastra",
- "generated": "2026-10-17T07:07:27.653Z",
+ "generated": "2026-10-17T09:00:27.135Z",
  "repos": [
   {
-   "name": "findastra",
-   "description": "Profile page for Astra: what I'm building and where to find me.",
-   "language": "Markdown",
-   "pushed_at": "2026-10-17T07:01:26Z",
+   "name": "file-master",
+   "description": "Keeps a Windows PC organized: read-only file/project audits, approval-based cleanup plans with undo, and a Claude Code agent.",
+   "language": "PowerShell",
+   "pushed_at": "2026-10-17T08:41:44Z",
    "homepage": null,
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [
+    {
+     "file": "file-master-page-1-20261017.png",
+     "source": "https://findastra.github.io/astras-pet-os/apps/file-master-20261008.html"
+    }
+   ],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count). 1 screenshot(s) ready to add."
    }
   },
   {
    "name": "astras-pet-os",
    "description": "Astra's PetOS: the Friendly Farmer organizes the pets (intelligent apps). System Map (3D PFD), intelligence levels, and the plan for the Farm and the Kennel.",
    "language": "HTML",
-   "pushed_at": "2026-10-17T07:00:36Z",
+   "pushed_at": "2026-10-17T08:41:10Z",
    "homepage": "https://findastra.github.io/astras-pet-os/system-map-20261012.html",
    "creative": true,
    "images": [
@@ -37,238 +43,118 @@
      ]
     }
    ],
-   "screenshot": null,
-   "a55": {
-    "status": "too-few",
-    "note": "Creative project with 1 picture(s); A55 asks for at least three, including in-world or 3D views."
-   }
-  },
-  {
-   "name": "fuzzboi-friend",
-   "description": "👉 https://findastra.github.io/fuzzboi-friend/ — Fuzzboi Friend, a pet app by Astra: type your 6-digit hex code and get your own Fuzzboi.",
-   "language": "HTML",
-   "pushed_at": "2026-10-17T06:23:47Z",
-   "homepage": "https://findastra.github.io/fuzzboi-friend/",
-   "creative": false,
-   "images": [
+   "screenshot": "astras-pet-os-site-20261017.png",
+   "pages": [
     {
-     "path": "art/fuzzboi-friend-ref-20261009.png",
-     "url": "https://raw.githubusercontent.com/findastra/fuzzboi-friend/main/art/fuzzboi-friend-ref-20261009.png",
-     "size": 135243,
-     "score": 15,
-     "why": [
-      "size"
-     ]
+     "file": "astras-pet-os-page-1-20261017.png",
+     "source": "https://findastra.github.io/astras-pet-os/apps/astras-pet-apps-20261008.html"
+    },
+    {
+     "file": "astras-pet-os-page-2-20261017.png",
+     "source": "https://findastra.github.io/astras-pet-os/system-map-20261012.html"
     }
    ],
-   "screenshot": "fuzzboi-friend-site-20261017.png",
    "a55": {
-    "status": "pass",
-    "note": "2 picture(s)."
+    "status": "too-few",
+    "note": "Creative project with 1 committed picture(s); A55 asks for at least three, including in-world or 3D views. 3 screenshot(s) ready to add."
    }
   },
   {
    "name": "github-goldfish",
    "description": "GitHub account audit companion for document control, organization, and systemic consistency.",
    "language": "HTML",
-   "pushed_at": "2026-10-17T06:23:13Z",
+   "pushed_at": "2026-10-17T08:39:32Z",
    "homepage": null,
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [
+    {
+     "file": "github-goldfish-page-1-20261017.png",
+     "source": "https://findastra.github.io/astras-pet-os/apps/github-goldfish-20261008.html"
+    }
+   ],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count). 1 screenshot(s) ready to add."
    }
   },
   {
-   "name": "startup-star",
-   "description": "Startup Star: the Friendly Farmer's tool that brings out Astra's desktop pets from the tray",
-   "language": "PowerShell",
-   "pushed_at": "2026-10-17T06:07:35Z",
+   "name": "findastra",
+   "description": "Profile page for Astra: what I'm building and where to find me.",
+   "language": "Markdown",
+   "pushed_at": "2026-10-17T08:33:20Z",
    "homepage": null,
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
    "name": "chat-rat",
    "description": "Chat Rat: a pet app by Astra. Files every Claude and OpenAI chat into one shared folder.",
    "language": "",
-   "pushed_at": "2026-10-17T03:44:13Z",
+   "pushed_at": "2026-10-17T08:32:54Z",
    "homepage": null,
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [
+    {
+     "file": "chat-rat-page-1-20261017.png",
+     "source": "local chat-rat-20261016.html"
+    }
+   ],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count). 1 screenshot(s) ready to add."
+   }
+  },
+  {
+   "name": "startup-star",
+   "description": "Startup Star: the Friendly Farmer's tool that brings out Astra's desktop pets from the tray",
+   "language": "PowerShell",
+   "pushed_at": "2026-10-17T08:31:40Z",
+   "homepage": null,
+   "creative": false,
+   "images": [],
+   "screenshot": null,
+   "pages": [],
+   "a55": {
+    "status": "missing",
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
    "name": "platform-platypus",
    "description": "Platform Platypus: keeps Astra's pages working on iPhone, Android, iPad and desktop",
    "language": "HTML",
-   "pushed_at": "2026-10-16T22:09:35Z",
+   "pushed_at": "2026-10-17T08:31:31Z",
    "homepage": "https://findastra.github.io/platform-platypus/",
    "creative": false,
    "images": [],
    "screenshot": "platform-platypus-site-20261017.png",
-   "a55": {
-    "status": "pass",
-    "note": "1 picture(s)."
-   }
-  },
-  {
-   "name": "raspberry-berry",
-   "description": "Raspberry Berry: a pet app by Astra. Its pet is Raspberry Pi.",
-   "language": "HTML",
-   "pushed_at": "2026-10-16T22:09:32Z",
-   "homepage": null,
-   "creative": false,
-   "images": [],
-   "screenshot": null,
+   "pages": [
+    {
+     "file": "platform-platypus-page-1-20261017.png",
+     "source": "https://findastra.github.io/platform-platypus/"
+    }
+   ],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
-   }
-  },
-  {
-   "name": "mesh-moth",
-   "description": "Mesh Moth: a pet app by Astra that stands for a Meshtastic node.",
-   "language": "HTML",
-   "pushed_at": "2026-10-16T22:09:30Z",
-   "homepage": null,
-   "creative": false,
-   "images": [],
-   "screenshot": null,
-   "a55": {
-    "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
-   }
-  },
-  {
-   "name": "deck-duck",
-   "description": "Deck Duck: a pet app by Astra (placeholder)",
-   "language": "PowerShell",
-   "pushed_at": "2026-10-16T22:09:28Z",
-   "homepage": null,
-   "creative": false,
-   "images": [],
-   "screenshot": null,
-   "a55": {
-    "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
-   }
-  },
-  {
-   "name": "wifi-butterfly",
-   "description": "Wifi Butterfly: a pet app by Astra (placeholder).",
-   "language": "HTML",
-   "pushed_at": "2026-10-16T22:09:26Z",
-   "homepage": null,
-   "creative": false,
-   "images": [],
-   "screenshot": null,
-   "a55": {
-    "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
-   }
-  },
-  {
-   "name": "rift-rabbit",
-   "description": "Rift Rabbit: a white pet app by Astra that preps and tracks VR software and performance (placeholder).",
-   "language": "HTML",
-   "pushed_at": "2026-10-16T22:09:23Z",
-   "homepage": null,
-   "creative": false,
-   "images": [],
-   "screenshot": null,
-   "a55": {
-    "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
-   }
-  },
-  {
-   "name": "backup-beaver",
-   "description": "Backup Beaver: a planned pet app for Astra's Pet Apps (placeholder).",
-   "language": "HTML",
-   "pushed_at": "2026-10-16T22:09:21Z",
-   "homepage": null,
-   "creative": false,
-   "images": [],
-   "screenshot": null,
-   "a55": {
-    "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
-   }
-  },
-  {
-   "name": "meme-fiend",
-   "description": "Meme Fiend: a meme saver and maker. A pet app by Astra.",
-   "language": "HTML",
-   "pushed_at": "2026-10-16T22:09:19Z",
-   "homepage": null,
-   "creative": true,
-   "images": [],
-   "screenshot": null,
-   "a55": {
-    "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
-   }
-  },
-  {
-   "name": "patch-cat",
-   "description": "Patch Cat: a placeholder pet app by Astra.",
-   "language": "HTML",
-   "pushed_at": "2026-10-16T22:09:17Z",
-   "homepage": null,
-   "creative": false,
-   "images": [],
-   "screenshot": null,
-   "a55": {
-    "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
-   }
-  },
-  {
-   "name": "mail-snail",
-   "description": "Mail Snail — a pet app by Astra (placeholder).",
-   "language": "HTML",
-   "pushed_at": "2026-10-16T22:09:15Z",
-   "homepage": null,
-   "creative": false,
-   "images": [],
-   "screenshot": null,
-   "a55": {
-    "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
-   }
-  },
-  {
-   "name": "mine-mole",
-   "description": "Mine Mole: a pet app by Astra. Researching whether mining crypto on a home PC is worth the power, with a break-even calculator.",
-   "language": "HTML",
-   "pushed_at": "2026-10-16T22:09:13Z",
-   "homepage": null,
-   "creative": false,
-   "images": [],
-   "screenshot": null,
-   "a55": {
-    "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count). 2 screenshot(s) ready to add."
    }
   },
   {
    "name": "findastra-discord-presence",
    "description": "Show the exact AI model you're using on your Discord profile. Two free Windows downloads: OpenAI Discord Presence and Anthropic Discord Presence, plus a guide to add more models.",
    "language": "JavaScript",
-   "pushed_at": "2026-10-16T22:09:10Z",
-   "homepage": "https://github.com/findastra/findastra-discord-presence#start-it-about-2-minutes",
+   "pushed_at": "2026-10-17T08:31:04Z",
+   "homepage": null,
    "creative": false,
    "images": [
     {
@@ -328,45 +214,246 @@
      ]
     }
    ],
-   "screenshot": "findastra-discord-presence-site-20261017.png",
+   "screenshot": null,
+   "pages": [
+    {
+     "file": "findastra-discord-presence-page-1-20261017.png",
+     "source": "https://findastra.github.io/astras-pet-os/apps/findastra-discord-presence-20261008.html"
+    }
+   ],
    "a55": {
     "status": "pass",
-    "note": "7 picture(s)."
+    "note": "6 committed picture(s)."
    }
   },
   {
-   "name": "file-master",
-   "description": "Keeps a Windows PC organized: read-only file/project audits, approval-based cleanup plans with undo, and a Claude Code agent.",
-   "language": "PowerShell",
-   "pushed_at": "2026-10-16T22:09:08Z",
+   "name": "ghost-protocol",
+   "description": "An interactive personal cybersecurity checklist.",
+   "language": "HTML",
+   "pushed_at": "2026-10-17T08:19:37Z",
+   "homepage": "https://findastra.github.io/ghost-protocol/",
+   "creative": false,
+   "images": [],
+   "screenshot": "ghost-protocol-site-20261017.png",
+   "pages": [
+    {
+     "file": "ghost-protocol-page-1-20261017.png",
+     "source": "https://findastra.github.io/ghost-protocol/"
+    }
+   ],
+   "a55": {
+    "status": "missing",
+    "note": "No real picture committed in the repo (pet art and icons do not count). 2 screenshot(s) ready to add."
+   }
+  },
+  {
+   "name": "the-astral-plane",
+   "description": "A bridge that brings an AI companion into VRChat.",
+   "language": "Python",
+   "pushed_at": "2026-10-17T08:18:08Z",
+   "homepage": null,
+   "creative": true,
+   "images": [],
+   "screenshot": null,
+   "pages": [],
+   "a55": {
+    "status": "missing",
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
+   }
+  },
+  {
+   "name": "findastra.github.io",
+   "description": "👉 https://findastra.github.io — Astra's portfolio: worlds, projects, pets. The one place that connects Audra and Astra.",
+   "language": "HTML",
+   "pushed_at": "2026-10-17T08:02:25Z",
+   "homepage": "https://findastra.github.io",
+   "creative": false,
+   "images": [
+    {
+     "path": "art/worlds/infinite-pole-spawn.jpg",
+     "url": "https://raw.githubusercontent.com/findastra/findastra.github.io/main/art/worlds/infinite-pole-spawn.jpg",
+     "size": 161748,
+     "score": 36,
+     "why": [
+      "name says it shows something",
+      "size"
+     ]
+    },
+    {
+     "path": "art/projects/openai-discord-presence-site-20261017.png",
+     "url": "https://raw.githubusercontent.com/findastra/findastra.github.io/main/art/projects/openai-discord-presence-site-20261017.png",
+     "size": 514134,
+     "score": 20,
+     "why": [
+      "size"
+     ]
+    },
+    {
+     "path": "art/projects/paper-girl-site-20261017.png",
+     "url": "https://raw.githubusercontent.com/findastra/findastra.github.io/main/art/projects/paper-girl-site-20261017.png",
+     "size": 347594,
+     "score": 19,
+     "why": [
+      "size"
+     ]
+    },
+    {
+     "path": "art/projects/ghost-protocol-site-20261017.png",
+     "url": "https://raw.githubusercontent.com/findastra/findastra.github.io/main/art/projects/ghost-protocol-site-20261017.png",
+     "size": 226192,
+     "score": 17,
+     "why": [
+      "size"
+     ]
+    },
+    {
+     "path": "art/projects/fuzzbois-site-20261017.png",
+     "url": "https://raw.githubusercontent.com/findastra/findastra.github.io/main/art/projects/fuzzbois-site-20261017.png",
+     "size": 203667,
+     "score": 17,
+     "why": [
+      "size"
+     ]
+    },
+    {
+     "path": "art/worlds/phone-booth.jpg",
+     "url": "https://raw.githubusercontent.com/findastra/findastra.github.io/main/art/worlds/phone-booth.jpg",
+     "size": 127613,
+     "score": 15,
+     "why": [
+      "size"
+     ]
+    }
+   ],
+   "screenshot": "findastra.github.io-site-20261017.png",
+   "pages": [],
+   "a55": {
+    "status": "pass",
+    "note": "6 committed picture(s)."
+   }
+  },
+  {
+   "name": "vscode-angel",
+   "description": "Planned code review and documentation companion for refining projects and maintaining Markdown records.",
+   "language": "HTML",
+   "pushed_at": "2026-10-17T07:54:53Z",
    "homepage": null,
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [
+    {
+     "file": "vscode-angel-page-1-20261017.png",
+     "source": "https://findastra.github.io/astras-pet-os/apps/vscode-angel-20261008.html"
+    }
+   ],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count). 1 screenshot(s) ready to add."
    }
   },
   {
    "name": "api-fairy",
    "description": "Windows desktop companion for tracking notes about API keys without storing the keys themselves.",
-   "language": "C#",
-   "pushed_at": "2026-10-16T22:09:05Z",
+   "language": "HTML",
+   "pushed_at": "2026-10-17T07:44:32Z",
    "homepage": null,
    "creative": false,
-   "images": [],
+   "images": [
+    {
+     "path": "docs/dashboard-keys.png",
+     "url": "https://raw.githubusercontent.com/findastra/api-fairy/main/docs/dashboard-keys.png",
+     "size": 271285,
+     "score": 58,
+     "why": [
+      "shown in the README",
+      "size"
+     ]
+    },
+    {
+     "path": "docs/dashboard-how.png",
+     "url": "https://raw.githubusercontent.com/findastra/api-fairy/main/docs/dashboard-how.png",
+     "size": 243275,
+     "score": 18,
+     "why": [
+      "size"
+     ]
+    },
+    {
+     "path": "docs/dashboard-settings.png",
+     "url": "https://raw.githubusercontent.com/findastra/api-fairy/main/docs/dashboard-settings.png",
+     "size": 228560,
+     "score": 17,
+     "why": [
+      "size"
+     ]
+    }
+   ],
    "screenshot": null,
+   "pages": [
+    {
+     "file": "api-fairy-page-1-20261017.png",
+     "source": "https://findastra.github.io/astras-pet-os/apps/api-fairy-20261008.html"
+    }
+   ],
    "a55": {
-    "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "status": "pass",
+    "note": "3 committed picture(s)."
+   }
+  },
+  {
+   "name": "astras-infinite-pole",
+   "description": "Unity source, magical effects, and verified VRChat publication history for Astra’s Infinite Pole. PC VR / desktop.",
+   "language": "C#",
+   "pushed_at": "2026-10-17T07:34:29Z",
+   "homepage": null,
+   "creative": true,
+   "images": [
+    {
+     "path": "docs/images/fine-magic.png",
+     "url": "https://raw.githubusercontent.com/findastra/astras-infinite-pole/codex%2Ffine-magic/docs/images/fine-magic.png",
+     "size": 1384761,
+     "score": 110,
+     "why": [
+      "shown in the README",
+      "docs/images",
+      "size"
+     ]
+    },
+    {
+     "path": "docs/images/spellbook.png",
+     "url": "https://raw.githubusercontent.com/findastra/astras-infinite-pole/codex%2Ffine-magic/docs/images/spellbook.png",
+     "size": 678855,
+     "score": 110,
+     "why": [
+      "shown in the README",
+      "docs/images",
+      "size"
+     ]
+    },
+    {
+     "path": "docs/images/living-magic.png",
+     "url": "https://raw.githubusercontent.com/findastra/astras-infinite-pole/codex%2Ffine-magic/docs/images/living-magic.png",
+     "size": 1687609,
+     "score": 70,
+     "why": [
+      "docs/images",
+      "size"
+     ]
+    }
+   ],
+   "screenshot": null,
+   "pages": [],
+   "a55": {
+    "status": "pass",
+    "note": "3 committed picture(s)."
    }
   },
   {
    "name": "data-dealer",
    "description": "",
    "language": "HTML",
-   "pushed_at": "2026-10-16T22:09:03Z",
+   "pushed_at": "2026-10-17T07:25:21Z",
    "homepage": null,
    "creative": false,
    "images": [
@@ -391,9 +478,240 @@
     }
    ],
    "screenshot": null,
+   "pages": [
+    {
+     "file": "data-dealer-page-1-20261017.png",
+     "source": "https://findastra.github.io/astras-pet-os/apps/data-dealer-20261008.html"
+    }
+   ],
    "a55": {
     "status": "pass",
-    "note": "2 picture(s)."
+    "note": "2 committed picture(s)."
+   }
+  },
+  {
+   "name": "fuzzboi-friend",
+   "description": "👉 https://findastra.github.io/fuzzboi-friend/ — Fuzzboi Friend, a pet app by Astra: type your 6-digit hex code and get your own Fuzzboi.",
+   "language": "HTML",
+   "pushed_at": "2026-10-17T06:23:47Z",
+   "homepage": "https://findastra.github.io/fuzzboi-friend/",
+   "creative": false,
+   "images": [
+    {
+     "path": "art/fuzzboi-friend-ref-20261009.png",
+     "url": "https://raw.githubusercontent.com/findastra/fuzzboi-friend/main/art/fuzzboi-friend-ref-20261009.png",
+     "size": 135243,
+     "score": 15,
+     "why": [
+      "size"
+     ]
+    }
+   ],
+   "screenshot": "fuzzboi-friend-site-20261017.png",
+   "pages": [],
+   "a55": {
+    "status": "pass",
+    "note": "1 committed picture(s)."
+   }
+  },
+  {
+   "name": "raspberry-berry",
+   "description": "Raspberry Berry: a pet app by Astra. Its pet is Raspberry Pi.",
+   "language": "HTML",
+   "pushed_at": "2026-10-16T22:09:32Z",
+   "homepage": null,
+   "creative": false,
+   "images": [],
+   "screenshot": null,
+   "pages": [
+    {
+     "file": "raspberry-berry-page-1-20261017.png",
+     "source": "local index.html"
+    }
+   ],
+   "a55": {
+    "status": "missing",
+    "note": "No real picture committed in the repo (pet art and icons do not count). 1 screenshot(s) ready to add."
+   }
+  },
+  {
+   "name": "mesh-moth",
+   "description": "Mesh Moth: a pet app by Astra that stands for a Meshtastic node.",
+   "language": "HTML",
+   "pushed_at": "2026-10-16T22:09:30Z",
+   "homepage": null,
+   "creative": false,
+   "images": [],
+   "screenshot": null,
+   "pages": [
+    {
+     "file": "mesh-moth-page-1-20261017.png",
+     "source": "local index.html"
+    }
+   ],
+   "a55": {
+    "status": "missing",
+    "note": "No real picture committed in the repo (pet art and icons do not count). 1 screenshot(s) ready to add."
+   }
+  },
+  {
+   "name": "deck-duck",
+   "description": "Deck Duck: a pet app by Astra (placeholder)",
+   "language": "PowerShell",
+   "pushed_at": "2026-10-16T22:09:28Z",
+   "homepage": null,
+   "creative": false,
+   "images": [],
+   "screenshot": null,
+   "pages": [
+    {
+     "file": "deck-duck-page-1-20261017.png",
+     "source": "local index.html"
+    }
+   ],
+   "a55": {
+    "status": "missing",
+    "note": "No real picture committed in the repo (pet art and icons do not count). 1 screenshot(s) ready to add."
+   }
+  },
+  {
+   "name": "wifi-butterfly",
+   "description": "Wifi Butterfly: a pet app by Astra (placeholder).",
+   "language": "HTML",
+   "pushed_at": "2026-10-16T22:09:26Z",
+   "homepage": null,
+   "creative": false,
+   "images": [],
+   "screenshot": null,
+   "pages": [
+    {
+     "file": "wifi-butterfly-page-1-20261017.png",
+     "source": "local wifi-butterfly-20261009.html"
+    }
+   ],
+   "a55": {
+    "status": "missing",
+    "note": "No real picture committed in the repo (pet art and icons do not count). 1 screenshot(s) ready to add."
+   }
+  },
+  {
+   "name": "rift-rabbit",
+   "description": "Rift Rabbit: a white pet app by Astra that preps and tracks VR software and performance (placeholder).",
+   "language": "HTML",
+   "pushed_at": "2026-10-16T22:09:23Z",
+   "homepage": null,
+   "creative": false,
+   "images": [],
+   "screenshot": null,
+   "pages": [
+    {
+     "file": "rift-rabbit-page-1-20261017.png",
+     "source": "local index.html"
+    }
+   ],
+   "a55": {
+    "status": "missing",
+    "note": "No real picture committed in the repo (pet art and icons do not count). 1 screenshot(s) ready to add."
+   }
+  },
+  {
+   "name": "backup-beaver",
+   "description": "Backup Beaver: a planned pet app for Astra's Pet Apps (placeholder).",
+   "language": "HTML",
+   "pushed_at": "2026-10-16T22:09:21Z",
+   "homepage": null,
+   "creative": false,
+   "images": [],
+   "screenshot": null,
+   "pages": [
+    {
+     "file": "backup-beaver-page-1-20261017.png",
+     "source": "local index.html"
+    }
+   ],
+   "a55": {
+    "status": "missing",
+    "note": "No real picture committed in the repo (pet art and icons do not count). 1 screenshot(s) ready to add."
+   }
+  },
+  {
+   "name": "meme-fiend",
+   "description": "Meme Fiend: a meme saver and maker. A pet app by Astra.",
+   "language": "HTML",
+   "pushed_at": "2026-10-16T22:09:19Z",
+   "homepage": null,
+   "creative": true,
+   "images": [],
+   "screenshot": null,
+   "pages": [
+    {
+     "file": "meme-fiend-page-1-20261017.png",
+     "source": "local index.html"
+    }
+   ],
+   "a55": {
+    "status": "missing",
+    "note": "No real picture committed in the repo (pet art and icons do not count). 1 screenshot(s) ready to add."
+   }
+  },
+  {
+   "name": "patch-cat",
+   "description": "Patch Cat: a placeholder pet app by Astra.",
+   "language": "HTML",
+   "pushed_at": "2026-10-16T22:09:17Z",
+   "homepage": null,
+   "creative": false,
+   "images": [],
+   "screenshot": null,
+   "pages": [
+    {
+     "file": "patch-cat-page-1-20261017.png",
+     "source": "local index.html"
+    }
+   ],
+   "a55": {
+    "status": "missing",
+    "note": "No real picture committed in the repo (pet art and icons do not count). 1 screenshot(s) ready to add."
+   }
+  },
+  {
+   "name": "mail-snail",
+   "description": "Mail Snail — a pet app by Astra (placeholder).",
+   "language": "HTML",
+   "pushed_at": "2026-10-16T22:09:15Z",
+   "homepage": null,
+   "creative": false,
+   "images": [],
+   "screenshot": null,
+   "pages": [
+    {
+     "file": "mail-snail-page-1-20261017.png",
+     "source": "local index.html"
+    }
+   ],
+   "a55": {
+    "status": "missing",
+    "note": "No real picture committed in the repo (pet art and icons do not count). 1 screenshot(s) ready to add."
+   }
+  },
+  {
+   "name": "mine-mole",
+   "description": "Mine Mole: a pet app by Astra. Researching whether mining crypto on a home PC is worth the power, with a break-even calculator.",
+   "language": "HTML",
+   "pushed_at": "2026-10-16T22:09:13Z",
+   "homepage": null,
+   "creative": false,
+   "images": [],
+   "screenshot": null,
+   "pages": [
+    {
+     "file": "mine-mole-page-1-20261017.png",
+     "source": "local mine-mole-20261009.html"
+    }
+   ],
+   "a55": {
+    "status": "missing",
+    "note": "No real picture committed in the repo (pet art and icons do not count). 1 screenshot(s) ready to add."
    }
   },
   {
@@ -460,9 +778,15 @@
     }
    ],
    "screenshot": null,
+   "pages": [
+    {
+     "file": "unity-unicorn-page-1-20261017.png",
+     "source": "https://findastra.github.io/astras-pet-os/apps/unity-unicorn-20261008.html"
+    }
+   ],
    "a55": {
     "status": "pass",
-    "note": "6 picture(s)."
+    "note": "6 committed picture(s)."
    }
   },
   {
@@ -474,9 +798,10 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -488,9 +813,10 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -502,9 +828,10 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -516,9 +843,10 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -530,9 +858,10 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -544,9 +873,10 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -558,9 +888,10 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -572,9 +903,10 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -586,9 +918,10 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -600,9 +933,10 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -614,9 +948,10 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -628,9 +963,10 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -642,9 +978,10 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -656,9 +993,10 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -670,9 +1008,10 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -684,9 +1023,10 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -698,9 +1038,10 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -712,9 +1053,10 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -726,9 +1068,10 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -740,9 +1083,10 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -754,9 +1098,10 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -768,9 +1113,10 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -782,9 +1128,10 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -796,9 +1143,10 @@
    "creative": true,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -810,9 +1158,10 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -824,9 +1173,10 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -838,9 +1188,10 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -852,9 +1203,10 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -866,9 +1218,10 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -880,9 +1233,10 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -894,9 +1248,10 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -908,9 +1263,10 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -922,9 +1278,10 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -936,9 +1293,10 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -950,9 +1308,10 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -964,9 +1323,10 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -978,9 +1338,10 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -992,9 +1353,10 @@
    "creative": true,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -1006,9 +1368,10 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -1020,9 +1383,10 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -1034,9 +1398,10 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -1048,9 +1413,10 @@
    "creative": true,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -1062,9 +1428,10 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -1076,9 +1443,10 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -1090,9 +1458,10 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -1104,9 +1473,10 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -1118,23 +1488,10 @@
    "creative": true,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
-   }
-  },
-  {
-   "name": "vrchat-ai-astra",
-   "description": "A bridge that brings an AI companion into VRChat.",
-   "language": "Python",
-   "pushed_at": "2026-10-14T08:39:22Z",
-   "homepage": null,
-   "creative": true,
-   "images": [],
-   "screenshot": null,
-   "a55": {
-    "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -1146,9 +1503,10 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -1160,9 +1518,15 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [
+    {
+     "file": "learn-python-page-1-20261017.png",
+     "source": "https://findastra.github.io/astras-pet-os/apps/learn-python-20261008.html"
+    }
+   ],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count). 1 screenshot(s) ready to add."
    }
   },
   {
@@ -1174,9 +1538,10 @@
    "creative": true,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -1188,9 +1553,10 @@
    "creative": true,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -1230,9 +1596,15 @@
     }
    ],
    "screenshot": "paper-girl-site-20261017.png",
+   "pages": [
+    {
+     "file": "paper-girl-page-1-20261017.png",
+     "source": "https://findastra.github.io/paper-girl/"
+    }
+   ],
    "a55": {
     "status": "pass",
-    "note": "4 picture(s)."
+    "note": "3 committed picture(s)."
    }
   },
   {
@@ -1256,9 +1628,15 @@
     }
    ],
    "screenshot": null,
+   "pages": [
+    {
+     "file": "voicemeeter-bug-page-1-20261017.png",
+     "source": "https://findastra.github.io/astras-pet-os/apps/voicemeeter-bug-20261008.html"
+    }
+   ],
    "a55": {
     "status": "pass",
-    "note": "1 picture(s)."
+    "note": "1 committed picture(s)."
    }
   },
   {
@@ -1333,23 +1711,10 @@
     }
    ],
    "screenshot": "fuzzbois-site-20261017.png",
+   "pages": [],
    "a55": {
     "status": "pass",
-    "note": "7 picture(s)."
-   }
-  },
-  {
-   "name": "vscode-angel",
-   "description": "Planned code review and documentation companion for refining projects and maintaining Markdown records.",
-   "language": "HTML",
-   "pushed_at": "2026-10-11T20:26:19Z",
-   "homepage": null,
-   "creative": false,
-   "images": [],
-   "screenshot": null,
-   "a55": {
-    "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "6 committed picture(s)."
    }
   },
   {
@@ -1361,9 +1726,15 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [
+    {
+     "file": "portfolio-puffer-page-1-20261017.png",
+     "source": "https://findastra.github.io/astras-pet-os/apps/portfolio-puffer-20261008.html"
+    }
+   ],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count). 1 screenshot(s) ready to add."
    }
   },
   {
@@ -1375,9 +1746,15 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [
+    {
+     "file": "project-parrot-page-1-20261017.png",
+     "source": "https://findastra.github.io/astras-pet-os/apps/project-parrot-20261008.html"
+    }
+   ],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count). 1 screenshot(s) ready to add."
    }
   },
   {
@@ -1389,23 +1766,15 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [
+    {
+     "file": "health-hummy-page-1-20261017.png",
+     "source": "https://findastra.github.io/astras-pet-os/apps/health-hummy-20261008.html"
+    }
+   ],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
-   }
-  },
-  {
-   "name": "ghost-protocol",
-   "description": "An interactive personal cybersecurity checklist.",
-   "language": "HTML",
-   "pushed_at": "2026-10-11T20:26:11Z",
-   "homepage": "https://findastra.github.io/ghost-protocol/",
-   "creative": false,
-   "images": [],
-   "screenshot": "ghost-protocol-site-20261017.png",
-   "a55": {
-    "status": "pass",
-    "note": "1 picture(s)."
+    "note": "No real picture committed in the repo (pet art and icons do not count). 1 screenshot(s) ready to add."
    }
   },
   {
@@ -1417,9 +1786,10 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -1431,9 +1801,10 @@
    "creative": true,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -1445,9 +1816,10 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -1459,9 +1831,15 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [
+    {
+     "file": "finance-finch-page-1-20261017.png",
+     "source": "https://findastra.github.io/astras-pet-os/apps/finance-finch-20261008.html"
+    }
+   ],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count). 1 screenshot(s) ready to add."
    }
   },
   {
@@ -1473,9 +1851,15 @@
    "creative": true,
    "images": [],
    "screenshot": null,
+   "pages": [
+    {
+     "file": "drum-dog-page-1-20261017.png",
+     "source": "https://findastra.github.io/astras-pet-os/apps/drum-dog-20261008.html"
+    }
+   ],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count). 1 screenshot(s) ready to add."
    }
   },
   {
@@ -1487,9 +1871,10 @@
    "creative": true,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -1497,7 +1882,7 @@
    "description": "Moved: Anthropic Discord Presence now lives in findastra/findastra-discord-presence (download it there).",
    "language": "JavaScript",
    "pushed_at": "2026-10-10T05:38:30Z",
-   "homepage": "https://github.com/findastra/findastra-discord-presence",
+   "homepage": null,
    "creative": false,
    "images": [
     {
@@ -1528,10 +1913,11 @@
      ]
     }
    ],
-   "screenshot": "anthropic-discord-presence-site-20261017.png",
+   "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "pass",
-    "note": "4 picture(s)."
+    "note": "3 committed picture(s)."
    }
   },
   {
@@ -1589,9 +1975,10 @@
     }
    ],
    "screenshot": "openai-discord-presence-site-20261017.png",
+   "pages": [],
    "a55": {
     "status": "pass",
-    "note": "6 picture(s)."
+    "note": "5 committed picture(s)."
    }
   },
   {
@@ -1603,9 +1990,10 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
@@ -1617,56 +2005,10 @@
    "creative": false,
    "images": [],
    "screenshot": null,
+   "pages": [],
    "a55": {
     "status": "missing",
-    "note": "No real picture of the project (pet art and icons do not count)."
-   }
-  },
-  {
-   "name": "astras-infinite-pole",
-   "description": "Unity source, magical effects, and verified VRChat publication history for Astra’s Infinite Pole. PC VR / desktop.",
-   "language": "C#",
-   "pushed_at": "2026-10-04T12:49:43Z",
-   "homepage": null,
-   "creative": true,
-   "images": [
-    {
-     "path": "docs/images/fine-magic.png",
-     "url": "https://raw.githubusercontent.com/findastra/astras-infinite-pole/codex%2Ffine-magic/docs/images/fine-magic.png",
-     "size": 1384761,
-     "score": 110,
-     "why": [
-      "shown in the README",
-      "docs/images",
-      "size"
-     ]
-    },
-    {
-     "path": "docs/images/spellbook.png",
-     "url": "https://raw.githubusercontent.com/findastra/astras-infinite-pole/codex%2Ffine-magic/docs/images/spellbook.png",
-     "size": 678855,
-     "score": 110,
-     "why": [
-      "shown in the README",
-      "docs/images",
-      "size"
-     ]
-    },
-    {
-     "path": "docs/images/living-magic.png",
-     "url": "https://raw.githubusercontent.com/findastra/astras-infinite-pole/codex%2Ffine-magic/docs/images/living-magic.png",
-     "size": 1687609,
-     "score": 70,
-     "why": [
-      "docs/images",
-      "size"
-     ]
-    }
-   ],
-   "screenshot": null,
-   "a55": {
-    "status": "pass",
-    "note": "3 picture(s)."
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   }
  ]

@@ -18,6 +18,11 @@
     if (!m) return [];
     const list = [];
     if (m.screenshot) list.push({ src: 'art/projects/' + m.screenshot, cap: repo + ' · live site' });
+    for (const pg of m.pages || []) {
+      if (m.homepage && pg.source === m.homepage) continue; // same page as the site screenshot
+      const cap = /system-map/.test(pg.source) ? 'System Map (3D PFD)' : 'program page';
+      list.push({ src: 'art/projects/' + pg.file, cap: repo + ' · ' + cap });
+    }
     for (const i of m.images || []) list.push({ src: i.url, cap: repo + ' · ' + i.path });
     return list;
   };
@@ -156,7 +161,7 @@
   $('search').addEventListener('input', (e) => { query = e.target.value; renderProjects(); });
   const useRepos = (list, live) => {
     repos = list.filter((r) => r.name !== 'findastra.github.io').map((r) => ({ ...r, group: groupOf(r) }));
-    const shots = Object.values(IMG).filter((r) => r.screenshot || r.images.length).length;
+    const shots = Object.values(IMG).filter((r) => r.screenshot || (r.pages || []).length || r.images.length).length;
     $('project-source').textContent = `${live ? 'live from GitHub' : 'snapshot'} · ${repos.length} public repos · ${shots} with pictures so far`;
     renderTabs(); renderProjects();
   };
