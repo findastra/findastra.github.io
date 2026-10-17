@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>star map · findastra</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300&family=Azeret+Mono:wght@300;500&display=swap">
+<style>
+  :root { --sky: #03040c; --star: #eef3ff; --blue: #79a8ff; --pink: #ff8fd6; --gold: #ffe7a3; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: var(--sky); color: var(--star); font-family: "Azeret Mono", monospace; font-weight: 300; }
+  canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+  .hud { position: fixed; z-index: 2; pointer-events: none; }
+  .title { left: 4vw; top: 4vh; max-width: 560px; }
+  .title p { margin: 0 0 6px; font-size: 11px; letter-spacing: .3em; text-transform: uppercase; color: var(--blue); }
+  .title h1 { font-family: "Cormorant Garamond", serif; font-weight: 300; font-size: clamp(2.4rem, 6vw, 4.6rem); line-height: .95; margin: 0 0 10px; }
+  .title h1 i { color: var(--pink); }
+  .slot { pointer-events: auto; display: inline-block; border: 1px dashed var(--pink); padding: 10px 16px; font-family: "Cormorant Garamond", serif; font-size: clamp(1.4rem, 3.5vw, 2.2rem); color: var(--pink); margin-top: 6px; }
+  .slot small { display: block; font: 10px "Azeret Mono", monospace; letter-spacing: .2em; color: #8892b0; }
+  .legend { right: 4vw; top: 4vh; text-align: right; font-size: 11px; line-height: 1.9; letter-spacing: .1em; }
+  .legend span::before { content: "●"; margin-right: 6px; }
+  .legend .w::before { color: var(--gold); } .legend .p::before { color: var(--blue); } .legend .a::before { color: var(--pink); }
+  .bottom { left: 0; right: 0; bottom: 3vh; text-align: center; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: #8892b0; }
+  .bottom button, .tools button { pointer-events: auto; font: 11px "Azeret Mono", monospace; letter-spacing: .15em; text-transform: uppercase; background: rgba(10, 14, 34, .8); color: var(--star); border: 1px solid #2b3566; padding: 8px 14px; cursor: pointer; margin: 6px 4px 0; }
+  .bottom button:hover, .tools button:hover { border-color: var(--pink); }
+  /* the pop-out card */
+  .card { position: fixed; z-index: 3; width: 280px; background: rgba(8, 10, 26, .94); border: 1px solid #2b3566; padding: 12px; pointer-events: auto; text-decoration: none; color: var(--star);
+    transform: scale(.7); opacity: 0; transition: transform .25s cubic-bezier(.2, 1.6, .4, 1), opacity .2s; box-shadow: 0 0 40px rgba(121, 168, 255, .25); }
+  .card.on { transform: scale(1); opacity: 1; }
+  .card img { display: block; width: 100%; aspect-ratio: 16/10; object-fit: cover; margin-bottom: 8px; }
+  .card img.pix { width: 72px; height: 72px; aspect-ratio: 1; image-rendering: pixelated; object-fit: contain; }
+  .card .k { font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: var(--blue); }
+  .card b { display: block; font-family: "Cormorant Garamond", serif; font-weight: 600; font-size: 1.5rem; margin: 2px 0 4px; }
+  .card span { font-size: 12px; line-height: 1.5; color: #c4cbe6; }
+  .panel { position: fixed; z-index: 4; inset: auto 4vw 10vh auto; width: min(420px, 92vw); max-height: 60vh; overflow: auto; background: rgba(8, 10, 26, .95); border: 1px solid #2b3566; padding: 18px; display: none; font-size: 13px; line-height: 1.6; }
+  .panel.on { display: block; }
+  .panel h2 { font-family: "Cormorant Garamond", serif; font-weight: 300; font-size: 2rem; margin: 0 0 6px; }
+  .panel a { color: var(--blue); }
+  .score { left: 50%; top: 4vh; transform: translateX(-50%); font-size: 13px; letter-spacing: .2em; color: var(--gold); display: none; }
+  body.playing .score { display: block; } body.playing .title, body.playing .legend { opacity: .15; }
+</style>
+</head>
+<body>
+<canvas id="sky"></canvas>
+<div class="hud title">
+  <p>findastra · a map</p>
+  <h1>One person.<br>Two names.<br><i>Both real.</i></h1>
+  <div class="slot" id="slot"></div>
+</div>
+<div class="hud legend"><span class="a">Audra / Astra</span><br><span class="w">worlds</span><br><span class="p">projects &amp; pets</span></div>
+<div class="hud score" id="score"></div>
+<div class="hud bottom">
+  hover a star · drag from star to star to draw a constellation<br>
+  <button id="audra">read the plain version</button><button id="clear">erase my lines</button><button id="play">play: catch falling stars</button>
+</div>
+<a class="card" id="card" target="_blank" rel="noopener"></a>
+<div class="panel" id="panel"></div>
+
+<script src="../profile-data.js"></script>
+<script src="../site-data.js"></script>
+<script src="common.js"></script>
+<script>
+(() => {
+  const A = window.ASTRA, $ = (id) => document.getElementById(id);
+  $('slot').textContent = A.lettering; $('slot').append(A.el('small', null, 'hand lettering goes here'));
+  const cv = $('sky'), cx = cv.getContext('2d'); let W, H, dpr;
+  let dust = [], stars = [], lines = [], drag = null, hover = null, mouse = [0, 0];
+
+  // seeded random so the map is the same every visit
+  let seed = 7; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  const items = [
+    { kind: 'astra', name: 'Astra', text: A.tagline, img: A.avatar, href: 'https://github.com/findastra', color: '#ff8fd6', r: 6 },
+    ...A.worlds.map((w) => ({ kind: 'world', name: w.name, text: w.text, img: w.img, href: w.href, color: '#ffe7a3', r: 4.5 })),
+    ...A.pets.map((p) => ({ kind: 'pet', name: p.pet, text: p.job, img: p.img, pix: true, href: p.href, color: '#79a8ff', r: 2.6 })),
+  ];
+  function layout() {
+    dpr = devicePixelRatio || 1; W = innerWidth; H = innerHeight; cv.width = W * dpr; cv.height = H * dpr; cx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    seed = 7; dust = Array.from({ length: Math.round(W * H / 2600) }, () => ({ x: rnd() * W, y: rnd() * H, a: rnd(), s: rnd() * 1.2 }));
+    const count = { world: items.filter((x) => x.kind === 'world').length, pet: items.filter((x) => x.kind === 'pet').length }, seen = { world: 0, pet: 0 };
+    stars = items.map((it) => {
+      const ring = it.kind === 'astra' ? 0 : it.kind === 'world' ? .2 : .32 + rnd() * .1;
+      // each kind is spaced evenly around its own ring, so labels never pile up
+      const ang = it.kind === 'astra' ? 0 : (seen[it.kind]++ / count[it.kind]) * Math.PI * 2 + (it.kind === 'world' ? .5 : rnd() * .2);
+      return { ...it, x: W * .62 + Math.cos(ang) * ring * Math.min(W, H) * 1.25, y: H * .52 + Math.sin(ang) * ring * Math.min(W, H) * .95, tw: rnd() * 6 };
+    });
+    // repos as faint distant stars, added when known
+    A.liveRepos((repos) => {
+      const keep = stars.filter((s) => s.kind !== 'repo'); seed = 99;
+      stars = keep.concat(repos.map((r) => ({ kind: 'repo', name: r.name, text: r.description || '', href: 'https://github.com/findastra/' + r.name, color: '#a9b8ff', r: 1.6, x: rnd() * W, y: H * .15 + rnd() * H * .8, tw: rnd() * 6 })));
+    });
+  }
+  layout(); addEventListener('resize', layout);
+
+  const near = (x, y) => { let best = null, bd = 22; for (const s of stars) { const d = Math.hypot(s.x - x, s.y - y); if (d < bd + s.r) { best = s; bd = d; } } return best; };
+
+  // pop-out card
+  const card = $('card');
+  function showCard(s) {
+    if (!s) { card.classList.remove('on'); return; }
+    card.replaceChildren(); card.href = s.href;
+    if (s.img) { const im = A.el('img', s.pix ? 'pix' : ''); im.src = s.img; im.alt = ''; card.append(im); }
+    card.append(A.el('div', 'k', s.kind), A.el('b', null, s.name), A.el('span', null, s.text || ''));
+    card.style.left = Math.min(W - 300, s.x + 18) + 'px'; card.style.top = Math.min(H - 260, Math.max(10, s.y - 40)) + 'px';
+    card.classList.add('on');
+  }
+
+  cv.addEventListener('pointermove', (e) => {
+    mouse = [e.clientX, e.clientY];
+    if (game.on) return;
+    const s = near(e.clientX, e.clientY);
+    if (s !== hover) { hover = s; showCard(s); }
+    cv.style.cursor = s ? 'pointer' : 'default';
+  });
+  cv.addEventListener('pointerdown', (e) => { if (game.on) return; const s = near(e.clientX, e.clientY); if (s) drag = { from: s, moved: false }; });
+  addEventListener('pointerup', (e) => {
+    if (!drag) return; const s = near(e.clientX, e.clientY);
+    if (s && s !== drag.from) lines.push([drag.from, s]);
+    else if (s === drag.from) open(s.href, '_blank', 'noopener');
+    drag = null;
+  });
+  $('clear').onclick = () => (lines = []);
+
+  $('audra').onclick = () => {
+    const p = $('panel'); if (p.classList.toggle('on')) {
+      p.replaceChildren(A.el('h2', null, 'Audra'), ...A.about.map((t) => A.el('p', null, t)), A.el('p', null, A.languages.join(' · ')));
+      const ul = A.el('ul'); A.skills.forEach((s) => ul.append(A.el('li', null, s))); p.append(ul, A.el('p', null, A.positions.length ? '' : 'Work: being written up. It goes here once I have read every word.'));
+      A.links.forEach((l) => { p.append(A.link(l.href, null, l.name)); p.append(document.createTextNode('  ')); });
+    }
+  };
+
+  // catch falling stars: 30 seconds, catch with the crescent under your pointer
+  const game = { on: false, score: 0, left: 0, falling: [] };
+  $('play').onclick = () => {
+    Object.assign(game, { on: true, score: 0, left: 30, falling: [] }); document.body.classList.add('playing'); showCard(null); $('panel').classList.remove('on');
+    const t = setInterval(() => { game.left--; if (game.left <= 0) { clearInterval(t); game.on = false; document.body.classList.remove('playing'); $('play').textContent = `play again (last: ${game.score})`; } }, 1000);
+  };
+
+  let tPrev = 0;
+  function frame(t) {
+    const dt = Math.min(.05, (t - tPrev) / 1000 || 0); tPrev = t;
+    cx.fillStyle = '#03040c'; cx.fillRect(0, 0, W, H);
+    // milky glow
+    const g = cx.createRadialGradient(W * .62, H * .52, 0, W * .62, H * .52, Math.max(W, H) * .6);
+    g.addColorStop(0, 'rgba(90, 70, 160, .22)'); g.addColorStop(1, 'rgba(0,0,0,0)'); cx.fillStyle = g; cx.fillRect(0, 0, W, H);
+    for (const d of dust) { cx.globalAlpha = .25 + .5 * Math.abs(Math.sin(t / 900 + d.a * 9)); cx.fillStyle = '#fff'; cx.fillRect(d.x, d.y, d.s, d.s); }
+    cx.globalAlpha = 1;
+    // constellation lines
+    cx.lineWidth = 1; cx.strokeStyle = 'rgba(255, 143, 214, .65)'; cx.shadowColor = '#ff8fd6'; cx.shadowBlur = 8;
+    for (const [a, b] of lines) { cx.beginPath(); cx.moveTo(a.x, a.y); cx.lineTo(b.x, b.y); cx.stroke(); }
+    if (drag) { cx.setLineDash([4, 6]); cx.beginPath(); cx.moveTo(drag.from.x, drag.from.y); cx.lineTo(mouse[0], mouse[1]); cx.stroke(); cx.setLineDash([]); }
+    // stars
+    for (const s of stars) {
+      const tw = A.reduced ? 1 : .75 + .25 * Math.sin(t / 500 + s.tw);
+      cx.shadowColor = s.color; cx.shadowBlur = s === hover ? 30 : 14; cx.fillStyle = s.color;
+      cx.beginPath(); cx.arc(s.x, s.y, s.r * tw * (s === hover ? 1.8 : 1), 0, Math.PI * 2); cx.fill();
+      if (s.kind === 'astra' || s.kind === 'world') { cx.shadowBlur = 0; cx.fillStyle = 'rgba(238,243,255,.7)'; cx.font = '11px "Azeret Mono"'; cx.fillText(s.name, s.x + 10, s.y - 8); }
+    }
+    cx.shadowBlur = 0;
+    // the game
+    if (game.on) {
+      if (Math.random() < dt * 3.2) game.falling.push({ x: 20 + Math.random() * (W - 40), y: -10, v: 120 + Math.random() * 160 + (30 - game.left) * 8, gold: Math.random() < .15 });
+      const [mx] = mouse, cy = H - 70;
+      cx.strokeStyle = '#ffe7a3'; cx.lineWidth = 4; cx.shadowColor = '#ffe7a3'; cx.shadowBlur = 16;
+      cx.beginPath(); cx.arc(mx, cy - 18, 34, Math.PI * .15, Math.PI * .85); cx.stroke();
+      for (const f of game.falling) {
+        f.y += f.v * dt;
+        cx.fillStyle = f.gold ? '#ffe7a3' : '#79a8ff'; cx.shadowColor = cx.fillStyle;
+        cx.beginPath(); cx.arc(f.x, f.y, f.gold ? 6 : 4, 0, Math.PI * 2); cx.fill();
+        cx.strokeStyle = cx.fillStyle; cx.lineWidth = 1; cx.beginPath(); cx.moveTo(f.x, f.y); cx.lineTo(f.x, f.y - 22); cx.stroke();
+        if (Math.abs(f.y - cy) < 14 && Math.abs(f.x - mx) < 34) { f.caught = true; game.score += f.gold ? 5 : 1; }
+      }
+      game.falling = game.falling.filter((f) => !f.caught && f.y < H + 20);
+      cx.shadowBlur = 0;
+      $('score').textContent = `caught ${game.score} · ${game.left}s`;
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

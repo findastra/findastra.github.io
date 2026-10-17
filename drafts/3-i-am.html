@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>I am · findastra</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Space+Mono&display=swap">
+<style>
+  :root { --bg: #000; --fg: #f4f1ff; --c1: #3a6bff; --c2: #ff4fb4; --c3: #8a5cff; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: var(--bg); color: var(--fg); font-family: Archivo, system-ui, sans-serif; }
+  .slide { position: fixed; inset: 0; display: grid; align-content: center; padding: 6vh 6vw; opacity: 0; pointer-events: none; transition: opacity .5s ease; }
+  .slide.on { opacity: 1; pointer-events: auto; }
+  .slide.plain { background: #fff; color: #111; font-family: Georgia, serif; }
+  .kick { font: 12px "Space Mono", monospace; letter-spacing: .25em; text-transform: uppercase; opacity: .7; margin: 0 0 2vh; }
+  .say { font-weight: 900; font-stretch: 62%; text-transform: uppercase; font-size: clamp(3.2rem, 15vw, 12rem); line-height: .82; letter-spacing: -.02em; margin: 0; }
+  .plain .say { font-family: Georgia, serif; text-transform: none; font-weight: 400; font-stretch: normal; letter-spacing: -.03em; font-size: clamp(3rem, 12vw, 9rem); }
+  .say em { font-style: normal; background: linear-gradient(90deg, var(--c1), var(--c3), var(--c2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .slide.on .say { animation: rise .8s cubic-bezier(.2, 1, .3, 1) both; }
+  @keyframes rise { from { transform: translateY(12vh) skewY(6deg); opacity: 0; } }
+  .sub { max-width: 60ch; font-size: clamp(1rem, 2vw, 1.25rem); line-height: 1.5; opacity: .85; }
+  .slot { display: inline-block; border: 2px dashed var(--c2); padding: 2vh 3vw; font-weight: 900; font-stretch: 75%; font-size: clamp(2rem, 7vw, 5rem); text-transform: uppercase; color: var(--c2); }
+  .slot small { display: block; font: 11px "Space Mono", monospace; letter-spacing: .2em; color: var(--fg); opacity: .6; }
+  /* pop-out polaroids */
+  .pops { position: absolute; inset: 0; pointer-events: none; }
+  .pop { position: absolute; pointer-events: auto; width: clamp(140px, 22vw, 300px); background: #fff; color: #111; padding: 8px 8px 10px; text-decoration: none; font: 11px "Space Mono", monospace;
+    box-shadow: 0 20px 40px rgba(0,0,0,.5); transform: scale(0) rotate(var(--r)); transition: transform .3s ease; }
+  .slide.on .pop { animation: popin .6s cubic-bezier(.2, 1.7, .4, 1) forwards; animation-delay: var(--d); }
+  .pop img { display: block; width: 100%; aspect-ratio: 4/3; object-fit: cover; margin-bottom: 6px; }
+  .pop:hover { transform: scale(1.08) rotate(0deg) !important; z-index: 2; }
+  @keyframes popin { to { transform: scale(1) rotate(var(--r)); } }
+  .chips { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 3vh; }
+  .chips a { color: var(--fg); border: 1px solid rgba(255,255,255,.35); padding: 8px 14px; text-decoration: none; font: 13px "Space Mono", monospace; transition: background .2s; }
+  .chips a:hover { background: var(--fg); color: var(--bg); }
+  .petrow { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 3vh; }
+  .petrow a img { width: 56px; height: 56px; image-rendering: pixelated; transition: transform .2s; }
+  .petrow a:hover img { transform: translateY(-8px) rotate(-8deg) scale(1.2); }
+  /* progress + controls */
+  .bar { position: fixed; left: 0; bottom: 0; height: 4px; background: linear-gradient(90deg, var(--c1), var(--c2)); transition: width .5s ease; z-index: 10; }
+  .ctl { position: fixed; right: 16px; bottom: 16px; z-index: 10; display: flex; gap: 8px; font: 12px "Space Mono", monospace; align-items: center; }
+  .ctl button { font: inherit; background: transparent; color: inherit; border: 1px solid currentColor; padding: 6px 12px; cursor: pointer; }
+  body.light .ctl { color: #111; }
+  /* the rhythm game */
+  .stage { position: relative; height: 48vh; max-width: 520px; width: 100%; margin: 2vh auto 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .lane { position: relative; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.1); overflow: hidden; }
+  .lane .hit { position: absolute; left: 0; right: 0; bottom: 10%; height: 4px; background: rgba(255,255,255,.5); }
+  .lane.flash { background: rgba(255, 79, 180, .25); }
+  .lane .key { position: absolute; left: 0; right: 0; bottom: 2%; text-align: center; font: 12px "Space Mono", monospace; opacity: .7; }
+  .note { position: absolute; left: 10%; right: 10%; height: 18px; border-radius: 4px; background: linear-gradient(90deg, var(--c1), var(--c2)); box-shadow: 0 0 14px var(--c2); }
+  .gscore { text-align: center; font: 14px "Space Mono", monospace; margin-top: 1.5vh; }
+  @media (prefers-reduced-motion: reduce) { .slide, .bar { transition: none; } .slide.on .say, .slide.on .pop { animation: none; transform: rotate(var(--r)); } }
+</style>
+</head>
+<body>
+<div id="deck"></div>
+<div class="bar" id="bar"></div>
+<div class="ctl"><span id="count"></span><button id="prev" aria-label="previous">←</button><button id="next" aria-label="next">→</button></div>
+<script src="../profile-data.js"></script>
+<script src="../site-data.js"></script>
+<script src="common.js"></script>
+<script>
+(() => {
+  const A = window.ASTRA, deck = document.getElementById('deck');
+  let at = 0, game = null;
+  const pops = (items) => {
+    const box = A.el('div', 'pops');
+    const spots = [[62, 8], [74, 46], [56, 62], [80, 14], [64, 34]];
+    items.forEach((it, i) => {
+      const a = A.link(it.href, 'pop'); const [x, y] = spots[i % spots.length];
+      a.style.left = x + '%'; a.style.top = y + '%'; a.style.setProperty('--r', (i % 2 ? 6 : -7) + 'deg'); a.style.setProperty('--d', .5 + i * .2 + 's');
+      if (it.img || it.src) { const img = A.el('img'); img.src = it.img || it.src; img.alt = ''; a.append(img); }
+      a.append(document.createTextNode(it.caption || it.name));
+      box.append(a);
+    });
+    return box;
+  };
+  const slides = [
+    { plain: true, build: (s) => {
+      s.append(A.el('p', 'kick', 'findastra'));
+      const h = A.el('h1', 'say'); h.textContent = "I'm Audra."; s.append(h);
+      A.about.forEach((t) => s.append(A.el('p', 'sub', t)));
+      s.append(A.el('p', 'sub', A.languages.join(' · ')));
+      s.append(A.el('p', 'kick', 'press → (it changes)'));
+    } },
+    { build: (s) => {
+      const h = A.el('h1', 'say'); h.innerHTML = "I'm also<br><em>Astra.</em>"; s.append(h);
+      const slot = A.el('div', 'slot', A.lettering); slot.append(A.el('small', null, 'hand lettering goes here')); slot.style.marginTop = '4vh'; s.append(slot);
+      s.append(pops([{ src: A.avatar, caption: 'Astra', href: 'https://github.com/findastra' }]));
+    } },
+    { build: (s) => { s.append(A.el('p', 'kick', 'one person · two names · both real')); const h = A.el('h1', 'say'); h.innerHTML = "I'm a<br><em>dancer.</em>"; s.append(h); s.append(A.el('p', 'sub', A.tagline)); } },
+    { build: (s) => {
+      const h = A.el('h1', 'say'); h.innerHTML = "I build<br><em>worlds.</em>"; s.append(h);
+      s.append(pops(A.worlds.filter((w) => w.img).map((w) => ({ img: w.img, caption: w.name, href: w.href }))));
+      const c = A.el('div', 'chips'); A.worlds.forEach((w) => c.append(A.link(w.href, null, w.name + ' ↗'))); s.append(c);
+    } },
+    { build: (s) => {
+      const h = A.el('h1', 'say'); h.innerHTML = "I hack<br><em>reality.</em>"; s.append(h);
+      const c = A.el('div', 'chips'); s.append(A.el('p', 'kick', 'projects · live from github'), c);
+      A.liveRepos((repos) => c.replaceChildren(...repos.slice(0, 18).map((r) => A.link('https://github.com/findastra/' + r.name, null, r.name))));
+    } },
+    { build: (s) => {
+      const h = A.el('h1', 'say'); h.innerHTML = `I keep<br><em>${A.pets.length} pets.</em>`; s.append(h);
+      s.append(A.el('p', 'sub', 'Small apps, each with a pixel pet. Hover them.'));
+      const r = A.el('div', 'petrow'); A.pets.forEach((p) => { const a = A.link(p.href); a.title = p.pet + ': ' + p.job; const i = A.el('img'); i.src = p.img; i.alt = p.pet; a.append(i); r.append(a); }); s.append(r);
+    } },
+    { game: true, build: (s) => {
+      s.append(A.el('p', 'kick', 'play with me · D F J K or tap the lanes'));
+      const h = A.el('h1', 'say'); h.innerHTML = 'Dance<em>.</em>'; h.style.fontSize = 'clamp(2.6rem, 9vw, 6rem)'; s.append(h);
+      const stage = A.el('div', 'stage'); s.append(stage, A.el('div', 'gscore'));
+      rhythm(stage, s.lastChild);
+    } },
+    { build: (s) => {
+      const h = A.el('h1', 'say'); h.innerHTML = 'Find<br><em>me.</em>'; s.append(h);
+      const c = A.el('div', 'chips'); A.links.forEach((l) => c.append(A.link(l.href, null, l.name + ' ↗'))); s.append(c);
+      s.append(pops(A.photos.map((p) => ({ src: p.src, caption: p.caption, href: p.href }))));
+    } },
+  ];
+  slides.forEach((d) => { const s = A.el('section', 'slide' + (d.plain ? ' plain' : '')); d.build(s); d.el = s; deck.append(s); });
+
+  const show = (i) => {
+    at = Math.max(0, Math.min(slides.length - 1, i));
+    slides.forEach((d, k) => d.el.classList.toggle('on', k === at));
+    document.body.classList.toggle('light', !!slides[at].plain);
+    document.getElementById('bar').style.width = ((at + 1) / slides.length) * 100 + '%';
+    document.getElementById('count').textContent = at + 1 + ' / ' + slides.length;
+    if (game) game(slides[at].game);
+  };
+  document.getElementById('next').onclick = () => show(at + 1);
+  document.getElementById('prev').onclick = () => show(at - 1);
+  addEventListener('keydown', (e) => {
+    if (slides[at].game && 'dfjk'.includes(e.key.toLowerCase())) return;
+    if (['ArrowRight', ' ', 'PageDown'].includes(e.key)) { e.preventDefault(); show(at + 1); }
+    if (['ArrowLeft', 'PageUp'].includes(e.key)) show(at - 1);
+  });
+  let tx = null;
+  addEventListener('touchstart', (e) => (tx = e.touches[0].clientX), { passive: true });
+  addEventListener('touchend', (e) => { if (tx == null || slides[at].game) return; const dx = e.changedTouches[0].clientX - tx; if (Math.abs(dx) > 50) show(at + (dx < 0 ? 1 : -1)); tx = null; });
+
+  // Four-lane rhythm game at 120 bpm; notes fall, hit them on the line.
+  function rhythm(stage, scoreEl) {
+    const keys = ['d', 'f', 'j', 'k'];
+    const lanes = keys.map((k) => { const l = A.el('div', 'lane'); l.append(A.el('div', 'hit'), A.el('div', 'key', k.toUpperCase())); stage.append(l); return l; });
+    let notes = [], score = 0, streak = 0, best = 0, running = false, last = 0, beat = 0, raf;
+    const speed = () => stage.clientHeight / 1.6; // px per second
+    const render = () => (scoreEl.textContent = `score ${score} · streak ${streak} · best ${best}`);
+    const spawn = () => { const lane = Math.random() < .2 && notes.length ? (notes[notes.length - 1].lane + 2) % 4 : Math.floor(Math.random() * 4); const n = A.el('div', 'note'); lanes[lane].append(n); notes.push({ lane, y: -20, el: n }); };
+    const hit = (lane) => {
+      lanes[lane].classList.add('flash'); setTimeout(() => lanes[lane].classList.remove('flash'), 90);
+      const line = stage.clientHeight * .9;
+      const n = notes.find((n) => n.lane === lane && Math.abs(n.y + 9 - line) < 40);
+      if (n) { score += 100 + streak * 10; streak++; best = Math.max(best, streak); n.el.remove(); notes = notes.filter((x) => x !== n); }
+      else streak = 0;
+      render();
+    };
+    const tick = (t) => {
+      if (!running) return;
+      const dt = Math.min(.05, (t - (last || t)) / 1000); last = t;
+      beat += dt; if (beat > .5) { beat = 0; spawn(); }
+      for (const n of notes) { n.y += speed() * dt; n.el.style.top = n.y + 'px'; }
+      const gone = notes.filter((n) => n.y > stage.clientHeight); if (gone.length) { streak = 0; gone.forEach((n) => n.el.remove()); notes = notes.filter((n) => !gone.includes(n)); render(); }
+      raf = requestAnimationFrame(tick);
+    };
+    addEventListener('keydown', (e) => { const i = keys.indexOf(e.key.toLowerCase()); if (running && i >= 0) hit(i); });
+    lanes.forEach((l, i) => l.addEventListener('pointerdown', () => running && hit(i)));
+    render();
+    game = (on) => { if (on && !running) { running = true; last = 0; raf = requestAnimationFrame(tick); } if (!on && running) { running = false; cancelAnimationFrame(raf); } };
+  }
+  show(0);
+})();
+</script>
+</body>
+</html>

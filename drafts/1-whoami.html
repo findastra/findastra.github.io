@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>whoami · findastra</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=VT323&display=swap">
+<style>
+  :root { --bg: #04060a; --fg: #b7f7ff; --dim: #4d7a86; --hot: #ff4fd8; --ok: #6dffb0; --warn: #ffd166; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--fg); }
+  body { font: 15px/1.55 "JetBrains Mono", ui-monospace, monospace; overflow: hidden; }
+  body::before { /* scanlines */
+    content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 5;
+    background: repeating-linear-gradient(transparent 0 2px, rgba(0, 0, 0, .28) 2px 3px);
+  }
+  body::after { /* vignette */
+    content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 5;
+    background: radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, .75));
+  }
+  #rain { position: fixed; inset: 0; opacity: .14; z-index: 0; }
+  .term { position: relative; z-index: 1; height: 100%; overflow-y: auto; padding: 24px 16px 120px; max-width: 980px; margin: 0 auto; }
+  .line { white-space: pre-wrap; word-break: break-word; margin: 0; text-shadow: 0 0 6px rgba(120, 240, 255, .45); }
+  .dim { color: var(--dim); } .hot { color: var(--hot); text-shadow: 0 0 8px rgba(255, 79, 216, .6); } .ok { color: var(--ok); } .warn { color: var(--warn); }
+  .prompt { color: var(--ok); }
+  .big { font-family: VT323, monospace; font-size: clamp(2.4rem, 9vw, 5rem); line-height: .95; margin: 8px 0; }
+  .slot { display: inline-block; margin: 14px 0; padding: 18px 26px; border: 1px dashed var(--hot); color: var(--hot); font-family: VT323, monospace; font-size: clamp(1.8rem, 6vw, 3.2rem); }
+  .slot small { display: block; font: 12px "JetBrains Mono", monospace; color: var(--dim); letter-spacing: .15em; text-transform: uppercase; }
+  a { color: var(--fg); text-decoration-color: var(--hot); }
+  a:hover { color: var(--hot); }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+  .chip { font: inherit; background: transparent; color: var(--fg); border: 1px solid var(--dim); padding: 4px 10px; cursor: pointer; }
+  .chip:hover, .chip:focus-visible { border-color: var(--hot); color: var(--hot); outline: none; }
+  .input { display: flex; gap: 8px; align-items: center; }
+  .input input { flex: 1; background: transparent; border: 0; color: var(--fg); font: inherit; outline: none; caret-color: var(--hot); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; margin: 10px 0 14px; }
+  .pop { display: block; border: 1px solid var(--dim); padding: 8px; text-decoration: none; transform: scale(.6) rotate(-4deg); opacity: 0; animation: pop .45s cubic-bezier(.2, 1.6, .4, 1) forwards; }
+  .pop img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; filter: saturate(1.2) contrast(1.05); }
+  .pop:hover { border-color: var(--hot); transform: scale(1.03) rotate(0); }
+  .pets { display: flex; flex-wrap: wrap; gap: 6px; }
+  .pets a { width: 64px; text-align: center; font-size: 10px; text-decoration: none; }
+  .pets img { width: 48px; height: 48px; image-rendering: pixelated; }
+  @keyframes pop { to { transform: scale(1) rotate(0); opacity: 1; } }
+  .glitch { animation: glitch .9s steps(2) 1; }
+  @keyframes glitch {
+    0% { filter: none; transform: none; } 20% { filter: hue-rotate(90deg) saturate(3); transform: translate(-6px, 2px) skewX(8deg); }
+    40% { filter: invert(1); transform: translate(5px, -3px); } 60% { filter: hue-rotate(-90deg); transform: translate(-2px, 4px) skewX(-6deg); }
+    100% { filter: none; transform: none; }
+  }
+  /* the password game */
+  .game { border: 1px solid var(--dim); padding: 12px; margin: 10px 0; }
+  .words { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 4px; margin: 8px 0; }
+  .words button { font: inherit; background: transparent; color: var(--fg); border: 0; text-align: left; padding: 2px 4px; cursor: pointer; }
+  .words button:hover { background: var(--fg); color: var(--bg); }
+  .words button[disabled] { color: var(--dim); text-decoration: line-through; cursor: default; background: transparent; }
+  @media (prefers-reduced-motion: reduce) { .pop { animation: none; opacity: 1; transform: none; } .glitch { animation: none; } #rain { display: none; } }
+</style>
+</head>
+<body>
+<canvas id="rain" aria-hidden="true"></canvas>
+<main class="term" id="term" aria-live="polite"></main>
+<script src="../profile-data.js"></script>
+<script src="../site-data.js"></script>
+<script src="common.js"></script>
+<script>
+(() => {
+  const A = window.ASTRA, term = document.getElementById('term');
+  let unmasked = false, busy = false;
+  const out = (text, cls) => { const p = A.el('p', 'line ' + (cls || ''), text); term.append(p); term.scrollTop = term.scrollHeight; return p; };
+  const block = (node) => { term.append(node); term.scrollTop = term.scrollHeight; return node; };
+  const wait = (ms) => new Promise((r) => setTimeout(r, A.reduced ? 0 : ms));
+  async function type(text, cls, speed = 14) {
+    const p = out('', cls);
+    if (A.reduced) { p.textContent = text; return p; }
+    for (const ch of text) { p.textContent += ch; await wait(speed); }
+    return p;
+  }
+
+  const COMMANDS = {
+    help: 'list commands',
+    whoami: 'the plain version',
+    'sudo unmask': 'the other version',
+    'ls worlds': 'places I built',
+    'ls photos': 'pictures',
+    'ls projects': 'everything on GitHub',
+    pets: 'the pets',
+    links: 'where to find me',
+    hack: 'play a game',
+    clear: 'clear the screen',
+  };
+
+  const run = {
+    async help() { for (const [c, d] of Object.entries(COMMANDS)) out(c.padEnd(14) + d, 'dim'); },
+    async whoami() {
+      out(unmasked ? 'astra' : 'audra', 'big');
+      for (const t of A.about) out(t);
+      out('');
+      out('languages  ' + A.languages.join(' · '), 'dim');
+      for (const s of A.skills) out('  - ' + s);
+      out('');
+      out(A.positions.length ? 'work' : 'work       being written up. it goes here once I have read every word.', 'dim');
+      for (const p of A.positions) out('  ' + p.employer + '  ' + p.role + '  ' + [p.start, p.end || 'now'].join('–'));
+      if (!unmasked) { out(''); out('there is another user on this machine. try: sudo unmask', 'hot'); }
+    },
+    async 'sudo unmask'() {
+      if (unmasked) { out('already unmasked.', 'dim'); return; }
+      await type('[sudo] password for audra: ********', 'dim', 10);
+      await wait(300);
+      document.body.classList.add('glitch');
+      await wait(900);
+      document.body.classList.remove('glitch');
+      unmasked = true;
+      document.documentElement.style.setProperty('--fg', '#ffc4f3');
+      for (const m of A.message) await type(m, 'big hot', 40);
+      const slot = A.el('div', 'slot', A.lettering);
+      slot.append(A.el('small', null, 'hand lettering goes here'));
+      block(slot);
+      out(A.tagline, 'ok');
+      out('try: ls worlds · ls photos · pets · hack', 'dim');
+    },
+    async 'ls worlds'() {
+      const g = block(A.el('div', 'grid'));
+      A.worlds.forEach((w, i) => {
+        const a = A.link(w.href, 'pop');
+        a.style.animationDelay = i * 0.12 + 's';
+        if (w.img) { const img = A.el('img'); img.src = w.img; img.alt = ''; a.append(img); }
+        a.append(A.el('div', 'hot', w.name), A.el('div', 'dim', w.kind), A.el('div', null, w.text));
+        g.append(a);
+      });
+    },
+    async 'ls photos'() {
+      const g = block(A.el('div', 'grid'));
+      A.photos.forEach((p, i) => {
+        const a = A.link(p.href, 'pop');
+        a.style.animationDelay = i * 0.15 + 's';
+        const img = A.el('img'); img.src = p.src; img.alt = p.caption;
+        a.append(img, A.el('div', 'dim', p.caption));
+        g.append(a);
+      });
+    },
+    async 'ls projects'() {
+      const holder = block(A.el('div'));
+      A.liveRepos((repos, live) => {
+        holder.replaceChildren(A.el('p', 'line dim', (live ? 'live from github' : 'snapshot') + ' · ' + repos.length + ' repos'));
+        for (const r of repos) {
+          const p = A.el('p', 'line');
+          p.append(A.link('https://github.com/findastra/' + r.name, null, r.name.padEnd(30)), document.createTextNode(' ' + (r.description || '').slice(0, 90)));
+          holder.append(p);
+        }
+        term.scrollTop = term.scrollHeight;
+      });
+    },
+    async pets() {
+      const box = block(A.el('div', 'pets'));
+      A.pets.forEach((p) => { const a = A.link(p.href); const img = A.el('img'); img.src = p.img; img.alt = ''; a.title = p.job; a.append(img, A.el('div', null, p.pet)); box.append(a); });
+    },
+    async links() { for (const l of A.links) { const p = out(''); p.append(A.link(l.href, null, l.name + '  ' + l.href)); } },
+    async clear() { term.replaceChildren(); },
+    async hack() { hackGame(); },
+  };
+
+  // A password-guessing terminal game: pick the word; "likeness" tells how many letters match in place.
+  function hackGame() {
+    const pool = ['ASTRA', 'AUDRA', 'DANCE', 'PIXEL', 'GHOST', 'CLOUD', 'NEONS', 'ORBIT', 'LACES', 'GLINT', 'TIDES', 'SPARK', 'PETAL', 'CHROM', 'VAPOR', 'RELAY'];
+    const words = pool.sort(() => Math.random() - .5).slice(0, 10);
+    const answer = words[Math.floor(Math.random() * words.length)];
+    let tries = 4;
+    const g = block(A.el('div', 'game'));
+    g.append(A.el('p', 'line hot', 'FINDASTRA TERMLINK · password required'), A.el('p', 'line dim', 'attempts left: ' + '■ '.repeat(tries)));
+    const status = g.children[1];
+    const list = A.el('div', 'words'); g.append(list);
+    const log = A.el('div'); g.append(log);
+    for (const w of words) {
+      const b = A.el('button', null, '0x' + Math.floor(Math.random() * 0xffff).toString(16).padStart(4, '0').toUpperCase() + ' ' + w);
+      b.onclick = () => {
+        if (tries <= 0) return;
+        b.disabled = true;
+        if (w === answer) {
+          log.append(A.el('p', 'line ok', '> ' + w + '  ACCESS GRANTED. welcome back, astra.'));
+          [...list.children].forEach((x) => (x.disabled = true));
+          return;
+        }
+        tries--;
+        const like = [...w].filter((c, i) => answer[i] === c).length;
+        log.append(A.el('p', 'line warn', '> ' + w + '  entry denied · likeness=' + like));
+        status.textContent = 'attempts left: ' + '■ '.repeat(tries);
+        if (!tries) { log.append(A.el('p', 'line hot', 'LOCKED OUT. the password was ' + answer + '. type hack to try again.')); [...list.children].forEach((x) => (x.disabled = true)); }
+        term.scrollTop = term.scrollHeight;
+      };
+      list.append(b);
+    }
+  }
+
+  function chips() {
+    const c = A.el('div', 'chips');
+    for (const k of Object.keys(COMMANDS)) { const b = A.el('button', 'chip', k); b.onclick = () => exec(k); c.append(b); }
+    return c;
+  }
+
+  let input;
+  function promptLine() {
+    const row = A.el('div', 'input');
+    row.append(A.el('span', 'prompt', (unmasked ? 'astra' : 'audra') + '@findastra:~$'));
+    input = A.el('input'); input.setAttribute('aria-label', 'command'); input.autocomplete = 'off'; input.spellcheck = false;
+    input.onkeydown = (e) => { if (e.key === 'Enter') exec(input.value.trim()); };
+    row.append(input);
+    block(chips()); block(row); input.focus({ preventScroll: true });
+  }
+
+  async function exec(cmd) {
+    if (busy) return; busy = true;
+    if (input) { input.parentElement.replaceWith(A.el('p', 'line', (unmasked ? 'astra' : 'audra') + '@findastra:~$ ' + cmd)); input = null; }
+    term.querySelectorAll('.chips').forEach((c) => c.remove());
+    const fn = run[cmd.toLowerCase()];
+    if (fn) await fn(); else if (cmd) out(cmd + ': command not found. type help', 'warn');
+    busy = false; promptLine();
+  }
+
+  async function boot() {
+    for (const l of ['findastra bios v2.6', 'checking memory ........ ok', 'mounting /worlds ........ ok', 'waking pets ............. ' + A.pets.length + ' found', '']) await type(l, 'dim', 6);
+    await run.whoami();
+    promptLine();
+  }
+  document.addEventListener('click', (e) => { if (input && !e.target.closest('a,button')) input.focus({ preventScroll: true }); });
+  boot();
+
+  // background code rain (art), very faint
+  const cv = document.getElementById('rain'), cx = cv.getContext('2d');
+  let cols = [];
+  const size = () => { cv.width = innerWidth; cv.height = innerHeight; cols = Array(Math.ceil(cv.width / 14)).fill(0).map(() => Math.random() * cv.height); };
+  size(); addEventListener('resize', size);
+  const glyphs = 'ASTRAUDRA01アストラ✦';
+  (function rain() {
+    if (A.reduced) return;
+    cx.fillStyle = 'rgba(4, 6, 10, .12)'; cx.fillRect(0, 0, cv.width, cv.height);
+    cx.fillStyle = unmasked ? '#ff4fd8' : '#7ff0ff'; cx.font = '13px JetBrains Mono';
+    cols.forEach((y, i) => { cx.fillText(glyphs[Math.floor(Math.random() * glyphs.length)], i * 14, y); cols[i] = y > cv.height + Math.random() * 1e4 ? 0 : y + 14; });
+    setTimeout(() => requestAnimationFrame(rain), 50);
+  })();
+})();
+</script>
+</body>
+</html>

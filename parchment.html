@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>findastra · parchment draft</title>
+<meta name="description" content="Astra's portfolio: the plain version first, then the worlds, projects and pets.">
+<link rel="icon" href="art/pets/portfolio-puffer.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Sedgwick+Ave+Display&display=swap">
+<link rel="stylesheet" href="styles-parchment.css">
+</head>
+<body>
+
+<nav class="tabs" aria-label="Sections">
+  <a href="#about" style="--tab: var(--pink)">about</a>
+  <a href="#work" style="--tab: var(--rose)">work</a>
+  <a href="#astra" style="--tab: var(--periwinkle)">astra</a>
+  <a href="#worlds" style="--tab: var(--lilac)">worlds</a>
+  <a href="#projects" style="--tab: var(--sky)">projects</a>
+  <a href="#pets" style="--tab: var(--pink)">pets</a>
+</nav>
+
+<main class="desk">
+
+  <!-- Sheet 1: the plain version -->
+  <section class="sheet plain" id="about" style="--tint: var(--paper)">
+    <span class="tape" style="--tape: var(--pink)"></span>
+    <span class="lace lace-bottom" aria-hidden="true"></span>
+    <h1 id="p-name">findastra</h1>
+    <p class="links">
+      <a href="https://github.com/findastra">GitHub</a> ·
+      <a href="https://www.tiktok.com/@findastra">TikTok</a>
+    </p>
+
+    <div class="cols">
+      <div>
+        <h2>A little about me:</h2>
+        <div id="p-about">
+          <p>I build virtual worlds, small single-purpose apps, and the tools that let AI assistants work alongside me.</p>
+        </div>
+      </div>
+      <div>
+        <h2>Known Languages:</h2>
+        <ul id="p-languages"><li>HTML &amp; CSS</li><li>JavaScript</li><li>C#</li><li>Python</li><li>PowerShell</li><li>TypeScript</li></ul>
+      </div>
+      <div>
+        <h2>Proficient Skill Sets:</h2>
+        <ul id="p-skills"><li>Unity and VRChat world building</li></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sheet 2: work -->
+  <section class="sheet tex-linen" id="work" style="--tint: var(--rose); --under1: var(--pink); --under2: var(--lilac)">
+    <span class="lace lace-top" aria-hidden="true"></span>
+    <h2 class="sheet-title">Work</h2>
+    <ul id="p-work" class="work"></ul>
+    <p id="p-work-note" class="note">My work history is being written up. It goes here once I have read every word.</p>
+  </section>
+
+  <!-- Sheet 3: Astra -->
+  <section class="sheet hero tex-watercolor" id="astra" style="--tint: var(--periwinkle); --under1: var(--sky); --under2: var(--pink)">
+    <span class="tape" style="--tape: var(--pink)"></span>
+    <div class="doily" aria-hidden="true"></div>
+    <figure class="polaroid">
+      <img src="art/avatar.jpg" alt="Astra's avatar portrait" width="220" height="220">
+      <figcaption>that's me</figcaption>
+    </figure>
+    <div>
+      <!-- Placeholder: Astra will hand-letter this in Procreate. Drop the image in art/lettering/ and swap it in. -->
+      <h2 class="lettering-slot">
+        <span class="visually-hidden">I'm Audra, a.k.a. Astra</span>
+        <span class="slot-text" aria-hidden="true">I'm Audra, a.k.a. Astra</span>
+        <span class="slot-note" aria-hidden="true">hand lettering goes here</span>
+      </h2>
+      <p class="tagline">noncorporeal dancer · reality-hacker · digital performer</p>
+    </div>
+  </section>
+
+  <!-- Sheet 4: worlds -->
+  <section class="sheet" id="worlds" style="--tint: var(--lilac); --under1: var(--periwinkle); --under2: var(--pink)">
+    <span class="tape" style="--tape: var(--sky)"></span>
+    <h2 class="sheet-title">Worlds</h2>
+    <div class="cards">
+      <a class="card" href="https://github.com/findastra/astras-infinite-pole" style="--note: var(--pink); --r: -1.2deg" data-tex="linen">
+        <span class="tag">VRChat · PC VR / desktop</span>
+        <strong>Astra's Infinite Pole</strong>
+        <span>My VRChat world, full of magical effects. Unity source and every published version are on GitHub.</span>
+      </a>
+      <a class="card" href="https://github.com/findastra/piranesi-house" style="--note: var(--sky); --r: 0.8deg">
+        <span class="tag">VRChat · in progress</span>
+        <strong>Piranesi House</strong>
+        <span>Inspired by Susanna Clarke's Piranesi: an endless House of statues, tides and light.</span>
+      </a>
+      <a class="card" href="https://github.com/findastra/mommys-website" style="--note: var(--paper); --r: -0.6deg" data-tex="linen">
+        <span class="tag">Community</span>
+        <strong>Mommy's</strong>
+        <span>A VRChat dance academy and entertainers club, with its own world, classes and Discord.</span>
+      </a>
+      <a class="card" href="https://github.com/findastra/vrchat-ai-astra" style="--note: var(--periwinkle); --r: 1.1deg">
+        <span class="tag">AI · VRChat</span>
+        <strong>AI Astra</strong>
+        <span>A bridge that brings an AI companion into VRChat.</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- Sheet 5: projects -->
+  <section class="sheet tex-linen" id="projects" style="--tint: var(--sky); --under1: var(--periwinkle); --under2: var(--aqua)">
+    <span class="tape" style="--tape: var(--lilac)"></span>
+    <h2 class="sheet-title">Projects</h2>
+    <p class="note" id="projects-source">Loading from GitHub…</p>
+    <div class="cards" id="project-list"></div>
+  </section>
+
+  <!-- Sheet 6: pets -->
+  <section class="sheet" id="pets" style="--tint: var(--pink); --under1: var(--rose); --under2: var(--lilac)">
+    <span class="lace lace-top" aria-hidden="true"></span>
+    <span class="lace lace-bottom" aria-hidden="true"></span>
+    <h2 class="sheet-title">Pets</h2>
+    <p class="note">Small single-purpose apps, each with a pixel pet. They live in <a href="https://github.com/findastra/astras-pet-os">Astra's PetOS</a>. This page is kept by Portfolio Puffer.</p>
+    <div class="pets" id="pet-list"></div>
+  </section>
+
+  <footer class="foot">
+    <p><a href="https://github.com/findastra">github.com/findastra</a> · <a href="https://www.tiktok.com/@findastra">@findastra on TikTok</a></p>
+    <p class="small">Made by Astra. Built with Claude Code (Claude Opus 5.5), 2026-10-17.</p>
+  </footer>
+</main>
+
+<script src="profile-data.js"></script>
+<script src="site-data.js"></script>
+<script src="site-parchment.js"></script>
+</body>
+</html>
