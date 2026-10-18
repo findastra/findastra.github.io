@@ -286,7 +286,7 @@
   const miniStar = (color) => { const svg = svgEl('svg', { viewBox: '-111 -116 229 220', 'aria-hidden': 'true' }); svg.append(svgEl('use', { href: '#star' })); svg.style.setProperty('--c', color); return svg; };
   const miniPlanet = (color) => {
     const svg = svgEl('svg', { viewBox: '-100 -100 200 200', 'aria-hidden': 'true' }); svg.style.setProperty('--c', color);
-    svg.append(svgEl('path', { class: 'ring-b', d: 'M-92 0A92 30 0 0 1 92 0', transform: 'rotate(-16)' }), svgEl('circle', { r: 52 }),
+    svg.append(svgEl('path', { class: 'ring-b', d: 'M-92 0A92 30 0 0 1 92 0', transform: 'rotate(-16)' }), svgEl('circle', { r: 64 }),
       svgEl('path', { class: 'ring-f', d: 'M-92 0A92 30 0 0 0 92 0', transform: 'rotate(-16)' }));
     return svg;
   };
@@ -297,21 +297,34 @@
     function fill(list) {
       items = list;
       const r = rand(list.length * 7919 + 17), n = list.length || 1;
-      // Astra (2026-10-18): the jar is filled to the top, every one visible. Pick the column count that gives the
-      // biggest shapes while all n fit in the glass, then spread the rows over the whole height, bottom row first.
+      // Astra (2026-10-18): the jar is full, every one visible, and they lie in a natural pile, not a grid. Each one is
+      // dropped from a random spot and stops on the first one it hits (or the floor); the lowest of a few tries wins.
+      // Start as big as would fill the glass and shrink until the whole pile fits under the lid.
       const W = inside.clientWidth || 240, H = inside.clientHeight || 280;
-      let cols = 1, cell = 0;
-      for (let c = 1; c <= 24; c++) { const rows = Math.ceil(n / c), size = Math.min(W / c, H / rows); if (size > cell) { cell = size; cols = c; } }
-      const rows = Math.ceil(n / cols), rowH = H / rows;
-      const size = Math.min(kind.maxMini, cell * .98), edge = (size / 2 + 2) / W * 100, edgeY = (size / 2 + 2) / H * 100;
-      inside.style.setProperty('--s', size + 'px');
+      const pile = (rad) => {
+        const at = [], reach = rad * 2 * .86; // neighbours tuck into each other's points a little
+        for (let i = 0; i < n; i++) {
+          let best = null;
+          for (let t = 0; t < 12; t++) {
+            const x = rad + r() * (W - 2 * rad);
+            let y = H - rad;
+            for (const p of at) { const dx = Math.abs(p.x - x); if (dx < reach) y = Math.min(y, p.y - Math.sqrt(reach * reach - dx * dx)); }
+            if (!best || y > best.y) best = { x, y };
+          }
+          if (best.y < rad * .7) return null;
+          at.push(best);
+        }
+        return at;
+      };
+      let rad = Math.min(kind.maxMini / 2, Math.sqrt((W * H * .6) / (n * Math.PI))), spots = null;
+      while (!(spots = pile(rad)) && rad > 4) rad *= .94;
+      spots = spots || list.map(() => ({ x: W / 2, y: H / 2 }));
+      inside.style.setProperty('--s', rad * 2 + 'px');
       inside.replaceChildren(...list.map((it, i) => {
         const m = kind.mini(colorOf(kind.key(it))); m.classList.add('mini');
-        const row = Math.floor(i / cols), col = i % cols, inRow = Math.min(cols, n - row * cols);
-        const x = ((col + .5) / inRow) * 100 + (r() - .5) * (40 / cols);
-        m.style.left = Math.min(100 - edge, Math.max(edge, x)) + '%';
-        m.style.top = Math.min(100 - edgeY, Math.max(edgeY, ((H - (row + .5) * rowH + (r() - .5) * rowH * .2) / H) * 100)) + '%';
-        m.style.setProperty('--r', Math.round(r() * 60 - 30) + 'deg');
+        m.style.left = (spots[i].x / W) * 100 + '%';
+        m.style.top = (spots[i].y / H) * 100 + '%';
+        m.style.setProperty('--r', Math.round(r() * 80 - 40) + 'deg');
         m.dataset.key = kind.key(it);
         if (m.dataset.key === outKey) m.classList.add('gone');
         return m;
@@ -396,7 +409,7 @@
       if (force > 14 && Date.now() - lastShake > 1400 && phoneShakes) { lastShake = Date.now(); phoneShakes(); }
     });
   }
-  const worldJar = makeJar('worlds', { key: (w) => w.repo, mini: miniPlanet, full: planet, hasPics: (w) => worldPics(w).length > 0, maxMini: 92, one: 'world', many: 'worlds' });
+  const worldJar = makeJar('worlds', { key: (w) => w.repo, mini: miniPlanet, full: planet, hasPics: (w) => worldPics(w).length > 0, maxMini: 130, one: 'world', many: 'worlds' });
   const petJar = makeJar('pets', { key: (e) => 'pet-' + e.p.number, mini: miniStar, full: star, hasPics: (e) => e.pics.length > 0, maxMini: 48, one: 'pet', many: 'pets' });
   const jars = [worldJar, petJar];
   const syncPourAll = () => { const open = jars.every((j) => j.isOpen()); $('pour-all').textContent = open ? 'put everything back' : 'tip out every jar'; $('pour-all').setAttribute('aria-pressed', String(open)); };
