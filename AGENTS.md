@@ -21,6 +21,8 @@ Astra's portfolio, served at <https://findastra.github.io>. **Portfolio Puffer**
 | `pets-data.js` | Every pet, generated from `pet-programs.json` on astras-pet-os `main`. Regenerate; never hand-edit. |
 | `project-images.js`, `art/projects/` | Pictures and site screenshots from GitHub Goldfish's `project-image-generator` (Puffer uses it by grant). Regenerate with `node scripts/project-image-generator-20261017.mjs findastra --out <this repo>\art\projects --js <this repo>\project-images.js --screenshots` in github-goldfish. |
 | `art/worlds/` | Astra's own world renders. No other people in pictures without their OK. |
+| `updates-data.js`, `scripts/build-updates-20261018.mjs` | The two tickers (updates; working on). Live from GitHub search (merged PRs and commits by findastra); the snapshot when GitHub does not answer. Regenerate the snapshot with `node scripts/build-updates-20261018.mjs`. |
+| Star jar (in `index.html`, `cyber.js`) | Every project in the current tab is a star filling the jar to the top (Astra, 2026-10-18). Shake it (click, drag side to side, the button, or shake the phone) and one comes out as its full project window. "show every project" opens the full list. |
 | `drafts/`, `parchment.html` | Earlier design drafts, kept for comparison. |
 
 ## Rules
@@ -33,5 +35,5 @@ Astra's portfolio, served at <https://findastra.github.io>. **Portfolio Puffer**
   reported under Flash Audit A55.
 - Work on a branch; merging to `main` publishes.
 
-Built with Claude Code (Claude Opus 5.5, `claude-opus-5-5`), 2026-10-17. Rescued from Astra's PC to GitHub by another
+Built with Claude Code (Claude Opus 5.5, `claude-opus-5-5`), 2026-10-17; updates tickers, darker grays and the star jar 2026-10-18. Rescued from Astra's PC to GitHub by another
 Claude Opus 5.5 session the same day. Grayscale and star-window restyle by a third Claude Opus 5.5 session, 2026-10-17.

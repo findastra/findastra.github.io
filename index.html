@@ -46,10 +46,11 @@
     </div>
   </section>
 
-  <div class="ticker" aria-hidden="true"><div class="track">
-    <span>AUDRA ✦ ASTRA ✦ ONE PERSON ✦ TWO NAMES ✦ BOTH REAL ✦ AUDRA ✦ ASTRA ✦ ONE PERSON ✦ TWO NAMES ✦ BOTH REAL ✦&nbsp;</span>
-    <span>AUDRA ✦ ASTRA ✦ ONE PERSON ✦ TWO NAMES ✦ BOTH REAL ✦ AUDRA ✦ ASTRA ✦ ONE PERSON ✦ TWO NAMES ✦ BOTH REAL ✦&nbsp;</span>
-  </div></div>
+  <!-- what changed lately, from public GitHub activity (live, else the snapshot in updates-data.js) -->
+  <section class="ticker" id="tick-updates" aria-label="Latest updates">
+    <span class="tick-label">updates</span>
+    <div class="track"></div>
+  </section>
 
   <section class="block light" id="about">
     <p class="kicker">// 01 · the plain version</p>
@@ -76,10 +77,11 @@
     <div class="worlds" id="world-list"></div>
   </section>
 
-  <div class="ticker flip" aria-hidden="true"><div class="track">
-    <span>NONCORPOREAL DANCER ✦ REALITY-HACKER ✦ DIGITAL PERFORMER ✦ NONCORPOREAL DANCER ✦ REALITY-HACKER ✦ DIGITAL PERFORMER ✦&nbsp;</span>
-    <span>NONCORPOREAL DANCER ✦ REALITY-HACKER ✦ DIGITAL PERFORMER ✦ NONCORPOREAL DANCER ✦ REALITY-HACKER ✦ DIGITAL PERFORMER ✦&nbsp;</span>
-  </div></div>
+  <!-- the projects worked on most recently -->
+  <section class="ticker flip" id="tick-now" aria-label="Working on now">
+    <span class="tick-label">working on</span>
+    <div class="track"></div>
+  </section>
 
   <section class="block dots" id="projects">
     <p class="kicker">// 03 · everything, live from GitHub</p>
@@ -89,7 +91,29 @@
       <input id="search" type="search" placeholder="search projects" aria-label="Search projects">
     </div>
     <p class="muted mono" id="project-source"></p>
-    <div class="grid" id="project-list"></div>
+    <!-- every project is a star in the jar; shake it and one comes out -->
+    <div class="jar-stage" id="jar-stage">
+      <div class="jar-side">
+        <button class="jar" id="jar" aria-label="Shake the jar. One project star comes out.">
+          <svg class="jar-glass" viewBox="0 0 300 380" aria-hidden="true">
+            <rect class="jar-lid" x="66" y="6" width="168" height="40" rx="8"/>
+            <path class="jar-lid-lines" d="M80 16H220M80 26H220M80 36H220"/>
+            <path class="jar-body" d="M92 46h116v22c0 10 8 16 22 22 26 11 40 30 40 58v186c0 22-14 36-36 36H66c-22 0-36-14-36-36V148c0-28 14-47 40-58 14-6 22-12 22-22z"/>
+          </svg>
+          <span class="jar-stars" id="jar-stars"></span>
+          <svg class="jar-shine" viewBox="0 0 300 380" aria-hidden="true">
+            <path d="M58 160c-4 40-4 120 2 170" /><path d="M74 140c-2 8-3 16-3 24" />
+          </svg>
+        </button>
+        <p class="mono jar-count" id="jar-count"></p>
+        <button class="btn hot" id="shake">shake the jar</button>
+      </div>
+      <div class="jar-out" id="jar-out" aria-live="polite">
+        <p class="jar-hint">Shake the jar.<br>One project falls out.</p>
+      </div>
+    </div>
+    <p class="all-toggle"><button class="btn" id="show-all" aria-expanded="false" aria-controls="project-list">show every project</button></p>
+    <div class="grid" id="project-list" hidden></div>
   </section>
 
   <section class="block dark checker" id="pets">
@@ -135,6 +159,7 @@
 <script src="site-data.js"></script>
 <script src="pets-data.js"></script>
 <script src="project-images.js"></script>
+<script src="updates-data.js"></script>
 <script src="cyber.js"></script>
 </body>
 </html>
