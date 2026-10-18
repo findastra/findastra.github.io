@@ -1,4 +1,4 @@
-/* findastra: everything in blacks and dark grays; the project stars are the only color.
+/* findastra: everything in blacks and dark grays; Astra's PetOS is the only color: clouds, ringed planets and fat stars.
    Each section sets its own gray palette (.dark .light .mid .dots) and its own pattern. White is only a small accent. */
 :root {
   --mono: "JetBrains Mono", ui-monospace, monospace;
@@ -55,9 +55,7 @@ h3 { display: inline-block; font: 700 12px var(--mono); text-transform: uppercas
 .checker { background: repeating-conic-gradient(#111 0 25%, #1c1c1c 0 50%) 0 0 / 44px 44px; }
 .lines { background: repeating-linear-gradient(#151515 0 3px, #1e1e1e 3px 4px); }
 #about h2 { text-shadow: 6px 6px 0 #3a3a3a, 12px 12px 0 #2a2a2a; }
-#worlds h2 { color: #cfcfcf; -webkit-text-stroke: 2px #000; text-shadow: 7px 7px 0 #000; }
-#projects h2 { background: repeating-linear-gradient(-45deg, #d8d8d8 0 7px, #5a5a5a 7px 11px); -webkit-background-clip: text; background-clip: text; color: transparent; }
-#pets h2 { color: transparent; -webkit-text-stroke: 2px #f2f2f2; text-shadow: 6px 6px 0 #3a3a3a; }
+#projects h2 { text-transform: none; background: repeating-linear-gradient(-45deg, #d8d8d8 0 7px, #5a5a5a 7px 11px); -webkit-background-clip: text; background-clip: text; color: transparent; }
 #arcade h2 { text-shadow: 4px 4px 0 #555, 8px 8px 0 #000; }
 
 /* tickers between sections: what changed lately, and what is being worked on now */
@@ -128,34 +126,66 @@ body.unmasked .hero { --bg: #8d8d8d; --ink: #070707; --muted: #2c2c2c;
 .list { padding-left: 1.4em; margin: 0; list-style: "✦  "; }
 .list li { margin-bottom: 4px; }
 
-/* worlds: white cards with hard black shadows, photos in grayscale */
-.worlds { display: grid; grid-template-columns: repeat(2, 1fr); gap: 34px 30px; }
-.world { position: relative; border: 3px solid #000; overflow: hidden; background: var(--panel); box-shadow: 10px 10px 0 #000; transform: rotate(-.6deg); }
-.world:nth-child(even) { transform: rotate(.8deg); }
-.world .shots { display: grid; grid-template-columns: 2fr 1fr; grid-template-rows: 1fr 1fr; gap: 3px; height: 260px; background: #000; border-bottom: 3px solid #000; }
-.world .shots button { padding: 0; border: 0; background: repeating-linear-gradient(45deg, #1d1d1d 0 6px, #262626 6px 12px); cursor: zoom-in; overflow: hidden; }
-.world .shots button:first-child { grid-row: span 2; }
-.world .shots img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.25); transition: transform .4s ease; }
-.world .shots button:hover img { transform: scale(1.06); }
-.world .shots .none { display: grid; place-items: center; font: 12px var(--mono); color: #9b9b9b; grid-column: 1 / -1; grid-row: 1 / -1;
-  background: repeating-linear-gradient(45deg, #161616 0 10px, #222 10px 20px); }
-.world .info { padding: 16px 18px 18px; }
-.world .info b { font: 900 1.4rem/1.1 Inter, sans-serif; display: block; margin: 6px 0 2px; }
-.world .info p { margin: 6px 0 10px; color: #c8c8c8; }
-.world .info .muted { color: #8a8a8a; }
+/* Astra's PetOS: other projects float as clouds over a worlds jar (ringed planets) and a pets jar (stars) */
+.filters { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+#search { font: 14px var(--mono); color: #e4e4e4; background: #0a0a0a; border: 2px solid #555; padding: 8px 12px; min-width: min(300px, 100%); box-shadow: 3px 3px 0 #000; }
+#search:focus { outline: 2px dashed #8a8a8a; outline-offset: 3px; }
 .tag { display: inline-block; font: 11px var(--mono); text-transform: uppercase; letter-spacing: .12em; background: #000; color: #cfcfcf; padding: 2px 8px; }
 
-/* projects */
-.filters { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-.tabs { display: flex; flex-wrap: wrap; gap: 8px; }
-.tabs button { font: 13px var(--mono); color: var(--ink); background: var(--panel); border: 2px solid var(--ink); padding: 5px 12px; cursor: pointer; box-shadow: 3px 3px 0 var(--ink); }
-.tabs button:hover { background: #3a3a3a; }
-.tabs button[aria-selected="true"] { color: var(--panel); background: var(--ink); }
-.tabs button span { opacity: .6; margin-left: 5px; }
-#search { font: 14px var(--mono); color: #e4e4e4; background: #0a0a0a; border: 2px solid #555; padding: 8px 12px; min-width: 220px; box-shadow: 3px 3px 0 #000; }
-#search:focus { outline: 2px dashed #8a8a8a; outline-offset: 3px; }
+/* sparkles: four-point twinkles around each shape, in hues near its own color */
+.sparkles { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
+.sparkles i { position: absolute; left: var(--x); top: var(--y); width: var(--s); aspect-ratio: 1; translate: -50% -50%; background: var(--c);
+  clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%);
+  animation: twinkle 2.6s ease-in-out var(--d) infinite; }
+@supports (color: hsl(from red h s l)) {
+  .sparkles i { background: hsl(from var(--c) calc(h + var(--dh)) s min(calc(l + var(--l)), 92)); }
+}
+@keyframes twinkle { 0%, 100% { transform: scale(.35) rotate(0deg); opacity: .35; } 50% { transform: scale(1.15) rotate(45deg); opacity: 1; } }
 
-/* the project windows: fat stars, the only color on the page */
+/* clouds: the other projects, bobbing in the sky above the jars */
+.sky-label { margin-top: 26px; }
+.sky { display: flex; flex-wrap: wrap; justify-content: center; gap: 18px 2%; padding: 10px 0 20px; }
+.cloud { position: relative; container-type: inline-size; width: clamp(240px, 23%, 300px); aspect-ratio: 256 / 168; color: #000;
+  rotate: var(--tilt); animation: bob 6s ease-in-out var(--bob) infinite alternate; }
+@keyframes bob { from { transform: translateY(-7px); } to { transform: translateY(9px); } }
+.cloud .shape { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.cloud .s-shadow { fill: #000; stroke: #000; stroke-width: 12; transform: translate(6px, 7px); }
+.cloud .s-line { fill: #000; stroke: #000; stroke-width: 12; }
+.cloud .s-fill { fill: var(--c); stroke: var(--c); stroke-width: 6; }
+.cloud .s-shine { fill: none; stroke: rgba(255, 255, 255, .55); stroke-width: 3; transform: translate(12%, 10%) scale(.8); }
+.cwin { position: absolute; left: 14%; right: 12%; top: 30%; bottom: 13%; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 1.2cqw; overflow: hidden; }
+.cwin .name { font: 800 6cqw/1.05 Inter, sans-serif; color: #000; text-decoration: none; }
+.cwin .name:hover, .cwin .name:focus-visible { background: #000; color: var(--c); outline: none; }
+.cwin p { margin: 0; font: 4.4cqw/1.25 Inter, sans-serif; color: #000; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; }
+.cwin .meta { margin-top: auto; display: flex; gap: .8em; font: 3.8cqw/1.3 var(--mono); color: #000; }
+.cwin .meta a { color: #000; }
+.cwin .meta a:hover { background: #000; color: var(--c); }
+
+/* planets: each world is a circle with a ring around it; the far half of the ring passes behind, the near half in front */
+.planets { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px 30px; }
+.planet { text-align: center; min-width: 0; }
+.orbit { position: relative; width: min(100%, 380px); margin: 0 auto -4%; aspect-ratio: 1; rotate: var(--tilt); transition: rotate .3s; }
+.planet:hover .orbit { rotate: 0deg; }
+.orbit .sparkles { inset: 8%; }
+.ring { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; transform: rotate(-16deg); }
+.ring.back { z-index: 0; } .ring.front { z-index: 2; }
+.ring path { fill: none; stroke-linecap: round; }
+.ring .r-line { stroke: #000; stroke-width: 15; }
+.ring .r-fill { stroke: color-mix(in srgb, var(--c) 55%, #fff); stroke-width: 8; }
+.orb { position: absolute; left: 50%; top: 50%; z-index: 1; width: 74%; aspect-ratio: 1; translate: -50% -50%; padding: 0; overflow: hidden; isolation: isolate;
+  border: 3px solid #000; border-radius: 50%; box-shadow: 7px 7px 0 #000; cursor: zoom-in;
+  background: radial-gradient(circle at 32% 28%, color-mix(in srgb, var(--c) 35%, #fff), var(--c) 48%, color-mix(in srgb, var(--c) 62%, #000)); }
+.orb img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.15); mix-blend-mode: multiply; transition: transform .4s; }
+.orb:hover img { transform: scale(1.08); }
+.orb::after { content: ""; position: absolute; inset: 0; border-radius: 50%; pointer-events: none; box-shadow: inset -14px -12px 0 rgba(0, 0, 0, .22), inset 8px 8px 0 rgba(255, 255, 255, .3); }
+div.orb { display: grid; place-items: center; cursor: default; }
+.orb .none { font: 12px var(--mono); color: #000; background: #fff; border: 2px solid #000; padding: 1px 8px; rotate: -8deg; }
+.planet .info { position: relative; z-index: 3; }
+.planet .info b { display: block; font: 900 1.3rem/1.1 Inter, sans-serif; margin: 8px 0 2px; color: var(--ink); }
+.planet .info p { margin: 4px auto 8px; max-width: 34ch; font-size: 15px; color: #c8c8c8; }
+.planet .meta { display: flex; gap: .8em; justify-content: center; flex-wrap: wrap; font: 12px var(--mono); color: var(--muted); }
+
+/* the pet windows: fat stars */
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 0 22px; margin-top: 26px; }
 /* rows tuck into each other: each star's top point rises into the notch between the legs above it */
 .grid .card { margin-bottom: -5%; }
@@ -168,6 +198,7 @@ body.unmasked .hero { --bg: #8d8d8d; --ink: #070707; --muted: #2c2c2c;
 .card .s-line { fill: #000; stroke: #000; stroke-width: 30; }
 .card .s-fill { fill: var(--c); stroke: var(--c); stroke-width: 24; }
 .card .s-shine { fill: none; stroke: rgba(255, 255, 255, .45); stroke-width: 3; transform: scale(.86); }
+.card .sparkles { inset: 4% 2% 0; }
 /* the star's top point holds the pet; the side points hold the links */
 .card .tip { position: absolute; left: 48.47%; top: 19.09%; width: 13.1%; aspect-ratio: 1; transform: translate(-50%, -50%); display: grid; place-items: center; font: 400 9cqw/1 VT323, monospace; }
 .card .tip img { width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; }
@@ -191,9 +222,17 @@ body.unmasked .hero { --bg: #8d8d8d; --ink: #070707; --muted: #2c2c2c;
 .card p { margin: 0; font: 3.2cqw/1.28 Inter, sans-serif; color: #111; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; }
 .card .meta { margin-top: auto; display: flex; gap: .7em; justify-content: center; font: 2.75cqw/1.3 var(--mono); color: rgba(0, 0, 0, .7); }
 
-/* the star jar: every project is a small star inside; shaking it lets one out as a full project window */
-.jar-stage { position: relative; display: grid; grid-template-columns: minmax(260px, 360px) 1fr; gap: 28px 40px; align-items: center; margin-top: 26px; min-height: 480px; }
+/* the jars: filled to the top with small planets or stars; shaking one lets one out full size, tipping it out lays out all */
+.jar-stage { position: relative; display: grid; grid-template-columns: minmax(260px, 360px) 1fr; gap: 28px 40px; align-items: center; margin-top: 40px; min-height: 480px; }
+/* the pets jar stands on the right */
+.jar-stage + .jar-stage { grid-template-columns: 1fr minmax(260px, 360px); }
+.jar-stage + .jar-stage .jar-side { order: 2; }
+.jar-all { grid-column: 1 / -1; order: 3; }
 .jar-side { display: grid; justify-items: center; gap: 12px; }
+.jar-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+/* the jar's name, on its lid */
+.jar-label { position: absolute; left: 50%; top: 6.8%; translate: -50% -50%; z-index: 1; font: 700 13px var(--mono); text-transform: uppercase; letter-spacing: .16em;
+  background: #d8d8d8; color: #000; border: 2px solid #000; padding: 1px 12px; rotate: -3deg; pointer-events: none; }
 .jar { position: relative; width: min(320px, 78vw); aspect-ratio: 300 / 380; padding: 0; border: 0; background: none; cursor: grab; touch-action: pan-y; transform-origin: 50% 92%; }
 .jar:active { cursor: grabbing; }
 .jar:focus-visible { outline: 2px dashed #8a8a8a; outline-offset: 8px; }
@@ -205,32 +244,17 @@ body.unmasked .hero { --bg: #8d8d8d; --ink: #070707; --muted: #2c2c2c;
 /* the inside of the glass, where the stars pile up (matches the body path in index.html) */
 .jar-stars { position: absolute; left: 11.4%; top: 25.6%; width: 77.2%; height: 70.6%; border-radius: 6% 6% 11% 11% / 4% 4% 9% 9%; overflow: hidden; }
 .mini { position: absolute; width: var(--s); height: var(--s); transform: translate(-50%, -50%) rotate(var(--r)); overflow: visible; }
-.mini use { fill: var(--c); stroke: #000; stroke-width: 16; stroke-linejoin: round; }
+.mini use, /* a small ringed planet */
+.mini circle, .flyer circle { fill: var(--c); stroke: #000; stroke-width: 9; }
+.mini path, .flyer path { fill: none; stroke: color-mix(in srgb, var(--c) 55%, #fff); stroke-width: 13; stroke-linecap: round; }
 .mini.gone { visibility: hidden; }
 .jar-count { margin: 0; color: #8a8a8a; }
 .jar-out { position: relative; display: grid; place-items: center; min-height: 440px; }
-.jar-out .card { width: min(100%, 420px); animation: popout .55s cubic-bezier(.2, 1.6, .4, 1); }
+.jar-out .card, .jar-out .planet { width: min(100%, 420px); animation: popout .55s cubic-bezier(.2, 1.6, .4, 1); }
 @keyframes popout { from { transform: scale(.2) rotate(-30deg); opacity: 0; } }
 .jar-hint { margin: 0; font: 700 clamp(1.4rem, 3vw, 2rem)/1.2 var(--mono); color: #4a4a4a; text-align: center; }
 .flyer { position: absolute; z-index: 30; pointer-events: none; width: var(--s); height: var(--s); }
-.flyer use { fill: var(--c); stroke: #000; stroke-width: 16; stroke-linejoin: round; }
-.all-toggle { margin: 28px 0 0; text-align: center; }
-.grid[hidden], .ticker[hidden] { display: none; }
-
-/* pets: a grayscale trading-card wall */
-.pets { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
-.petcard { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 4px; padding: 14px 8px; background: #161616; border: 1px solid #3a3a3a; color: #f2f2f2; text-decoration: none; }
-.petcard:nth-child(3n+2) { background: #202020; }
-.petcard:nth-child(5n) { background: #0d0d0d; border-style: dashed; }
-.petcard:hover { background: #3a3a3a; color: #fff; border-color: #8a8a8a; }
-.petcard img { width: 64px; height: 64px; image-rendering: pixelated; filter: grayscale(1) contrast(1.2); transition: transform .25s; }
-.petcard:hover img { transform: translateY(-6px) rotate(-6deg) scale(1.1); filter: grayscale(1) contrast(1.5); }
-.petcard .ph { width: 64px; height: 64px; display: grid; place-items: center; font: 400 34px VT323, monospace; color: #777; border: 2px dashed #555; border-radius: 50%; }
-.petcard b { font-size: 14px; line-height: 1.2; }
-.petcard span { font: 11px var(--mono); color: #8f8f8f; }
-.petcard .st { color: #cfcfcf; }
-.petcard:hover span { color: #bdbdbd; }
-.petcard:hover .st { color: #fff; }
+.jar-all[hidden], .ticker[hidden] { display: none; }
 
 /* arcade: black cabinets on white scanlines */
 .arcade { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
@@ -275,8 +299,9 @@ body.unmasked .hero { --bg: #8d8d8d; --ink: #070707; --muted: #2c2c2c;
 
 @media (max-width: 900px) {
   .hero { grid-template-columns: 1fr; padding-top: 36px; }
-  .about, .arcade, .worlds { grid-template-columns: 1fr; }
-  .jar-stage { grid-template-columns: 1fr; min-height: 0; }
+  .about, .arcade { grid-template-columns: 1fr; }
+  .jar-stage, .jar-stage + .jar-stage { grid-template-columns: 1fr; min-height: 0; }
+  .jar-stage + .jar-stage .jar-side { order: 0; }
   .jar-out { min-height: 380px; }
 }
 @media (max-width: 520px) {
@@ -285,12 +310,13 @@ body.unmasked .hero { --bg: #8d8d8d; --ink: #070707; --muted: #2c2c2c;
   .board { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .lightbox figure { padding: 44px 12px 12px; }
   .top nav { gap: 4px 10px; }
-  .grid { grid-template-columns: 1fr; }
+  .grid, .planets { grid-template-columns: 1fr; }
+  .cloud { width: min(300px, 100%); }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .glitch, .ticker .track, .jar-out .card { animation: none; }
+  .glitch, .ticker .track, .jar-out .card, .jar-out .planet, .cloud, .sparkles i { animation: none; }
   .ticker { overflow-x: auto; }
-  .card, .card .s-shadow, .btn, .petcard img, .world .shots img, .tile button { transition: none; }
+  .card, .card .s-shadow, .btn, .orbit, .orb img, .tile button { transition: none; }
   #rain { display: none; }
 }
