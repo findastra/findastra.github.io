@@ -14,5 +14,5 @@ Employer pages publish only what Astra has read word for word. Portfolio Puffer 
 
 - Work history is empty until Astra approves each employer page.
 - The "I'm Audra, a.k.a. Astra" heading is a placeholder for Astra's hand lettering.
-- 35 of 93 repos show pictures here (committed pictures, live sites, program pages and the 3D System Map). Most repos still have no pictures committed in the repo itself (Flash Audit A55); those cards show the pet or a placeholder.
+- Every project card shows its repo's own committed pictures first (35 repos pass Flash Audit A55 so far), then live-site screenshots; program-page screenshots fill in for repos that have not committed pictures yet.
 - Projects load live from the GitHub API; when it does not answer, the page uses the snapshot in `site-data.js` and says so.
