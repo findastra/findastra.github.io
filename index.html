@@ -12,15 +12,17 @@
 <link rel="stylesheet" href="cyber.css">
 </head>
 <body>
-<!-- the fat star every project window is cut from (R 100, r 70; rounded by the stroke in cyber.css) -->
+<!-- the fat star every pet window is cut from (R 100, r 70; rounded by the stroke in cyber.css) -->
 <svg class="defs" aria-hidden="true" focusable="false"><defs>
   <path id="star" stroke-linejoin="round" d="M0-100L41.1-56.6L95.1-30.9L66.6 21.6L58.8 80.9L0 70L-58.8 80.9L-66.6 21.6L-95.1-30.9L-41.1-56.6Z"/>
+  <!-- the puffy cloud the other projects float in (viewBox 0 0 240 160) -->
+  <path id="cloud" stroke-linejoin="round" d="M52 146C24 146 10 128 16 108C2 98 4 70 30 66C28 38 58 22 84 34C96 10 140 6 158 32C184 18 220 34 216 66C238 74 240 112 220 124C224 140 206 150 188 146Z"/>
 </defs></svg>
 
 <header class="top">
   <a class="brand" href="#top">find<span>/</span>astra</a>
   <nav aria-label="Sections">
-    <a href="#about">about</a><a href="#worlds">worlds</a><a href="#projects">projects</a><a href="#pets">pets</a><a href="#arcade">arcade</a>
+    <a href="#about">about</a><a href="#projects">petos</a><a href="#worlds">worlds</a><a href="#pets">pets</a><a href="#arcade">arcade</a>
   </nav>
 </header>
 
@@ -71,12 +73,6 @@
     </div>
   </section>
 
-  <section class="block mid" id="worlds">
-    <p class="kicker">// 02 · places I built</p>
-    <h2>Worlds</h2>
-    <div class="worlds" id="world-list"></div>
-  </section>
-
   <!-- the projects worked on most recently -->
   <section class="ticker flip" id="tick-now" aria-label="Working on now">
     <span class="tick-label">working on</span>
@@ -84,47 +80,69 @@
   </section>
 
   <section class="block dots" id="projects">
-    <p class="kicker">// 03 · everything, live from GitHub</p>
-    <h2>Projects</h2>
+    <p class="kicker">// 02 · everything, live from GitHub</p>
+    <h2>Astra's PetOS</h2>
+    <p class="lead">Every project of mine gets a pet: a small app with a face, its own program, and a job. Together they are <a href="https://github.com/findastra/astras-pet-os">Astra's PetOS</a>. Portfolio Puffer keeps this page.</p>
     <div class="filters">
-      <div class="tabs" id="tabs" role="tablist"></div>
-      <input id="search" type="search" placeholder="search projects" aria-label="Search projects">
+      <button class="btn hot" id="pour-all" aria-pressed="false">tip out every jar</button>
+      <input id="search" type="search" placeholder="search pets, worlds, projects" aria-label="Search pets, worlds and projects">
     </div>
     <p class="muted mono" id="project-source"></p>
-    <!-- every project is a star in the jar; shake it and one comes out -->
-    <div class="jar-stage" id="jar-stage">
-      <div class="jar-side">
-        <button class="jar" id="jar" aria-label="Shake the jar. One project star comes out.">
-          <svg class="jar-glass" viewBox="0 0 300 380" aria-hidden="true">
-            <rect class="jar-lid" x="66" y="6" width="168" height="40" rx="8"/>
-            <path class="jar-lid-lines" d="M80 16H220M80 26H220M80 36H220"/>
-            <path class="jar-body" d="M92 46h116v22c0 10 8 16 22 22 26 11 40 30 40 58v186c0 22-14 36-36 36H66c-22 0-36-14-36-36V148c0-28 14-47 40-58 14-6 22-12 22-22z"/>
-          </svg>
-          <span class="jar-stars" id="jar-stars"></span>
-          <svg class="jar-shine" viewBox="0 0 300 380" aria-hidden="true">
-            <path d="M58 160c-4 40-4 120 2 170" /><path d="M74 140c-2 8-3 16-3 24" />
-          </svg>
-        </button>
-        <p class="mono jar-count" id="jar-count"></p>
-        <button class="btn hot" id="shake">shake the jar</button>
+
+    <h3 class="sky-label">Other projects</h3>
+    <div class="sky" id="cloud-list"></div>
+
+    <!-- two jars, filled to the top: shake one and a world or pet comes out; tip it out to see all of them -->
+    <div class="jars">
+      <div class="jar-stage" id="worlds">
+        <div class="jar-side">
+          <button class="jar" aria-label="Shake the worlds jar. One world comes out.">
+            <svg class="jar-glass" viewBox="0 0 300 380" aria-hidden="true">
+              <rect class="jar-lid" x="66" y="6" width="168" height="40" rx="8"/>
+              <path class="jar-lid-lines" d="M80 16H220M80 26H220M80 36H220"/>
+              <path class="jar-body" d="M92 46h116v22c0 10 8 16 22 22 26 11 40 30 40 58v186c0 22-14 36-36 36H66c-22 0-36-14-36-36V148c0-28 14-47 40-58 14-6 22-12 22-22z"/>
+            </svg>
+            <span class="jar-stars"></span>
+            <svg class="jar-shine" viewBox="0 0 300 380" aria-hidden="true">
+              <path d="M58 160c-4 40-4 120 2 170" /><path d="M74 140c-2 8-3 16-3 24" />
+            </svg>
+            <span class="jar-label">worlds</span>
+          </button>
+          <p class="mono jar-count"></p>
+          <div class="jar-buttons"><button class="btn hot shake">shake the jar</button><button class="btn pour" aria-expanded="false"></button></div>
+        </div>
+        <div class="jar-out" aria-live="polite">
+          <p class="jar-hint">Shake the jar.<br>One world falls out.</p>
+        </div>
+        <div class="jar-all planets" hidden></div>
       </div>
-      <div class="jar-out" id="jar-out" aria-live="polite">
-        <p class="jar-hint">Shake the jar.<br>One project falls out.</p>
+      <div class="jar-stage" id="pets">
+        <div class="jar-side">
+          <button class="jar" aria-label="Shake the pets jar. One pet comes out.">
+            <svg class="jar-glass" viewBox="0 0 300 380" aria-hidden="true">
+              <rect class="jar-lid" x="66" y="6" width="168" height="40" rx="8"/>
+              <path class="jar-lid-lines" d="M80 16H220M80 26H220M80 36H220"/>
+              <path class="jar-body" d="M92 46h116v22c0 10 8 16 22 22 26 11 40 30 40 58v186c0 22-14 36-36 36H66c-22 0-36-14-36-36V148c0-28 14-47 40-58 14-6 22-12 22-22z"/>
+            </svg>
+            <span class="jar-stars"></span>
+            <svg class="jar-shine" viewBox="0 0 300 380" aria-hidden="true">
+              <path d="M58 160c-4 40-4 120 2 170" /><path d="M74 140c-2 8-3 16-3 24" />
+            </svg>
+            <span class="jar-label">pets</span>
+          </button>
+          <p class="mono jar-count"></p>
+          <div class="jar-buttons"><button class="btn hot shake">shake the jar</button><button class="btn pour" aria-expanded="false"></button></div>
+        </div>
+        <div class="jar-out" aria-live="polite">
+          <p class="jar-hint">Shake the jar.<br>One pet falls out.</p>
+        </div>
+        <div class="jar-all grid" hidden></div>
       </div>
     </div>
-    <p class="all-toggle"><button class="btn" id="show-all" aria-expanded="false" aria-controls="project-list">show every project</button></p>
-    <div class="grid" id="project-list" hidden></div>
-  </section>
-
-  <section class="block dark checker" id="pets">
-    <p class="kicker">// 04 · Pet (Intelligent App)</p>
-    <h2>Pets</h2>
-    <p class="lead">Every project of mine gets a pet: a small app with a face, its own program, and a job. Together they are <a href="https://github.com/findastra/astras-pet-os">Astra's PetOS</a>. Portfolio Puffer keeps this page.</p>
-    <div class="pets" id="pet-list"></div>
   </section>
 
   <section class="block light lines" id="arcade">
-    <p class="kicker">// 05 · play</p>
+    <p class="kicker">// 03 · play</p>
     <h2>Arcade</h2>
     <div class="arcade">
       <div class="cab">
@@ -144,7 +162,7 @@
 
   <footer class="foot dark">
     <p class="links" id="links"></p>
-    <p class="muted">Made by Astra · built with Claude Code (Claude Opus 5.5), 2026-10-17 · pictures found by <a href="https://github.com/findastra/github-goldfish">GitHub Goldfish</a>'s project-image-generator</p>
+    <p class="muted">Made by Astra · built with Claude Code (Claude Opus 5.5), 2026-10-17 and 2026-10-18 · pictures found by <a href="https://github.com/findastra/github-goldfish">GitHub Goldfish</a>'s project-image-generator</p>
   </footer>
 </main>
 
