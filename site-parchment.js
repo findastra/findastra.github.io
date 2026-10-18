@@ -65,12 +65,15 @@
     .catch(() => { $('projects-source').textContent = 'GitHub could not be reached, so this is the snapshot from ' + (S.snapshot || 'earlier') + '.'; });
 
   // ---- Pets ----
+  // Their pictures live in the hub (one art source, Flash Audit A58); its art/frames/index.json names each frame.
+  const HUB = 'https://raw.githubusercontent.com/findastra/astras-pet-os/main/';
+  const frames = fetch(HUB + 'art/frames/index.json').then((r) => (r.ok ? r.json() : Promise.reject(r.status))).then((ix) => ix.pets || {}).catch(() => ({}));
   $('pet-list').replaceChildren(...S.pets.map((p, i) => {
     const a = el('a', 'pet');
     a.href = 'https://github.com/findastra/' + encodeURIComponent(p.repo);
     a.title = p.job || '';
     const img = el('img');
-    img.src = 'art/pets/' + p.art + '.png';
+    frames.then((pets) => { const idle = pets[p.art] && pets[p.art].frames && pets[p.art].frames.idle; if (idle) img.src = HUB + idle; });
     img.alt = '';
     img.width = 72; img.height = 72;
     img.style.setProperty('--d', (i % 6) * -0.4 + 's');

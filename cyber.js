@@ -10,7 +10,9 @@
   const link = (href, cls, text) => { const a = el('a', cls, text); a.href = href; a.target = '_blank'; a.rel = 'noopener'; return a; };
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const petByRepo = Object.fromEntries(PETS.filter((p) => p.repo).map((p) => [p.repo, p]));
-  const iconOf = (p) => (p && p.icon ? 'art/icons/' + p.icon : null);
+  // Pet icons live in the hub, findastra/astras-pet-os art/icons/ (one art source, Flash Audit A58).
+  const ICONS = 'https://raw.githubusercontent.com/findastra/astras-pet-os/main/art/icons/';
+  const iconOf = (p) => (p && p.icon ? ICONS + p.icon : null);
 
   // ---------- pictures for a repo: site screenshot first, then the best committed pictures ----------
   const picturesOf = (repo) => {
@@ -174,7 +176,7 @@
   // ---------- pets: all of them ----------
   $('pet-list').replaceChildren(...PETS.map((p) => {
     const a = p.repo_exists ? link('https://github.com/findastra/' + p.repo, 'petcard') : el('div', 'petcard');
-    if (p.icon) { const im = el('img'); im.src = 'art/icons/' + p.icon; im.alt = ''; im.loading = 'lazy'; a.append(im); }
+    if (p.icon) { const im = el('img'); im.src = ICONS + p.icon; im.alt = ''; im.loading = 'lazy'; a.append(im); }
     else a.append(el('div', 'ph', '?'));
     a.append(el('span', null, '#' + p.number), el('b', null, p.pet), el('span', null, p.program || 'program not named yet'), el('span', 'st', p.stage));
     a.title = p.text; return a;
@@ -210,7 +212,7 @@
     const stat = () => ($('mem-stat').textContent = `moves ${moves} · pairs ${found}/6`);
     $('board').replaceChildren(...cards.map((p) => {
       const t = el('div', 'tile'), b = el('button'); b.setAttribute('aria-label', 'card');
-      const f2 = el('span', 'f f2'), im = el('img'); im.src = 'art/icons/' + p.icon; im.alt = p.pet; f2.append(im);
+      const f2 = el('span', 'f f2'), im = el('img'); im.src = ICONS + p.icon; im.alt = p.pet; f2.append(im);
       b.append(el('span', 'f f1', '✦'), f2); t.append(b);
       b.onclick = () => {
         if (lock || t.classList.contains('open') || t.classList.contains('done')) return;

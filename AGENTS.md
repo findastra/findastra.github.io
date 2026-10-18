@@ -20,6 +20,7 @@ Astra's portfolio, served at <https://findastra.github.io>. **Portfolio Puffer**
 | `site-data.js` | Repo snapshot, used when the GitHub API does not answer. |
 | `pets-data.js` | Every pet, generated from `pet-programs.json` on astras-pet-os `main`. Regenerate; never hand-edit. |
 | `project-images.js`, `art/projects/` | Pictures and site screenshots from GitHub Goldfish's `project-image-generator` (Puffer uses it by grant). Regenerate with `node scripts/project-image-generator-20261017.mjs findastra --out <this repo>\art\projects --js <this repo>\project-images.js --screenshots` in github-goldfish. |
+| Pet pictures and icons | **Not here.** They live in the hub, findastra/astras-pet-os `art/icons/` and `art/frames/` (one art source, Flash Audit A58), and the pages load them from `https://raw.githubusercontent.com/findastra/astras-pet-os/main/`. Never copy one in. |
 | `art/worlds/` | Astra's own world renders. No other people in pictures without their OK. |
 | `drafts/`, `parchment.html` | Earlier design drafts, kept for comparison. |
 
@@ -32,3 +33,5 @@ Astra's portfolio, served at <https://findastra.github.io>. **Portfolio Puffer**
 
 Built with Claude Code (Claude Opus 5.5, `claude-opus-5-5`), 2026-10-17. Rescued from Astra's PC to GitHub by another
 Claude Opus 5.5 session the same day.
+
+Pet icons and pictures moved to the hub (one art source, Flash Audit A58, Astra 2026-10-18): `art/icons/` and `art/pets/` are gone; `cyber.js`, `site-parchment.js` (through the hub's `art/frames/index.json`) and the favicons load them from findastra/astras-pet-os. By Claude Opus 5.5 (`claude-opus-5-5`), 2026-10-18.
