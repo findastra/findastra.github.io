@@ -93,18 +93,19 @@ h3 { display: inline-block; font: 700 12px var(--mono); text-transform: uppercas
 .term-actions { display: flex; gap: 12px; flex-wrap: wrap; padding: 12px 18px 18px; --ink: #f2f2f2; --bg: #000; --muted: #5c5c5c; }
 .who { text-align: center; }
 .portrait { margin: 0 auto 26px; width: min(300px, 70vw); aspect-ratio: 1; position: relative; transform: rotate(2.5deg); }
-.portrait img { width: 100%; height: 100%; object-fit: cover; border: 3px solid var(--ink); filter: grayscale(1) contrast(1.35) brightness(1.04); }
+.portrait img { width: 100%; height: 100%; object-fit: cover; border: 3px solid var(--ink); }
+/* the portrait's own colors twinkle on it (cyber.js samples them) */
+.portrait .glitter { inset: 3px; z-index: 1; }
 .portrait::before { content: ""; position: absolute; inset: 0; z-index: -1; transform: translate(-16px, 16px); background: repeating-linear-gradient(-45deg, #8c8c8c 0 3px, transparent 3px 8px); }
-.portrait::after { content: ""; position: absolute; inset: 3px; pointer-events: none; mix-blend-mode: multiply; background: radial-gradient(circle, transparent 1px, rgba(0, 0, 0, .4) 1.7px) 0 0 / 4px 4px; }
 .slot { display: inline-block; margin: 0 0 14px; padding: 14px 24px; border: 2px dashed var(--ink); font-weight: 400; }
 .slot-text { display: block; font: 400 clamp(2rem, 5vw, 3rem)/1.05 VT323, var(--mono); color: var(--ink); }
 .slot small { display: block; font: 11px var(--mono); letter-spacing: .15em; text-transform: uppercase; color: var(--muted); }
-.message { font: 700 clamp(1.3rem, 3vw, 1.8rem)/1.3 var(--mono); margin: 0 0 6px; }
-.message span { white-space: nowrap; }
-.message span:nth-child(1) { color: var(--ink); }
-.message span:nth-child(2) { color: var(--muted); }
-.message span:nth-child(3) { background: var(--ink); color: var(--bg); padding: 0 .25em; }
-.tagline { color: var(--muted); margin: 0; }
+/* a quote from Audra under the portrait */
+.quote { margin: 4px auto 0; max-width: 30ch; }
+.quote p { margin: 0; font: 700 clamp(1.2rem, 2.6vw, 1.6rem)/1.3 var(--mono); color: var(--ink); }
+.quote p::before { content: "“"; } .quote p::after { content: "”"; }
+.quote footer { margin-top: 8px; font: 13px var(--mono); color: var(--muted); }
+.quote footer::before { content: "— "; }
 
 /* the unmask: the hero turns to its negative */
 body.unmasked .hero { --bg: #8d8d8d; --ink: #070707; --muted: #2c2c2c;
@@ -242,6 +243,8 @@ div.orb { display: grid; place-items: center; cursor: default; }
 .jar-body { fill: rgba(150, 150, 150, .07); stroke: #a8a8a8; stroke-width: 5; }
 .jar-shine path { fill: none; stroke: rgba(255, 255, 255, .28); stroke-width: 7; stroke-linecap: round; }
 /* the inside of the glass, where the stars pile up (matches the body path in index.html) */
+.jar .jar-glints { inset: auto; left: 11.4%; top: 25.6%; width: 77.2%; height: 70.6%; transition: opacity .2s; }
+.jar.shaking .jar-glints { opacity: 0; }
 .jar-stars { position: absolute; left: 11.4%; top: 25.6%; width: 77.2%; height: 70.6%; border-radius: 6% 6% 11% 11% / 4% 4% 9% 9%; overflow: hidden; }
 .mini { position: absolute; width: var(--s); height: var(--s); transform: translate(-50%, -50%) rotate(var(--r)); overflow: visible; }
 .mini use, /* a small ringed planet */
@@ -255,6 +258,15 @@ div.orb { display: grid; place-items: center; cursor: default; }
 .jar-hint { margin: 0; font: 700 clamp(1.4rem, 3vw, 2rem)/1.2 var(--mono); color: #4a4a4a; text-align: center; }
 .flyer { position: absolute; z-index: 30; pointer-events: none; width: var(--s); height: var(--s); }
 .jar-all[hidden], .ticker[hidden] { display: none; }
+
+/* contact: two cards, one per name */
+.contacts { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+.contact { background: #111; border: 3px solid #000; padding: 22px 24px; box-shadow: 10px 10px 0 #000; }
+.contact:nth-child(2) { box-shadow: -10px 10px 0 #000; }
+.contact b { display: block; font: 900 1.6rem/1.1 Inter, sans-serif; }
+.contact .role { margin: 6px 0 4px; font: 700 14px var(--mono); color: #cfcfcf; }
+.contact .muted { margin: 0 0 12px; }
+.contact .list { margin-top: 10px; }
 
 /* arcade: black cabinets on white scanlines */
 .arcade { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
@@ -299,7 +311,7 @@ div.orb { display: grid; place-items: center; cursor: default; }
 
 @media (max-width: 900px) {
   .hero { grid-template-columns: 1fr; padding-top: 36px; }
-  .about, .arcade { grid-template-columns: 1fr; }
+  .about, .arcade, .contacts { grid-template-columns: 1fr; }
   .jar-stage, .jar-stage + .jar-stage { grid-template-columns: 1fr; min-height: 0; }
   .jar-stage + .jar-stage .jar-side { order: 0; }
   .jar-out { min-height: 380px; }

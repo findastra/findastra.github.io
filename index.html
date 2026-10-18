@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>findastra</title>
-<meta name="description" content="Audra, a.k.a. Astra: worlds, projects, pets. One person, two names, both real.">
+<meta name="description" content="Audra, a.k.a. Astra: worlds, projects, pets, and how to reach me.">
 <link rel="icon" href="art/pets/portfolio-puffer.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&family=JetBrains+Mono:wght@400;700&family=VT323&display=swap">
-<link rel="stylesheet" href="cyber.css">
+<link rel="stylesheet" href="cyber.css?v=20261018c">
 </head>
 <body>
 <!-- the fat star every pet window is cut from (R 100, r 70; rounded by the stroke in cyber.css) -->
@@ -22,7 +22,7 @@
 <header class="top">
   <a class="brand" href="#top">find<span>/</span>astra</a>
   <nav aria-label="Sections">
-    <a href="#about">about</a><a href="#projects">petos</a><a href="#worlds">worlds</a><a href="#pets">pets</a><a href="#arcade">arcade</a>
+    <a href="#about">about</a><a href="#projects">petos</a><a href="#worlds">worlds</a><a href="#pets">pets</a><a href="#arcade">arcade</a><a href="#contact">contact</a>
   </nav>
 </header>
 
@@ -40,17 +40,20 @@
       </div>
     </div>
     <div class="who">
-      <figure class="portrait"><img src="art/avatar.jpg" alt="Astra's avatar portrait" width="320" height="320"></figure>
+      <!-- the portrait in color; each of its colors sparkles in that color (sampled from the picture in cyber.js) -->
+      <figure class="portrait"><img src="art/avatar.jpg" alt="Astra's avatar portrait" width="320" height="320"><div class="sparkles glitter" id="portrait-glitter" aria-hidden="true"></div></figure>
       <!-- Placeholder: Astra will hand-letter this in Procreate. Put the image in art/lettering/ and swap it in. -->
       <h1 class="slot"><span class="slot-text">I'm Audra, a.k.a. Astra</span><small>hand lettering goes here</small></h1>
-      <p class="message"><span>One person.</span> <span>Two names.</span> <span>Both real.</span></p>
-      <p class="tagline">noncorporeal dancer · reality-hacker · digital performer</p>
+      <blockquote class="quote">
+        <p>Learn to program it, or it will program you.</p>
+        <footer>Audra J. Volk</footer>
+      </blockquote>
     </div>
   </section>
 
   <!-- what changed lately, from public GitHub activity (live, else the snapshot in updates-data.js) -->
-  <section class="ticker" id="tick-updates" aria-label="Latest updates">
-    <span class="tick-label">updates</span>
+  <section class="ticker" id="tick-updates" aria-label="Live updates">
+    <span class="tick-label">live updates:</span>
     <div class="track"></div>
   </section>
 
@@ -160,6 +163,31 @@
     </div>
   </section>
 
+  <section class="block mid" id="contact">
+    <p class="kicker">// 04 · contact</p>
+    <h2>Contact</h2>
+    <div class="contacts">
+      <article class="contact">
+        <b>Audra J. Volk</b>
+        <p class="role">Chemical Process Engineering</p>
+        <p class="muted">For chemical engineering opportunities.</p>
+        <ul class="list">
+          <li><a href="mailto:audrajvolk@icloud.com">audrajvolk@icloud.com</a></li>
+          <li><a href="tel:+12064341199">(206) 434-1199</a></li>
+        </ul>
+      </article>
+      <article class="contact">
+        <b>Astra</b>
+        <p class="role">VR Programmer, Dance Performer, &amp; Content Creator</p>
+        <ul class="list">
+          <li><a href="mailto:astraonvr@gmail.com">astraonvr@gmail.com</a></li>
+          <li><a href="https://www.tiktok.com/@findastra" target="_blank" rel="noopener">@findastra</a> on VR TikTok</li>
+          <li><a href="https://www.tiktok.com/@astra_on_fire" target="_blank" rel="noopener">@astra_on_fire</a> on Pole Dance TikTok</li>
+        </ul>
+      </article>
+    </div>
+  </section>
+
   <footer class="foot dark">
     <p class="links" id="links"></p>
     <p class="muted">Made by Astra · built with Claude Code (Claude Opus 5.5), 2026-10-17 and 2026-10-18 · pictures found by <a href="https://github.com/findastra/github-goldfish">GitHub Goldfish</a>'s project-image-generator</p>
@@ -173,11 +201,11 @@
   <button class="lb-nav next" id="lb-next" aria-label="next picture">›</button>
 </dialog>
 
-<script src="profile-data.js"></script>
-<script src="site-data.js"></script>
-<script src="pets-data.js"></script>
-<script src="project-images.js"></script>
-<script src="updates-data.js"></script>
-<script src="cyber.js"></script>
+<script src="profile-data.js?v=20261018c"></script>
+<script src="site-data.js?v=20261018c"></script>
+<script src="pets-data.js?v=20261018c"></script>
+<script src="project-images.js?v=20261018c"></script>
+<script src="updates-data.js?v=20261018c"></script>
+<script src="cyber.js?v=20261018c"></script>
 </body>
 </html>

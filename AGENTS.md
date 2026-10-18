@@ -6,7 +6,11 @@ Astra's portfolio, served at <https://findastra.github.io>. **Portfolio Puffer**
 
 ## What is special here
 - **This is the one place that connects Audra and Astra** (Astra, 2026-10-07 and 2026-10-17). Everywhere else stays
-  Astra-only. Only the first name Audra appears; no surname, email, address or personal path.
+  Astra-only. Since 2026-10-18 Astra wants her full name in two places only: the hero quote ("Learn to program it, or
+  it will program you." — Audra J. Volk) and the Contact section, which lists, word for word as she gave them, Audra J.
+  Volk's chemical engineering email and phone and Astra's email and TikToks. Nothing else personal: no address or
+  personal path, and no contact details anywhere else on the page. The hero does not advertise the two names
+  (Astra removed "One person. Two names. Both real." and the tagline under it).
 - **Employer pages publish only what Astra has read word for word.** Puffer drafts from LinkedIn and GitHub and proposes
   changes to `profile-data.js`; Astra approves each one. No client names or project specifics unless she writes them.
 - The "I'm Audra, a.k.a. Astra" heading is a placeholder: Astra hand-letters it in Procreate. Put the image in
@@ -21,14 +25,17 @@ Astra's portfolio, served at <https://findastra.github.io>. **Portfolio Puffer**
 | `pets-data.js` | Every pet, generated from `pet-programs.json` on astras-pet-os `main`. Regenerate; never hand-edit. |
 | `project-images.js`, `art/projects/` | Pictures and site screenshots from GitHub Goldfish's `project-image-generator` (Puffer uses it by grant). Regenerate with `node scripts/project-image-generator-20261017.mjs findastra --out <this repo>\art\projects --js <this repo>\project-images.js --screenshots` in github-goldfish. |
 | `art/worlds/` | Astra's own world renders. No other people in pictures without their OK. |
-| `updates-data.js`, `scripts/build-updates-20261018.mjs` | The two tickers (updates; working on). Live from GitHub search (merged PRs and commits by findastra); the snapshot when GitHub does not answer. Regenerate the snapshot with `node scripts/build-updates-20261018.mjs`. |
+| `updates-data.js`, `scripts/build-updates-20261018.mjs` | The two tickers ("live updates:"; working on). Live from GitHub search (merged PRs and commits by findastra); the snapshot when GitHub does not answer. Regenerate the snapshot with `node scripts/build-updates-20261018.mjs`. |
 | Astra's PetOS (in `index.html`, `cyber.js`) | The projects section, renamed by Astra 2026-10-18. Other projects float as clouds above two full jars, each a natural pile (dropped one by one, not a grid): worlds (small ringed planets) and pets (a small star for every pet in `pets-data.js`). Shake a jar (click, drag side to side, the button, or shake the phone) and one comes out full size; "tip out" lays out everything in that jar. Every cloud, planet and star has sparkles in hues near its own color. |
 | `drafts/`, `parchment.html` | Earlier design drafts, kept for comparison. |
 
 ## Rules
 - Static, no build, no dependencies besides Google Fonts. Pages serves `main` as is (`.nojekyll`).
-- Only Astra's PetOS carries color: its clouds, ringed planets and stars (Astra, 2026-10-17 and 2026-10-18). Everything
-  else, new sections included, stays black and gray; avatar and pet pictures outside it are shown in grayscale. The star
+- Only Astra's PetOS and the hero portrait carry color (Astra, 2026-10-17 and 2026-10-18). The portrait's own colors
+  twinkle on it, and the stars and planets in the jars twinkle in theirs, with the same sparkle. Everything else, new
+  sections included, stays black and gray; pet pictures outside PetOS are shown in grayscale.
+- Every stylesheet and script link in `index.html` carries `?v=<date + letter>`. Change it whenever those files change,
+  so a browser holding a cached old `cyber.js` does not run it against the new page (Pages caches for 10 minutes). The star
   and cloud shapes are `#star` and `#cloud` in `index.html`; the window layouts in `cyber.css` are placed inside them by
   percentages, so change both together.
 - Fetched text goes into the page with `textContent`, never `innerHTML`.
