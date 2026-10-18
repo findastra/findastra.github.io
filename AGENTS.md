@@ -15,7 +15,7 @@ Astra's portfolio, served at <https://findastra.github.io>. **Portfolio Puffer**
 ## Files
 | File | What it is |
 |---|---|
-| `index.html`, `cyber.css`, `cyber.js` | The site (cyber design, picked by Astra 2026-10-17). |
+| `index.html`, `cyber.css`, `cyber.js` | The site (cyber design, picked by Astra 2026-10-17; restyled the same day at her request: black, white and grays everywhere, and the project windows are the only color, cut as fat stars). |
 | `profile-data.js` | The plain version: about, languages, skills, positions. Astra approves every change. |
 | `site-data.js` | Repo snapshot, used when the GitHub API does not answer. |
 | `pets-data.js` | Every pet, generated from `pet-programs.json` on astras-pet-os `main`. Regenerate; never hand-edit. |
@@ -25,10 +25,13 @@ Astra's portfolio, served at <https://findastra.github.io>. **Portfolio Puffer**
 
 ## Rules
 - Static, no build, no dependencies besides Google Fonts. Pages serves `main` as is (`.nojekyll`).
+- Only the project windows carry color (Astra, 2026-10-17). Everything else, new sections included, stays black, white
+  and gray; world, avatar and pet pictures outside the project windows are shown in grayscale. The star shape is
+  `#star` in `index.html`; the window layout in `cyber.css` is placed inside it by percentages, so change both together.
 - Fetched text goes into the page with `textContent`, never `innerHTML`.
 - Every project on GitHub appears (Astra, 2026-10-17); repos with no pictures yet show their pet or a placeholder and are
   reported under Flash Audit A55.
 - Work on a branch; merging to `main` publishes.
 
 Built with Claude Code (Claude Opus 5.5, `claude-opus-5-5`), 2026-10-17. Rescued from Astra's PC to GitHub by another
-Claude Opus 5.5 session the same day.
+Claude Opus 5.5 session the same day. Grayscale and star-window restyle by a third Claude Opus 5.5 session, 2026-10-17.
