@@ -12,18 +12,22 @@
   const petByRepo = Object.fromEntries(PETS.filter((p) => p.repo).map((p) => [p.repo, p]));
   const iconOf = (p) => (p && p.icon ? 'art/icons/' + p.icon : null);
 
-  // ---------- pictures for a repo: site screenshot first, then the best committed pictures ----------
+  // ---------- pictures for a repo: the repo's own committed pictures first, then a live-site screenshot ----------
+  // Program-page screenshots fill in only until the repo commits its own docs/images (A55); after that they repeat them.
   const picturesOf = (repo) => {
     const m = IMG[repo];
     if (!m) return [];
     const list = [];
+    const committed = m.images || [];
+    for (const i of committed) list.push({ src: i.url, cap: repo + ' · ' + i.path });
     if (m.screenshot) list.push({ src: 'art/projects/' + m.screenshot, cap: repo + ' · live site' });
-    for (const pg of m.pages || []) {
-      if (m.homepage && pg.source === m.homepage) continue; // same page as the site screenshot
-      const cap = /system-map/.test(pg.source) ? 'System Map (3D PFD)' : 'program page';
-      list.push({ src: 'art/projects/' + pg.file, cap: repo + ' · ' + cap });
+    if (!committed.some((i) => /(^|\/)docs\/images\//.test(i.path))) {
+      for (const pg of m.pages || []) {
+        if (m.homepage && pg.source === m.homepage) continue; // same page as the site screenshot
+        const cap = /system-map/.test(pg.source) ? 'System Map (3D PFD)' : 'program page';
+        list.push({ src: 'art/projects/' + pg.file, cap: repo + ' · ' + cap });
+      }
     }
-    for (const i of m.images || []) list.push({ src: i.url, cap: repo + ' · ' + i.path });
     return list;
   };
 

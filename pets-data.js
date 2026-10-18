@@ -1,4 +1,4 @@
-// Every pet (intelligent app), from astras-pet-os pet-programs.json on main, 2026-10-17. Regenerate; do not edit by hand.
+// Every pet (intelligent app), from astras-pet-os pet-programs.json on main, 2026-10-18. Regenerate; do not edit by hand.
 window.PETS = [
  {
   "number": 1,
@@ -63,12 +63,12 @@ window.PETS = [
  {
   "number": 7,
   "pet": "Astra Wisp",
-  "program": "AI Astra",
+  "program": "The Astral Plane",
   "stage": "registered",
-  "repo": "vrchat-ai-astra",
+  "repo": "the-astral-plane",
   "repo_exists": true,
   "text": "Watches the health of VRChat AI Astra, both while she runs and while she is being worked on offline, so problems show up before a session.",
-  "icon": "vrchat-ai-astra-20261012.png"
+  "icon": null
  },
  {
   "number": 8,
@@ -303,7 +303,7 @@ window.PETS = [
  {
   "number": 31,
   "pet": "Wifi Butterfly",
-  "program": null,
+  "program": "Signal Garden",
   "stage": "pipeline",
   "repo": "wifi-butterfly",
   "repo_exists": true,
@@ -313,7 +313,7 @@ window.PETS = [
  {
   "number": 32,
   "pet": "Deck Duck",
-  "program": null,
+  "program": "Deck Pond",
   "stage": "pipeline",
   "repo": "deck-duck",
   "repo_exists": true,
@@ -323,7 +323,7 @@ window.PETS = [
  {
   "number": 33,
   "pet": "Mesh Moth",
-  "program": null,
+  "program": "Mesh Lantern",
   "stage": "pipeline",
   "repo": "mesh-moth",
   "repo_exists": true,
@@ -383,7 +383,7 @@ window.PETS = [
  {
   "number": 39,
   "pet": "Procreate Panda",
-  "program": null,
+  "program": "Bamboo Studio",
   "stage": "seed",
   "repo": "pet-program-39",
   "repo_exists": false,
@@ -393,7 +393,7 @@ window.PETS = [
  {
   "number": 40,
   "pet": "Skill Scout",
-  "program": null,
+  "program": "Luna's Log",
   "stage": "seed",
   "repo": "pet-program-40",
   "repo_exists": false,
@@ -403,7 +403,7 @@ window.PETS = [
  {
   "number": 41,
   "pet": "OSC Sealion",
-  "program": null,
+  "program": "OSC Sonar",
   "stage": "seed",
   "repo": "pet-program-41",
   "repo_exists": false,
@@ -423,7 +423,7 @@ window.PETS = [
  {
   "number": 43,
   "pet": "Photo Dodo",
-  "program": null,
+  "program": "Photo Roost",
   "stage": "seed",
   "repo": "pet-program-43",
   "repo_exists": false,
@@ -433,7 +433,7 @@ window.PETS = [
  {
   "number": 44,
   "pet": "Video Vulture",
-  "program": null,
+  "program": "Video Vault",
   "stage": "seed",
   "repo": "pet-program-44",
   "repo_exists": false,
@@ -443,7 +443,7 @@ window.PETS = [
  {
   "number": 45,
   "pet": "Closet Cat",
-  "program": null,
+  "program": "The Cat's Closet",
   "stage": "seed",
   "repo": "the-cats-closet",
   "repo_exists": true,
@@ -463,7 +463,7 @@ window.PETS = [
  {
   "number": 47,
   "pet": "Queue Quokka",
-  "program": null,
+  "program": "Task Island",
   "stage": "roadmap",
   "repo": "pet-program-47",
   "repo_exists": false,
@@ -473,7 +473,7 @@ window.PETS = [
  {
   "number": 48,
   "pet": "Log Lynx",
-  "program": null,
+  "program": "Log Den",
   "stage": "roadmap",
   "repo": "pet-program-48",
   "repo_exists": false,
@@ -483,7 +483,7 @@ window.PETS = [
  {
   "number": 49,
   "pet": "Server Salamander",
-  "program": null,
+  "program": "Server Hearth",
   "stage": "roadmap",
   "repo": "pet-program-49",
   "repo_exists": false,
@@ -493,7 +493,7 @@ window.PETS = [
  {
   "number": 50,
   "pet": "Docker Dragon",
-  "program": null,
+  "program": "Container Hoard",
   "stage": "roadmap",
   "repo": "pet-program-50",
   "repo_exists": false,
@@ -503,7 +503,7 @@ window.PETS = [
  {
   "number": 51,
   "pet": "Test Tortoise",
-  "program": null,
+  "program": "Test Track",
   "stage": "roadmap",
   "repo": "pet-program-51",
   "repo_exists": false,
@@ -513,7 +513,7 @@ window.PETS = [
  {
   "number": 52,
   "pet": "Token Toucan",
-  "program": null,
+  "program": "Token Canopy",
   "stage": "roadmap",
   "repo": "pet-program-52",
   "repo_exists": false,
@@ -523,7 +523,7 @@ window.PETS = [
  {
   "number": 53,
   "pet": "Packet Piranha",
-  "program": null,
+  "program": "Packet River",
   "stage": "roadmap",
   "repo": "pet-program-53",
   "repo_exists": false,
@@ -533,7 +533,7 @@ window.PETS = [
  {
   "number": 54,
   "pet": "Calendar Crow",
-  "program": null,
+  "program": "Crow's Nest",
   "stage": "roadmap",
   "repo": "pet-program-54",
   "repo_exists": false,
@@ -543,7 +543,7 @@ window.PETS = [
  {
   "number": 55,
   "pet": "Browser Bat",
-  "program": null,
+  "program": "Browser Belfry",
   "stage": "roadmap",
   "repo": "pet-program-55",
   "repo_exists": false,
@@ -553,7 +553,7 @@ window.PETS = [
  {
   "number": 56,
   "pet": "Data Dragonfly",
-  "program": null,
+  "program": "Data Marsh",
   "stage": "roadmap",
   "repo": "pet-program-56",
   "repo_exists": false,
@@ -563,7 +563,7 @@ window.PETS = [
  {
   "number": 57,
   "pet": "Update Urchin",
-  "program": null,
+  "program": "Update Tidepool",
   "stage": "roadmap",
   "repo": "pet-program-57",
   "repo_exists": false,
@@ -573,7 +573,7 @@ window.PETS = [
  {
   "number": 58,
   "pet": "Linux Penguin",
-  "program": null,
+  "program": "Linux Iceberg",
   "stage": "roadmap",
   "repo": "pet-program-58",
   "repo_exists": false,
@@ -583,7 +583,7 @@ window.PETS = [
  {
   "number": 59,
   "pet": "Stock Fox",
-  "program": null,
+  "program": "Market Meadow",
   "stage": "roadmap",
   "repo": "pet-program-59",
   "repo_exists": false,
@@ -593,7 +593,7 @@ window.PETS = [
  {
   "number": 60,
   "pet": "Passport Pelican",
-  "program": null,
+  "program": "Passport Harbor",
   "stage": "roadmap",
   "repo": "pet-program-60",
   "repo_exists": false,
@@ -603,7 +603,7 @@ window.PETS = [
  {
   "number": 61,
   "pet": "Journal Jellyfish",
-  "program": null,
+  "program": "Journal Lagoon",
   "stage": "roadmap",
   "repo": "pet-program-61",
   "repo_exists": false,
@@ -613,7 +613,7 @@ window.PETS = [
  {
   "number": 62,
   "pet": "Shell Squid",
-  "program": null,
+  "program": "Shell Trench",
   "stage": "roadmap",
   "repo": "pet-program-62",
   "repo_exists": false,
@@ -623,7 +623,7 @@ window.PETS = [
  {
   "number": 63,
   "pet": "Kernel Koala",
-  "program": null,
+  "program": "Kernel Grove",
   "stage": "roadmap",
   "repo": "pet-program-63",
   "repo_exists": false,
@@ -633,7 +633,7 @@ window.PETS = [
  {
   "number": 64,
   "pet": "Proxy Axolotl",
-  "program": null,
+  "program": "Proxy Lake",
   "stage": "roadmap",
   "repo": "pet-program-64",
   "repo_exists": false,
@@ -643,7 +643,7 @@ window.PETS = [
  {
   "number": 65,
   "pet": "Cluster Crab",
-  "program": null,
+  "program": "Cluster Shore",
   "stage": "roadmap",
   "repo": "pet-program-65",
   "repo_exists": false,
@@ -653,7 +653,7 @@ window.PETS = [
  {
   "number": 66,
   "pet": "Storage Stoat",
-  "program": null,
+  "program": "Storage Warren",
   "stage": "roadmap",
   "repo": "pet-program-66",
   "repo_exists": false,
@@ -663,7 +663,7 @@ window.PETS = [
  {
   "number": 67,
   "pet": "White Hat Weasel",
-  "program": null,
+  "program": "White Hat Lab",
   "stage": "roadmap",
   "repo": "pet-program-67",
   "repo_exists": false,
@@ -673,7 +673,7 @@ window.PETS = [
  {
   "number": 68,
   "pet": "Port Spider",
-  "program": null,
+  "program": "Port Web",
   "stage": "roadmap",
   "repo": "pet-program-68",
   "repo_exists": false,
@@ -683,7 +683,7 @@ window.PETS = [
  {
   "number": 69,
   "pet": "Cipher Owl",
-  "program": null,
+  "program": "Cipher Hollow",
   "stage": "roadmap",
   "repo": "pet-program-69",
   "repo_exists": false,
@@ -693,7 +693,7 @@ window.PETS = [
  {
   "number": 70,
   "pet": "Forensic Ferret",
-  "program": null,
+  "program": "Evidence Locker",
   "stage": "roadmap",
   "repo": "pet-program-70",
   "repo_exists": false,
@@ -703,7 +703,7 @@ window.PETS = [
  {
   "number": 71,
   "pet": "Llama Librarian",
-  "program": null,
+  "program": "Model Library",
   "stage": "roadmap",
   "repo": "pet-program-71",
   "repo_exists": false,
@@ -713,7 +713,7 @@ window.PETS = [
  {
   "number": 72,
   "pet": "Inference Iguana",
-  "program": null,
+  "program": "Benchmark Rock",
   "stage": "roadmap",
   "repo": "pet-program-72",
   "repo_exists": false,
@@ -723,7 +723,7 @@ window.PETS = [
  {
   "number": 73,
   "pet": "Agent Ant",
-  "program": null,
+  "program": "Agent Colony",
   "stage": "roadmap",
   "repo": "pet-program-73",
   "repo_exists": false,
@@ -733,7 +733,7 @@ window.PETS = [
  {
   "number": 74,
   "pet": "Roaming Raven",
-  "program": null,
+  "program": "Roam Map",
   "stage": "roadmap",
   "repo": "pet-program-74",
   "repo_exists": false,
@@ -743,7 +743,7 @@ window.PETS = [
  {
   "number": 75,
   "pet": "Cache Coyote",
-  "program": null,
+  "program": "Cache Canyon",
   "stage": "roadmap",
   "repo": "pet-program-75",
   "repo_exists": false,
@@ -753,7 +753,7 @@ window.PETS = [
  {
   "number": 76,
   "pet": "Sync Mink",
-  "program": null,
+  "program": "Sync Stream",
   "stage": "roadmap",
   "repo": "pet-program-76",
   "repo_exists": false,
@@ -762,8 +762,8 @@ window.PETS = [
  },
  {
   "number": 77,
-  "pet": "pet-program-77-icon-77",
-  "program": null,
+  "pet": "Triage Tapir",
+  "program": "The Triage Desk",
   "stage": "seed",
   "repo": "pet-program-77",
   "repo_exists": false,
@@ -803,7 +803,7 @@ window.PETS = [
  {
   "number": 81,
   "pet": "Intel Owl",
-  "program": null,
+  "program": "Threat Observatory",
   "stage": "seed",
   "repo": "pet-program-81",
   "repo_exists": false,
@@ -818,6 +818,16 @@ window.PETS = [
   "repo": "the-threshold",
   "repo_exists": false,
   "text": "Door Dormouse manages Liminal Doors: floors, build choices, tools, Unity project metadata and preview website. Browser prototype; L3 and Unity execution are not connected.",
+  "icon": null
+ },
+ {
+  "number": 83,
+  "pet": "Role Fairy",
+  "program": "Fairy Ring",
+  "stage": "pipeline",
+  "repo": "role-fairy",
+  "repo_exists": true,
+  "text": "Runs Mommy’s Role Fairy, a cute single-choice Discord role picker: new members get a welcome-channel link to the picker and everyone can change their role any time.",
   "icon": null
  }
 ];
