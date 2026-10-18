@@ -294,6 +294,8 @@
     const box = $(id), jar = box.querySelector('.jar'), inside = box.querySelector('.jar-stars'), out = box.querySelector('.jar-out'), all = box.querySelector('.jar-all');
     const shakeBtn = box.querySelector('.shake'), pourBtn = box.querySelector('.pour');
     let items = [], outKey = null, shaking = false;
+    // glints: the same color-matched sparkle as the portrait, twinkling on the stars and planets in the jar
+    const glints = el('span', 'sparkles jar-glints'); glints.setAttribute('aria-hidden', 'true'); inside.after(glints);
     function fill(list) {
       items = list;
       const r = rand(list.length * 7919 + 17), n = list.length || 1;
@@ -329,6 +331,15 @@
         if (m.dataset.key === outKey) m.classList.add('gone');
         return m;
       }));
+      glints.replaceChildren(...list.flatMap((it, i) => {
+        const key = kind.key(it), h = hash(key);
+        return Array.from({ length: kind.glints(h) }, (_, g) => {
+          const k = hash(h + ':g' + g), a = (k % 628) / 100, d = rad * (.15 + ((k >>> 10) % 50) / 100);
+          const s = el('i'); s.dataset.key = key; s.hidden = key === outKey;
+          s.style.cssText = `--x:${((spots[i].x + Math.cos(a) * d) / W * 100).toFixed(1)}%;--y:${((spots[i].y + Math.sin(a) * d) / H * 100).toFixed(1)}%;--s:${Math.max(6, rad * (.45 + ((k >>> 16) % 40) / 100)).toFixed(1)}px;--d:${((k >>> 20) % 30) / 10}s;--c:${colorOf(key)};--dh:0;--l:40`;
+          return s;
+        });
+      }));
       box.querySelector('.jar-count').textContent = `${list.length} ${list.length === 1 ? kind.one : kind.many} in the jar`;
       pourBtn.dataset.n = list.length;
       if (!all.hidden) all.replaceChildren(...list.map(kind.full));
@@ -337,7 +348,7 @@
     new ResizeObserver(() => fill(items)).observe(inside);
     async function shake() {
       if (shaking || !items.length) return;
-      shaking = true;
+      shaking = true; jar.classList.add('shaking');
       const minis = [...inside.children];
       if (!reduced) {
         jar.animate([{ transform: 'rotate(0)' }, { transform: 'rotate(-10deg)' }, { transform: 'rotate(9deg)' }, { transform: 'rotate(-7deg)' }, { transform: 'rotate(5deg)' }, { transform: 'rotate(0)' }],
@@ -355,6 +366,8 @@
       const pick = pool[Math.floor(Math.random() * pool.length)];
       const from = minis.find((m) => m.dataset.key === kind.key(pick));
       minis.forEach((m) => m.classList.toggle('gone', m === from));
+      for (const g of glints.children) g.hidden = !!from && g.dataset.key === from.dataset.key;
+      jar.classList.remove('shaking');
       if (!reduced && from) await fly(from, pick);
       outKey = kind.key(pick);
       out.replaceChildren(kind.full(pick));
@@ -409,8 +422,8 @@
       if (force > 14 && Date.now() - lastShake > 1400 && phoneShakes) { lastShake = Date.now(); phoneShakes(); }
     });
   }
-  const worldJar = makeJar('worlds', { key: (w) => w.repo, mini: miniPlanet, full: planet, hasPics: (w) => worldPics(w).length > 0, maxMini: 130, one: 'world', many: 'worlds' });
-  const petJar = makeJar('pets', { key: (e) => 'pet-' + e.p.number, mini: miniStar, full: star, hasPics: (e) => e.pics.length > 0, maxMini: 48, one: 'pet', many: 'pets' });
+  const worldJar = makeJar('worlds', { key: (w) => w.repo, mini: miniPlanet, full: planet, hasPics: (w) => worldPics(w).length > 0, maxMini: 130, glints: () => 3, one: 'world', many: 'worlds' });
+  const petJar = makeJar('pets', { key: (e) => 'pet-' + e.p.number, mini: miniStar, full: star, hasPics: (e) => e.pics.length > 0, maxMini: 48, glints: (h) => (h % 10 < 7 ? 1 : 0), one: 'pet', many: 'pets' });
   const jars = [worldJar, petJar];
   const syncPourAll = () => { const open = jars.every((j) => j.isOpen()); $('pour-all').textContent = open ? 'put everything back' : 'tip out every jar'; $('pour-all').setAttribute('aria-pressed', String(open)); };
   $('pour-all').addEventListener('click', () => { const open = !jars.every((j) => j.isOpen()); jars.forEach((j) => j.setPour(open)); syncPourAll(); });
@@ -437,6 +450,30 @@
     .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
     .then((d) => useRepos(d.filter((r) => !r.fork && !r.private).map((r) => ({ name: r.name, description: r.description || '', language: r.language || '', pushed_at: r.pushed_at, homepage: r.homepage || (r.has_pages ? `https://findastra.github.io/${r.name}/` : '') })), true))
     .catch(() => {});
+
+  // ---------- the portrait, in color: each of its colors sparkles in that color ----------
+  // Astra (2026-10-18). Samples the picture on a small canvas and puts a twinkle on its most colorful spots.
+  (() => {
+    const img = document.querySelector('.portrait img'), box = $('portrait-glitter');
+    const go = () => {
+      const N = 48, cv = document.createElement('canvas'); cv.width = cv.height = N;
+      const cx = cv.getContext('2d', { willReadFrequently: true });
+      let px; try { cx.drawImage(img, 0, 0, N, N); px = cx.getImageData(0, 0, N, N).data; } catch { return; }
+      const r = rand(4242), spots = [];
+      for (let i = 0; i < N * N; i++) {
+        const R = px[i * 4], G = px[i * 4 + 1], B = px[i * 4 + 2], hi = Math.max(R, G, B), lo = Math.min(R, G, B);
+        spots.push({ i, sat: hi ? (hi - lo) / hi : 0, light: hi / 255, c: `rgb(${R}, ${G}, ${B})`, w: r() });
+      }
+      // colorful and bright spots first, with a little chance so the twinkles spread over the whole picture
+      spots.sort((a, b) => (b.sat * .7 + b.light * .3 + b.w * .5) - (a.sat * .7 + a.light * .3 + a.w * .5));
+      box.replaceChildren(...spots.slice(0, 70).map((sp, n) => {
+        const s = el('i'), k = hash('p' + sp.i);
+        s.style.cssText = `--x:${((sp.i % N + .5) / N * 100).toFixed(1)}%;--y:${((Math.floor(sp.i / N) + .5) / N * 100).toFixed(1)}%;--s:${8 + (k % 14)}px;--d:${((k >>> 8) % 40) / 10}s;--c:${sp.c};--dh:0;--l:22`;
+        return s;
+      }));
+    };
+    if (img.complete && img.naturalWidth) go(); else img.addEventListener('load', go, { once: true });
+  })();
 
   // ---------- arcade: hack ----------
   function hack() {
