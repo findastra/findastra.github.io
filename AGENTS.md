@@ -13,8 +13,11 @@ Astra's portfolio, served at <https://findastra.github.io>. **Portfolio Puffer**
   (Astra removed "One person. Two names. Both real." and the tagline under it).
 - **Employer pages publish only what Astra has read word for word.** Puffer drafts from LinkedIn and GitHub and proposes
   changes to `profile-data.js`; Astra approves each one. No client names or project specifics unless she writes them.
-- The "I'm Audra, a.k.a. Astra" heading is a placeholder: Astra hand-letters it in Procreate. Put the image in
-  `art/lettering/` and swap it into `.slot` in `index.html`.
+- **Hand lettering** (Astra, 2026-10-19): the hero slider shows Astra's Procreate lettering, one piece at a time, with
+  a clear background. The pictures live in `art/lettering/`; the list, order and words live in `lettering-data.js`.
+  Manage them with Portfolio Puffer's **Handwritten Message Manager** (`handwritten-message-manager-20261019.html` in
+  findastra/portfolio-puffer), which clears the background and exports both. Each picture is an ink mask painted in the
+  hero's `--ink`, so it stays black and gray like the rest of the page.
 
 ## Files
 | File | What it is |
@@ -27,6 +30,7 @@ Astra's portfolio, served at <https://findastra.github.io>. **Portfolio Puffer**
 | `art/worlds/` | Astra's own world renders. No other people in pictures without their OK. |
 | `updates-data.js`, `scripts/build-updates-20261018.mjs` | The two tickers ("live updates:"; working on). Live from GitHub search (merged PRs and commits by findastra); the snapshot when GitHub does not answer. Regenerate the snapshot with `node scripts/build-updates-20261018.mjs`. |
 | Astra's PetOS (in `index.html`, `cyber.js`) | The projects section, renamed by Astra 2026-10-18. Other projects float as clouds above two full jars, each a natural pile (dropped one by one, not a grid): worlds (small ringed planets) and pets (a small star for every pet in `pets-data.js`). Shake a jar (click, drag side to side, the button, or shake the phone) and one comes out full size; "tip out" lays out everything in that jar. Every cloud, planet and star has sparkles in hues near its own color. |
+| `lettering-data.js`, `lettering.js`, `art/lettering/` | Astra's hand lettering slider in the hero (swipe, arrows, dots, arrow keys). Export the data file and pictures from Puffer's Handwritten Message Manager; never hand-draw or AI-draw lettering. |
 | `drafts/`, `parchment.html` | Earlier design drafts, kept for comparison. |
 
 ## Rules
@@ -47,4 +51,4 @@ Astra's portfolio, served at <https://findastra.github.io>. **Portfolio Puffer**
 
 Built with Claude Code (Claude Opus 5.5, `claude-opus-5-5`), 2026-10-17; updates tickers, darker grays and the star jar 2026-10-18. Rescued from Astra's PC to GitHub by another
 Claude Opus 5.5 session the same day. Grayscale and star-window restyle by a third Claude Opus 5.5 session, 2026-10-17. Astra's PetOS (clouds, worlds and
-pets jars, ringed planets, sparkles) by a Claude Opus 5.5 session, 2026-10-18.
+pets jars, ringed planets, sparkles) by a Claude Opus 5.5 session, 2026-10-18. Hand lettering slider by a Claude Opus 5.5 session, 2026-10-19.

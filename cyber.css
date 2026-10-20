@@ -97,9 +97,24 @@ h3 { display: inline-block; font: 700 12px var(--mono); text-transform: uppercas
 /* the portrait's own colors twinkle on it (cyber.js samples them) */
 .portrait .glitter { inset: 3px; z-index: 1; }
 .portrait::before { content: ""; position: absolute; inset: 0; z-index: -1; transform: translate(-16px, 16px); background: repeating-linear-gradient(-45deg, #8c8c8c 0 3px, transparent 3px 8px); }
-.slot { display: inline-block; margin: 0 0 14px; padding: 14px 24px; border: 2px dashed var(--ink); font-weight: 400; }
-.slot-text { display: block; font: 400 clamp(2rem, 5vw, 3rem)/1.05 VT323, var(--mono); color: var(--ink); }
-.slot small { display: block; font: 11px var(--mono); letter-spacing: .15em; text-transform: uppercase; color: var(--muted); }
+/* Astra's hand lettering: transparent ink masks painted in --ink, so they follow the hero (white, then black when unmasked) */
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.lettering { margin: 0 auto 14px; max-width: 520px; outline: none; }
+.lettering:focus-visible { outline: 2px dashed var(--ink); outline-offset: 6px; }
+.letter-track { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none; }
+.letter-track::-webkit-scrollbar { display: none; }
+.letter { flex: 0 0 100%; scroll-snap-align: center; display: grid; place-items: center; height: clamp(170px, 44vw, 230px); padding: 4px 8px; box-sizing: border-box; }
+.letter-ink { width: 100%; height: 100%; background: var(--ink);
+  -webkit-mask: var(--src) center / contain no-repeat; mask: var(--src) center / contain no-repeat; transition: background .4s; }
+.letter-nav { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 6px; }
+.letter-btn { font: 700 20px/1 var(--mono); width: 34px; height: 30px; color: var(--ink); background: transparent; border: 2px solid var(--ink); cursor: pointer; box-shadow: 3px 3px 0 var(--muted); }
+.letter-btn:hover, .letter-btn:focus-visible { background: var(--ink); color: var(--bg); outline: none; }
+.letter-dots { display: flex; gap: 2px; }
+.letter-dot { width: 22px; height: 22px; padding: 0; border: 0; background: transparent; cursor: pointer; display: grid; place-items: center; }
+.letter-dot::before { content: ""; width: 9px; height: 9px; border: 2px solid var(--ink); transform: rotate(45deg); }
+.letter-dot[aria-current="true"]::before { background: var(--ink); }
+.letter-dot:focus-visible { outline: 2px solid var(--ink); }
+.letter-count { font: 11px var(--mono); letter-spacing: .12em; color: var(--muted); min-width: 4ch; }
 /* a quote from Audra under the portrait */
 .quote { margin: 4px auto 0; max-width: 30ch; }
 .quote p { margin: 0; font: 700 clamp(1.2rem, 2.6vw, 1.6rem)/1.3 var(--mono); color: var(--ink); }
@@ -327,7 +342,7 @@ div.orb { display: grid; place-items: center; cursor: default; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .glitch, .ticker .track, .jar-out .card, .jar-out .planet, .cloud, .sparkles i { animation: none; }
+  .letter-ink, .glitch, .ticker .track, .jar-out .card, .jar-out .planet, .cloud, .sparkles i { animation: none; }
   .ticker { overflow-x: auto; }
   .card, .card .s-shadow, .btn, .orbit, .orb img, .tile button { transition: none; }
   #rain { display: none; }
