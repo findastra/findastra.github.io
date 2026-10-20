@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&family=JetBrains+Mono:wght@400;700&family=VT323&display=swap">
-<link rel="stylesheet" href="cyber.css?v=20261018c">
+<link rel="stylesheet" href="cyber.css?v=20261019a">
 </head>
 <body>
 <!-- the fat star every pet window is cut from (R 100, r 70; rounded by the stroke in cyber.css) -->
@@ -42,8 +42,17 @@
     <div class="who">
       <!-- the portrait in color; each of its colors sparkles in that color (sampled from the picture in cyber.js) -->
       <figure class="portrait"><img src="art/avatar.jpg" alt="Astra's avatar portrait" width="320" height="320"><div class="sparkles glitter" id="portrait-glitter" aria-hidden="true"></div></figure>
-      <!-- Placeholder: Astra will hand-letter this in Procreate. Put the image in art/lettering/ and swap it in. -->
-      <h1 class="slot"><span class="slot-text">I'm Audra, a.k.a. Astra</span><small>hand lettering goes here</small></h1>
+      <!-- Astra's hand lettering: pictures in art/lettering/, list and order in lettering-data.js (Portfolio Puffer's Handwritten Message Manager) -->
+      <h1 class="sr-only">I'm Audra, a.k.a. Astra</h1>
+      <figure class="lettering" id="lettering" role="region" aria-roledescription="carousel" aria-label="Astra's hand lettering" tabindex="0" hidden>
+        <div class="letter-track" id="letter-track"></div>
+        <figcaption class="letter-nav">
+          <button class="letter-btn" type="button" id="letter-prev" aria-label="Previous lettering">&lsaquo;</button>
+          <span class="letter-dots" id="letter-dots"></span>
+          <button class="letter-btn" type="button" id="letter-next" aria-label="Next lettering">&rsaquo;</button>
+          <span class="letter-count" id="letter-count" aria-live="polite"></span>
+        </figcaption>
+      </figure>
       <blockquote class="quote">
         <p>Learn to program it, or it will program you.</p>
         <footer>Audra J. Volk</footer>
@@ -206,6 +215,8 @@
 <script src="pets-data.js?v=20261018c"></script>
 <script src="project-images.js?v=20261018c"></script>
 <script src="updates-data.js?v=20261018c"></script>
+<script src="lettering-data.js?v=20261019a"></script>
+<script src="lettering.js?v=20261019a"></script>
 <script src="cyber.js?v=20261018c"></script>
 </body>
 </html>
