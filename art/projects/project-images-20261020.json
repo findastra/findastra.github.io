@@ -1,7 +1,7 @@
 {
  "tool": "github-aquarium-v1.0-project-image-generator-v1.0",
  "owner": "findastra",
- "generated": "2026-10-18T08:23:59.896Z",
+ "generated": "2026-10-20T17:28:30.222Z",
  "repos": [
   {
    "name": "ai-doghouse",
@@ -40,15 +40,17 @@
   },
   {
    "name": "chat-rat",
+   "private": true,
    "description": "Chat Rat: a pet app by Astra. Files every Claude and OpenAI chat into one shared folder.",
-   "language": "",
-   "pushed_at": "2026-10-18T08:18:59Z",
+   "language": "JavaScript",
+   "pushed_at": "2026-10-20T08:15:57Z",
    "homepage": null,
    "creative": false,
    "images": [
     {
      "path": "docs/images/chat-rat-program-page-20261017.png",
-     "url": "https://raw.githubusercontent.com/findastra/chat-rat/main/docs/images/chat-rat-program-page-20261017.png",
+     "url": "art/projects/chat-rat-program-page-20261017.png",
+     "file": "chat-rat-program-page-20261017.png",
      "size": 36957,
      "score": 100,
      "why": [
@@ -72,15 +74,17 @@
   },
   {
    "name": "drum-dog",
+   "private": true,
    "description": "Planned music companion for Ableton Live project management, beat acquisition, and sampling.",
    "language": "HTML",
-   "pushed_at": "2026-10-18T08:18:58Z",
+   "pushed_at": "2026-10-20T08:15:09Z",
    "homepage": null,
    "creative": true,
    "images": [
     {
      "path": "docs/images/drum-dog-edit-track-idea-20261018.png",
-     "url": "https://raw.githubusercontent.com/findastra/drum-dog/main/docs/images/drum-dog-edit-track-idea-20261018.png",
+     "url": "art/projects/drum-dog-edit-track-idea-20261018.png",
+     "file": "drum-dog-edit-track-idea-20261018.png",
      "size": 83649,
      "score": 103,
      "why": [
@@ -91,7 +95,8 @@
     },
     {
      "path": "docs/images/drum-dog-sample-desk-20261018.png",
-     "url": "https://raw.githubusercontent.com/findastra/drum-dog/main/docs/images/drum-dog-sample-desk-20261018.png",
+     "url": "art/projects/drum-dog-sample-desk-20261018.png",
+     "file": "drum-dog-sample-desk-20261018.png",
      "size": 83019,
      "score": 103,
      "why": [
@@ -102,7 +107,8 @@
     },
     {
      "path": "docs/images/drum-dog-program-page-20261017.png",
-     "url": "https://raw.githubusercontent.com/findastra/drum-dog/main/docs/images/drum-dog-program-page-20261017.png",
+     "url": "art/projects/drum-dog-program-page-20261017.png",
+     "file": "drum-dog-program-page-20261017.png",
      "size": 69575,
      "score": 102,
      "why": [
@@ -271,15 +277,17 @@
   },
   {
    "name": "platform-platypus",
+   "private": true,
    "description": "Platform Platypus: keeps Astra's pages working on iPhone, Android, iPad and desktop",
    "language": "HTML",
-   "pushed_at": "2026-10-18T07:53:37Z",
-   "homepage": "https://findastra.github.io/platform-platypus/",
+   "pushed_at": "2026-10-20T08:15:50Z",
+   "homepage": null,
    "creative": false,
    "images": [
     {
      "path": "docs/images/platform-platypus-program-page-20261017.png",
-     "url": "https://raw.githubusercontent.com/findastra/platform-platypus/main/docs/images/platform-platypus-program-page-20261017.png",
+     "url": "art/projects/platform-platypus-program-page-20261017.png",
+     "file": "platform-platypus-program-page-20261017.png",
      "size": 162833,
      "score": 106,
      "why": [
@@ -303,15 +311,17 @@
   },
   {
    "name": "vscode-angel",
+   "private": true,
    "description": "Planned code review and documentation companion for refining projects and maintaining Markdown records.",
    "language": "HTML",
-   "pushed_at": "2026-10-18T07:16:10Z",
+   "pushed_at": "2026-10-20T08:15:05Z",
    "homepage": null,
    "creative": false,
    "images": [
     {
      "path": "docs/images/vscode-angel-program-page-20261017.png",
-     "url": "https://raw.githubusercontent.com/findastra/vscode-angel/main/docs/images/vscode-angel-program-page-20261017.png",
+     "url": "art/projects/vscode-angel-program-page-20261017.png",
+     "file": "vscode-angel-program-page-20261017.png",
      "size": 75970,
      "score": 103,
      "why": [
@@ -335,19 +345,20 @@
   },
   {
    "name": "mommys-mommies",
+   "private": true,
    "description": "Planned management companion for Mommy's VRChat dance academy and entertainers club.",
    "language": "HTML",
-   "pushed_at": "2026-10-18T07:16:08Z",
+   "pushed_at": "2026-10-20T07:00:49Z",
    "homepage": null,
    "creative": true,
    "images": [
     {
      "path": "docs/images/mommys-mommies-program-page-20261017.png",
-     "url": "https://raw.githubusercontent.com/findastra/mommys-mommies/main/docs/images/mommys-mommies-program-page-20261017.png",
+     "url": "art/projects/mommys-mommies-program-page-20261017.png",
+     "file": "mommys-mommies-program-page-20261017.png",
      "size": 75330,
-     "score": 103,
+     "score": 63,
      "why": [
-      "shown in the README",
       "docs/images",
       "size"
      ]
@@ -362,15 +373,17 @@
   },
   {
    "name": "api-fairy",
+   "private": true,
    "description": "Windows desktop companion for tracking notes about API keys without storing the keys themselves.",
-   "language": "HTML",
-   "pushed_at": "2026-10-18T07:16:04Z",
+   "language": "C#",
+   "pushed_at": "2026-10-20T08:14:41Z",
    "homepage": null,
    "creative": false,
    "images": [
     {
      "path": "docs/dashboard-keys.png",
-     "url": "https://raw.githubusercontent.com/findastra/api-fairy/main/docs/dashboard-keys.png",
+     "url": "art/projects/api-fairy-dashboard-keys-20261020.png",
+     "file": "api-fairy-dashboard-keys-20261020.png",
      "size": 271285,
      "score": 58,
      "why": [
@@ -380,7 +393,8 @@
     },
     {
      "path": "docs/dashboard-how.png",
-     "url": "https://raw.githubusercontent.com/findastra/api-fairy/main/docs/dashboard-how.png",
+     "url": "art/projects/api-fairy-dashboard-how-20261020.png",
+     "file": "api-fairy-dashboard-how-20261020.png",
      "size": 243275,
      "score": 18,
      "why": [
@@ -389,7 +403,8 @@
     },
     {
      "path": "docs/dashboard-settings.png",
-     "url": "https://raw.githubusercontent.com/findastra/api-fairy/main/docs/dashboard-settings.png",
+     "url": "art/projects/api-fairy-dashboard-settings-20261020.png",
+     "file": "api-fairy-dashboard-settings-20261020.png",
      "size": 228560,
      "score": 17,
      "why": [
@@ -581,40 +596,33 @@
   },
   {
    "name": "fuzzboi-friend",
+   "private": true,
    "description": "👉 https://findastra.github.io/fuzzboi-friend/ — Fuzzboi Friend, a pet app by Astra: type your 6-digit hex code and get your own Fuzzboi.",
    "language": "HTML",
-   "pushed_at": "2026-10-18T07:05:19Z",
+   "pushed_at": "2026-10-20T08:16:34Z",
    "homepage": "https://findastra.github.io/fuzzboi-friend/",
    "creative": false,
-   "images": [
-    {
-     "path": "art/fuzzboi-friend-ref-20261009.png",
-     "url": "https://raw.githubusercontent.com/findastra/fuzzboi-friend/main/art/fuzzboi-friend-ref-20261009.png",
-     "size": 135243,
-     "score": 15,
-     "why": [
-      "size"
-     ]
-    }
-   ],
+   "images": [],
    "screenshot": "fuzzboi-friend-site-20261018.png",
    "pages": [],
    "a55": {
-    "status": "pass",
-    "note": "1 committed picture(s)."
+    "status": "missing",
+    "note": "No real picture committed in the repo (pet art and icons do not count)."
    }
   },
   {
    "name": "raspberry-berry",
+   "private": true,
    "description": "Raspberry Berry: a pet app by Astra. Its pet is Raspberry Pi.",
    "language": "HTML",
-   "pushed_at": "2026-10-18T07:05:13Z",
+   "pushed_at": "2026-10-20T08:16:09Z",
    "homepage": null,
    "creative": false,
    "images": [
     {
      "path": "docs/images/raspberry-berry-program-page-20261017.png",
-     "url": "https://raw.githubusercontent.com/findastra/raspberry-berry/main/docs/images/raspberry-berry-program-page-20261017.png",
+     "url": "art/projects/raspberry-berry-program-page-20261017.png",
+     "file": "raspberry-berry-program-page-20261017.png",
      "size": 27619,
      "score": 98,
      "why": [
@@ -638,15 +646,17 @@
   },
   {
    "name": "deck-duck",
+   "private": true,
    "description": "Deck Duck: a pet app by Astra (placeholder)",
    "language": "PowerShell",
-   "pushed_at": "2026-10-18T07:05:10Z",
+   "pushed_at": "2026-10-20T08:16:38Z",
    "homepage": null,
    "creative": false,
    "images": [
     {
      "path": "docs/images/deck-duck-program-page-20261017.png",
-     "url": "https://raw.githubusercontent.com/findastra/deck-duck/main/docs/images/deck-duck-program-page-20261017.png",
+     "url": "art/projects/deck-duck-program-page-20261017.png",
+     "file": "deck-duck-program-page-20261017.png",
      "size": 229302,
      "score": 107,
      "why": [
@@ -670,15 +680,17 @@
   },
   {
    "name": "mine-mole",
+   "private": true,
    "description": "Mine Mole: a pet app by Astra. Researching whether mining crypto on a home PC is worth the power, with a break-even calculator.",
    "language": "HTML",
-   "pushed_at": "2026-10-18T07:05:06Z",
+   "pushed_at": "2026-10-20T08:16:16Z",
    "homepage": null,
    "creative": false,
    "images": [
     {
      "path": "docs/images/mine-mole-program-page-20261017.png",
-     "url": "https://raw.githubusercontent.com/findastra/mine-mole/main/docs/images/mine-mole-program-page-20261017.png",
+     "url": "art/projects/mine-mole-program-page-20261017.png",
+     "file": "mine-mole-program-page-20261017.png",
      "size": 43123,
      "score": 100,
      "why": [
@@ -717,15 +729,17 @@
   },
   {
    "name": "backup-beaver",
+   "private": true,
    "description": "Backup Beaver: a planned pet app for Astra's Pet Apps (placeholder).",
    "language": "HTML",
-   "pushed_at": "2026-10-18T07:04:58Z",
+   "pushed_at": "2026-10-20T08:16:45Z",
    "homepage": null,
    "creative": false,
    "images": [
     {
      "path": "docs/images/backup-beaver-program-page-20261017.png",
-     "url": "https://raw.githubusercontent.com/findastra/backup-beaver/main/docs/images/backup-beaver-program-page-20261017.png",
+     "url": "art/projects/backup-beaver-program-page-20261017.png",
+     "file": "backup-beaver-program-page-20261017.png",
      "size": 243001,
      "score": 108,
      "why": [
@@ -749,15 +763,17 @@
   },
   {
    "name": "mail-snail",
+   "private": true,
    "description": "Mail Snail — a pet app by Astra (placeholder).",
    "language": "HTML",
-   "pushed_at": "2026-10-18T07:04:55Z",
+   "pushed_at": "2026-10-20T08:16:27Z",
    "homepage": null,
    "creative": false,
    "images": [
     {
      "path": "docs/images/mail-snail-program-page-20261017.png",
-     "url": "https://raw.githubusercontent.com/findastra/mail-snail/main/docs/images/mail-snail-program-page-20261017.png",
+     "url": "art/projects/mail-snail-program-page-20261017.png",
+     "file": "mail-snail-program-page-20261017.png",
      "size": 239696,
      "score": 108,
      "why": [
@@ -781,15 +797,17 @@
   },
   {
    "name": "patch-cat",
+   "private": true,
    "description": "Patch Cat: a placeholder pet app by Astra.",
    "language": "HTML",
-   "pushed_at": "2026-10-18T07:04:51Z",
+   "pushed_at": "2026-10-20T08:16:12Z",
    "homepage": null,
    "creative": false,
    "images": [
     {
      "path": "docs/images/patch-cat-program-page-20261017.png",
-     "url": "https://raw.githubusercontent.com/findastra/patch-cat/main/docs/images/patch-cat-program-page-20261017.png",
+     "url": "art/projects/patch-cat-program-page-20261017.png",
+     "file": "patch-cat-program-page-20261017.png",
      "size": 241253,
      "score": 108,
      "why": [
@@ -813,15 +831,17 @@
   },
   {
    "name": "rift-rabbit",
+   "private": true,
    "description": "Rift Rabbit: a white pet app by Astra that preps and tracks VR software and performance (placeholder).",
    "language": "HTML",
-   "pushed_at": "2026-10-18T07:04:48Z",
+   "pushed_at": "2026-10-20T08:16:05Z",
    "homepage": null,
    "creative": false,
    "images": [
     {
      "path": "docs/images/rift-rabbit-program-page-20261017.png",
-     "url": "https://raw.githubusercontent.com/findastra/rift-rabbit/main/docs/images/rift-rabbit-program-page-20261017.png",
+     "url": "art/projects/rift-rabbit-program-page-20261017.png",
+     "file": "rift-rabbit-program-page-20261017.png",
      "size": 245557,
      "score": 108,
      "why": [
@@ -845,15 +865,17 @@
   },
   {
    "name": "rgbee",
+   "private": true,
    "description": "A pet app by Astra: plans and previews lighting scenes for every RGB light in the room (room lights, mouse pad, mouse, PC, keyboard).",
    "language": "HTML",
-   "pushed_at": "2026-10-18T07:04:44Z",
+   "pushed_at": "2026-10-20T08:15:43Z",
    "homepage": null,
    "creative": false,
    "images": [
     {
      "path": "docs/images/rgbee-program-page-20261017.png",
-     "url": "https://raw.githubusercontent.com/findastra/rgbee/main/docs/images/rgbee-program-page-20261017.png",
+     "url": "art/projects/rgbee-program-page-20261017.png",
+     "file": "rgbee-program-page-20261017.png",
      "size": 142718,
      "score": 105,
      "why": [
@@ -872,30 +894,22 @@
   },
   {
    "name": "meme-fiend",
+   "private": true,
    "description": "Meme Fiend: a meme saver and maker. A pet app by Astra.",
    "language": "HTML",
-   "pushed_at": "2026-10-18T07:04:40Z",
+   "pushed_at": "2026-10-20T08:16:23Z",
    "homepage": null,
    "creative": true,
    "images": [
     {
      "path": "docs/images/meme-fiend-program-page-20261017.png",
-     "url": "https://raw.githubusercontent.com/findastra/meme-fiend/main/docs/images/meme-fiend-program-page-20261017.png",
+     "url": "art/projects/meme-fiend-program-page-20261017.png",
+     "file": "meme-fiend-program-page-20261017.png",
      "size": 254456,
      "score": 108,
      "why": [
       "shown in the README",
       "docs/images",
-      "size"
-     ]
-    },
-    {
-     "path": "art/meme-fiend-20261009.png",
-     "url": "https://raw.githubusercontent.com/findastra/meme-fiend/main/art/meme-fiend-20261009.png",
-     "size": 39051,
-     "score": 50,
-     "why": [
-      "shown in the README",
       "size"
      ]
     }
@@ -909,20 +923,22 @@
    ],
    "a55": {
     "status": "too-few",
-    "note": "Creative project with 2 committed picture(s); A55 asks for at least three, including in-world or 3D views. 1 screenshot(s) ready to add."
+    "note": "Creative project with 1 committed picture(s); A55 asks for at least three, including in-world or 3D views."
    }
   },
   {
    "name": "mesh-moth",
+   "private": true,
    "description": "Mesh Moth: a pet app by Astra that stands for a Meshtastic node.",
    "language": "HTML",
-   "pushed_at": "2026-10-18T07:04:36Z",
+   "pushed_at": "2026-10-20T08:16:20Z",
    "homepage": null,
    "creative": false,
    "images": [
     {
      "path": "docs/images/mesh-moth-program-page-20261017.png",
-     "url": "https://raw.githubusercontent.com/findastra/mesh-moth/main/docs/images/mesh-moth-program-page-20261017.png",
+     "url": "art/projects/mesh-moth-program-page-20261017.png",
+     "file": "mesh-moth-program-page-20261017.png",
      "size": 240801,
      "score": 108,
      "why": [
@@ -946,15 +962,17 @@
   },
   {
    "name": "wifi-butterfly",
+   "private": true,
    "description": "Wifi Butterfly: a pet app by Astra (placeholder).",
    "language": "HTML",
-   "pushed_at": "2026-10-18T07:04:33Z",
+   "pushed_at": "2026-10-20T08:16:01Z",
    "homepage": null,
    "creative": false,
    "images": [
     {
      "path": "docs/images/wifi-butterfly-program-page-20261017.png",
-     "url": "https://raw.githubusercontent.com/findastra/wifi-butterfly/main/docs/images/wifi-butterfly-program-page-20261017.png",
+     "url": "art/projects/wifi-butterfly-program-page-20261017.png",
+     "file": "wifi-butterfly-program-page-20261017.png",
      "size": 26881,
      "score": 98,
      "why": [
@@ -978,15 +996,17 @@
   },
   {
    "name": "github-goldfish",
+   "private": true,
    "description": "GitHub account audit companion for document control, organization, and systemic consistency.",
    "language": "HTML",
-   "pushed_at": "2026-10-18T07:04:25Z",
+   "pushed_at": "2026-10-20T08:15:38Z",
    "homepage": null,
    "creative": false,
    "images": [
     {
      "path": "docs/images/github-goldfish-program-page-20261017.png",
-     "url": "https://raw.githubusercontent.com/findastra/github-goldfish/main/docs/images/github-goldfish-program-page-20261017.png",
+     "url": "art/projects/github-goldfish-program-page-20261017.png",
+     "file": "github-goldfish-program-page-20261017.png",
      "size": 35955,
      "score": 99,
      "why": [
@@ -1010,62 +1030,72 @@
   },
   {
    "name": "unity-unicorn",
+   "private": true,
    "description": "Planned pet companion for Unity and VRChat world projects; scope to be decided.",
    "language": "Python",
-   "pushed_at": "2026-10-18T07:04:22Z",
+   "pushed_at": "2026-10-20T08:14:26Z",
    "homepage": null,
    "creative": true,
    "images": [
     {
-     "path": "art/avatars/fae-20261009.jpg",
-     "url": "https://raw.githubusercontent.com/findastra/unity-unicorn/main/art/avatars/fae-20261009.jpg",
-     "size": 26387,
-     "score": 8,
+     "path": "docs/screenshots-20261019/hub-unity-unicorn-l1-avatar-and-world-tools.png",
+     "url": "art/projects/unity-unicorn-hub-unity-unicorn-l1-avatar-and-world-tools-20261020.png",
+     "file": "unity-unicorn-hub-unity-unicorn-l1-avatar-and-world-tools-20261020.png",
+     "size": 258588,
+     "score": 38,
+     "why": [
+      "name says it shows something",
+      "size"
+     ]
+    },
+    {
+     "path": "docs/screenshots-20261019/page-world-sparkles.png",
+     "url": "art/projects/unity-unicorn-page-world-sparkles-20261020.png",
+     "file": "unity-unicorn-page-world-sparkles-20261020.png",
+     "size": 257723,
+     "score": 38,
+     "why": [
+      "name says it shows something",
+      "size"
+     ]
+    },
+    {
+     "path": "docs/screenshots-20261019/page-world-tools.png",
+     "url": "art/projects/unity-unicorn-page-world-tools-20261020.png",
+     "file": "unity-unicorn-page-world-tools-20261020.png",
+     "size": 42143,
+     "score": 30,
+     "why": [
+      "name says it shows something",
+      "size"
+     ]
+    },
+    {
+     "path": "docs/screenshots-20261019/page-vine-options.png",
+     "url": "art/projects/unity-unicorn-page-vine-options-20261020.png",
+     "file": "unity-unicorn-page-vine-options-20261020.png",
+     "size": 276337,
+     "score": 18,
      "why": [
       "size"
      ]
     },
     {
-     "path": "art/avatars/poppy-20261009.jpg",
-     "url": "https://raw.githubusercontent.com/findastra/unity-unicorn/main/art/avatars/poppy-20261009.jpg",
-     "size": 21685,
-     "score": 7,
+     "path": "docs/screenshots-20261019/unity-vines-test-wide.png",
+     "url": "art/projects/unity-unicorn-unity-vines-test-wide-20261020.png",
+     "file": "unity-unicorn-unity-vines-test-wide-20261020.png",
+     "size": 274018,
+     "score": 18,
      "why": [
       "size"
      ]
     },
     {
-     "path": "art/avatars/nya-vrcft-20261009.jpg",
-     "url": "https://raw.githubusercontent.com/findastra/unity-unicorn/main/art/avatars/nya-vrcft-20261009.jpg",
-     "size": 19634,
-     "score": 7,
-     "why": [
-      "size"
-     ]
-    },
-    {
-     "path": "art/avatars/meep-20261009.jpg",
-     "url": "https://raw.githubusercontent.com/findastra/unity-unicorn/main/art/avatars/meep-20261009.jpg",
-     "size": 19054,
-     "score": 7,
-     "why": [
-      "size"
-     ]
-    },
-    {
-     "path": "art/avatars/zhora-20261009.jpg",
-     "url": "https://raw.githubusercontent.com/findastra/unity-unicorn/main/art/avatars/zhora-20261009.jpg",
-     "size": 17357,
-     "score": 6,
-     "why": [
-      "size"
-     ]
-    },
-    {
-     "path": "art/avatars/obsi-vrcft-20261009.jpg",
-     "url": "https://raw.githubusercontent.com/findastra/unity-unicorn/main/art/avatars/obsi-vrcft-20261009.jpg",
-     "size": 16903,
-     "score": 6,
+     "path": "docs/screenshots-20261019/page-liminal-doors-tools.png",
+     "url": "art/projects/unity-unicorn-page-liminal-doors-tools-20261020.png",
+     "file": "unity-unicorn-page-liminal-doors-tools-20261020.png",
+     "size": 181787,
+     "score": 16,
      "why": [
       "size"
      ]
@@ -1085,15 +1115,17 @@
   },
   {
    "name": "data-dealer",
+   "private": true,
    "description": "",
    "language": "HTML",
-   "pushed_at": "2026-10-18T07:04:18Z",
+   "pushed_at": "2026-10-20T08:15:35Z",
    "homepage": null,
    "creative": false,
    "images": [
     {
      "path": "diagrams/pipeline-v2.png",
-     "url": "https://raw.githubusercontent.com/findastra/data-dealer/main/diagrams/pipeline-v2.png",
+     "url": "art/projects/data-dealer-pipeline-v2-20261020.png",
+     "file": "data-dealer-pipeline-v2-20261020.png",
      "size": 638552,
      "score": 60,
      "why": [
@@ -1103,7 +1135,8 @@
     },
     {
      "path": "docs/process-flow.png",
-     "url": "https://raw.githubusercontent.com/findastra/data-dealer/main/docs/process-flow.png",
+     "url": "art/projects/data-dealer-process-flow-20261020.png",
+     "file": "data-dealer-process-flow-20261020.png",
      "size": 474785,
      "score": 20,
      "why": [
@@ -1125,15 +1158,17 @@
   },
   {
    "name": "learn-python",
+   "private": true,
    "description": "Learning Python, in the open.",
    "language": "Markdown",
-   "pushed_at": "2026-10-18T07:04:15Z",
+   "pushed_at": "2026-10-20T08:15:31Z",
    "homepage": null,
    "creative": false,
    "images": [
     {
      "path": "docs/images/learn-python-program-page-20261017.png",
-     "url": "https://raw.githubusercontent.com/findastra/learn-python/main/docs/images/learn-python-program-page-20261017.png",
+     "url": "art/projects/learn-python-program-page-20261017.png",
+     "file": "learn-python-program-page-20261017.png",
      "size": 32799,
      "score": 99,
      "why": [
@@ -1157,15 +1192,17 @@
   },
   {
    "name": "paper-girl",
+   "private": true,
    "description": "A free science discovery desk: real research, publisher explanations, fresh articles, and an anonymous shared reading history.",
    "language": "TypeScript",
-   "pushed_at": "2026-10-18T07:04:07Z",
+   "pushed_at": "2026-10-20T08:15:16Z",
    "homepage": "https://findastra.github.io/paper-girl/",
    "creative": false,
    "images": [
     {
      "path": "public/art/ecology-friends.png",
-     "url": "https://raw.githubusercontent.com/findastra/paper-girl/main/public/art/ecology-friends.png",
+     "url": "art/projects/paper-girl-ecology-friends-20261020.png",
+     "file": "paper-girl-ecology-friends-20261020.png",
      "size": 2720106,
      "score": 20,
      "why": [
@@ -1174,7 +1211,8 @@
     },
     {
      "path": "public/art/curious-brain.png",
-     "url": "https://raw.githubusercontent.com/findastra/paper-girl/main/public/art/curious-brain.png",
+     "url": "art/projects/paper-girl-curious-brain-20261020.png",
+     "file": "paper-girl-curious-brain-20261020.png",
      "size": 2576132,
      "score": 20,
      "why": [
@@ -1183,7 +1221,8 @@
     },
     {
      "path": "public/art/cosmic-curiosity.png",
-     "url": "https://raw.githubusercontent.com/findastra/paper-girl/main/public/art/cosmic-curiosity.png",
+     "url": "art/projects/paper-girl-cosmic-curiosity-20261020.png",
+     "file": "paper-girl-cosmic-curiosity-20261020.png",
      "size": 2086751,
      "score": 20,
      "why": [
@@ -1205,15 +1244,17 @@
   },
   {
    "name": "file-master",
+   "private": true,
    "description": "Keeps a Windows PC organized: read-only file/project audits, approval-based cleanup plans with undo, and a Claude Code agent.",
    "language": "PowerShell",
-   "pushed_at": "2026-10-18T07:04:02Z",
+   "pushed_at": "2026-10-20T08:15:13Z",
    "homepage": null,
    "creative": false,
    "images": [
     {
      "path": "docs/images/file-master-program-page-20261017.png",
-     "url": "https://raw.githubusercontent.com/findastra/file-master/main/docs/images/file-master-program-page-20261017.png",
+     "url": "art/projects/file-master-program-page-20261017.png",
+     "file": "file-master-program-page-20261017.png",
      "size": 43045,
      "score": 100,
      "why": [
@@ -1237,15 +1278,17 @@
   },
   {
    "name": "health-hummy",
+   "private": true,
    "description": "Planned personal health tracker with local-only data kept out of Git.",
    "language": "HTML",
-   "pushed_at": "2026-10-18T07:03:55Z",
+   "pushed_at": "2026-10-20T08:15:23Z",
    "homepage": null,
    "creative": false,
    "images": [
     {
      "path": "docs/images/health-hummy-program-page-20261017.png",
-     "url": "https://raw.githubusercontent.com/findastra/health-hummy/main/docs/images/health-hummy-program-page-20261017.png",
+     "url": "art/projects/health-hummy-program-page-20261017.png",
+     "file": "health-hummy-program-page-20261017.png",
      "size": 65014,
      "score": 102,
      "why": [
@@ -1269,15 +1312,17 @@
   },
   {
    "name": "finance-finch",
+   "private": true,
    "description": "Planned personal finance tracker with local-only data kept out of Git.",
    "language": "HTML",
-   "pushed_at": "2026-10-18T07:03:52Z",
+   "pushed_at": "2026-10-20T08:15:19Z",
    "homepage": null,
    "creative": false,
    "images": [
     {
      "path": "docs/images/finance-finch-program-page-20261017.png",
-     "url": "https://raw.githubusercontent.com/findastra/finance-finch/main/docs/images/finance-finch-program-page-20261017.png",
+     "url": "art/projects/finance-finch-program-page-20261017.png",
+     "file": "finance-finch-program-page-20261017.png",
      "size": 67598,
      "score": 102,
      "why": [
@@ -1301,15 +1346,17 @@
   },
   {
    "name": "portfolio-puffer",
+   "private": true,
    "description": "Planned portfolio companion that reviews GitHub and LinkedIn changes and proposes updates for approval.",
    "language": "HTML",
-   "pushed_at": "2026-10-18T07:03:49Z",
+   "pushed_at": "2026-10-20T08:22:23Z",
    "homepage": null,
    "creative": false,
    "images": [
     {
      "path": "docs/images/portfolio-puffer-program-page-20261017.png",
-     "url": "https://raw.githubusercontent.com/findastra/portfolio-puffer/main/docs/images/portfolio-puffer-program-page-20261017.png",
+     "url": "art/projects/portfolio-puffer-program-page-20261017.png",
+     "file": "portfolio-puffer-program-page-20261017.png",
      "size": 66365,
      "score": 102,
      "why": [
@@ -1333,15 +1380,17 @@
   },
   {
    "name": "project-parrot",
+   "private": true,
    "description": "Project Parrot: an idea and reminder desk for new projects, part of Astra’s Pet Apps.",
    "language": "HTML",
-   "pushed_at": "2026-10-18T07:03:41Z",
+   "pushed_at": "2026-10-20T08:14:52Z",
    "homepage": null,
    "creative": false,
    "images": [
     {
      "path": "docs/images/project-parrot-program-page-20261017.png",
-     "url": "https://raw.githubusercontent.com/findastra/project-parrot/main/docs/images/project-parrot-program-page-20261017.png",
+     "url": "art/projects/project-parrot-program-page-20261017.png",
+     "file": "project-parrot-program-page-20261017.png",
      "size": 72468,
      "score": 102,
      "why": [
@@ -1365,15 +1414,17 @@
   },
   {
    "name": "voicemeeter-bug",
+   "private": true,
    "description": "",
    "language": "C#",
-   "pushed_at": "2026-10-18T07:03:38Z",
+   "pushed_at": "2026-10-20T08:14:19Z",
    "homepage": null,
    "creative": false,
    "images": [
     {
      "path": "voicemeeter-bug-preview-20261008.png",
-     "url": "https://raw.githubusercontent.com/findastra/voicemeeter-bug/master/voicemeeter-bug-preview-20261008.png",
+     "url": "art/projects/voicemeeter-bug-preview-20261008.png",
+     "file": "voicemeeter-bug-preview-20261008.png",
      "size": 14527,
      "score": 65,
      "why": [
@@ -1397,15 +1448,17 @@
   },
   {
    "name": "ghost-protocol",
+   "private": true,
    "description": "An interactive personal cybersecurity checklist.",
    "language": "HTML",
-   "pushed_at": "2026-10-18T07:03:25Z",
-   "homepage": "https://findastra.github.io/ghost-protocol/",
+   "pushed_at": "2026-10-20T08:14:58Z",
+   "homepage": null,
    "creative": false,
    "images": [
     {
      "path": "docs/images/ghost-protocol-live-site-20261017.png",
-     "url": "https://raw.githubusercontent.com/findastra/ghost-protocol/main/docs/images/ghost-protocol-live-site-20261017.png",
+     "url": "art/projects/ghost-protocol-live-site-20261017.png",
+     "file": "ghost-protocol-live-site-20261017.png",
      "size": 217913,
      "score": 107,
      "why": [

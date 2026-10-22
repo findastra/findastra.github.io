@@ -246,7 +246,13 @@
   }
 
   // ---------- stars: every pet, with its repo's pictures and links when the repo is public ----------
-  const petEntry = (p) => { const name = byName[p.repo] ? p.repo : RENAMED[p.repo]; const r = byName[name]; return { p, r, pics: r ? picturesOf(r.name) : [] }; };
+  // A private pet has no repo to link, but its pictures are copies on this site (its project-images.js entry says
+  // private), so they still show (Astra, 2026-10-20, after making most repos private: "copy the pictures into the website").
+  const petEntry = (p) => {
+    const name = byName[p.repo] ? p.repo : RENAMED[p.repo]; const r = byName[name];
+    const own = r ? r.name : [p.repo, name].find((n) => n && IMG[n] && IMG[n].private);
+    return { p, r, pics: own ? picturesOf(own) : [] };
+  };
   function star({ p, r, pics }) {
     const c = el('article', 'card'); const h = paint(c, r ? r.name : p.pet);
     const repoUrl = r ? 'https://github.com/findastra/' + r.name : null, icon = p.icon ? 'art/icons/' + p.icon : null;
