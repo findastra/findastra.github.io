@@ -10,6 +10,10 @@
   const link = (href, cls, text) => { const a = el('a', cls, text); a.href = href; a.target = '_blank'; a.rel = 'noopener'; return a; };
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const petByRepo = Object.fromEntries(PETS.filter((p) => p.repo).map((p) => [p.repo, p]));
+  // Pet icons live in the hub only, at an address that never changes (findastra/astras-pet-os art/latest, Astra
+  // 2026-10-24): pets-data.js names the dated drawing, and the stable name drops its date, so a new icon shows by itself.
+  const ICONS = 'https://raw.githubusercontent.com/findastra/astras-pet-os/main/art/latest/icons/';
+  const iconOf = (p) => (p && p.icon ? ICONS + p.icon.replace(/-\d{8}(\.\w+)$/, '$1') : null);
 
   // ---------- pictures for a repo: the repo's own committed pictures first, then a live-site screenshot ----------
   // Program-page screenshots fill in only until the repo commits its own docs/images (A55); after that they repeat them.
@@ -255,7 +259,7 @@
   };
   function star({ p, r, pics }) {
     const c = el('article', 'card'); const h = paint(c, r ? r.name : p.pet);
-    const repoUrl = r ? 'https://github.com/findastra/' + r.name : null, icon = p.icon ? 'art/icons/' + p.icon : null;
+    const repoUrl = r ? 'https://github.com/findastra/' + r.name : null, icon = iconOf(p);
     let thumb;
     if (pics.length) {
       thumb = el('button', 'thumb'); thumb.setAttribute('aria-label', 'open pictures of ' + p.pet);
@@ -511,7 +515,7 @@
     const stat = () => ($('mem-stat').textContent = `moves ${moves} · pairs ${found}/6`);
     $('board').replaceChildren(...cards.map((p) => {
       const t = el('div', 'tile'), b = el('button'); b.setAttribute('aria-label', 'card');
-      const f2 = el('span', 'f f2'), im = el('img'); im.src = 'art/icons/' + p.icon; im.alt = p.pet; f2.append(im);
+      const f2 = el('span', 'f f2'), im = el('img'); im.src = iconOf(p); im.alt = p.pet; f2.append(im);
       b.append(el('span', 'f f1', '✦'), f2); t.append(b);
       b.onclick = () => {
         if (lock || t.classList.contains('open') || t.classList.contains('done')) return;
