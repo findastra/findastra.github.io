@@ -70,7 +70,8 @@
     a.href = 'https://github.com/findastra/' + encodeURIComponent(p.repo);
     a.title = p.job || '';
     const img = el('img');
-    img.src = 'art/pets/' + p.art + '.png';
+    // Pet pictures live in the hub only, at an address that never changes (findastra/astras-pet-os art/latest).
+    img.src = 'https://raw.githubusercontent.com/findastra/astras-pet-os/main/art/latest/frames/' + p.art + '/idle.png';
     img.alt = '';
     img.width = 72; img.height = 72;
     img.style.setProperty('--d', (i % 6) * -0.4 + 's');
