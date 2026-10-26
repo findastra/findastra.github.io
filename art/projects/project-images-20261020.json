@@ -177,7 +177,7 @@
    "pages": [
     {
      "file": "astras-pet-os-page-1-20261018.png",
-     "source": "https://findastra.github.io/astras-pet-os/apps/astras-pet-apps-20261008.html"
+     "source": "https://findastra.github.io/astras-pet-os/apps/astras-pet-os-20261008.html"
     },
     {
      "file": "astras-pet-os-page-2-20261018.png",
@@ -730,7 +730,7 @@
   {
    "name": "backup-beaver",
    "private": true,
-   "description": "Backup Beaver: a planned pet app for Astra's Pet Apps (placeholder).",
+   "description": "Backup Beaver: a planned pet app for Astra's PetOS (placeholder).",
    "language": "HTML",
    "pushed_at": "2026-10-20T08:16:45Z",
    "homepage": null,
@@ -1381,7 +1381,7 @@
   {
    "name": "project-parrot",
    "private": true,
-   "description": "Project Parrot: an idea and reminder desk for new projects, part of Astra’s Pet Apps.",
+   "description": "Project Parrot: an idea and reminder desk for new projects, part of Astra’s PetOS.",
    "language": "HTML",
    "pushed_at": "2026-10-20T08:14:52Z",
    "homepage": null,
