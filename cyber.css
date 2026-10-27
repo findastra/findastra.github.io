@@ -87,17 +87,17 @@ h3 { display: inline-block; font: 700 12px var(--mono); text-transform: uppercas
 /* live updates: a slim, straight news strip right under the header */
 .ticker.strip { margin: 0; padding: 7px 0; transform: none; box-shadow: none; border-block: 1px solid #262626; background: #030303; font-size: 13px; }
 .ticker.strip .tick-label { padding: 0 12px; font-size: 10px; background: #2a2a2a; color: #d6d6d6; box-shadow: 6px 0 10px #000; }
-/* the white rabbit hops along just under the strip, in the top of the hero; the lane clips him at its edges, so running off
-   the side never widens the page, and his hops never reach the strip's words */
-.rabbit-lane { position: relative; z-index: 3; height: 56px; margin-bottom: -56px; overflow: hidden; pointer-events: none; }
+/* the white rabbit hops along the top edge of the working on bar, tilted like it, in the hero's bottom padding; the lane
+   clips him at its edges, so running off the side never widens the page, and his hops never cover the bar's words */
+.rabbit-lane { position: relative; z-index: 3; height: 64px; margin: -64px -24px 0; overflow: hidden; pointer-events: none; transform: rotate(1.2deg); }
 .rabbit-lane .white-rabbit { pointer-events: auto; }
-.white-rabbit { position: absolute; z-index: 0; bottom: 8px; left: -60px; display: none; width: 38px; height: 32px; padding: 4px; border: 0; background: none; color: #fff;
-  cursor: pointer; filter: drop-shadow(0 0 5px currentColor); }
-/* he is the color the rain turns when he is caught; before the rainbow comes back, he is every color */
-.white-rabbit.rainbow { color: #ff3ea5; animation: rabbit-rainbow 2s linear infinite; }
-@keyframes rabbit-rainbow { to { filter: drop-shadow(0 0 5px currentColor) hue-rotate(360deg); } }
+.white-rabbit { position: absolute; z-index: 0; bottom: 20px; left: -60px; display: none; width: 38px; height: 32px; padding: 4px; border: 0; background: none; color: #fff;
+  cursor: pointer; --glow: #fff; filter: drop-shadow(1.5px 0 0 #111) drop-shadow(-1.5px 0 0 #111) drop-shadow(0 1.5px 0 #111) drop-shadow(0 -1.5px 0 #111) drop-shadow(0 0 6px var(--glow)); }
+/* white with a dark outline (Astra, 2026-10-27); his glow is the color the rain turns when he is caught, every color before the rainbow */
+.white-rabbit.rainbow { animation: rabbit-rainbow 1.6s linear infinite; }
+@keyframes rabbit-rainbow { 0% { --glow: #ff2e4d; } 17% { --glow: #ff7a1a; } 33% { --glow: #fff01f; } 50% { --glow: #39ff14; } 67% { --glow: #1f8fff; } 83% { --glow: #b14bff; } 100% { --glow: #ff2bd6; } }
 .white-rabbit.running { display: block; }
-.white-rabbit:hover, .white-rabbit:focus-visible { filter: drop-shadow(0 0 10px currentColor); outline: none; }
+.white-rabbit:hover, .white-rabbit:focus-visible { outline: none; scale: 1.15; }
 .white-rabbit svg { width: 30px; height: 24px; fill: currentColor; }
 .white-rabbit .eye { fill: #050505; }
 .rabbit-burst { inset: auto; width: 70px; height: 70px; translate: -50% -50%; z-index: 3; }
@@ -131,6 +131,11 @@ h3 { display: inline-block; font: 700 12px var(--mono); text-transform: uppercas
 .term-body .dim { color: #7c7c7c; }
 .term-body .ok { color: #fff; font-weight: 700; }
 .term-body .hot { display: table; background: #f2f2f2; color: #000; padding: 0 6px; }
+.term-input { display: flex; align-items: center; gap: 8px; margin: 0; padding: 4px 14px 8px; font: 12.5px var(--mono); color: #fff; }
+.term-input label { font-weight: 700; white-space: nowrap; }
+#term-in { flex: 1; min-width: 0; font: inherit; color: #e4e4e4; background: transparent; border: 0; border-bottom: 1px dashed #4a4a4a; padding: 2px 0; caret-color: #fff; }
+#term-in:focus { outline: none; border-bottom-color: #f2f2f2; }
+.term-body { max-height: 360px; overflow-y: auto; }
 .term-actions { display: flex; gap: 10px; flex-wrap: wrap; padding: 10px 14px 14px; --ink: #f2f2f2; --bg: #000; --muted: #5c5c5c; }
 .who { display: flex; flex-direction: column; justify-content: center; text-align: center; }
 .portrait { margin: 0 auto 26px; width: min(300px, 70vw); aspect-ratio: 1; position: relative; transform: rotate(2.5deg); }
@@ -147,8 +152,13 @@ h3 { display: inline-block; font: 700 12px var(--mono); text-transform: uppercas
 .letter-track { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none; }
 .letter-track::-webkit-scrollbar { display: none; }
 /* small, about a third of what it was (Astra, 2026-10-27: "make my handwriting like a third of the size"; it was 84–118px tall) */
-.letter { flex: 0 0 100%; scroll-snap-align: center; display: grid; place-items: center; height: clamp(40px, 10vw, 50px); padding: 4px 8px; box-sizing: border-box; }
-.letter-ink { width: 100%; height: 100%; background: var(--ink);
+.letter { flex: 0 0 100%; scroll-snap-align: center; display: grid; place-items: center; min-height: clamp(40px, 10vw, 50px); padding: 4px 8px; box-sizing: border-box; }
+/* each picture cut into its words, laid out large in rows; a line of writing is --line tall (Astra, 2026-10-27) */
+.letter-words { --line: clamp(30px, 6vw, 42px); display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 2px 12px; max-width: 100%; }
+.letter-word { width: calc(var(--w) * var(--line)); height: calc(var(--h) * var(--line)); background: var(--ink); transition: background .4s;
+  -webkit-mask: var(--src) center / 100% 100% no-repeat; mask: var(--src) center / 100% 100% no-repeat; }
+/* a picture shown whole, when its words could not be cut apart */
+.letter-ink { width: 100%; height: clamp(84px, 20vw, 118px); background: var(--ink);
   -webkit-mask: var(--src) center / contain no-repeat; mask: var(--src) center / contain no-repeat; transition: background .4s; }
 .letter-nav { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 6px; }
 .letter-btn { font: 700 20px/1 var(--mono); width: 34px; height: 30px; color: var(--ink); background: transparent; border: 2px solid var(--ink); cursor: pointer; box-shadow: 3px 3px 0 var(--muted); }

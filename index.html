@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&family=JetBrains+Mono:wght@400;700&family=VT323&family=Permanent+Marker&display=swap">
-<link rel="stylesheet" href="cyber.css?v=20261027w">
+<link rel="stylesheet" href="cyber.css?v=20261027y">
 </head>
 <body>
 <!-- the fat star every pet window is cut from (R 100, r 70; rounded by the stroke in cyber.css) -->
@@ -41,18 +41,19 @@
 
 <main id="top">
   <!-- what changed lately, from public GitHub activity (live, else the snapshot in updates-data.js): a slim news strip at the
-       very top (Astra, 2026-10-27: "move it at the top"), with the white rabbit hopping along just under it -->
+       very top (Astra, 2026-10-27: "move it at the top") -->
   <section class="ticker strip" id="tick-updates" aria-label="Live updates">
     <span class="tick-label">live updates</span>
     <div class="track"></div>
   </section>
-  <div class="rabbit-lane" id="rabbit-lane"></div>
   <!-- hero: a terminal that tells the plain version, then unmasks -->
   <section class="hero dark">
     <canvas id="rain" aria-hidden="true"></canvas>
     <div class="term" aria-live="polite">
       <div class="term-bar"><i></i><i></i><i></i><span id="term-title">audra@findastra: ~</span></div>
       <div class="term-body" id="term"></div>
+      <!-- a line to type into (Astra, 2026-10-27: "there should be a spot where you can enter something in the terminal") -->
+      <form class="term-input" id="term-form" autocomplete="off"><label for="term-in" id="term-prompt">audra@findastra:~$</label><input id="term-in" spellcheck="false" autocapitalize="off" placeholder="type help" aria-label="Type a command"></form>
       <div class="term-actions">
         <button class="btn hot" id="unmask">sudo unmask</button>
         <a class="btn" href="#projects">ls projects</a>
@@ -79,6 +80,8 @@
   </section>
 
   <!-- the projects worked on most recently -->
+  <!-- the white rabbit hops along the top edge of the working on bar (Astra, 2026-10-27) -->
+  <div class="rabbit-lane" id="rabbit-lane"></div>
   <section class="ticker flip" id="tick-now" aria-label="Working on now">
     <span class="tick-label">working on</span>
     <div class="track"></div>
@@ -273,8 +276,8 @@
 <script src="project-images.js?v=20261020a"></script>
 <script src="updates-data.js?v=20261018c"></script>
 <script src="lettering-data.js?v=20261019a"></script>
-<script src="lettering.js?v=20261027a"></script>
-<script src="cyber.js?v=20261027t"></script>
+<script src="lettering.js?v=20261027e"></script>
+<script src="cyber.js?v=20261027x"></script>
 <script src="games-20261027.js?v=20261027d"></script>
 </body>
 </html>
