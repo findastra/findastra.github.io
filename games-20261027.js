@@ -1,6 +1,6 @@
-// The arcade's newer games (Astra, 2026-10-27): the Fuzzboi Forge and the Fuzzboi cyber home it fills, and the two games from
+// The arcade's newer games (Astra, 2026-10-27): the Fuzzboi Factory and the Fuzzboi cyber home it fills, and the two games from
 // Mommy's website (findastra/mommys-website): the sparkle catcher ("Catch the beat") and the Avatar Lab. The cabinets stay
-// black and gray; the art inside them keeps its own colors. Fuzzboi rules and drawing come from the Fuzzboi Forge itself
+// black and gray; the art inside them keeps its own colors. Fuzzboi rules and drawing come from the Fuzzboi Factory itself
 // (findastra/fuzzboi-factory site/fuzzboi.js, served at findastra.github.io/fuzzboi-factory/), one copy of the rules.
 (() => {
   const $ = (id) => document.getElementById(id);
@@ -13,16 +13,40 @@
   // a canvas drawn at the screen's pixel density; returns its size in CSS pixels
   const fit = (cv) => { const r = cv.getBoundingClientRect(), d = Math.min(devicePixelRatio || 1, 2); cv.width = Math.max(1, r.width * d); cv.height = Math.max(1, r.height * d); cv.getContext('2d').setTransform(d, 0, 0, d, 0, 0); return r; };
 
-  // ---------- Fuzzboi Forge: type a six-digit code, get that exact Fuzzboi; each one moves into the cyber home ----------
+  // ---------- Fuzzboi Factory: type a six-digit code, get that exact Fuzzboi; each one moves into the cyber home ----------
   const RULES = 'https://findastra.github.io/fuzzboi-factory/site/fuzzboi.js';
   const LAYERS = 'https://raw.githubusercontent.com/findastra/astras-pet-os/main/desktop-art/fuzzboi-friend/layers/';
   const HOME_MAX = 30, HOME_KEY = 'findastra-fuzzboi-home-v1';
   const layers = new Map();
   let F = null, layersIn = 0;
-  const forge = $('fz-cv'), codeIn = $('fz-code'), note = $('fz-note');
+  const factoryCv = $('fz-cv'), note = $('fz-note');
+  // six big boxes, one per digit, each with what it decides written under it, as on the Fuzzboi Factory's own page
+  // (Astra, 2026-10-27: "I liked it when I could enter them in and it was big and obvious")
+  const POS = ['Style', 'Color', 'Acc 1', 'Acc 2', 'Acc 3', 'Rare?'];
+  const boxes = POS.map((label, i) => {
+    const w = el('label', 'fz-digit'), inp = el('input'); inp.maxLength = 1; inp.autocomplete = 'off'; inp.spellcheck = false; inp.setAttribute('aria-label', `Position ${i + 1}: ${label}`);
+    w.append(inp, el('span', null, label)); $('fz-digits').append(w); return inp;
+  });
+  const codeIn = { get value() { return boxes.map((b) => b.value).join('').toUpperCase(); }, set value(v) { [...String(v).padEnd(6, ' ').slice(0, 6)].forEach((ch, i) => (boxes[i].value = ch.trim())); } };
+  boxes.forEach((inp, i) => {
+    inp.addEventListener('input', async () => {
+      inp.value = inp.value.replace(/[^0-9a-f]/gi, '').slice(-1).toUpperCase();
+      if (inp.value && i < 5) { boxes[i + 1].focus(); boxes[i + 1].select(); }
+      if (codeIn.value.length === 6) { await ready; make(codeIn.value); }
+    });
+    inp.addEventListener('keydown', (e) => {
+      if (e.key === 'Backspace' && !inp.value && i > 0) boxes[i - 1].focus();
+      if (e.key === 'ArrowLeft' && i > 0) boxes[i - 1].focus();
+      if (e.key === 'ArrowRight' && i < 5) boxes[i + 1].focus();
+    });
+    inp.addEventListener('paste', async (e) => {
+      const t = (e.clipboardData.getData('text') || '').replace(/[^0-9a-f]/gi, '').toUpperCase();
+      if (t.length > 1) { e.preventDefault(); codeIn.value = t.slice(0, 6); if (t.length >= 6) { await ready; make(codeIn.value); } }
+    });
+  });
   const loadScript = (src) => new Promise((ok, no) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = no; document.head.append(s); });
   const ready = (async () => {
-    try { await loadScript(RULES); F = window.Fuzzboi; } catch { note.textContent = 'The Fuzzboi Forge did not answer. Try again in a minute.'; return; }
+    try { await loadScript(RULES); F = window.Fuzzboi; } catch { note.textContent = 'The Fuzzboi Factory did not answer. Try again in a minute.'; return; }
     try { layersIn = await F.loadLayers(LAYERS, layers, true); } catch {}
   })();
   // draws one Fuzzboi on a transparent canvas (the home has its own background); a rough stand-in if the art did not load
@@ -45,7 +69,7 @@
     const d = F.decode(code);
     if (!/^[0-9A-F]{6}$/.test(d.code)) { note.textContent = d.flags.map((f) => f[1]).join(' '); return; }
     codeIn.value = d.code;
-    if (F.missing(d.parts, layers).length) F.drawStandIn(forge, d.parts); else F.drawLayers(forge, d.parts, layers);
+    if (F.missing(d.parts, layers).length) F.drawStandIn(factoryCv, d.parts); else F.drawLayers(factoryCv, d.parts, layers);
     $('fz-traits').replaceChildren(...F.describe(d.parts).flatMap(([k, v, swatch]) => {
       const dd = el('dd', null, v); if (swatch) { const i = el('i'); i.style.background = swatch; dd.prepend(i); }
       return [el('dt', null, k), dd];
@@ -57,10 +81,9 @@
     // a made Fuzzboi gets a link of its own (#fuzzboi-456900 opens it and moves it in)
     if (moveIn) try { history.replaceState(null, '', '#fuzzboi-' + d.code); } catch {}
   }
-  $('fz-form').addEventListener('submit', async (e) => { e.preventDefault(); await ready; make(codeIn.value.trim()); });
-  codeIn.addEventListener('input', () => { codeIn.value = codeIn.value.toUpperCase().replace(/[^0-9A-F]/g, '').slice(0, 6); });
+  $('fz-form').addEventListener('submit', async (e) => { e.preventDefault(); await ready; make(codeIn.value); });
   $('fz-random').onclick = async () => { await ready; make(Math.floor(Math.random() * 0x1000000).toString(16).toUpperCase().padStart(6, '0')); };
-  $('fz-save').onclick = async () => { await ready; if (F && codeIn.value.length === 6) F.savePng(forge, `fuzzboi-${codeIn.value}.png`).catch(() => (note.textContent = 'This browser would not save the picture.')); };
+  $('fz-save').onclick = async () => { await ready; if (F && codeIn.value.length === 6) F.savePng(factoryCv, `fuzzboi-${codeIn.value}.png`).catch(() => (note.textContent = 'This browser would not save the picture.')); };
 
   // ---------- the cyber home: every Fuzzboi made above moves in, up to 30; they wander and hop ----------
   const home = (() => {
@@ -97,25 +120,26 @@
     });
     $('home-out').onclick = () => { if (!picked) return; folks.splice(folks.indexOf(picked), 1); picked = null; save(); };
     $('home-clear').onclick = () => { folks.length = 0; picked = null; save(); };
-    // the room: graphite walls, a neon grid floor in perspective, a window of falling code
+    // the room, in black, white and gray so the Fuzzbois are the only color (Astra, 2026-10-27): graphite walls, a white grid
+    // floor in perspective, a window of falling code
     function room(t) {
       const ft = floorTop();
       cx.fillStyle = '#121212'; cx.fillRect(0, 0, W, ft);
       cx.fillStyle = '#0a0a0a'; cx.fillRect(0, ft, W, H - ft);
-      cx.strokeStyle = 'rgba(0, 225, 255, .35)'; cx.lineWidth = 1;
+      cx.strokeStyle = 'rgba(255, 255, 255, .28)'; cx.lineWidth = 1;
       for (let i = 0; i <= 12; i++) { const x = (i / 12) * W; cx.beginPath(); cx.moveTo(W / 2 + (x - W / 2) * .35, ft); cx.lineTo(x, H); cx.stroke(); }
       for (let j = 1; j <= 7; j++) { const y = ft + (H - ft) * Math.pow(j / 7, 1.7); cx.beginPath(); cx.moveTo(0, y); cx.lineTo(W, y); cx.stroke(); }
-      cx.strokeStyle = '#ff3ea5'; cx.lineWidth = 2; cx.beginPath(); cx.moveTo(0, ft); cx.lineTo(W, ft); cx.stroke();
+      cx.strokeStyle = '#f2f2f2'; cx.lineWidth = 2; cx.beginPath(); cx.moveTo(0, ft); cx.lineTo(W, ft); cx.stroke();
       // window on the back wall
       const ww = Math.min(150, W * .24), wh = ft * .6, wx = W * .68, wy = ft * .16;
       cx.fillStyle = '#000'; cx.fillRect(wx, wy, ww, wh);
       cx.save(); cx.beginPath(); cx.rect(wx, wy, ww, wh); cx.clip();
-      cx.fillStyle = 'rgba(198, 255, 0, .7)'; cx.font = '11px JetBrains Mono, monospace';
+      cx.fillStyle = 'rgba(220, 220, 220, .6)'; cx.font = '11px JetBrains Mono, monospace';
       for (let c = 0; c < ww / 12; c++) { const y = ((t * .04 + c * 37) % (wh + 40)) - 20; cx.fillText('01ア✦'[(c + Math.floor(t / 300)) % 4], wx + 3 + c * 12, wy + y); }
       cx.restore();
       cx.strokeStyle = '#555'; cx.lineWidth = 3; cx.strokeRect(wx, wy, ww, wh); cx.beginPath(); cx.moveTo(wx + ww / 2, wy); cx.lineTo(wx + ww / 2, wy + wh); cx.stroke();
       // a little sign
-      cx.fillStyle = '#ff3ea5'; cx.font = '700 13px JetBrains Mono, monospace'; cx.fillText('FUZZBOI CYBER HOME', 14, 26);
+      cx.fillStyle = '#f2f2f2'; cx.font = '700 13px JetBrains Mono, monospace'; cx.fillText('FUZZBOI CYBER HOME', 14, 26);
     }
     function frame(t) {
       requestAnimationFrame(frame);
@@ -141,7 +165,7 @@
         if (f === picked) { cx.strokeStyle = '#' + f.code; cx.lineWidth = 3; cx.beginPath(); cx.ellipse(f.x, f.y, size * .42, size * .12, 0, 0, 7); cx.stroke(); }
         cx.drawImage(f.art, f.x - size / 2, f.y - size * .92 - lift, size, size);
       }
-      if (folks.length >= HOME_MAX) { cx.fillStyle = '#c6ff00'; cx.font = '700 13px JetBrains Mono, monospace'; cx.fillText('FULL HOUSE', W - 104, 26); }
+      if (folks.length >= HOME_MAX) { cx.fillStyle = '#f2f2f2'; cx.font = '700 13px JetBrains Mono, monospace'; cx.fillText('FULL HOUSE', W - 104, 26); }
     }
     ready.then(() => {
       if (!F) return;
@@ -236,14 +260,17 @@
    girls:[['High pigtails','pigtail',0,58],['Blunt pigtails','pigtail',1,62],['Side-swept pigtails','pigtail',2,52],['Wispy pigtails','pigtail',3,72],['Split-fringe pigtails','pigtail',4,48],['Heart-fringe pigtails','pigtail',5,65],['Choppy pigtails','pigtail',6,55],['Baby-bang pigtails','pigtail',7,40],['Blunt bob','bob',1,30],['French bob','bob',7,22],['Side bob','bob',2,36],['Long curtain hair','long',0,83],['Long waves','wave',3,78],['Long side part','long',9,74],['Space buns','buns',4,20],['Low double buns','buns',5,42],['Twin braids','braids',0,72],['High ponytail','pony',2,65],['Layered shag','shag',6,44],['Soft pixie','pixie',8,17]],
    boys:[['Curtain crop','crop',0,14],['Textured crop','crop',6,18],['Side-part crop','crop',2,12],['Blunt fringe','crop',1,20],['Wispy fringe','crop',3,19],['Split fringe crop','crop',4,16],['Short quiff','quiff',2,17],['Tall quiff','quiff',9,26],['Side undercut','undercut',2,18],['Split undercut','undercut',4,15],['Soft curls','curls',3,26],['Tight curls','curls',7,18],['Tousled waves','wave',6,27],['Wolf cut','shag',9,46],['Long curtain cut','bob',0,37],['Short spikes','spikes',6,18],['Tall spikes','spikes',7,29],['Swept-back bun','topknot',8,28],['Short ponytail','pony',4,34],['Braided sides','braids',2,35]]
   };
-  const AV_HEAD=['None','Devil horns','Halo','Cat ears','Star clips','Moon crown','Crystal crown','Heart antennae','Rabbit ears','Bear ears','Headphones','Goggles','Bow headband','Flower crown','Tiny top hat','Beret','Witch hat','Butterfly clips','Leaf sprout','Satellite rings'];
-  const AV_BODY=['None','Neck bow','Heart pendant','Star pendant','Pearl collar','Crossbody sash','Ribbon belt','Chain belt','Mini backpack','Angel wings','Bat wings','Shoulder cape','Scarf','Rose brooch','Moon brooch','Double bows','Harness straps','Heart purse','Arm cuffs','Devil tail'];
+  const AV_HEAD=['None','Devil horns','Halo','Cat ears','Star clips','Moon crown','Double bows','Heart antennae','Rabbit ears','Bear ears','Headphones','Goggles','Bow headband','Flower crown','Tiny top hat','Beret','Witch hat','Butterfly clips','Leaf sprout','Satellite rings'];
+  const AV_BODY=['None','Neck bow','Heart pendant','Star pendant','Pearl collar','Crossbody sash','Ribbon belt','Chain belt','Mini backpack','Angel wings','Bat wings','Shoulder cape','Scarf','Rose brooch','Moon brooch','Long tie','Harness straps','Heart purse','Heart pocket','Devil tail'];
   const AV_FX=['Four-point glints','Tiny diamonds','Twinkle stars','Star halo','Heart dust','Pearl bubbles','Snowflakes','Comet trails','Confetti','Orbit rings','Crescent moons','Fireflies','Crystal shards','Cross glints','Petal drift','Spiral dust','Dotted aura','Star shower','Diamond crown','Ribbon sparks'];
+  // lash styles (Astra, 2026-10-27: "some that have like three, some that have two, some that are just a cute little swoop")
+  const AV_LASHES=['Three flicks','Two flicks','Swoop','Off'];
+  const AV_LASH_D=['M79 90l-5-4M78 93l-6-1M81 87l-3-5M121 90l5-4M122 93l6-1M119 87l3-5','M79 90l-5-4M78 94l-6-1M121 90l5-4M122 94l6-1','M80 90Q75 91 72 85M120 90Q125 91 128 85',''];
   const AV_FITS=['Skater dress','Tunic','Jacket','Sweater','Vest','Split dress','Pleated dress','T-shirt','Overalls','Coat'];
   const avPick=n=>Math.floor(Math.random()*n);
   const avNext=(old,n)=>(old+1+avPick(n-1))%n;
   const avPalette=()=>[...AV_PALETTES[avPick(AV_PALETTES.length)]];
-  const avState={group:'all',hairGroup:'girls',hair:0,bangs:0,hairColors:avPalette(),head:1,headColors:avPalette(),body:1,bodyColors:avPalette(),fit:0,fitColors:avPalette(),fx:0,fxColors:avPalette(),lashes:true,seed:347};
+  const avState={group:'all',hairGroup:'girls',hair:0,bangs:0,hairColors:avPalette(),head:1,headColors:avPalette(),body:1,bodyColors:avPalette(),fit:0,fitColors:avPalette(),fx:0,fxColors:avPalette(),lashes:0,seed:347};
   const avPath=(d,c,s='',w=2)=>`<path d="${d}" fill="${c}"${s?` stroke="${s}" stroke-width="${w}"`:''}/>`;
   const avEllipse=(x,y,rx,ry,c,s='')=>`<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="${c}"${s?` stroke="${s}" stroke-width="2"`:''}/>`;
   const avLine=(d,c,w=2)=>avPath(d,'none',c,w);
@@ -296,7 +323,7 @@
    case 3:return sym(ear);
    case 4:return avStar(65,62,10,a)+avStar(135,62,10,b);
    case 5:return avPath('M66 48L65 29L83 38L100 19L117 38L135 29L134 48Z',a,b)+avEllipse(100,34,5,7,b);
-   case 6:return avPath('M66 48L72 26L86 43L100 15L114 43L128 26L134 48Z',a,b);
+   case 6:{const bow=(x,y)=>avPath(`M${x} ${y}l-13-8v16ZM${x} ${y}l13-8v16Z`,a,b)+avEllipse(x,y,3.5,3.5,b);return bow(70,54)+bow(130,54);} // two bows on the head, in place of the crystal crown
    case 7:return avLine('M72 48Q64 23 53 22M128 48Q136 23 147 22',b)+avHeart(53,23,.7,a)+avHeart(147,23,.7,a);
    case 8:return sym(avEllipse(74,26,10,27,a,b)+avEllipse(74,25,4,18,b));
    case 9:return sym(avEllipse(65,44,17,17,a,b)+avEllipse(65,44,9,9,b));
@@ -305,14 +332,17 @@
    case 12:return avLine('M60 62Q100 30 140 62',b,5)+avPath('M100 43L74 25L76 55ZM100 43L126 25L124 55Z',a,b);
    case 13:{let out='';for(let j=0;j<7;j++){let x=61+j*13,y=54-Math.sin(j/6*Math.PI)*16;out+=avStar(x,y,9,a,6)+avEllipse(x,y,3,3,b)}return out;}
    case 14:return avPath('M83 41L81 12H118L116 41Z',a,b)+avEllipse(100,42,31,6,b)+avLine('M83 32H116',b,5);
-   case 15:return avEllipse(95,43,43,18,a,b)+avLine('M97 27L101 20',b,4);
+   case 15:return `<g transform="rotate(-20 120 48)">${avEllipse(120,48,27,11,a,b)+avLine('M121 37L123 31',b,4)}</g>`; // smaller, crooked, on the side
    case 16:return avPath('M68 46L95 4L119 17L111 17L132 46Z',a,b)+avEllipse(100,47,46,7,b);
    case 17:return sym(avEllipse(62,53,9,13,a)+avEllipse(70,58,8,10,b)+avLine('M64 50L69 65',b));
    case 18:return avLine('M100 43V24',b,4)+avPath('M100 28Q73 6 74 27Q82 39 100 28ZM100 28Q127 6 126 27Q118 39 100 28Z',a,b);
    case 19:return avEllipse(100,35,46,12,'none',a)+avEllipse(100,35,32,18,'none',b)+avStar(142,29,6,b);
    }
   }
-  function avBody(){
+  // accessories that hang behind the body; drawn before the outfit so they tuck in behind it (2026-10-27)
+  const AV_BEHIND=new Set([8,9,10,19]);
+  function avBody(behind=false){
+   if(AV_BEHIND.has(avState.body)!==behind)return avState.body===8&&!behind?avLine('M88 128L80 160M112 128L120 160',avState.bodyColors[1],4):'';
    const [,a,b]=avState.bodyColors;
    const bow=(x,y)=>avPath(`M${x} ${y}l-16-9v18ZM${x} ${y}l16-9v18Z`,a,b)+avEllipse(x,y,4,4,b);
    switch(avState.body){
@@ -323,18 +353,18 @@
    case 4:{let s='';for(let i=0;i<7;i++)s+=avEllipse(83+i*5.6,133+Math.sin(i/6*Math.PI)*9,3,3,i%2?a:b);return s;}
    case 5:return avPath('M84 127L119 182L127 180L91 126Z',a,b);
    case 6:return avPath('M76 164H124V172H76Z',a,b)+bow(100,168);
-   case 7:return avLine('M74 163Q100 183 126 163',a,3)+avStar(100,177,5,b);
+   case 7:{let s='';for(let i=0;i<=10;i++){const t=i/10,x=74+t*52,y=160+Math.sin(t*Math.PI)*16;s+=avEllipse(x,y,4.2,2.8,'none',i%2?a:b).replace('stroke-width="2"','stroke-width="2.4"')}return s+avStar(100,177,8,b);} // a bigger chain
    case 8:return avPath('M62 140Q49 127 49 151V175H70ZM138 140Q151 127 151 151V175H130Z',a,b);
    case 9:return avPath('M78 143Q34 107 42 147L29 147Q40 175 74 164ZM122 143Q166 107 158 147L171 147Q160 175 126 164Z',a,b);
    case 10:return avPath('M78 143L35 119L42 147L28 164Q49 151 58 177L74 166ZM122 143L165 119L158 147L172 164Q151 151 142 177L126 166Z',a,b);
    case 11:return avPath('M86 128Q63 134 54 184L84 175L100 183L116 175L146 184Q137 134 114 128Z',a,b);
-   case 12:return avPath('M84 130H116V140H104L117 175L107 181L93 140H84Z',a,b);
+   case 12:return avPath('M76 126Q100 136 124 126V141Q112 145 106 143L119 175L109 181L95 143Q84 145 76 141Z',a,b); // wider on the neck
    case 13:return avStar(117,145,9,a,7)+avEllipse(117,145,4,4,b);
    case 14:return avPath('M123 136A10 10 0 1 0 123 156A8 8 0 0 1 123 136Z',a,b);
-   case 15:return bow(80,148)+bow(120,148);
-   case 16:return avLine('M84 128L117 180M116 128L83 180M78 155H122',a,4)+avEllipse(100,155,5,5,b);
+   case 15:return avPath('M95 127H105L103 134L108 172L100 182L92 172L97 134Z',a,b)+avLine('M96 142L104 148M95 155L105 161M94 168L106 174',b,1.5); // a long tie, in place of the double bows
+   case 16:return avLine('M88 126L131 184M112 126L69 184M72 155H128',a,4)+avEllipse(100,155,5,5,b); // the straps run to every edge of the outfit
    case 17:return avLine('M87 129L128 165',a,3)+avHeart(129,174,1.1,b);
-   case 18:return avPath('M70 154L79 156L76 173L65 170ZM130 154L121 156L124 173L135 170Z',a,b);
+   case 18:return avPath('M84 158H116L113 176Q100 179 87 176Z',a,b)+avHeart(100,169,.42,b); // a heart pocket, in place of the arm cuffs
    case 19:return avLine('M126 173Q178 211 165 149',a,5)+avPath('M165 141L154 159L174 155Z',b);
    }
   }
@@ -372,11 +402,11 @@
   const labSvg=document.getElementById('labSvg');
   function drawLab(){
    const hair=avHair();
-   const lashes=avState.lashes?avLine('M79 90l-5-4M78 94l-6-1M121 90l5-4M122 94l6-1','#2a1330',2.4):'';
-   labSvg.innerHTML=`<ellipse cx="100" cy="188" rx="52" ry="9" fill="#ff2e7e" opacity=".3"/>${hair.back}${avFit()}${avBody()}<circle cx="100" cy="88" r="42" fill="#f9d8c4"/>${hair.front}${avHead()}<g fill="#2a1330"><ellipse cx="85" cy="94" rx="6" ry="8"/><ellipse cx="115" cy="94" rx="6" ry="8"/></g>${lashes}<g fill="#fff"><circle cx="87" cy="91" r="2.3"/><circle cx="117" cy="91" r="2.3"/></g><ellipse cx="76" cy="106" rx="9" ry="5" fill="#ff8fd0" opacity=".55"/><ellipse cx="124" cy="106" rx="9" ry="5" fill="#ff8fd0" opacity=".55"/>${avLine('M95 108q5 5 10 0','#c4306b',2.4)}${avEffects()}`;
-   const labels={hair:AV_HAIR[avState.hairGroup][avState.hair][0],bangs:AV_BANGS[avState.bangs],head:AV_HEAD[avState.head],body:AV_BODY[avState.body],fit:AV_FITS[avState.fit],fx:AV_FX[avState.fx],lashes:avState.lashes?'On':'Off'};
+   const lashes=AV_LASH_D[avState.lashes]?avLine(AV_LASH_D[avState.lashes],'#2a1330',2.4):'';
+   labSvg.innerHTML=`<ellipse cx="100" cy="188" rx="52" ry="9" fill="#ff2e7e" opacity=".3"/>${hair.back}${avBody(true)}${avFit()}${avBody()}<circle cx="100" cy="88" r="42" fill="#f9d8c4"/>${hair.front}${avHead()}<g fill="#2a1330"><ellipse cx="85" cy="94" rx="6" ry="8"/><ellipse cx="115" cy="94" rx="6" ry="8"/></g>${lashes}<g fill="#fff"><circle cx="87" cy="91" r="2.3"/><circle cx="117" cy="91" r="2.3"/></g><ellipse cx="76" cy="106" rx="9" ry="5" fill="#ff8fd0" opacity=".55"/><ellipse cx="124" cy="106" rx="9" ry="5" fill="#ff8fd0" opacity=".55"/>${avLine('M95 108q5 5 10 0','#c4306b',2.4)}${avEffects()}`;
+   const labels={hair:AV_HAIR[avState.hairGroup][avState.hair][0],bangs:AV_BANGS[avState.bangs],head:AV_HEAD[avState.head],body:AV_BODY[avState.body],fit:AV_FITS[avState.fit],fx:AV_FX[avState.fx],lashes:AV_LASHES[avState.lashes]};
    for(const [part,label] of Object.entries(labels))document.getElementById('lb-'+part).textContent=label;
-   document.getElementById('labLashes').setAttribute('aria-pressed',String(avState.lashes));
+   document.getElementById('labLashes').setAttribute('aria-pressed',String(avState.lashes!==3));
    document.getElementById('labPalette').textContent='Hair colors: '+avState.hairColors[0]+' · '+avState.hairColors.slice(1).join(' / ');
    labSvg.setAttribute('aria-label',labels.hair+', '+labels.bangs+' bangs, '+labels.head+', '+labels.body+', '+labels.fx+', lashes '+labels.lashes.toLowerCase());
   }
@@ -390,7 +420,7 @@
    const part=button.dataset.avatarPart;
    if(part==='hair')avRandomHair();
    else if(part==='bangs'){avState.bangs=avNext(avState.bangs,AV_BANGS.length);avState.hairColors=avPalette()}
-   else if(part==='lashes')avState.lashes=!avState.lashes;
+   else if(part==='lashes')avState.lashes=(avState.lashes+1)%AV_LASHES.length;
    else{const options={head:AV_HEAD,body:AV_BODY,fit:AV_FITS,fx:AV_FX};avState[part]=avNext(avState[part],options[part].length);avState[part+'Colors']=avPalette();if(part==='fx')avState.seed=avPick(1e9)}
    drawLab();
   });

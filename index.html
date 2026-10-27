@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&family=JetBrains+Mono:wght@400;700&family=VT323&family=Permanent+Marker&display=swap">
-<link rel="stylesheet" href="cyber.css?v=20261027e">
+<link rel="stylesheet" href="cyber.css?v=20261027f">
 </head>
 <body>
 <!-- the fat star every pet window is cut from (R 100, r 70; rounded by the stroke in cyber.css) -->
@@ -57,6 +57,7 @@
   </section>
 
   <!-- what changed lately, from public GitHub activity (live, else the snapshot in updates-data.js) -->
+  <div class="rabbit-lane" id="rabbit-lane"></div>
   <section class="ticker" id="tick-updates" aria-label="Live updates">
     <span class="tick-label">live updates:</span>
     <div class="track"></div>
@@ -132,36 +133,37 @@
     <p class="kicker">// 03 · play</p>
     <h2>Arcade</h2>
     <div class="arcade">
-      <div class="cab">
+      <div class="cab spread">
         <h3>Hack the terminal</h3>
         <p class="muted">Pick the password. Likeness = letters in the right place. Four tries.</p>
-        <div id="hack"></div>
+        <!-- the game sits in a terminal window, like the one at the top of the page -->
+        <div class="hack-term"><div class="term-bar"><i></i><i></i><i></i><span>termlink@findastra: ~</span></div><div id="hack"></div></div>
         <button class="btn" id="hack-new">new terminal</button>
       </div>
-      <div class="cab">
+      <div class="cab spread">
         <h3>Pet memory</h3>
         <p class="muted mono" id="mem-stat"></p>
         <div class="board" id="board"></div>
-        <button class="btn" id="mem-new">new board</button>
+        <!-- easy: six pets; hard: one pet and six of its moods (Astra, 2026-10-27) -->
+        <div class="fz-row"><button class="btn" id="mem-new">new board</button><button class="btn" id="mem-hard" aria-pressed="false">hard: one pet's moods</button></div>
       </div>
-      <!-- the Fuzzboi Forge, same rules and art as findastra.github.io/fuzzboi-factory; every Fuzzboi made here moves into the cyber home -->
-      <div class="cab">
-        <h3>Fuzzboi Forge</h3>
-        <p class="muted">Type any six-digit hex code. That exact Fuzzboi appears, and moves into the cyber home.</p>
-        <form class="fz-row" id="fz-form">
-          <label class="sr-only" for="fz-code">Six-digit hex code</label>
-          <span class="fz-hash">#</span><input id="fz-code" maxlength="6" autocomplete="off" spellcheck="false" placeholder="456900" inputmode="text">
-          <button class="btn hot" type="submit">make it</button>
-          <button class="btn" type="button" id="fz-random">random</button>
-          <button class="btn" type="button" id="fz-save">save png</button>
+      <!-- the Fuzzboi Factory, same rules and art as findastra.github.io/fuzzboi-factory and the same six big code boxes; every
+           Fuzzboi made here moves into the cyber home -->
+      <div class="cab spread">
+        <h3>Fuzzboi Factory</h3>
+        <p class="muted">Type any six-digit hex code (0–9, A–F). That exact Fuzzboi appears, and moves into the cyber home.</p>
+        <form class="fz-code" id="fz-form">
+          <span class="fz-hash">#</span>
+          <div class="fz-digits" id="fz-digits"></div>
         </form>
+        <div class="fz-row fz-buttons"><button class="btn hot" type="button" id="fz-random">roll a random fuzzboi</button><button class="btn" type="button" id="fz-save">save png</button></div>
         <div class="fz-out">
           <canvas id="fz-cv" width="512" height="512" aria-label="Your Fuzzboi"></canvas>
           <dl class="fz-traits" id="fz-traits"></dl>
         </div>
         <p class="muted mono" id="fz-note" aria-live="polite">Loading the Fuzzboi art…</p>
       </div>
-      <div class="cab">
+      <div class="cab spread">
         <h3>Fuzzboi cyber home</h3>
         <p class="muted mono" id="home-count"></p>
         <canvas class="home" id="home" aria-label="The Fuzzboi cyber home. Tap a Fuzzboi to see its code."></canvas>
@@ -188,7 +190,7 @@
           <button class="lab-b" data-avatar-part="body">Accessory 2 · Body<small id="lb-body">—</small></button>
           <button class="lab-b" data-avatar-part="fit">Outfit<small id="lb-fit">—</small></button>
           <button class="lab-b" data-avatar-part="fx">Sparkles<small id="lb-fx">—</small></button>
-          <button class="lab-b" id="labLashes" data-avatar-part="lashes" aria-pressed="true">Lashes<small id="lb-lashes">On</small></button>
+          <button class="lab-b" id="labLashes" data-avatar-part="lashes" aria-pressed="true">Lashes<small id="lb-lashes">Three flicks</small></button>
         </div>
         <p class="muted mono">Click a part to shuffle its look and colors.</p>
         <p id="labPalette" class="muted mono" aria-live="polite"></p>
@@ -248,7 +250,7 @@
 <script src="updates-data.js?v=20261018c"></script>
 <script src="lettering-data.js?v=20261019a"></script>
 <script src="lettering.js?v=20261027a"></script>
-<script src="cyber.js?v=20261027e"></script>
-<script src="games-20261027.js?v=20261027a"></script>
+<script src="cyber.js?v=20261027f"></script>
+<script src="games-20261027.js?v=20261027b"></script>
 </body>
 </html>

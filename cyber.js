@@ -122,6 +122,9 @@
       return [...byText.values()];
     }
     const repoLink = (name, text, hidden) => { const a = link('https://github.com/findastra/' + name, 'repo', text); if (hidden) a.tabIndex = -1; return a; };
+    // each item in its own color on the black and gray bars (Astra, 2026-10-27: "different colors for each item"), the same
+    // color every time for the same project
+    const tint = (s, name) => { let h = 7; for (const ch of String(name)) h = (h * 31 + ch.codePointAt(0)) % 360; s.style.setProperty('--c', `hsl(${h} 100% 66%)`); return s; };
     function fill(id, makers) {
       const box = $(id), track = box.querySelector('.track');
       box.hidden = !makers.length;
@@ -131,7 +134,7 @@
     }
     function draw() {
       fill('tick-updates', updates.slice(0, 22).map((u) => (hidden) => {
-        const s = el('span', 'item');
+        const s = tint(el('span', 'item'), u.repos.join('+'));
         s.append(u.repos.length > 2 ? el('span', 'repo', u.repos.length + ' repos') : repoLink(u.repos[0], u.repos.slice(0, 2).join(' + '), hidden), el('span', null, u.text), el('span', 'when', ago(u.at)));
         return s;
       }));
@@ -145,7 +148,7 @@
         .sort((a, b) => count.get(b) - count.get(a) || String(last.get(b)).localeCompare(String(last.get(a)))).slice(0, 12);
       const info = Object.fromEntries(repoList.map((r) => [r.name, r]));
       fill('tick-now', busy.map((name) => (hidden) => {
-        const s = el('span', 'item'), r = info[name] || {}, pet = petByRepo[name];
+        const s = tint(el('span', 'item'), name), r = info[name] || {}, pet = petByRepo[name];
         s.append(repoLink(name, name, hidden));
         if (pet && pet.pet && !/^pet-program/.test(pet.pet)) s.append(el('span', 'pet', pet.pet));
         const d = (r.description || (pet && pet.text) || '').replace(/^👉\s*\S+\s*[—-]\s*/, '');
@@ -525,7 +528,7 @@
     const status = el('p', 'mono', 'attempts: ■ ■ ■ ■'), list = el('div', 'words'), log = el('div', 'hacklog');
     box.replaceChildren(el('p', 'mono hot', 'FINDASTRA TERMLINK · password required'), status, list, log);
     for (const w of words) {
-      const b = el('button', null, '0x' + Math.floor(Math.random() * 0xffff).toString(16).toUpperCase().padStart(4, '0') + ' ' + w);
+      const b = el('button', null, '> 0x' + Math.floor(Math.random() * 0xffff).toString(16).toUpperCase().padStart(4, '0') + ' ' + w);
       b.onclick = () => {
         if (!tries) return; b.disabled = true;
         if (w === answer) { log.append(el('p', 'granted', `> ${w}  ACCESS GRANTED · welcome back, astra`)); [...list.children].forEach((x) => (x.disabled = true)); return; }
@@ -540,21 +543,39 @@
   $('hack-new').onclick = hack; hack();
 
   // ---------- arcade: pet memory ----------
+  // Easy: six pets, in their own colors. Hard (Astra, 2026-10-27): one pet, and the pairs are six of its moods, so the cards
+  // all look alike; the moods come from the hub's art/latest/moods/<pet>/ (blink is left out, it is too close to idle).
+  let hard = false;
+  const MOODS = ['alarmed', 'curious', 'happy', 'idle', 'sad', 'sick', 'sleep', 'worried'];
+  const moodPets = () => {
+    if (!hosted) return [];
+    const by = {};
+    for (const k of hosted) { const m = /^moods\/([^/]+)\/([a-z]+)\.png$/.exec(k); if (m && MOODS.includes(m[2])) (by[m[1]] = by[m[1]] || []).push(m[2]); }
+    return Object.entries(by).filter(([, list]) => list.length >= 6);
+  };
   function deal() {
-    const pool = pets.filter(iconOf);
-    const pick = [...pool].sort(() => Math.random() - .5).slice(0, 6), cards = [...pick, ...pick].sort(() => Math.random() - .5);
+    const shuffle = (a) => [...a].sort(() => Math.random() - .5);
+    let pick, who = '';
+    const hardOnes = hard ? moodPets() : [];
+    if (hard && hardOnes.length) {
+      const [art, list] = hardOnes[Math.floor(Math.random() * hardOnes.length)];
+      const p = pets.find((x) => iconOf(x) && iconOf(x).includes('/' + art + '/')) || { pet: art.replace(/-/g, ' ') };
+      who = p.pet;
+      pick = shuffle(list).slice(0, 6).map((m) => ({ key: m, src: LATEST + 'moods/' + art + '/' + m + '.png', alt: p.pet + ', ' + m }));
+    } else pick = shuffle(pets.filter(iconOf)).slice(0, 6).map((p) => ({ key: p.number, src: iconOf(p), alt: p.pet }));
+    const cards = shuffle([...pick, ...pick]);
     let open = [], found = 0, moves = 0, lock = false; const t0 = Date.now();
-    const stat = () => ($('mem-stat').textContent = `moves ${moves} · pairs ${found}/6`);
+    const stat = () => ($('mem-stat').textContent = `${who ? who + "'s moods · " : ''}moves ${moves} · pairs ${found}/6`);
     $('board').replaceChildren(...cards.map((p) => {
       const t = el('div', 'tile'), b = el('button'); b.setAttribute('aria-label', 'card');
-      const f2 = el('span', 'f f2'), im = el('img'); im.src = iconOf(p); im.alt = p.pet; f2.append(im);
+      const f2 = el('span', 'f f2'), im = el('img'); im.src = p.src; im.alt = p.alt; f2.append(im);
       b.append(el('span', 'f f1', '✦'), f2); t.append(b);
       b.onclick = () => {
         if (lock || t.classList.contains('open') || t.classList.contains('done')) return;
         t.classList.add('open'); open.push([t, p]);
         if (open.length < 2) return;
         moves++; const [[ta, pa], [tb, pb]] = open; open = [];
-        if (pa === pb) { ta.classList.add('done'); tb.classList.add('done'); found++; if (found === 6) { $('mem-stat').textContent = `all pairs · ${moves} moves · ${Math.round((Date.now() - t0) / 1000)}s ✦`; return; } }
+        if (pa.key === pb.key) { ta.classList.add('done'); tb.classList.add('done'); found++; if (found === 6) { $('mem-stat').textContent = `all pairs · ${moves} moves · ${Math.round((Date.now() - t0) / 1000)}s ✦`; return; } }
         else { lock = true; setTimeout(() => { ta.classList.remove('open'); tb.classList.remove('open'); lock = false; }, 700); }
         stat();
       };
@@ -562,7 +583,9 @@
     }));
     stat();
   }
-  $('mem-new').onclick = deal; deal();
+  $('mem-new').onclick = deal;
+  $('mem-hard').onclick = () => { hard = !hard; $('mem-hard').setAttribute('aria-pressed', String(hard)); $('mem-hard').textContent = hard ? 'easy: six pets' : "hard: one pet's moods"; deal(); };
+  deal();
 
   // ---------- links ----------
 
@@ -594,10 +617,10 @@
 
   // ---------- the white rabbit: hops across the live updates ticker now and then; catch it and the rain changes color ----------
   // Astra (2026-10-27) asked for "the rabbit from Data Dealer"; the hopping white rabbit lives in Gone Ghost's page
-  // (findastra/ghost-protocol): the same four 8-bit frames (15 x 12 pixels), the same hop. It runs in its own lane under the
-  // ticker's words and starts behind the "live updates" box, so it never hops over either.
+  // (findastra/ghost-protocol): the same four 8-bit frames (15 x 12 pixels), the same hop. It hops along the top edge of the
+  // bar, never over its words.
   (() => {
-    const lane = $('tick-updates'); if (!lane || reduced) return;
+    const lane = $('rabbit-lane'); if (!lane || reduced) return;
     // each frame: [x, y, w, h] pixels, the eye last; and how high it is in the hop (0 to 1)
     const FRAMES = [
       { pose: 'crouch', lift: 0, px: [[9,0,1,1],[11,0,1,1],[9,1,2,1],[11,1,2,1],[9,2,5,1],[8,3,6,1],[1,3,1,1],[1,4,1,1],[2,4,13,1],[1,5,13,1],[1,6,12,1],[2,7,10,1],[2,8,3,1],[9,8,3,1],[2,9,2,1],[9,9,2,1]], eye: [12,3] },
@@ -620,7 +643,7 @@
     // 8-bit hops: four fixed frames per hop, and the rabbit jumps forward once per hop, from behind the label to off the right edge
     function run() {
       if (document.hidden) return later(5000);
-      const label = lane.querySelector('.tick-label'), x0 = (label ? label.offsetWidth : 0) - 40, x1 = lane.clientWidth + 10;
+      const x0 = -40, x1 = lane.clientWidth + 10;
       const hopMs = 560 + Math.random() * 160, hop = 11 + Math.random() * 3, hops = Math.max(6, Math.round((x1 - x0) / 46)), step = (x1 - x0) / hops;
       running = true; bun.classList.add('running'); bun.style.left = x0 + 'px'; pose(0, hop);
       const t0 = performance.now() + 600;
