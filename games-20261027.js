@@ -1,4 +1,4 @@
-// The arcade's newer games (Astra, 2026-10-27): the Fuzzboi Factory and the Fuzzboi cyber home it fills, and the two games from
+// The arcade's newer games (Astra, 2026-10-27): the Fuzzboi Factory and the Fuzzboi Cyber Dome it fills, and the two games from
 // Mommy's website (findastra/mommys-website): the sparkle catcher ("Catch the beat") and the Avatar Lab. The cabinets stay
 // black and gray; the art inside them keeps its own colors. Fuzzboi rules and drawing come from the Fuzzboi Factory itself
 // (findastra/fuzzboi-factory site/fuzzboi.js, served at findastra.github.io/fuzzboi-factory/), one copy of the rules.
@@ -13,7 +13,7 @@
   // a canvas drawn at the screen's pixel density; returns its size in CSS pixels
   const fit = (cv) => { const r = cv.getBoundingClientRect(), d = Math.min(devicePixelRatio || 1, 2); cv.width = Math.max(1, r.width * d); cv.height = Math.max(1, r.height * d); cv.getContext('2d').setTransform(d, 0, 0, d, 0, 0); return r; };
 
-  // ---------- Fuzzboi Factory: type a six-digit code, get that exact Fuzzboi; each one moves into the cyber home ----------
+  // ---------- Fuzzboi Factory: type a six-digit code, get that exact Fuzzboi; each one moves into the Cyber Dome ----------
   const RULES = 'https://findastra.github.io/fuzzboi-factory/site/fuzzboi.js';
   const LAYERS = 'https://raw.githubusercontent.com/findastra/astras-pet-os/main/desktop-art/fuzzboi-friend/layers/';
   const HOME_MAX = 30, HOME_KEY = 'findastra-fuzzboi-home-v1';
@@ -83,13 +83,16 @@
   }
   $('fz-form').addEventListener('submit', async (e) => { e.preventDefault(); await ready; make(codeIn.value); });
   $('fz-random').onclick = async () => { await ready; make(Math.floor(Math.random() * 0x1000000).toString(16).toUpperCase().padStart(6, '0')); };
+  // tap the Fuzzboi itself to save it, too (Astra, 2026-10-27: "make sure people can save it directly from there")
+  factoryCv.title = 'Tap to save this Fuzzboi'; factoryCv.style.cursor = 'pointer'; factoryCv.onclick = () => $('fz-save').click();
   $('fz-save').onclick = async () => { await ready; if (F && codeIn.value.length === 6) F.savePng(factoryCv, `fuzzboi-${codeIn.value}.png`).catch(() => (note.textContent = 'This browser would not save the picture.')); };
 
-  // ---------- the cyber home: every Fuzzboi made above moves in, up to 30; they wander and hop ----------
+  // ---------- the Cyber Dome (it was the cyber home): every Fuzzboi made above moves in, up to 30; they bounce around like
+  // particles and boing off each other (Astra, 2026-10-27) ----------
   const home = (() => {
     const cv = $('home'), cx = cv.getContext('2d');
     let W = 0, H = 0, picked = null;
-    const folks = [];
+    const folks = [], boings = [];
     const floorTop = () => H * .42; // the back wall meets the floor here
     function resize() { const r = fit(cv); W = r.width; H = r.height; }
     new ResizeObserver(resize).observe(cv); resize();
@@ -98,7 +101,8 @@
     function spawn(code, at) {
       const p = F.decode(code).parts;
       return { code, art: sprite(p, 192), x: at ? at.x : 40 + Math.random() * Math.max(1, W - 80), y: at ? at.y : floorTop() + 20 + Math.random() * Math.max(1, H - floorTop() - 40),
-        vx: (Math.random() - .5) * .6, vy: (Math.random() - .5) * .3, hop: 0, t: Math.random() * 100, born: performance.now() };
+        vx: (Math.random() < .5 ? -1 : 1) * (.8 + Math.random() * .9), vy: (Math.random() < .5 ? -1 : 1) * (.4 + Math.random() * .6), hop: 0, squash: 0, spin: 0,
+        t: Math.random() * 100, born: performance.now() };
     }
     function save() { store.set(HOME_KEY, folks.map((f) => f.code)); count(); }
     function count() {
@@ -107,9 +111,9 @@
       $('home-pick').textContent = picked ? `#${picked.code} · tap “let them out” to give the spot to someone new` : folks.length ? 'Tap a Fuzzboi to see its code.' : 'Nobody lives here yet. Make a Fuzzboi above and it moves in.';
     }
     function add(code) {
-      if (folks.length >= HOME_MAX) return `The cyber home is full (${HOME_MAX}). Let one out to make room.`;
+      if (folks.length >= HOME_MAX) return `The Cyber Dome is full (${HOME_MAX}). Let one out to make room.`;
       folks.push(spawn(code)); save();
-      return `#${code} moved into the cyber home (${folks.length} of ${HOME_MAX}).`;
+      return `#${code} moved into the Cyber Dome (${folks.length} of ${HOME_MAX}).`;
     }
     cv.addEventListener('pointerdown', (e) => {
       const r = cv.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top, s = sizeFor();
@@ -138,24 +142,41 @@
       for (let c = 0; c < ww / 12; c++) { const y = ((t * .04 + c * 37) % (wh + 40)) - 20; cx.fillText('01ア✦'[(c + Math.floor(t / 300)) % 4], wx + 3 + c * 12, wy + y); }
       cx.restore();
       cx.strokeStyle = '#555'; cx.lineWidth = 3; cx.strokeRect(wx, wy, ww, wh); cx.beginPath(); cx.moveTo(wx + ww / 2, wy); cx.lineTo(wx + ww / 2, wy + wh); cx.stroke();
+      // the dome: white ribs arching over the room
+      cx.strokeStyle = 'rgba(255, 255, 255, .5)'; cx.lineWidth = 2;
+      cx.beginPath(); cx.ellipse(W / 2, ft, W * .48, ft * .92, 0, Math.PI, 0); cx.stroke();
+      cx.strokeStyle = 'rgba(255, 255, 255, .18)'; cx.lineWidth = 1;
+      for (let k = 1; k < 6; k++) { cx.beginPath(); cx.ellipse(W / 2, ft, W * .48 * (k / 6), ft * .92, 0, Math.PI, 0); cx.stroke(); }
+      for (let k = 1; k < 4; k++) { cx.beginPath(); cx.ellipse(W / 2, ft, W * .48, ft * .92 * (k / 4), 0, Math.PI, 0); cx.stroke(); }
       // a little sign
-      cx.fillStyle = '#f2f2f2'; cx.font = '700 13px JetBrains Mono, monospace'; cx.fillText('FUZZBOI CYBER HOME', 14, 26);
+      cx.fillStyle = '#f2f2f2'; cx.font = '700 13px JetBrains Mono, monospace'; cx.fillText('FUZZBOI CYBER DOME', 14, 26);
     }
     function frame(t) {
       requestAnimationFrame(frame);
       if (!W) return;
       room(t);
       const s = sizeFor(), ft = floorTop();
+      const minX = s * .4, maxX = W - s * .4, minY = ft + s * .3, maxY = H - 6;
       for (const f of folks) {
         if (!reduced) {
           f.t += 1; f.x += f.vx; f.y += f.vy;
-          if (Math.random() < .006) { f.vx = (Math.random() - .5) * .9; f.vy = (Math.random() - .5) * .4; }
-          if (Math.random() < .003) f.hop = 1;
-          if (f.x < s * .4 || f.x > W - s * .4) f.vx *= -1;
-          if (f.y < ft + s * .3 || f.y > H - 6) f.vy *= -1;
-          f.x = Math.min(Math.max(f.x, s * .4), W - s * .4); f.y = Math.min(Math.max(f.y, ft + s * .3), H - 6);
+          if (f.x < minX || f.x > maxX) { f.vx *= -1; f.squash = .6; }
+          if (f.y < minY || f.y > maxY) { f.vy *= -1; f.squash = .6; }
+          f.x = Math.min(Math.max(f.x, minX), maxX); f.y = Math.min(Math.max(f.y, minY), maxY);
         }
-        f.hop = Math.max(0, f.hop - .04);
+        f.hop = Math.max(0, f.hop - .04); f.squash = Math.max(0, f.squash - .05); f.spin *= .94;
+      }
+      // two that meet bounce apart like billiard balls, squish, spin a little and say boing
+      if (!reduced) for (let i = 0; i < folks.length; i++) for (let k = i + 1; k < folks.length; k++) {
+        const p = folks[i], q = folks[k], dx = q.x - p.x, dy = (q.y - p.y) * 2, d = Math.hypot(dx, dy), r = s * .5;
+        if (!d || d >= r) continue;
+        const nx = dx / d, ny = dy / d, rel = (p.vx - q.vx) * nx + (p.vy - q.vy) * ny;
+        if (rel > 0) {
+          p.vx -= rel * nx; p.vy -= rel * ny; q.vx += rel * nx; q.vy += rel * ny;
+          p.squash = q.squash = 1; p.spin = (Math.random() - .5) * .9; q.spin = (Math.random() - .5) * .9; p.hop = q.hop = 1;
+          boings.push({ x: (p.x + q.x) / 2, y: Math.min(p.y, q.y) - s * .9, t: 1, word: ['boing!', 'boop', 'bonk!', 'sproing'][Math.floor(Math.random() * 4)] });
+        }
+        const push = (r - d) / 2; p.x -= nx * push; p.y -= ny * push / 2; q.x += nx * push; q.y += ny * push / 2;
       }
       for (const f of [...folks].sort((a, b) => a.y - b.y)) {
         const drop = Math.max(0, 1 - (t - f.born) / 650); // a new one drops in from above
@@ -163,8 +184,14 @@
         const lift = Math.sin(f.hop * Math.PI) * size * .35 + drop * drop * H * .8 + (reduced ? 0 : Math.sin(f.t / 18) * 1.5);
         cx.fillStyle = 'rgba(0, 0, 0, .55)'; cx.beginPath(); cx.ellipse(f.x, f.y, size * .32, size * .08, 0, 0, 7); cx.fill();
         if (f === picked) { cx.strokeStyle = '#' + f.code; cx.lineWidth = 3; cx.beginPath(); cx.ellipse(f.x, f.y, size * .42, size * .12, 0, 0, 7); cx.stroke(); }
-        cx.drawImage(f.art, f.x - size / 2, f.y - size * .92 - lift, size, size);
+        const sq = Math.sin(f.squash * Math.PI) * .22;
+        cx.save(); cx.translate(f.x, f.y - lift); cx.rotate(f.spin); cx.scale(1 + sq, 1 - sq);
+        cx.drawImage(f.art, -size / 2, -size * .92, size, size); cx.restore();
       }
+      cx.font = '700 13px JetBrains Mono, monospace'; cx.textAlign = 'center';
+      for (const b of boings) { cx.fillStyle = `rgba(255, 255, 255, ${b.t})`; cx.fillText(b.word, b.x, b.y - (1 - b.t) * 18); b.t -= .025; }
+      cx.textAlign = 'start';
+      for (let i = boings.length - 1; i >= 0; i--) if (boings[i].t <= 0) boings.splice(i, 1);
       if (folks.length >= HOME_MAX) { cx.fillStyle = '#f2f2f2'; cx.font = '700 13px JetBrains Mono, monospace'; cx.fillText('FULL HOUSE', W - 104, 26); }
     }
     ready.then(() => {
@@ -184,12 +211,40 @@
   // ---------- the sparkle catcher, from Mommy's website ("Catch the beat"): tap the sparkles before they burn out ----------
   (() => {
     const bc = $('beatC'), bx = bc.getContext('2d');
-    const HUES = [330, 318, 345, 300, 42, 200];
+    // the sparkle the game throws comes from the Sparkle Creator below it: how many points, how sharp, what color, how it spins
+    const SPARK = { points: [4, 5, 6, 8], sharp: [['Sharp', .28], ['Soft', .5], ['Puffy', .72]], color: [['Pink', [330, 318, 345, 300]], ['Gold', [42, 48, 36, 54]],
+      ['Ice', [190, 200, 210, 180]], ['Mint', [150, 160, 140, 170]], ['Lilac', [270, 280, 260, 290]], ['Rainbow', [0, 60, 120, 180, 240, 300]]], spin: ['Twirl', 'Still', 'Wobble'] };
+    const spark = Object.assign({ points: 0, sharp: 0, color: 0, spin: 0 }, store.get('findastra-sparkle', {}));
+    for (const k of Object.keys(SPARK)) if (!(spark[k] >= 0 && spark[k] < SPARK[k].length)) spark[k] = 0;
+    const hues = () => SPARK.color[spark.color][1];
+    // one sparkle: a star with the chosen points and sharpness, turned by the chosen spin
+    function drawSpark(c, x, y, r, age, hue, a) {
+      const n = SPARK.points[spark.points], inner = SPARK.sharp[spark.sharp][1], mode = SPARK.spin[spark.spin];
+      const turn = mode === 'Twirl' ? age * 3 : mode === 'Wobble' ? Math.sin(age * 9) * .35 : 0;
+      c.fillStyle = `hsla(${hue},100%,84%,${a})`; c.shadowColor = `hsla(${hue},100%,64%,${a})`; c.shadowBlur = r * .8;
+      c.beginPath();
+      for (let i = 0; i < n * 2; i++) { const rr = i % 2 ? r * inner : r, an = (i * Math.PI) / n + turn - Math.PI / 2; c.lineTo(x + Math.cos(an) * rr, y + Math.sin(an) * rr); }
+      c.closePath(); c.fill(); c.shadowBlur = 0;
+    }
     let targets = [], pops = [], score = 0, combo = 0, best = store.get('findastra-beat-best', 0) || 0, miss = 0, on = false, spawnIn = 0;
     const bS = $('bScore'), bC = $('bCombo'), bB = $('bBest'); bB.textContent = best;
     let w = 0, h = 0;
     const size = () => { const r = fit(bc); w = r.width; h = r.height; };
     new ResizeObserver(size).observe(bc); size();
+    const prev = $('sparkPrev'), px = prev.getContext('2d');
+    function showSpark() {
+      for (const k of Object.keys(SPARK)) { const v = SPARK[k][spark[k]]; $('sp-' + k).textContent = Array.isArray(v) ? v[0] : String(v); }
+      store.set('findastra-sparkle', spark);
+    }
+    (function preview(t) {
+      requestAnimationFrame(preview);
+      px.fillStyle = '#060606'; px.fillRect(0, 0, 192, 192);
+      const hs = hues(), hue = hs[Math.floor(t / 900) % hs.length];
+      px.save(); px.globalCompositeOperation = 'lighter'; drawSpark(px, 96, 96, 62, reduced ? 0 : t / 2600, hue, 1); px.restore();
+    })(0);
+    document.querySelectorAll('[data-spark]').forEach((b) => (b.onclick = () => { const k = b.dataset.spark; spark[k] = (spark[k] + 1) % SPARK[k].length; showSpark(); }));
+    $('sparkRand').onclick = () => { for (const k of Object.keys(SPARK)) spark[k] = Math.floor(Math.random() * SPARK[k].length); showSpark(); };
+    showSpark();
     function start() { targets = []; score = 0; combo = 0; miss = 0; on = true; spawnIn = 0; bS.textContent = 0; bC.textContent = 0; $('beatBtn').textContent = 'playing…'; }
     function end() { on = false; $('beatBtn').textContent = 'start set'; if (score > best) { best = score; bB.textContent = best; store.set('findastra-beat-best', best); } }
     function loop() {
@@ -199,7 +254,8 @@
       for (let i = 1; i < 4; i++) { bx.beginPath(); bx.moveTo(0, h * i / 4); bx.lineTo(w, h * i / 4); bx.stroke(); }
       if (on && --spawnIn <= 0) {
         spawnIn = Math.max(16, 46 - score * .28);
-        targets.push({ x: 24 + Math.random() * (w - 48), y: 24 + Math.random() * (h - 48), t: 1, hue: HUES[(Math.random() * 4) | 0], sp: .010 + Math.min(.014, score * .00013) });
+        const hs = hues();
+        targets.push({ x: 24 + Math.random() * (w - 48), y: 24 + Math.random() * (h - 48), t: 1, hue: hs[(Math.random() * hs.length) | 0], sp: .010 + Math.min(.014, score * .00013) });
       }
       bx.save(); bx.globalCompositeOperation = 'lighter';
       for (const t of targets) {
@@ -207,9 +263,7 @@
         const R = 10 + (1 - t.t) * 16, a = Math.max(0, t.t);
         bx.strokeStyle = `hsla(${t.hue},100%,72%,${a})`; bx.lineWidth = 3;
         bx.beginPath(); bx.arc(t.x, t.y, R + 12 * t.t, 0, 6.283); bx.stroke();
-        bx.fillStyle = `hsla(${t.hue},100%,86%,${a})`; bx.beginPath();
-        for (let i = 0; i < 8; i++) { const rr = i % 2 ? 4 : 12, an = i * Math.PI / 4 + (1 - t.t) * 3; bx.lineTo(t.x + Math.cos(an) * rr, t.y + Math.sin(an) * rr); }
-        bx.closePath(); bx.fill();
+        drawSpark(bx, t.x, t.y, 13, 1 - t.t, t.hue, a);
       }
       // the burst where a sparkle was caught
       for (const p of pops) {

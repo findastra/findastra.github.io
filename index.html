@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&family=JetBrains+Mono:wght@400;700&family=VT323&family=Permanent+Marker&display=swap">
-<link rel="stylesheet" href="cyber.css?v=20261027n">
+<link rel="stylesheet" href="cyber.css?v=20261027o">
 </head>
 <body>
 <!-- the fat star every pet window is cut from (R 100, r 70; rounded by the stroke in cyber.css) -->
@@ -153,13 +153,13 @@
         <p class="muted mono" id="mem-stat"></p>
         <div class="board" id="board"></div>
         <!-- easy: six pets; hard: one pet and six of its moods (Astra, 2026-10-27) -->
-        <div class="fz-row"><button class="btn" id="mem-new">new board</button><button class="btn" id="mem-hard" aria-pressed="false">hard: one pet's moods</button></div>
+        <div class="fz-row"><button class="btn" id="mem-new">new board</button><button class="btn" id="mem-hard" aria-pressed="false">hard: moods</button></div>
       </div>
       <!-- the Fuzzboi Factory, same rules and art as findastra.github.io/fuzzboi-factory and the same six big code boxes; every
-           Fuzzboi made here moves into the cyber home -->
+           Fuzzboi made here moves into the Cyber Dome -->
       <div class="cab spread">
         <h3>Fuzzboi Factory</h3>
-        <p class="muted">Type any six-digit hex code (0–9, A–F). That exact Fuzzboi appears, and moves into the cyber home.</p>
+        <p class="muted">Type any six-digit hex code (0–9, A–F). That exact Fuzzboi appears, and moves into the Cyber Dome.</p>
         <form class="fz-code" id="fz-form">
           <span class="fz-hash">#</span>
           <div class="fz-digits" id="fz-digits"></div>
@@ -172,9 +172,9 @@
         <p class="muted mono" id="fz-note" aria-live="polite">Loading the Fuzzboi art…</p>
       </div>
       <div class="cab spread">
-        <h3>Fuzzboi cyber home</h3>
+        <h3>Fuzzboi Cyber Dome</h3>
         <p class="muted mono" id="home-count"></p>
-        <canvas class="home" id="home" aria-label="The Fuzzboi cyber home. Tap a Fuzzboi to see its code."></canvas>
+        <canvas class="home" id="home" aria-label="The Fuzzboi Cyber Dome. Tap a Fuzzboi to see its code."></canvas>
         <p class="muted mono" id="home-pick" aria-live="polite"></p>
         <div class="fz-row"><button class="btn" id="home-out" disabled>let them out</button><button class="btn" id="home-clear" disabled>empty the home</button></div>
       </div>
@@ -185,6 +185,20 @@
         <div class="screen"><canvas id="beatC" aria-label="Sparkle catcher"></canvas></div>
         <div class="hud mono"><span>score <b id="bScore">0</b></span><span>combo <b id="bCombo">0</b></span><span>best <b id="bBest">0</b></span></div>
         <button class="btn" id="beatBtn">start set</button>
+        <!-- the Sparkle Creator: design the sparkle, and the game above uses it (Astra, 2026-10-27) -->
+        <div class="spark-lab">
+          <h4>Sparkle creator</h4>
+          <div class="spark-row">
+            <canvas id="sparkPrev" width="192" height="192" aria-label="Your sparkle"></canvas>
+            <div class="labrow">
+              <button class="lab-b" data-spark="points">Points<small id="sp-points">—</small></button>
+              <button class="lab-b" data-spark="sharp">Shape<small id="sp-sharp">—</small></button>
+              <button class="lab-b" data-spark="color">Color<small id="sp-color">—</small></button>
+              <button class="lab-b" data-spark="spin">Spin<small id="sp-spin">—</small></button>
+            </div>
+          </div>
+          <button class="btn hot" id="sparkRand">randomize</button>
+        </div>
       </div>
       <div class="cab">
         <h3>Avatar lab</h3>
@@ -258,7 +272,7 @@
 <script src="updates-data.js?v=20261018c"></script>
 <script src="lettering-data.js?v=20261019a"></script>
 <script src="lettering.js?v=20261027a"></script>
-<script src="cyber.js?v=20261027n"></script>
-<script src="games-20261027.js?v=20261027b"></script>
+<script src="cyber.js?v=20261027o"></script>
+<script src="games-20261027.js?v=20261027c"></script>
 </body>
 </html>

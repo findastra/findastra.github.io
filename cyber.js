@@ -187,8 +187,17 @@
       local: [{ src: 'art/worlds/infinite-pole-spawn.jpg', cap: "Astra's Infinite Pole · the spawn" }] },
     { name: 'Piranesi House', kind: 'VRChat world · PC VR / desktop', text: "Inspired by Susanna Clarke's Piranesi: an endless labyrinth of marble statues on an island, with a tide that rises and falls, a colossus you can sit in, and a very special developers' easter egg.", repo: 'piranesi-house', local: [] },
     // the pictures each world has so far (Astra, 2026-10-27); proper captures from the worlds come later
-    { name: 'Liminal Doors', kind: 'VRChat world · PC VR / desktop', text: 'Doors that open onto quiet in-between places: an empty pool after closing, a laundrette with a sky turning in one washer, a platform between trains. Every door hides a unique crystal animal.', repo: 'liminal-doors', local: ['03-axolotl-pool-after-closing', '04-raccoon-last-laundrette', '06-crane-platform-between-trains', '18-snow-leopard-snow-in-the-lobby', '30-swan-door-at-sunrise']
-      .map((f) => ({ src: LD + f + '-20261015.png', cap: 'Liminal Doors · ' + f.replace(/^d+-/, '').replace(/-/g, ' ') })) },
+    { name: 'Liminal Doors', kind: 'VRChat world · PC VR / desktop', text: 'Doors that open onto quiet in-between places: an empty pool after closing, a laundrette with a sky turning in one washer, a platform between trains. Every door hides a unique crystal animal.', repo: 'liminal-doors', local: [ // all of its floors, the hummingbird's first (Astra, 2026-10-27)
+      '09-hummingbird-upside-down-conservatory-20261015', '01-fox-pinkscape-20261020', '02-hare-faraway-field-20261015', '03-axolotl-pool-after-closing-20261015',
+      '04-raccoon-last-laundrette-20261015', '05-gecko-apricot-underpass-20261015', '06-crane-platform-between-trains-20261015', '07-moth-velvet-waiting-room-20261015',
+      '08-frog-rain-that-misses-you-20261015', '10-ibex-salt-moon-20261015', '11-cat-motel-without-rooms-20261015', '12-manta-ray-tidal-carpet-20261015',
+      '13-hedgehog-vending-machine-clearing-20261015', '14-lynx-lavender-quarry-20261015', '15-seahorse-empty-aquarium-20261015', '16-heron-blackwater-footbridge-20261015',
+      '17-dragonfly-soft-staircase-20261015', '18-snow-leopard-snow-in-the-lobby-20261015', '19-raven-pearl-car-park-20261015', '20-octopus-room-beneath-the-ocean-20261015',
+      '21-deer-wind-telephone-20261015', '22-firefly-sleeping-arcade-20261015', '23-kangaroo-low-gravity-court-20261015', '24-scarab-ribbon-dunes-20261015',
+      '25-praying-mantis-frosted-office-20261015', '26-flamingo-red-sun-reservoir-20261015', '27-jellyfish-room-of-curtains-20261015', '28-butterfly-glass-orchard-20261015',
+      '29-red-panda-midnight-food-court-20261015', '30-swan-door-at-sunrise-20261015', '31-otter-steam-between-stars-20261015', '32-sandpiper-sunset-sandbar-20261015',
+      '33-dolphin-aquaglass-concourse-20261015', '36-kingfisher-blue-sky-terminal-20261015']
+      .map((f) => ({ src: LD + f + '.png', cap: 'Liminal Doors · ' + f.replace(/^\d+-/, '').replace(/-\d{8}$/, '').replace(/-/g, ' ') })) },
     { name: "Mommy's World", kind: 'VRChat world · PC VR / desktop', text: "The VRChat home of Mommy's Rave House, Dance & Avatar Academy.", repo: 'mommys-world',
       local: [{ src: 'art/worlds/phone-booth.jpg', cap: 'A pink phone booth above the clouds' }], extra: ['mommys', 'role-fairy'] },
     { name: 'The Rainbow Maker', kind: 'VRChat world · PC VR / desktop', text: 'The mechanics of the Kikkerland Rainbow Maker: watch its tiny gear train turn and spin a crystal that refracts rainbows across the room.', repo: 'the-rainbow-maker', local: [
@@ -205,7 +214,9 @@
   const PETOS_REPOS = new Set(['astras-pet-os', 'startup-star', 'the-kennel', 'the-shed', 'vet-clinic', 'the-police-station', 'iron-gates', 'the-recovery-room', 'ai-doghouse', 'findastra']);
   // The rest, in the profile README's groups: Discord by name, Web & More is everything else
   const DISCORD = new Set(['moodglass', 'findastra-discord-presence', 'openai-discord-presence', 'anthropic-discord-presence']);
-  const isOther = (r) => !/^pet-program-\d+$/.test(r.name) && !WORLD_REPOS.has(r.name) && !PETOS_REPOS.has(r.name) && !petByRepo[r.name];
+  // the Star Window is the Photo Star now, so only the Photo Star gets a Polaroid (Astra, 2026-10-27)
+  const HIDDEN = new Set(['astras-star-window']);
+  const isOther = (r) => !/^pet-program-\d+$/.test(r.name) && !WORLD_REPOS.has(r.name) && !PETOS_REPOS.has(r.name) && !petByRepo[r.name] && !HIDDEN.has(r.name);
   let repos = [], byName = {}, query = '';
   const when = (iso) => { const d = new Date(iso); return isNaN(d) ? '' : d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }); };
   // The Polaroids' tape, the stars and their sparkles are the only color on the page. Each keeps its color and tilt (hashed from its name).
@@ -260,9 +271,9 @@
       photo.onclick = (e) => { if (still()) openGallery(pics.filter((p) => !p.type), pics.filter((p) => !p.type).indexOf(pics[at])); };
       // more than one picture: two small arrows in the white border's bottom corners flip through them (Astra, 2026-10-27)
       if (pics.length > 1) {
-        const count = el('span', 'count', `1 / ${pics.length}`); photo.append(count);
-        const go = (d) => { at = (at + d + pics.length) % pics.length; const next = media(pics[at]); shown.replaceWith(next); shown = next; count.textContent = `${at + 1} / ${pics.length}`; };
-        flip = ['‹', '›'].map((t, i) => { const b = el('button', 'flip ' + (i ? 'next' : 'prev'), t); b.type = 'button'; b.setAttribute('aria-label', (i ? 'next' : 'previous') + ' picture of ' + name); b.onclick = () => go(i ? 1 : -1); return b; });
+        const count = el('span', 'count', `1 of ${pics.length}`);
+        const go = (d) => { at = (at + d + pics.length) % pics.length; const next = media(pics[at]); shown.replaceWith(next); shown = next; count.textContent = `${at + 1} of ${pics.length}`; };
+        flip = ['‹', '›'].map((t, i) => { const b = el('button', 'flip ' + (i ? 'next' : 'prev'), t); b.type = 'button'; b.setAttribute('aria-label', (i ? 'next' : 'previous') + ' picture of ' + name); b.onclick = () => go(i ? 1 : -1); return b; }).concat(count);
       }
     }
     const title = repo || site ? link(repo || site, 'title', name) : el('b', 'title', name);
@@ -296,10 +307,19 @@
     return box;
   };
   // Discord and Web & More: the repo name, written out with spaces, and its language
+  // what each website looks like (Astra, 2026-10-27): its own page, shown first on its Polaroid
+  const SITE_PICS = {
+    'fuzzboi-factory': [{ src: 'art/projects/fuzzboi-factory-site-20261027.jpg', cap: 'The Fuzzboi Factory' }],
+    'mommys-website': [{ src: 'art/projects/mommys-website-site-20261027.jpg', cap: "Mommy's: the twins and the windows" }],
+    'astras-photostar': [{ src: 'https://findastra.github.io/astras-star-window/star-window.svg', cap: "Astra's Photo Star" }],
+    // the live sign, saying what it is (its ?message= link option is a Pocket Message Board change waiting for Astra's OK)
+    'pocket-message-board': [{ src: 'https://findastra.github.io/pocket-message-board/?message=' + encodeURIComponent('This is a Pocket Message Board. Check it out!') + '&size=1', cap: 'Pocket Message Board', type: 'frame' }],
+  };
+  const NAMES = { 'astras-photostar': "Astra's Photo Star" };
   const extraCard = (r) => {
     const repoUrl = 'https://github.com/findastra/' + r.name;
-    return polaroid({ key: r.name, shot: r.name === 'moodglass' ? moodglassShot() : null, name: r.name.replace(/-/g, ' '), kind: r.language || 'project', date: when(r.pushed_at),
-      text: cleanText(r.description || 'No description yet.'), pics: picturesOf(r.name), repo: repoUrl, site: r.homepage });
+    return polaroid({ key: r.name, shot: r.name === 'moodglass' ? moodglassShot() : null, name: NAMES[r.name] || r.name.replace(/-/g, ' '), kind: r.language || 'project', date: when(r.pushed_at),
+      text: cleanText(r.description || 'No description yet.'), pics: [...(SITE_PICS[r.name] || []), ...picturesOf(r.name)], repo: repoUrl, site: r.homepage });
   };
 
   // ---------- stars: every pet, with its hosted icon, and its repo's pictures and links when the repo is public ----------
@@ -624,7 +644,7 @@
     stat();
   }
   $('mem-new').onclick = deal;
-  $('mem-hard').onclick = () => { hard = !hard; $('mem-hard').setAttribute('aria-pressed', String(hard)); $('mem-hard').textContent = hard ? 'easy: six pets' : "hard: one pet's moods"; deal(); };
+  $('mem-hard').onclick = () => { hard = !hard; $('mem-hard').setAttribute('aria-pressed', String(hard)); $('mem-hard').textContent = hard ? 'easy: 6 pets' : 'hard: moods'; deal(); };
   deal();
 
   // ---------- links ----------
