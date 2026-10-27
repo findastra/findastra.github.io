@@ -60,5 +60,8 @@
     }, 120);
   }, { passive: true });
   addEventListener('resize', () => { track.scrollLeft = slides[at].offsetLeft - track.offsetLeft; });
-  show(0);
+  // a different one each visit (Astra, 2026-10-27: "I also want that slide to be random")
+  const first = Math.floor(Math.random() * slides.length);
+  requestAnimationFrame(() => { track.scrollLeft = slides[first].offsetLeft - track.offsetLeft; });
+  show(first);
 })();

@@ -96,14 +96,7 @@
   };
   boot();
 
-  // ---------- about ----------
-  $('about-text').replaceChildren(...(P.about || []).map((t) => el('p', null, t)));
-  $('languages').replaceChildren(...(P.languages || []).map((t) => el('li', null, t)));
-  $('skills').replaceChildren(...(P.skills || []).map((t) => el('li', null, t)));
-  if ((P.positions || []).length) {
-    $('work-note').hidden = true;
-    $('work').replaceChildren(...P.positions.map((p) => { const li = el('li'); li.append(link('work/' + encodeURIComponent(p.slug) + '.html', null, p.employer), document.createTextNode(` · ${p.role} · ${p.start}–${p.end || 'now'}`)); return li; }));
-  }
+  // ---------- about: left blank for now (Astra, 2026-10-27) ----------
 
   // ---------- tickers: what changed lately, and the projects being worked on now ----------
   // From GitHub's public search (merged pull requests and commits by findastra); the snapshot in updates-data.js when
@@ -180,38 +173,29 @@
     try { sessionStorage.setItem(KEY, JSON.stringify({ t: Date.now(), prs, commits })); } catch {}
   })();
 
-  // ---------- projects, in four chapters read top to bottom like the GitHub profile README (Astra, 2026-10-27): worlds and
-  // avatars as Polaroids with their names written on the white border, Astra's PetOS as the star jar, everything else as
-  // Polaroids again ----------
-  // Worlds in the profile README's order and words (findastra/findastra README, "VR & VRChat").
+  // ---------- projects, in the GitHub profile README's groups read top to bottom (Astra, 2026-10-27): VR & VRChat, Discord,
+  // Web & More, all as Polaroids with their names written on the white border, then Astra's PetOS as the star jar ----------
+  // VR & VRChat: her six worlds, in the profile README's words (findastra/findastra README). DETOUR into VR is in the
+  // README's VR group but is not a world, so it is left out here (Astra: "there should be only like 6 worlds").
   const WORLDS = [
     { name: "Astra's Infinite Pole", kind: 'VRChat world · PC VR / desktop', text: 'An infinite pole, a spiral staircase, phone booths that can talk to each other no matter how far down you fall, and tons of glitter too.', repo: 'astras-infinite-pole',
       local: [{ src: 'art/worlds/infinite-pole-spawn.jpg', cap: "Astra's Infinite Pole · the spawn" }] },
     { name: 'Piranesi House', kind: 'VRChat world · PC VR / desktop', text: "Inspired by Susanna Clarke's Piranesi: an endless labyrinth of marble statues on an island, with a tide that rises and falls, a colossus you can sit in, and a very special developers' easter egg.", repo: 'piranesi-house', local: [] },
     { name: 'Liminal Doors', kind: 'VRChat world · PC VR / desktop', text: 'Doors that open onto quiet in-between places: an empty pool after closing, a laundrette with a sky turning in one washer, a platform between trains. Every door hides a unique crystal animal.', repo: 'liminal-doors', local: [] },
     { name: "Mommy's World", kind: 'VRChat world · PC VR / desktop', text: "The VRChat home of Mommy's Rave House, Dance & Avatar Academy.", repo: 'mommys-world',
-      local: [{ src: 'art/worlds/phone-booth.jpg', cap: 'A pink phone booth above the clouds' }], extra: ['mommys-website', 'mommys', 'role-fairy'] },
+      local: [{ src: 'art/worlds/phone-booth.jpg', cap: 'A pink phone booth above the clouds' }], extra: ['mommys', 'role-fairy'] },
     { name: 'The Rainbow Maker', kind: 'VRChat world · PC VR / desktop', text: 'The mechanics of the Kikkerland Rainbow Maker: watch its tiny gear train turn and spin a crystal that refracts rainbows across the room.', repo: 'the-rainbow-maker', local: [] },
     { name: 'The Cooling Tower', kind: 'VRChat world · PC VR / desktop', text: "A rave world inside a nuclear plant's cooling tower: break into the facility and power it up with music. The Stack, the Turbine Hall, then the Reactor Hall.", repo: 'the-cooling-tower', local: [] },
-    { name: 'DETOUR into VR', kind: 'Live · IRL + VR rave', text: 'Streaming DETOUR Mile 04, an IRL + VR rave, to TikTok LIVE from VRChat.', repo: 'detour-into-vr', local: [] },
-  ];
-  // Avatars: a starting list from the repos and Mommy's website, for Astra to check (2026-10-27).
-  const AVATARS = [
-    { name: "Astra's avatar", kind: 'VRChat avatar', text: 'The one in the portrait up top.', pic: 'art/avatar.jpg', href: '#top' },
-    { name: 'Poppy', kind: 'VRChat avatar', text: 'Version guide and release records for the Poppy avatar.', repo: 'poppy' },
-    { name: 'Dubstep Armory', kind: 'Avatar effects', text: 'A catalog site for avatar gun effects and loadouts.', repo: 'dubstep-armory' },
-    { name: "Mommy's Avatar Academy", kind: 'Workshops', text: 'Avatar editing classes at Mommy\'s: sparkles, clothing material swaps, outfit rigging.', repo: 'mommys-website' },
-    { name: 'Avatar lab', kind: 'Play', text: 'Build a chibi look in the arcade, the same lab as on Mommy\'s website.', href: '#arcade' },
   ];
   // vrchat-ai-astra was renamed the-astral-plane (2026-10-18); the pet list may still use the old name
   const RENAMED = { 'vrchat-ai-astra': 'the-astral-plane' };
   if (petByRepo['vrchat-ai-astra'] && !petByRepo['the-astral-plane']) petByRepo['the-astral-plane'] = petByRepo['vrchat-ai-astra'];
-  // Repos shown as a world or avatar get no Polaroid of their own. PetOS's own building blocks get none either (Astra,
+  // Repos shown as a world (and the avatar ones, with no chapter now) get no Polaroid of their own. PetOS's own building blocks get none either (Astra,
   // 2026-10-18); the ones that are pets are in the jar.
-  const WORLD_REPOS = new Set(['astras-infinite-pole', 'piranesi-house', 'liminal-doors', 'mommys-world', 'the-rainbow-maker', 'the-cooling-tower', 'detour-into-vr', 'mommys-website', 'role-fairy', 'poppy', 'dubstep-armory']);
+  const WORLD_REPOS = new Set(['astras-infinite-pole', 'piranesi-house', 'liminal-doors', 'mommys-world', 'the-rainbow-maker', 'the-cooling-tower', 'detour-into-vr', 'role-fairy', 'poppy', 'dubstep-armory']);
   const PETOS_REPOS = new Set(['astras-pet-os', 'startup-star', 'the-kennel', 'the-shed', 'vet-clinic', 'the-police-station', 'iron-gates', 'the-recovery-room', 'ai-doghouse', 'findastra']);
-  // Everything else, grouped the way the profile README groups it
-  const GROUPS = [['Discord', new Set(['moodglass', 'findastra-discord-presence', 'openai-discord-presence', 'anthropic-discord-presence'])], ['Web & more', null]];
+  // The rest, in the profile README's groups: Discord by name, Web & More is everything else
+  const DISCORD = new Set(['moodglass', 'findastra-discord-presence', 'openai-discord-presence', 'anthropic-discord-presence']);
   const isOther = (r) => !/^pet-program-\d+$/.test(r.name) && !WORLD_REPOS.has(r.name) && !PETOS_REPOS.has(r.name) && !petByRepo[r.name];
   let repos = [], byName = {}, query = '';
   const when = (iso) => { const d = new Date(iso); return isNaN(d) ? '' : d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }); };
@@ -268,11 +252,7 @@
     const pics = worldPics(w);
     return polaroid({ key: w.repo, name: w.name, kind: w.kind, text: w.text, pics, meta: [repoLink(w.repo)] });
   };
-  const avatarCard = (a) => {
-    const go = a.href ? el('a', null, a.href === '#arcade' ? 'play ↓' : 'see ↑') : null; if (go) go.href = a.href;
-    return polaroid({ key: a.name, name: a.name, kind: a.kind, text: a.text, pics: a.pic ? [{ src: a.pic, cap: a.name }] : picturesOf(a.repo || ''), meta: [a.repo && repoLink(a.repo), go] });
-  };
-  // everything else: the repo name, written out with spaces, and its language
+  // Discord and Web & More: the repo name, written out with spaces, and its language
   const extraCard = (r) => {
     const repoUrl = 'https://github.com/findastra/' + r.name;
     return polaroid({ key: r.name, name: r.name.replace(/-/g, ' '), kind: r.language || 'project', text: cleanText(r.description || 'No description yet.'), pics: picturesOf(r.name), href: r.homepage || repoUrl,
@@ -466,24 +446,20 @@
 
   function render() {
     $('world-list').replaceChildren(...WORLDS.filter((w) => shown(`${w.name} ${w.kind} ${w.text} ${w.repo}`)).map(worldCard));
-    $('avatar-list').replaceChildren(...AVATARS.filter((a) => shown(`${a.name} ${a.kind} ${a.text} ${a.repo || ''}`)).map(avatarCard));
-    // pets with pictures first, then the ones with an icon, then the ones with a public repo, then by number
-    petJar.fill(pets.map(petEntry).filter(({ p, r }) => shown(`${p.pet} ${p.program} ${p.text} ${p.repo} ${(r && r.description) || ''}`))
-      .sort((a, b) => (b.pics.length > 0) - (a.pics.length > 0) || !!iconOf(b.p) - !!iconOf(a.p) || (b.r ? 1 : 0) - (a.r ? 1 : 0) || a.p.number - b.p.number));
-    // everything else, in the README's groups
+    // only pets with a picture go in the jar (Astra, 2026-10-27: "I don't want to see stars without pets on them"); the ones
+    // with project pictures first, then the ones with a public repo, then by number
+    petJar.fill(pets.filter(iconOf).map(petEntry).filter(({ p, r }) => shown(`${p.pet} ${p.program} ${p.text} ${p.repo} ${(r && r.description) || ''}`))
+      .sort((a, b) => (b.pics.length > 0) - (a.pics.length > 0) || (b.r ? 1 : 0) - (a.r ? 1 : 0) || a.p.number - b.p.number));
+    // Discord and Web & More, newest first
     const others = repos.filter(isOther).filter((r) => shown(`${r.name} ${r.description}`)).sort((a, b) => String(b.pushed_at).localeCompare(String(a.pushed_at)));
-    $('extra-list').replaceChildren(...GROUPS.map(([title, names]) => {
-      const list = others.filter((r) => (names ? names.has(r.name) : !GROUPS.some(([, n]) => n && n.has(r.name))));
-      if (!list.length) return null;
-      const g = el('section', 'extra-group'); const wall = el('div', 'polaroids'); wall.append(...list.map(extraCard));
-      g.append(el('h4', null, '### ' + title), wall); return g;
-    }).filter(Boolean));
+    $('discord-list').replaceChildren(...others.filter((r) => DISCORD.has(r.name)).map(extraCard));
+    $('web-list').replaceChildren(...others.filter((r) => !DISCORD.has(r.name)).map(extraCard));
     for (const ch of document.querySelectorAll('.chapter')) ch.classList.toggle('empty', !!query && !ch.querySelector('.polaroid, .mini'));
   }
   // a search tips the jar out, so every matching pet shows
   $('search').addEventListener('input', (e) => { query = e.target.value.trim().toLowerCase(); if (query) petJar.setPour(true); render(); });
   const shots = Object.values(IMG).filter((r) => r.screenshot || (r.pages || []).length || r.images.length).length;
-  const source = (live) => ($('project-source').textContent = `${live ? 'live from GitHub' : 'snapshot'} · ${repos.length} public repos · ${WORLDS.length} worlds · ${pets.length} pets · ${shots} with pictures so far`);
+  const source = (live) => ($('project-source').textContent = `${live ? 'live from GitHub' : 'snapshot'} · ${repos.length} public repos · ${WORLDS.length} worlds · ${pets.filter(iconOf).length} pets · ${shots} with pictures so far`);
   let liveRepos = false;
   const useRepos = (list, live) => {
     repos = list.filter((r) => r.name !== 'findastra.github.io'); byName = Object.fromEntries(repos.map((r) => [r.name, r]));
@@ -534,7 +510,7 @@
       spots.sort((a, b) => (b.sat * .7 + b.light * .3 + b.w * .5) - (a.sat * .7 + a.light * .3 + a.w * .5));
       box.replaceChildren(...spots.slice(0, 70).map((sp, n) => {
         const s = el('i'), k = hash('p' + sp.i);
-        s.style.cssText = `--x:${((sp.i % N + .5) / N * 100).toFixed(1)}%;--y:${((Math.floor(sp.i / N) + .5) / N * 100).toFixed(1)}%;--s:${8 + (k % 14)}px;--d:${((k >>> 8) % 40) / 10}s;--c:${sp.c};--dh:0;--l:22`;
+        s.style.cssText = `--x:${((sp.i % N + .5) / N * 100).toFixed(1)}%;--y:${((Math.floor(sp.i / N) + .5) / N * 100).toFixed(1)}%;--s:${8 + (k % 14)}px;--d:${((k >>> 8) % 40) / 10}s;--c:${sp.c};--dh:${[-36, -18, 0, 18, 36][(k >>> 12) % 5]};--l:22`;
         return s;
       }));
     };
@@ -589,7 +565,6 @@
   $('mem-new').onclick = deal; deal();
 
   // ---------- links ----------
-  [['GitHub', 'https://github.com/findastra'], ['TikTok', 'https://www.tiktok.com/@findastra']].forEach(([n, h]) => $('links').append(link(h, null, n)));
 
   // ---------- code rain behind the hero, in rainbow colors that drift down the spectrum (Astra, 2026-10-27; it was white) ----------
   const cv = $('rain'), cx = cv.getContext('2d'); let cols = [];
