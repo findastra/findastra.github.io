@@ -96,6 +96,37 @@
     $('unmask').textContent = 'unmasked ✓';
   };
   boot();
+  // the line to type into: a few commands, the rest answered like a real shell would (Astra, 2026-10-27)
+  const SECTIONS = { vr: 'vr', discord: 'discord', web: 'web', petos: 'pets', pets: 'pets', arcade: 'arcade', contact: 'contact', top: 'top' };
+  const who = () => (unmasked ? 'astra' : 'audra');
+  const go = (id) => $(id) && $(id).scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' });
+  const COMMANDS = {
+    help: () => 'try: whoami · ls · cd <vr|discord|web|petos|arcade|contact> · find /astra · sudo unmask · rabbit · date · clear',
+    whoami: () => who(),
+    ls: () => 'vr/  discord/  web/  petos/  arcade/  contact/',
+    pwd: () => '/home/' + who(),
+    date: () => new Date().toString(),
+    rabbit: () => 'follow the white rabbit. it hops along the bar below. catch it.',
+    'find /astra': () => '/astra/vr  /astra/discord  /astra/web  /astra/petos  /astra/arcade  · found ' + (repos.length || 'many') + ' projects',
+    'sudo unmask': () => { if (unmasked) return 'already unmasked.'; $('unmask').click(); return ''; },
+    play: () => { go('arcade'); return 'cd arcade'; },
+    clear: () => { term.replaceChildren(); return ''; },
+  };
+  $('term-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const raw = $('term-in').value.trim(); $('term-in').value = '';
+    if (!raw) return;
+    line(`${who()}@findastra:~$ ${raw}`, 'ok');
+    const cmd = raw.toLowerCase().replace(/\s+/g, ' ');
+    let out;
+    if (COMMANDS[cmd]) out = COMMANDS[cmd]();
+    else if (/^cd\s+/.test(cmd)) { const to = SECTIONS[cmd.slice(3).replace(/[\/.~]/g, '')]; out = to ? (go(to), '') : `cd: ${raw.slice(3)}: no such section`; }
+    else if (/^echo\s+/.test(cmd)) out = raw.slice(5);
+    else out = `${raw.split(' ')[0]}: command not found. try help`;
+    if (out) line(out, 'dim');
+    $('term-prompt').textContent = `${who()}@findastra:~$`;
+    term.scrollTop = term.scrollHeight;
+  });
 
 
   // ---------- tickers: what changed lately, and the projects being worked on now ----------
@@ -752,7 +783,7 @@
   // ---------- the white rabbit: hops across the live updates ticker now and then; catch it and the rain changes color ----------
   // Astra (2026-10-27) asked for "the rabbit from Data Dealer"; the hopping white rabbit lives in Gone Ghost's page
   // (findastra/ghost-protocol): the same four 8-bit frames (15 x 12 pixels), the same hop. It hops along the top edge of the
-  // bar, never over its words.
+  // working on bar, never over its words.
   (() => {
     const lane = $('rabbit-lane'); if (!lane || reduced) return;
     // each frame: [x, y, w, h] pixels, the eye last; and how high it is in the hop (0 to 1)
@@ -781,7 +812,7 @@
       const hopMs = 560 + Math.random() * 160, hop = 11 + Math.random() * 3, hops = Math.max(6, Math.round((x1 - x0) / 46)), step = (x1 - x0) / hops;
       // his color is the colors the rain turns when he is caught (Astra, 2026-10-27)
       const next = PALETTES[(palette + 1) % PALETTES.length];
-      bun.classList.toggle('rainbow', next.span === 360); bun.style.color = next.span === 360 ? '' : `hsl(${next.from + next.span / 2} 100% 70%)`;
+      bun.classList.toggle('rainbow', next.span === 360); bun.style.setProperty('--glow', next.span === 360 ? '#fff' : `hsl(${next.from + next.span / 2} 100% 62%)`);
       running = true; bun.classList.add('running'); bun.style.left = x0 + 'px'; pose(0, hop);
       const t0 = performance.now() + 600;
       raf = requestAnimationFrame(function tick(now) {
