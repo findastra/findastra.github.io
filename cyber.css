@@ -12,7 +12,20 @@
 
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; scroll-padding-top: 64px; }
-body { margin: 0; background: #0b0b0b; color: var(--ink); font: 17px/1.65 Inter, system-ui, sans-serif; overflow-x: hidden; }
+body { margin: 0; background: #0b0b0b; color: var(--ink); font: 17px/1.65 Inter, system-ui, sans-serif; overflow-x: hidden; padding-left: var(--rail); }
+/* the pole on the left, from Mommy's website: a glowing pole, a floor label per section, and a bead on the one you are on */
+:root { --rail: 52px; }
+#pole { position: fixed; left: 0; top: 0; bottom: 0; z-index: 40; width: var(--rail); pointer-events: none; background: #050505; border-right: 2px solid #1e1e1e; }
+#pole::before { content: ""; position: absolute; top: 0; bottom: 0; left: calc(var(--rail) / 2 - 3px); width: 6px; border-radius: 6px;
+  background: linear-gradient(180deg, #fff 0%, #dde0f5 12%, #ff8fd0 40%, #ff2e7e 68%, #e5123f 100%); box-shadow: 0 0 14px rgba(255, 46, 126, .85), 0 0 40px rgba(255, 46, 126, .35); }
+#bead { position: absolute; top: 60px; left: calc(var(--rail) / 2 - 11px); width: 22px; height: 22px; border-radius: 50%;
+  background: radial-gradient(circle at 32% 30%, #fff, #ff8fd0 45%, #ff2e7e 100%); box-shadow: 0 0 18px #ff2e7e, 0 0 44px rgba(255, 46, 126, .6); transition: top .18s cubic-bezier(.4, 1.4, .5, 1); }
+.floors { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: space-around; align-items: center; padding: 12vh 0; }
+.floors a { pointer-events: auto; cursor: pointer; text-decoration: none; min-height: 44px; min-width: 28px; display: flex; align-items: center; justify-content: center;
+  font: 400 10px/1 var(--mono); letter-spacing: .14em; color: #c9c9c9; writing-mode: vertical-rl; text-orientation: mixed; background: #0b0b0b; padding: 6px 2px; opacity: .55;
+  transition: opacity .25s, color .25s, text-shadow .25s; }
+.floors a:hover, .floors a:focus-visible { opacity: 1; background: #0b0b0b; color: #fff; }
+.floors a.on { opacity: 1; color: #fff; text-shadow: 0 0 10px #ff2e7e; }
 /* film grain over everything */
 body::after { content: ""; position: fixed; inset: 0; z-index: 60; pointer-events: none; opacity: .09;
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
@@ -402,6 +415,8 @@ a.title:hover, a.title:focus-visible { color: color-mix(in srgb, var(--c) 45%, #
 }
 @media (max-width: 520px) {
   body { font-size: 16px; }
+  :root { --rail: 36px; }
+  .floors a { font-size: 9px; letter-spacing: .1em; }
   .block { padding-top: 64px; padding-bottom: 64px; }
   .board { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .fz-traits { grid-template-columns: repeat(2, minmax(0, 1fr)); }

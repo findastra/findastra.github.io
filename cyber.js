@@ -615,6 +615,28 @@
     setTimeout(() => requestAnimationFrame(rain), 60);
   })();
 
+  // ---------- the pole on the left (from Mommy's website): the bead sits on the section you are on; click a floor to go there ----------
+  (() => {
+    const marks = [...document.querySelectorAll('.floors a')], secs = marks.map((a) => $(a.dataset.f)), bead = $('bead');
+    let asked = -1; // a floor clicked, until the visitor scrolls on their own
+    function onScroll() {
+      let at = asked;
+      if (at < 0) { at = 0; secs.forEach((s, i) => { if (s && s.getBoundingClientRect().top <= Math.min(90, innerHeight * .15)) at = i; }); }
+      marks.forEach((a, i) => { a.classList.toggle('on', i === at); if (i === at) a.setAttribute('aria-current', 'location'); else a.removeAttribute('aria-current'); });
+      const r = marks[at].getBoundingClientRect(); bead.style.top = r.top + r.height / 2 - bead.offsetHeight / 2 + 'px';
+    }
+    marks.forEach((a, i) => a.addEventListener('click', (e) => {
+      if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+      e.preventDefault(); asked = i; history.replaceState(null, '', a.hash);
+      secs[i].scrollIntoView({ behavior: reduced ? 'instant' : 'smooth', block: 'start' }); onScroll();
+    }));
+    const release = () => (asked = -1);
+    addEventListener('wheel', release, { passive: true }); addEventListener('touchstart', release, { passive: true });
+    addEventListener('keydown', (e) => { if (['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'Home', 'End', ' '].includes(e.key)) release(); });
+    addEventListener('pointerdown', (e) => { if (!e.target.closest('#pole')) release(); }, { passive: true });
+    addEventListener('scroll', onScroll, { passive: true }); addEventListener('resize', onScroll); onScroll();
+  })();
+
   // ---------- the white rabbit: hops across the live updates ticker now and then; catch it and the rain changes color ----------
   // Astra (2026-10-27) asked for "the rabbit from Data Dealer"; the hopping white rabbit lives in Gone Ghost's page
   // (findastra/ghost-protocol): the same four 8-bit frames (15 x 12 pixels), the same hop. It hops along the top edge of the
