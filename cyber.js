@@ -183,7 +183,7 @@
   const LD = 'https://raw.githubusercontent.com/findastra/liminal-doors/main/concept-art/floors/';
   const RM = 'https://raw.githubusercontent.com/findastra/the-rainbow-maker/main/Art/rainbow-maker/';
   const WORLDS = [
-    { name: "Astra's Infinite Pole", kind: 'VRChat world · PC VR / desktop', text: 'An infinite pole, a spiral staircase, phone booths that can talk to each other no matter how far down you fall, and tons of glitter too.', repo: 'astras-infinite-pole',
+    { name: "Astra's Infinite Pole", ownPicsOnly: true, kind: 'VRChat world · PC VR / desktop', text: 'An infinite pole, a spiral staircase, phone booths that can talk to each other no matter how far down you fall, and tons of glitter too.', repo: 'astras-infinite-pole',
       local: [{ src: 'art/worlds/infinite-pole-spawn.jpg', cap: "Astra's Infinite Pole · the spawn" }] },
     { name: 'Piranesi House', kind: 'VRChat world · PC VR / desktop', text: "Inspired by Susanna Clarke's Piranesi: an endless labyrinth of marble statues on an island, with a tide that rises and falls, a colossus you can sit in, and a very special developers' easter egg.", repo: 'piranesi-house', local: [] },
     // the pictures each world has so far (Astra, 2026-10-27); proper captures from the worlds come later
@@ -201,8 +201,8 @@
     { name: "Mommy's World", kind: 'VRChat world · PC VR / desktop', text: "The VRChat home of Mommy's Rave House, Dance & Avatar Academy.", repo: 'mommys-world',
       local: [{ src: 'art/worlds/phone-booth.jpg', label: 'concept art', cap: 'A pink phone booth above the clouds' }], extra: ['mommys', 'role-fairy'] },
     { name: 'The Rainbow Maker', kind: 'VRChat world · PC VR / desktop', text: 'The mechanics of the Kikkerland Rainbow Maker: watch its tiny gear train turn and spin a crystal that refracts rainbows across the room.', repo: 'the-rainbow-maker', local: [
-      { src: RM + 'rainbow-maker-preview-20261022.mp4', cap: 'The Rainbow Maker · turning', type: 'video', fit: 'contain' },
-      { src: RM + 'rainbow-maker-still-20261022.png', cap: 'The Rainbow Maker', fit: 'contain' }, { src: RM + 'rainbow-maker-crystals-cycles-20261023.png', cap: 'The Rainbow Maker · the crystals', fit: 'contain' }] },
+      { src: RM + 'rainbow-maker-preview-20261022.mp4', cap: 'The Rainbow Maker · turning', type: 'video', fit: 'contain', bg: '#45444a' },
+      { src: RM + 'rainbow-maker-still-20261022.png', cap: 'The Rainbow Maker', fit: 'contain', bg: '#45444a' }, { src: RM + 'rainbow-maker-crystals-cycles-20261023.png', cap: 'The Rainbow Maker · the crystals', fit: 'contain', bg: '#47423f' }] },
     { name: 'The Cooling Tower', siteLabel: 'see full mini model ↗', kind: 'VRChat world · PC VR / desktop', text: "A rave world inside a nuclear plant's cooling tower: break into the facility and power it up with music. The Stack, the Turbine Hall, then the Reactor Hall.", repo: 'the-cooling-tower', local: [{ src: 'https://findastra.github.io/the-cooling-tower/mini-model/the-cooling-tower-mini-model-20261024.html', cap: 'The Cooling Tower · Mini Model', type: 'frame', label: 'concept model', bare: true }] },
   ];
   // vrchat-ai-astra was renamed the-astral-plane (2026-10-18); the pet list may still use the old name
@@ -250,17 +250,20 @@
   // Everything about a project is on the Polaroid (Astra, 2026-10-27): its name (a link to the repo), its code and the date it
   // last changed, written in marker on the white border, with little repo and site tags under them; under it, the
   // repo's own GitHub description.
-  function polaroid({ key, name, kind, date, text, pics, repo, site, siteLabel, shot }) {
+  // the GitHub descriptions under the Polaroids are off for now (Astra, 2026-10-27: "just get rid of those descriptions ... I might
+  // want to bring them back"); true brings them back
+  const SHOW_DESCRIPTIONS = false;
+  function polaroid({ key, name, kind, date, text, pics, repo, site, siteLabel, shot, sticky }) {
     const c = el('article', 'polaroid'); const h = paint(c, key);
     const photo = el(pics.length && !shot && !pics.some((p) => p.type === 'frame') ? 'button' : 'div', 'photo');
     if (shot) photo.append(shot);
     else if (!pics.length) photo.append(el('span', 'developing', 'still developing…'));
-    let flip = null;
+    let flip = null, count = null;
     if (!shot && pics.length) {
       let at = 0;
       // each picture can also be a video (plays by itself, muted, on a loop) or a live page you can move around in
       const media = (p) => {
-        if (p.type === 'video') { const v = el('video'); Object.assign(v, { src: p.src, muted: true, loop: true, autoplay: !reduced, playsInline: true, preload: 'metadata' }); if (p.fit) v.style.objectFit = p.fit; return v; }
+        if (p.type === 'video') { const v = el('video'); Object.assign(v, { src: p.src, muted: true, loop: true, autoplay: !reduced, playsInline: true, preload: 'metadata' }); if (p.fit) v.style.objectFit = p.fit; if (p.bg) v.style.background = p.bg; return v; }
         // a live page starts once the Polaroid scrolls near (the browser's own lazy loading never starts it inside the scaled frame)
         // a bare page is cropped to its picture (Astra, 2026-10-27: the Mini Model without its title and key); on the live site it
         // shares this site's address, so its panel is hidden outright too
@@ -269,7 +272,7 @@
           if (p.bare) f.addEventListener('load', () => { try { const st = f.contentDocument.createElement('style'); st.textContent = '.panel{display:none!important}'; f.contentDocument.head.append(st); } catch {} });
           new IntersectionObserver((seen, io) => { if (seen.some((s) => s.isIntersecting)) { f.src = p.src; io.disconnect(); } }, { rootMargin: '400px' }).observe(photo); return f;
         }
-        const im = el('img'); im.src = p.src; im.alt = ''; im.loading = 'lazy'; if (p.fit) im.style.objectFit = p.fit; return im;
+        const im = el('img'); im.src = p.src; im.alt = ''; im.loading = 'lazy'; if (p.fit) im.style.objectFit = p.fit; if (p.bg) im.style.background = p.bg; return im;
       };
       // what a picture is, written at its top (Astra, 2026-10-27: "wherever it's concept art, it says concept art")
       const badge = el('span', 'badge'); badge.hidden = !pics[0].label; badge.textContent = pics[0].label || '';
@@ -279,22 +282,24 @@
       photo.onclick = (e) => { if (still()) openGallery(pics.filter((p) => !p.type), pics.filter((p) => !p.type).indexOf(pics[at])); };
       // more than one picture: two small arrows in the white border's bottom corners flip through them (Astra, 2026-10-27)
       if (pics.length > 1) {
-        const count = el('span', 'count', `1 of ${pics.length}`);
-        const go = (d) => { at = (at + d + pics.length) % pics.length; const next = media(pics[at]); shown.replaceWith(next); shown = next; badge.hidden = !pics[at].label; badge.textContent = pics[at].label || ''; count.textContent = `${at + 1} of ${pics.length}`; };
-        flip = ['‹', '›'].map((t, i) => { const b = el('button', 'flip ' + (i ? 'next' : 'prev'), t); b.type = 'button'; b.setAttribute('aria-label', (i ? 'next' : 'previous') + ' picture of ' + name); b.onclick = () => go(i ? 1 : -1); return b; }).concat(count);
+        count = el('span', 'count', `1 of ${pics.length}`);
+        const go = (d) => { at = (at + d + pics.length) % pics.length; const next = media(pics[at]); shown.replaceWith(next); shown = next; if (sticky) sticky(at, note2); badge.hidden = !pics[at].label; badge.textContent = pics[at].label || ''; count.textContent = `${at + 1} of ${pics.length}`; };
+        flip = ['‹', '›'].map((t, i) => { const b = el('button', 'flip ' + (i ? 'next' : 'prev'), t); b.type = 'button'; b.setAttribute('aria-label', (i ? 'next' : 'previous') + ' picture of ' + name); b.onclick = () => go(i ? 1 : -1); return b; });
       }
     }
     const title = repo || site ? link(repo || site, 'title', name) : el('b', 'title', name);
     const note = el('div', 'note'), tags = el('div', 'tags');
-    if (repo) tags.append(link(repo, null, 'repo ↗'));
     if (site) tags.append(link(site, null, siteLabel || 'site ↗'));
+    if (count) tags.prepend(count);
     note.append(title, el('span', 'kind', [kind, date].filter(Boolean).join(' · ')), tags);
     const frame = el('div', 'frame'); frame.append(el('i', 'tape'), photo, note, ...(flip || []));
     const info = el('div', 'info');
-    if (text) { const p = el('p', null, text); p.title = text; info.append(p); }
+    if (text && SHOW_DESCRIPTIONS) { const p = el('p', null, text); p.title = text; info.append(p); }
+    let note2 = null;
+    if (sticky) { note2 = el('div', 'sticky'); sticky(0, note2); frame.append(note2); }
     c.append(sparkles(h, 5), frame, info); return c;
   }
-  const worldPics = (w) => [...w.local, ...picturesOf(w.repo), ...(w.extra || []).flatMap(picturesOf)];
+  const worldPics = (w) => [...w.local, ...(w.ownPicsOnly ? [] : picturesOf(w.repo)), ...(w.extra || []).flatMap(picturesOf)];
   // a world: its repo (when public) gives the link, date and description; the README's words when it is private
   const worldCard = (w) => {
     const r = byName[w.repo];
@@ -320,9 +325,9 @@
   // Discord and Web & More: the repo name, written out with spaces, and its language
   // what each website looks like (Astra, 2026-10-27): its own page, shown first on its Polaroid
   const SITE_PICS = {
-    'fuzzboi-factory': [{ src: 'art/projects/fuzzboi-factory-site-20261027.jpg', cap: 'The Fuzzboi Factory' }],
-    'mommys-website': [{ src: 'art/projects/mommys-website-site-20261027.jpg', cap: "Mommy's: the twins and the windows" }],
-    'astras-photostar': [{ src: 'https://findastra.github.io/astras-star-window/star-window.svg', cap: "Astra's Photo Star" }],
+    'fuzzboi-factory': [{ src: 'art/projects/fuzzboi-factory-site-20261027.jpg', cap: 'The Fuzzboi Factory', fit: 'contain', bg: '#121a6b' }],
+    'mommys-website': [{ src: 'art/projects/mommys-website-site-20261027.jpg', cap: "Mommy's: the twins and the windows", fit: 'contain', bg: '#1a0612' }],
+    'astras-photostar': [{ src: 'https://findastra.github.io/astras-star-window/star-window.svg', cap: "Astra's Photo Star", fit: 'contain', bg: '#ffffff' }],
     // the live sign, saying what it is (its ?message= link option is a Pocket Message Board change waiting for Astra's OK)
     'pocket-message-board': [{ src: 'https://findastra.github.io/pocket-message-board/?message=' + encodeURIComponent('This is a Pocket Message Board. Check it out!') + '&size=1', cap: 'Pocket Message Board', type: 'frame' }],
   };
@@ -525,6 +530,21 @@
     for (const p of list) { const im = el('img'); im.src = iconOf(p); im.alt = ''; im.loading = 'lazy'; im.title = p.pet; g.append(im); }
     return g;
   };
+  // each pet's levels from the hub's INTELLIGENCE-LEVELS.md table: L1 programs, L2 pet program and runtime, L3 agentic harness;
+  // ✅ built, 🟡 partly, — not yet
+  let levels = {};
+  fetch(HUB + 'INTELLIGENCE-LEVELS.md').then((r) => (r.ok ? r.text() : Promise.reject(r.status))).then((md) => {
+    const mark = (cell) => { const m = /^\s*(✅|🟡)/u.exec(cell || ''); return m ? m[1] : '—'; };
+    for (const row of md.split('\n')) {
+      const cells = row.split('|'); if (cells.length < 10 || !/<img/.test(cells[1])) continue;
+      levels[cells[2].trim()] = [mark(cells[5]), mark(cells[6]), mark(cells[8])];
+    }
+    render();
+  }).catch(() => {});
+  const levelNote = (p) => (at, box) => {
+    const pet = p[at], lv = levels[pet.pet];
+    box.replaceChildren(el('b', null, 'intelligence'), ...(lv ? ['L1 ' + lv[0], 'L2 ' + lv[1], 'L3 ' + lv[2]] : ['not rated yet']).map((t) => el('div', null, t)));
+  };
   function petosCards() {
     const drawn = pets.filter(iconOf);
     return [
@@ -532,7 +552,7 @@
         pics: [{ src: HUB_PAGES + 'system-map-20261012.html', cap: 'The System Map', type: 'frame', label: 'live' }], repo: 'https://github.com/findastra/astras-pet-os', site: HUB_PAGES + 'system-map-20261012.html', siteLabel: 'open the System Map ↗' }),
       polaroid({ key: 'all-pets', name: 'The pets', kind: drawn.length + ' drawn so far', text: 'What they all look like. Each one is a small app with a face and a job.', pics: [], shot: petsShot(drawn) }),
       polaroid({ key: 'meet-pets', name: 'Meet every pet', kind: 'flip with the arrows', text: 'One at a time, no shaking needed.',
-        pics: drawn.map((p) => ({ src: iconOf(p), cap: p.pet, label: p.pet, fit: 'contain' })) }),
+        pics: drawn.map((p) => ({ src: iconOf(p), cap: p.pet, label: p.pet, fit: 'contain' })), sticky: levelNote(drawn) }),
     ];
   }
 

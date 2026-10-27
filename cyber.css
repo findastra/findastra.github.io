@@ -28,8 +28,8 @@ body { margin: 0; background: #0b0b0b; color: var(--ink); font: 17px/1.65 Inter,
   font: 700 13px/1 var(--mono); letter-spacing: .12em; color: var(--c, #c9c9c9); writing-mode: vertical-rl; text-orientation: mixed; transform: rotate(180deg); background: #0b0b0b; padding: 6px 2px; opacity: .55;
   transition: opacity .25s, color .25s, text-shadow .25s; }
 /* each floor its own color (Astra, 2026-10-27: "I want each section to have a color") */
-.floors a:nth-child(1) { --c: #c6ff00; } .floors a:nth-child(2) { --c: #00e1ff; } .floors a:nth-child(3) { --c: #ff3ea5; } .floors a:nth-child(4) { --c: #3d8bff; }
-.floors a:nth-child(5) { --c: #ff9500; } .floors a:nth-child(6) { --c: #ffe500; } .floors a:nth-child(7) { --c: #00f5a0; }
+.floors a:nth-child(1) { --c: #ff2bd6; } .floors a:nth-child(2) { --c: #ff2e4d; } .floors a:nth-child(3) { --c: #ff7a1a; } .floors a:nth-child(4) { --c: #fff01f; }
+.floors a:nth-child(5) { --c: #39ff14; } .floors a:nth-child(6) { --c: #1f8fff; } .floors a:nth-child(7) { --c: #b14bff; }
 .floors a:hover, .floors a:focus-visible { opacity: 1; background: #0b0b0b; color: var(--c); }
 .floors a.on { opacity: 1; color: var(--c); text-shadow: 0 0 8px var(--c), 0 0 16px var(--c); }
 /* film grain over everything */
@@ -171,9 +171,11 @@ body.unmasked #rain { opacity: .8; }
 body.unmasked .block::before, body.unmasked .ticker::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: var(--tint, #8a8fff);
   mix-blend-mode: color; opacity: .6; }
 body.unmasked .ticker { isolation: isolate; }
-body.unmasked #vr { --tint: #00b8d4; } body.unmasked #discord { --tint: #ff3ea5; } body.unmasked #web { --tint: #3d8bff; }
-body.unmasked #pets { --tint: #ff9500; } body.unmasked #arcade { --tint: #ffd000; } body.unmasked #contact { --tint: #00d68f; }
-body.unmasked #tick-updates { --tint: #c6ff00; } body.unmasked #tick-now { --tint: #b98cff; }
+body.unmasked #vr { --tint: #ff2e4d; } body.unmasked #discord { --tint: #ff7a1a; } body.unmasked #web { --tint: #fff01f; }
+body.unmasked #pets { --tint: #39ff14; } body.unmasked #arcade { --tint: #1f8fff; } body.unmasked #contact { --tint: #b14bff; }
+body.unmasked #tick-updates { --tint: #ff2bd6; } body.unmasked #tick-now { --tint: #ff2bd6; }
+/* on the tinted panels the titles stay black, outlined in white, never colored (Astra, 2026-10-27) */
+body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 2px #f2f2f2; text-shadow: none; background: none; }
 .glitch { animation: glitch .8s steps(2) 1; }
 @keyframes glitch {
   20% { filter: invert(1) contrast(2); transform: translate(-5px, 2px) skewX(6deg); }
@@ -259,16 +261,16 @@ body.unmasked #tick-updates { --tint: #c6ff00; } body.unmasked #tick-now { --tin
   rotate: var(--tilt); transition: rotate .3s, transform .3s; }
 .polaroid:hover .frame { rotate: 0deg; transform: scale(1.03); }
 /* a strip of neon tape holds each one up */
-#vr .polaroid { --c: #00e1ff !important; }
-#discord .polaroid { --c: #ff3ea5 !important; }
-#web .polaroid { --c: #3d8bff !important; }
-#pets .polaroid { --c: #ff9500 !important; }
+#vr .polaroid { --c: #ff2e4d !important; }
+#discord .polaroid { --c: #ff7a1a !important; }
+#web .polaroid { --c: #fff01f !important; }
+#pets .polaroid { --c: #39ff14 !important; }
 .polaroid .tape { position: absolute; z-index: 1; left: 50%; top: -13px; width: 90px; height: 26px; translate: -50% 0; rotate: calc(var(--tilt) * -2.5);
   background: color-mix(in srgb, var(--c) 72%, transparent); box-shadow: 0 0 14px var(--c); }
 .polaroid .photo { position: relative; display: grid; place-items: center; width: 100%; aspect-ratio: 1; padding: 0; border: 0; overflow: hidden; cursor: zoom-in;
   background: radial-gradient(circle at 30% 25%, color-mix(in srgb, var(--c) 55%, #000), #0b0b0b 72%); }
-.polaroid .photo img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s; }
-.polaroid .photo video { width: 100%; height: 100%; object-fit: cover; }
+/* every picture fills the square exactly, so a tall or wide one never spills out and gets cut (Astra, 2026-10-27) */
+.polaroid .photo > img, .polaroid .photo > video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .4s; }
 /* the presence cards' galaxies turn slowly, like their animated cards (Astra, 2026-10-27: "make sure those are moving") */
 .polaroid .photo img[src$="galaxy.png"] { scale: 1.42; animation: galaxy-turn 60s linear infinite; }
 @keyframes galaxy-turn { to { rotate: 360deg; } }
@@ -283,8 +285,13 @@ body.unmasked #tick-updates { --tint: #c6ff00; } body.unmasked #tick-now { --tin
 .pet-grid img { width: 100%; aspect-ratio: 1; object-fit: contain; }
 #petos-list { margin-bottom: 34px; }
 #petos-list .photo img[style*="contain"] { background: #f6efe3; }
+/* a sticky note hanging off a Polaroid's corner (the pet's intelligence levels on "Meet every pet") */
+.polaroid .sticky { position: absolute; right: -14px; bottom: 54px; z-index: 3; width: 92px; padding: 8px 6px 7px; background: #fff36b; color: #151515;
+  font: 13px/1.25 "Permanent Marker", cursive; text-align: center; rotate: 7deg; box-shadow: 3px 4px 0 rgba(0, 0, 0, .55); }
+.polaroid .sticky::before { content: ""; position: absolute; left: 50%; top: -7px; width: 36px; height: 12px; translate: -50% 0; background: rgba(255, 255, 255, .55); }
+.polaroid .sticky b { display: block; font: 700 9px var(--mono); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 3px; }
 /* "concept art" / "concept model", written at the top of the picture */
-.polaroid .badge { position: absolute; left: 6px; top: 6px; z-index: 1; font: 12px/1 "Permanent Marker", cursive; color: #fff; background: #151515; padding: 3px 7px; rotate: -3deg; pointer-events: none; }
+.polaroid .badge { position: absolute; left: 6px; top: 6px; z-index: 2; transform: translateZ(0); font: 12px/1 "Permanent Marker", cursive; color: #fff; background: #151515; padding: 3px 7px; rotate: -3deg; pointer-events: none; }
 .polaroid .photo:hover img { transform: scale(1.06); }
 .polaroid div.photo { cursor: default; }
 /* Moodglass's picture: a staggered collage, columns split at different heights, edge to edge with soft seams */
@@ -292,8 +299,11 @@ body.unmasked #tick-updates { --tint: #c6ff00; } body.unmasked #tick-now { --tin
 .mg-col { flex: 1; display: flex; flex-direction: column; min-width: 0; }
 .mg-col:nth-child(2) { flex: 1.25; }
 .mg-col img { flex: 1 1 0; min-height: 0; width: 100%; object-fit: cover; margin: -2px 0; -webkit-mask: linear-gradient(transparent, #000 6%, #000 94%, transparent); mask: linear-gradient(transparent, #000 6%, #000 94%, transparent); }
+.mg-col img:first-child { -webkit-mask: linear-gradient(#000 94%, transparent); mask: linear-gradient(#000 94%, transparent); margin-top: 0; }
+.mg-col img:last-child { -webkit-mask: linear-gradient(transparent, #000 6%); mask: linear-gradient(transparent, #000 6%); margin-bottom: 0; }
+.mg-col img:only-child { -webkit-mask: none; mask: none; }
 .photo .developing { font: 1.3rem/1 "Permanent Marker", cursive; color: color-mix(in srgb, var(--c) 55%, #fff); text-shadow: 0 0 12px var(--c); rotate: -7deg; }
-.polaroid .count { position: absolute; right: 30px; bottom: 8px; font: 12px/1 "Permanent Marker", cursive; color: #6a6a6a; rotate: -3deg; pointer-events: none; }
+.polaroid .count { font: 13px/1.2 "Permanent Marker", cursive; color: #6a6a6a; rotate: -2deg; }
 /* the little arrows in the white border's bottom corners */
 .polaroid .flip { position: absolute; bottom: 2px; width: 26px; height: 26px; display: grid; place-items: center; padding: 0; border: 0; background: none;
   color: #151515; font: 26px/1 "Permanent Marker", cursive; cursor: pointer; }
@@ -365,8 +375,13 @@ a.title:hover, a.title:focus-visible { color: color-mix(in srgb, var(--c) 45%, #
 .cab .btn.hot { color: var(--bg); letter-spacing: 0; }
 .cab .btn.hot:hover, .cab .btn.hot:focus-visible { color: var(--ink); }
 /* Hack the terminal: inside a terminal window, its words spread out with a > prompt each */
-.hack-term { flex: 1; display: flex; flex-direction: column; border: 2px solid #f2f2f2; background: #000; box-shadow: 6px 6px 0 #3a3a3a; }
-.hack-term .term-bar { font: 12px var(--mono); }
+/* drawn like the tool panels on the pet program pages: a thin square border with the panel's name set into its top edge,
+   three lights to the left of the name (Astra, 2026-10-27) */
+.hack-term { position: relative; flex: 1; display: flex; flex-direction: column; margin-top: 10px; border: 1px solid #5a5a5a; background: #050505; }
+.hack-term .panel-label { position: absolute; left: 12px; top: 0; translate: 0 -50%; display: inline-flex; align-items: center; gap: 5px; padding: 0 8px;
+  background: var(--bg); font: 12px var(--mono); color: #cfcfcf; }
+.hack-term .panel-label i { width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid #f2f2f2; }
+.hack-term .panel-label i:first-child { background: #f2f2f2; }
 #hack { flex: 1; display: flex; flex-direction: column; justify-content: space-evenly; padding: 12px 16px; background: repeating-linear-gradient(transparent 0 2px, rgba(255, 255, 255, .035) 2px 3px); }
 #hack > p { margin: 4px 0; font: 13px var(--mono); }
 .words { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px 12px; margin: 14px 0; font: 15px var(--mono); }
@@ -402,14 +417,15 @@ a.title:hover, a.title:focus-visible { color: color-mix(in srgb, var(--c) 45%, #
 .fz-digit input:focus { outline: none; border-color: #f2f2f2; }
 .fz-digit span { font: 11px var(--mono); color: #8a8a8a; white-space: nowrap; }
 .fz-out { display: grid; justify-items: center; gap: 14px; }
-.fz-traits { width: 100%; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 14px; }
+/* each trait's name beside its value, one per row */
+.fz-traits { width: 100%; display: grid; grid-template-columns: max-content 1fr; gap: 4px 14px; align-items: center; }
 #fz-cv { width: min(100%, 300px); aspect-ratio: 1; border: 2px solid #000; box-shadow: 6px 6px 0 #3a3a3a; background: #222; }
 .fz-traits { margin: 0; font: 13px/1.4 var(--mono); }
-.fz-traits dt { color: #8a8a8a; text-transform: uppercase; letter-spacing: .1em; font-size: 11px; margin-top: 8px; }
+.fz-traits dt { color: #8a8a8a; text-transform: uppercase; letter-spacing: .1em; font-size: 11px; margin-top: 0; }
 .fz-traits dd { margin: 0; color: #f2f2f2; display: flex; align-items: center; gap: 6px; }
 .fz-traits dd i { width: 14px; height: 14px; border: 2px solid #f2f2f2; }
 #fz-note, #home-pick, #home-count { min-height: 1.4em; font-size: 12px; }
-.home { display: block; width: 100%; aspect-ratio: 16 / 11; border: 2px solid #000; box-shadow: 6px 6px 0 #3a3a3a; background: #0a0a0a; cursor: pointer; touch-action: manipulation; }
+.home { display: block; width: 100%; aspect-ratio: 1; border: 2px solid #000; box-shadow: 6px 6px 0 #3a3a3a; background: #0a0a0a; cursor: pointer; touch-action: manipulation; }
 .screen { position: relative; aspect-ratio: 4 / 3; border: 2px solid #000; box-shadow: 6px 6px 0 #3a3a3a; background: #060606; touch-action: manipulation; }
 .screen canvas { display: block; width: 100%; height: 100%; }
 .hud { display: flex; justify-content: space-between; margin: 12px 0; color: #8a8a8a; }
@@ -475,7 +491,6 @@ a.title:hover, a.title:focus-visible { color: color-mix(in srgb, var(--c) 45%, #
   .floors a { font-size: 11px; letter-spacing: .08em; }
   .block { padding-top: 64px; padding-bottom: 64px; }
   .board { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  .fz-traits { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .fz-digit input { font-size: 22px; }
   .lightbox figure { padding: 44px 12px 12px; }
   .top nav { gap: 4px 10px; }

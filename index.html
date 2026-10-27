@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&family=JetBrains+Mono:wght@400;700&family=VT323&family=Permanent+Marker&display=swap">
-<link rel="stylesheet" href="cyber.css?v=20261027s">
+<link rel="stylesheet" href="cyber.css?v=20261027w">
 </head>
 <body>
 <!-- the fat star every pet window is cut from (R 100, r 70; rounded by the stroke in cyber.css) -->
@@ -20,7 +20,7 @@
 <header class="top">
   <a class="brand" href="#top">find <span>/</span>astra</a>
   <nav aria-label="Sections">
-    <a href="#vr">vr</a><a href="#discord">discord</a><a href="#web">web</a><a href="#pets">petos</a><a href="#arcade">arcade</a><a href="#contact">contact</a>
+    <a href="#vr">vr &amp; vrchat</a><a href="#discord">discord</a><a href="#web">web &amp; more</a><a href="#pets">astra's petos</a><a href="#arcade">arcade</a><a href="#contact">contact</a>
   </nav>
 </header>
 
@@ -147,7 +147,7 @@
         <h3>Hack the terminal</h3>
         <p class="muted">Pick the password. Likeness = letters in the right place. Four tries.</p>
         <!-- the game sits in a terminal window, like the one at the top of the page -->
-        <div class="hack-term"><div class="term-bar"><i></i><i></i><i></i><span>termlink@findastra: ~</span></div><div id="hack"></div></div>
+        <div class="hack-term"><span class="panel-label"><i></i><i></i><i></i>hack-the-terminal-tool-panel</span><div id="hack"></div></div>
         <button class="btn" id="hack-new">new terminal</button>
       </div>
       <div class="cab spread">
@@ -158,15 +158,15 @@
         <div class="fz-row"><button class="btn" id="mem-new">new board</button><button class="btn" id="mem-hard" aria-pressed="false">hard: moods</button></div>
       </div>
       <!-- the Fuzzboi Factory, same rules and art as findastra.github.io/fuzzboi-factory and the same six big code boxes; every
-           Fuzzboi made here moves into the Cyber Dome -->
+           Fuzzboi made here can be sent into the Cyber Dome -->
       <div class="cab spread">
         <h3>Fuzzboi Factory</h3>
-        <p class="muted">Type any six-digit hex code (0–9, A–F). That exact Fuzzboi appears, and moves into the Cyber Dome.</p>
+        <p class="muted">Type any six-digit hex code (0–9, A–F). That exact Fuzzboi appears. Send it into the Cyber Dome below.</p>
         <form class="fz-code" id="fz-form">
           <span class="fz-hash">#</span>
           <div class="fz-digits" id="fz-digits"></div>
         </form>
-        <div class="fz-row fz-buttons"><button class="btn hot" type="button" id="fz-random">roll a random fuzzboi</button><button class="btn" type="button" id="fz-save">save png</button></div>
+        <div class="fz-row fz-buttons"><button class="btn hot" type="button" id="fz-random">roll a random fuzzboi</button><button class="btn" type="button" id="fz-send">send to the Cyber Dome</button><button class="btn" type="button" id="fz-save">save png</button></div>
         <div class="fz-out">
           <canvas id="fz-cv" width="512" height="512" aria-label="Your Fuzzboi"></canvas>
           <dl class="fz-traits" id="fz-traits"></dl>
@@ -178,7 +178,7 @@
         <p class="muted mono" id="home-count"></p>
         <canvas class="home" id="home" aria-label="The Fuzzboi Cyber Dome. Tap a Fuzzboi to see its code."></canvas>
         <p class="muted mono" id="home-pick" aria-live="polite"></p>
-        <div class="fz-row"><button class="btn" id="home-out" disabled>let them out</button><button class="btn" id="home-clear" disabled>empty the home</button></div>
+        <div class="fz-row"><button class="btn" id="home-out" disabled>let them out</button><button class="btn" id="home-clear" disabled>empty the dome</button></div>
       </div>
       <!-- the two games from Mommy's website (findastra/mommys-website) -->
       <div class="cab">
@@ -236,7 +236,7 @@
           <li><a href="mailto:audrajvolk@icloud.com">audrajvolk@icloud.com</a></li>
           <li><a href="tel:+12064341199">(206) 434-1199</a></li>
         </ul>
-  </section>
+      </article>
       <article class="contact">
         <b>Astra</b>
         <p class="role">VR Programmer, Dance Performer, &amp; Content Creator</p>
@@ -245,7 +245,7 @@
           <li><a href="https://www.tiktok.com/@findastra" target="_blank" rel="noopener">@findastra</a> on VR TikTok</li>
           <li><a href="https://www.tiktok.com/@astra_on_fire" target="_blank" rel="noopener">@astra_on_fire</a> on Pole Dance TikTok</li>
         </ul>
-  </section>
+      </article>
     </div>
   </section>
 
@@ -274,7 +274,7 @@
 <script src="updates-data.js?v=20261018c"></script>
 <script src="lettering-data.js?v=20261019a"></script>
 <script src="lettering.js?v=20261027a"></script>
-<script src="cyber.js?v=20261027s"></script>
-<script src="games-20261027.js?v=20261027c"></script>
+<script src="cyber.js?v=20261027t"></script>
+<script src="games-20261027.js?v=20261027d"></script>
 </body>
 </html>
