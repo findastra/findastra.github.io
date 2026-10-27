@@ -28,7 +28,7 @@ body { margin: 0; background: #0b0b0b; color: var(--ink); font: 17px/1.65 Inter,
   font: 700 13px/1 var(--mono); letter-spacing: .12em; color: var(--c, #c9c9c9); writing-mode: vertical-rl; text-orientation: mixed; transform: rotate(180deg); background: #0b0b0b; padding: 6px 2px; opacity: .55;
   transition: opacity .25s, color .25s, text-shadow .25s; }
 /* each floor its own color (Astra, 2026-10-27: "I want each section to have a color") */
-.floors a:nth-child(1) { --c: #ff3ea5; } .floors a:nth-child(2) { --c: #00e1ff; } .floors a:nth-child(3) { --c: #8a8fff; } .floors a:nth-child(4) { --c: #c6ff00; }
+.floors a:nth-child(1) { --c: #c6ff00; } .floors a:nth-child(2) { --c: #00e1ff; } .floors a:nth-child(3) { --c: #ff3ea5; } .floors a:nth-child(4) { --c: #3d8bff; }
 .floors a:nth-child(5) { --c: #ff9500; } .floors a:nth-child(6) { --c: #ffe500; } .floors a:nth-child(7) { --c: #00f5a0; }
 .floors a:hover, .floors a:focus-visible { opacity: 1; background: #0b0b0b; color: var(--c); }
 .floors a.on { opacity: 1; color: var(--c); text-shadow: 0 0 8px var(--c), 0 0 16px var(--c); }
@@ -81,21 +81,23 @@ h3 { display: inline-block; font: 700 12px var(--mono); text-transform: uppercas
 /* tickers between sections: what changed lately, and what is being worked on now */
 .ticker { position: relative; z-index: 2; margin: -16px -24px; padding: 13px 0 13px 0; overflow: hidden; white-space: nowrap; background: #050505; color: #d6d6d6;
   border-block: 2px solid #3c3c3c; box-shadow: 0 7px 0 #000; transform: rotate(-1.4deg); font: 500 clamp(14px, 1.7vw, 17px)/1.2 var(--mono); }
-/* the working on bar sits a little lower, apart from the live updates bar (Astra, 2026-10-27) */
-#tick-now { margin-top: 44px; }
 .ticker.flip { background: #1c1c1c; color: #cfcfcf; border-color: #000; box-shadow: 0 -7px 0 #000; transform: rotate(1.2deg); }
 .tick-label { position: absolute; z-index: 1; left: 0; top: 0; bottom: 0; display: grid; place-items: center; padding: 0 16px 0 34px; background: #8a8a8a; color: #000;
   font: 700 12px var(--mono); text-transform: uppercase; letter-spacing: .14em; box-shadow: 8px 0 14px #000; }
-/* the white rabbit hops along the top edge of the live updates bar (Astra, 2026-10-27: "I don't see the bunny hopping along the
-   top of it"): its lane is tilted like the bar and sits on the bar's top border, in the hero's bottom padding, so its hops
-   (up to 14 px) never cover the bar's words */
-.rabbit-lane { position: relative; z-index: 3; height: 64px; margin: -64px -24px 0; overflow: hidden; pointer-events: none; transform: rotate(-1.4deg); }
-/* the lane clips the rabbit at its edges, so running off the side never widens the page and shifts everything (Astra, 2026-10-27) */
+/* live updates: a slim, straight news strip right under the header */
+.ticker.strip { margin: 0; padding: 7px 0; transform: none; box-shadow: none; border-block: 1px solid #262626; background: #030303; font-size: 13px; }
+.ticker.strip .tick-label { padding: 0 12px; font-size: 10px; background: #2a2a2a; color: #d6d6d6; box-shadow: 6px 0 10px #000; }
+/* the white rabbit hops along just under the strip, in the top of the hero; the lane clips him at its edges, so running off
+   the side never widens the page, and his hops never reach the strip's words */
+.rabbit-lane { position: relative; z-index: 3; height: 56px; margin-bottom: -56px; overflow: hidden; pointer-events: none; }
 .rabbit-lane .white-rabbit { pointer-events: auto; }
-.white-rabbit { position: absolute; z-index: 0; bottom: 14px; left: -60px; display: none; width: 38px; height: 32px; padding: 4px; border: 0; background: none; color: #fff;
-  cursor: pointer; filter: drop-shadow(0 0 5px rgba(255, 255, 255, .8)); }
+.white-rabbit { position: absolute; z-index: 0; bottom: 8px; left: -60px; display: none; width: 38px; height: 32px; padding: 4px; border: 0; background: none; color: #fff;
+  cursor: pointer; filter: drop-shadow(0 0 5px currentColor); }
+/* he is the color the rain turns when he is caught; before the rainbow comes back, he is every color */
+.white-rabbit.rainbow { color: #ff3ea5; animation: rabbit-rainbow 2s linear infinite; }
+@keyframes rabbit-rainbow { to { filter: drop-shadow(0 0 5px currentColor) hue-rotate(360deg); } }
 .white-rabbit.running { display: block; }
-.white-rabbit:hover, .white-rabbit:focus-visible { filter: drop-shadow(0 0 9px #fff); outline: none; }
+.white-rabbit:hover, .white-rabbit:focus-visible { filter: drop-shadow(0 0 10px currentColor); outline: none; }
 .white-rabbit svg { width: 30px; height: 24px; fill: currentColor; }
 .white-rabbit .eye { fill: #050505; }
 .rabbit-burst { inset: auto; width: 70px; height: 70px; translate: -50% -50%; z-index: 3; }
@@ -161,9 +163,17 @@ h3 { display: inline-block; font: 700 12px var(--mono); text-transform: uppercas
 .quote { margin: 6px auto 0; font: 14px var(--mono); color: var(--muted); }
 .quote::before { content: "— "; }
 
-/* the unmask: the hero turns to its negative */
-body.unmasked .hero { --bg: #8d8d8d; --ink: #070707; --muted: #2c2c2c;
-  background: radial-gradient(circle at 76% 42%, #a9a9a9 0, transparent 46%), radial-gradient(#7b7b7b 1px, transparent 1.6px) 0 0 / 18px 18px, #8d8d8d; }
+/* the unmask (Astra, 2026-10-27): the hero turns white, its falling code black and glowing in its colors; everywhere else the
+   grays take on a soft tint of their section's color */
+body.unmasked .hero { --bg: #f7f7f7; --ink: #070707; --muted: #4a4a4a;
+  background: radial-gradient(circle at 76% 42%, #ffffff 0, transparent 46%), radial-gradient(#dcdcdc 1px, transparent 1.6px) 0 0 / 18px 18px, #f4f4f4; }
+body.unmasked #rain { opacity: .8; }
+body.unmasked .block::before, body.unmasked .ticker::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: var(--tint, #8a8fff);
+  mix-blend-mode: color; opacity: .6; }
+body.unmasked .ticker { isolation: isolate; }
+body.unmasked #vr { --tint: #00b8d4; } body.unmasked #discord { --tint: #ff3ea5; } body.unmasked #web { --tint: #3d8bff; }
+body.unmasked #pets { --tint: #ff9500; } body.unmasked #arcade { --tint: #ffd000; } body.unmasked #contact { --tint: #00d68f; }
+body.unmasked #tick-updates { --tint: #c6ff00; } body.unmasked #tick-now { --tint: #b98cff; }
 .glitch { animation: glitch .8s steps(2) 1; }
 @keyframes glitch {
   20% { filter: invert(1) contrast(2); transform: translate(-5px, 2px) skewX(6deg); }
@@ -249,6 +259,10 @@ body.unmasked .hero { --bg: #8d8d8d; --ink: #070707; --muted: #2c2c2c;
   rotate: var(--tilt); transition: rotate .3s, transform .3s; }
 .polaroid:hover .frame { rotate: 0deg; transform: scale(1.03); }
 /* a strip of neon tape holds each one up */
+#vr .polaroid { --c: #00e1ff !important; }
+#discord .polaroid { --c: #ff3ea5 !important; }
+#web .polaroid { --c: #3d8bff !important; }
+#pets .polaroid { --c: #ff9500 !important; }
 .polaroid .tape { position: absolute; z-index: 1; left: 50%; top: -13px; width: 90px; height: 26px; translate: -50% 0; rotate: calc(var(--tilt) * -2.5);
   background: color-mix(in srgb, var(--c) 72%, transparent); box-shadow: 0 0 14px var(--c); }
 .polaroid .photo { position: relative; display: grid; place-items: center; width: 100%; aspect-ratio: 1; padding: 0; border: 0; overflow: hidden; cursor: zoom-in;
@@ -262,16 +276,22 @@ body.unmasked .hero { --bg: #8d8d8d; --ink: #070707; --muted: #2c2c2c;
 /* a live page (the Cooling Tower's Mini Model) drawn at twice the size and scaled down, so it fits the photo; it spins by itself
    and can be dragged around */
 .polaroid .photo iframe.live { position: absolute; left: 0; top: 0; width: 200%; height: 200%; border: 0; transform: scale(.5); transform-origin: 0 0; background: #000; }
+/* bare: the page's title strip cropped off the top, and the picture a little lower so the model sits in the middle */
+.polaroid .photo iframe.live.bare { top: -10%; height: 300%; }
+/* the PetOS Polaroids: every pet's drawing in a little grid; the pet you flip to on a light background */
+.pet-grid { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(7, 1fr); align-content: center; gap: 2px; padding: 6px; background: #f6efe3; }
+.pet-grid img { width: 100%; aspect-ratio: 1; object-fit: contain; }
+#petos-list { margin-bottom: 34px; }
+#petos-list .photo img[style*="contain"] { background: #f6efe3; }
+/* "concept art" / "concept model", written at the top of the picture */
+.polaroid .badge { position: absolute; left: 6px; top: 6px; z-index: 1; font: 12px/1 "Permanent Marker", cursive; color: #fff; background: #151515; padding: 3px 7px; rotate: -3deg; pointer-events: none; }
 .polaroid .photo:hover img { transform: scale(1.06); }
 .polaroid div.photo { cursor: default; }
-/* Moodglass's picture: a plain collage, one big picture and five small, with the Discord logo over it */
-.mg-shot { position: absolute; inset: 0; overflow: hidden; background: #111; }
-.mg-mosaic { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); gap: 0; }
-.mg-mosaic img { width: 100%; height: 100%; object-fit: cover; }
-.mg-mosaic img:first-child { grid-column: span 2; grid-row: span 2; }
-.mg-logo { position: absolute; left: 50%; top: 50%; translate: -50% -50%; display: grid; place-items: center; width: 34%; aspect-ratio: 1; border-radius: 50%;
-  background: #5865f2; box-shadow: 0 0 0 3px #fff, 0 6px 18px rgba(0, 0, 0, .55); }
-.mg-logo svg { width: 62%; fill: #fff; }
+/* Moodglass's picture: a staggered collage, columns split at different heights, edge to edge with soft seams */
+.mg-shot { position: absolute; inset: 0; display: flex; overflow: hidden; background: #111; }
+.mg-col { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.mg-col:nth-child(2) { flex: 1.25; }
+.mg-col img { flex: 1 1 0; min-height: 0; width: 100%; object-fit: cover; margin: -2px 0; -webkit-mask: linear-gradient(transparent, #000 6%, #000 94%, transparent); mask: linear-gradient(transparent, #000 6%, #000 94%, transparent); }
 .photo .developing { font: 1.3rem/1 "Permanent Marker", cursive; color: color-mix(in srgb, var(--c) 55%, #fff); text-shadow: 0 0 12px var(--c); rotate: -7deg; }
 .polaroid .count { position: absolute; right: 30px; bottom: 8px; font: 12px/1 "Permanent Marker", cursive; color: #6a6a6a; rotate: -3deg; pointer-events: none; }
 /* the little arrows in the white border's bottom corners */

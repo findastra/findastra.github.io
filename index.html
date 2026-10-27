@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&family=JetBrains+Mono:wght@400;700&family=VT323&family=Permanent+Marker&display=swap">
-<link rel="stylesheet" href="cyber.css?v=20261027o">
+<link rel="stylesheet" href="cyber.css?v=20261027s">
 </head>
 <body>
 <!-- the fat star every pet window is cut from (R 100, r 70; rounded by the stroke in cyber.css) -->
@@ -40,6 +40,13 @@
 </nav>
 
 <main id="top">
+  <!-- what changed lately, from public GitHub activity (live, else the snapshot in updates-data.js): a slim news strip at the
+       very top (Astra, 2026-10-27: "move it at the top"), with the white rabbit hopping along just under it -->
+  <section class="ticker strip" id="tick-updates" aria-label="Live updates">
+    <span class="tick-label">live updates</span>
+    <div class="track"></div>
+  </section>
+  <div class="rabbit-lane" id="rabbit-lane"></div>
   <!-- hero: a terminal that tells the plain version, then unmasks -->
   <section class="hero dark">
     <canvas id="rain" aria-hidden="true"></canvas>
@@ -69,13 +76,6 @@
       <!-- the words are in the lettering above; only the credit is written out (Astra, 2026-10-27) -->
       <p class="quote">Audra J. Volk</p>
     </div>
-  </section>
-
-  <!-- what changed lately, from public GitHub activity (live, else the snapshot in updates-data.js) -->
-  <div class="rabbit-lane" id="rabbit-lane"></div>
-  <section class="ticker" id="tick-updates" aria-label="Live updates">
-    <span class="tick-label">live updates:</span>
-    <div class="track"></div>
   </section>
 
   <!-- the projects worked on most recently -->
@@ -112,6 +112,8 @@
     <p class="kicker">// 04 · astra's petos</p>
     <h2>Astra's PetOS</h2>
     <p class="lede">Every project of mine gets a pet: a small app with a face, its own program, and a job. Together they are <a href="https://github.com/findastra/astras-pet-os">Astra's PetOS</a>. Portfolio Puffer keeps this page. Shake the jar and a pet falls out.</p>
+        <!-- Polaroids first (Astra, 2026-10-27): the System Map, what the pets look like, and every pet to flip through -->
+        <div class="polaroids" id="petos-list"></div>
         <!-- the pet jar, filled to the top: shake it and a pet comes out; tip it out to see all of them -->
         <div class="jar-stage" id="pet-jar">
           <div class="jar-side">
@@ -272,7 +274,7 @@
 <script src="updates-data.js?v=20261018c"></script>
 <script src="lettering-data.js?v=20261019a"></script>
 <script src="lettering.js?v=20261027a"></script>
-<script src="cyber.js?v=20261027o"></script>
+<script src="cyber.js?v=20261027s"></script>
 <script src="games-20261027.js?v=20261027c"></script>
 </body>
 </html>
