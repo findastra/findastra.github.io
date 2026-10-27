@@ -64,6 +64,16 @@ h3 { display: inline-block; font: 700 12px var(--mono); text-transform: uppercas
 .ticker.flip { background: #1c1c1c; color: #cfcfcf; border-color: #000; box-shadow: 0 -7px 0 #000; transform: rotate(1.2deg); }
 .tick-label { position: absolute; z-index: 1; left: 0; top: 0; bottom: 0; display: grid; place-items: center; padding: 0 16px 0 34px; background: #8a8a8a; color: #000;
   font: 700 12px var(--mono); text-transform: uppercase; letter-spacing: .14em; box-shadow: 8px 0 14px #000; }
+/* the live updates ticker has a lane under its words for the white rabbit to hop in (Astra, 2026-10-27: "make sure there's
+   enough room for the rabbit to hop"): 30 x 24 px, hops up to 14 px, from 6 px off the bottom */
+#tick-updates { padding-bottom: 58px; }
+.white-rabbit { position: absolute; z-index: 0; bottom: 6px; left: -60px; display: none; width: 38px; height: 32px; padding: 4px; border: 0; background: none; color: #fff;
+  cursor: pointer; filter: drop-shadow(0 0 5px rgba(255, 255, 255, .8)); }
+.white-rabbit.running { display: block; }
+.white-rabbit:hover, .white-rabbit:focus-visible { filter: drop-shadow(0 0 9px #fff); outline: none; }
+.white-rabbit svg { width: 30px; height: 24px; fill: currentColor; }
+.white-rabbit .eye { fill: #050505; }
+.rabbit-burst { inset: auto; width: 70px; height: 70px; translate: -50% -50%; z-index: 3; }
 .ticker .track { display: inline-flex; animation: tick var(--dur, 90s) linear infinite; }
 .ticker.flip .track { animation-direction: reverse; }
 .ticker:hover .track, .ticker:focus-within .track { animation-play-state: paused; }

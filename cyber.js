@@ -571,6 +571,13 @@
   const size = () => { cv.width = cv.offsetWidth; cv.height = cv.offsetHeight; cols = Array(Math.ceil(cv.width / 16)).fill(0).map(() => Math.random() * cv.height); };
   size(); new ResizeObserver(size).observe(cv);
   const glyphs = 'ASTRAUDRA01アストラ✦';
+  // the rain's colors: the rainbow first; catching the white rabbit moves to the next set (Astra, 2026-10-27). Each is a run of
+  // hues (from, span) that the columns spread over and drift down.
+  const PALETTES = [
+    { name: 'rainbow', from: 0, span: 360 }, { name: 'neon pink and cyan', from: 290, span: 110 }, { name: 'matrix green', from: 95, span: 60 },
+    { name: 'sunset', from: 330, span: 80 }, { name: 'ice', from: 170, span: 70 }, { name: 'gold', from: 30, span: 40 }, { name: 'vapor', from: 250, span: 90 },
+  ];
+  let palette = 0;
   (function rain() {
     if (reduced) return;
     cx.globalCompositeOperation = 'destination-out'; cx.fillStyle = 'rgba(0, 0, 0, .14)'; cx.fillRect(0, 0, cv.width, cv.height);
@@ -578,9 +585,63 @@
     cx.font = '14px JetBrains Mono';
     const t = performance.now() / 40, light = unmasked ? 32 : 62;
     cols.forEach((y, i) => {
-      cx.fillStyle = `hsl(${(i * 9 + y / 6 + t) % 360} 100% ${light}%)`;
+      const pal = PALETTES[palette], k = (i * 9 + y / 6 + t) % 360;
+      cx.fillStyle = `hsl(${pal.from + (pal.span === 360 ? k : Math.abs(((k / 360) * 2 * pal.span) % (2 * pal.span) - pal.span))} 100% ${light}%)`;
       cx.fillText(glyphs[Math.floor(Math.random() * glyphs.length)], i * 16, y); cols[i] = y > cv.height + Math.random() * 1e4 ? 0 : y + 16;
     });
     setTimeout(() => requestAnimationFrame(rain), 60);
+  })();
+
+  // ---------- the white rabbit: hops across the live updates ticker now and then; catch it and the rain changes color ----------
+  // Astra (2026-10-27) asked for "the rabbit from Data Dealer"; the hopping white rabbit lives in Gone Ghost's page
+  // (findastra/ghost-protocol): the same four 8-bit frames (15 x 12 pixels), the same hop. It runs in its own lane under the
+  // ticker's words and starts behind the "live updates" box, so it never hops over either.
+  (() => {
+    const lane = $('tick-updates'); if (!lane || reduced) return;
+    // each frame: [x, y, w, h] pixels, the eye last; and how high it is in the hop (0 to 1)
+    const FRAMES = [
+      { pose: 'crouch', lift: 0, px: [[9,0,1,1],[11,0,1,1],[9,1,2,1],[11,1,2,1],[9,2,5,1],[8,3,6,1],[1,3,1,1],[1,4,1,1],[2,4,13,1],[1,5,13,1],[1,6,12,1],[2,7,10,1],[2,8,3,1],[9,8,3,1],[2,9,2,1],[9,9,2,1]], eye: [12,3] },
+      { pose: 'rise', lift: .55, px: [[10,0,1,1],[12,0,1,1],[10,1,2,1],[12,1,2,1],[10,2,4,1],[9,3,6,1],[1,3,1,1],[1,4,1,1],[2,4,12,1],[1,5,12,1],[1,6,10,1],[2,7,8,1],[0,8,2,1],[9,8,2,1],[0,9,2,1]], eye: [13,3] },
+      { pose: 'peak', lift: 1, px: [[11,0,1,1],[13,0,1,1],[11,1,2,1],[13,1,2,1],[11,2,3,1],[10,3,5,1],[2,3,1,1],[2,4,1,1],[3,4,11,1],[2,5,11,1],[1,6,9,1],[12,7,3,1],[0,7,3,1]], eye: [14,3] },
+      { pose: 'land', lift: .35, px: [[9,0,1,1],[11,0,1,1],[9,1,2,1],[11,1,2,1],[9,2,5,1],[8,3,6,1],[1,3,1,1],[1,4,1,1],[2,4,13,1],[1,5,13,1],[1,6,11,1],[2,7,9,1],[10,8,2,1],[11,9,2,1],[2,8,2,1]], eye: [12,3] },
+    ];
+    const bun = el('button', 'white-rabbit'); bun.type = 'button'; bun.setAttribute('aria-label', 'A white rabbit. Catch it.'); bun.title = 'catch me';
+    const sprites = FRAMES.map((f) => {
+      const svg = svgEl('svg', { viewBox: '0 0 15 12', 'shape-rendering': 'crispEdges', 'aria-hidden': 'true' });
+      for (const [x, y, w, h] of f.px) svg.append(svgEl('rect', { x, y, width: w, height: h }));
+      const [ex, ey] = f.eye; svg.append(svgEl('rect', { x: ex, y: ey, width: 1, height: 1, class: 'eye' }));
+      bun.append(svg); return svg;
+    });
+    lane.append(bun);
+    let running = false, timer = 0, raf = 0;
+    const pose = (i, hop) => { sprites.forEach((s, n) => (s.style.display = n === i ? 'block' : 'none')); bun.style.transform = `translateY(${-Math.round(FRAMES[i].lift * hop)}px)`; };
+    const later = (ms) => { clearTimeout(timer); timer = setTimeout(run, ms); };
+    function stop() { running = false; cancelAnimationFrame(raf); bun.classList.remove('running'); later(25000 + Math.random() * 35000); }
+    // 8-bit hops: four fixed frames per hop, and the rabbit jumps forward once per hop, from behind the label to off the right edge
+    function run() {
+      if (document.hidden) return later(5000);
+      const label = lane.querySelector('.tick-label'), x0 = (label ? label.offsetWidth : 0) - 40, x1 = lane.clientWidth + 10;
+      const hopMs = 560 + Math.random() * 160, hop = 11 + Math.random() * 3, hops = Math.max(6, Math.round((x1 - x0) / 46)), step = (x1 - x0) / hops;
+      running = true; bun.classList.add('running'); bun.style.left = x0 + 'px'; pose(0, hop);
+      const t0 = performance.now() + 600;
+      raf = requestAnimationFrame(function tick(now) {
+        if (!running) return;
+        const k = Math.max(0, Math.floor((now - t0) / (hopMs / 4))), n = Math.floor(k / 4), f = k % 4;
+        if (n >= hops) return stop();
+        bun.style.left = Math.round(x0 + (f ? n + 1 : n) * step) + 'px'; pose(f, hop);
+        raf = requestAnimationFrame(tick);
+      });
+    }
+    // caught: a burst of sparkles where it was, the rain moves to its next colors, and the rabbit is gone until next time
+    bun.addEventListener('click', () => {
+      if (!running) return;
+      palette = (palette + 1) % PALETTES.length;
+      const b = bun.getBoundingClientRect(), r = lane.getBoundingClientRect(), burst = el('span', 'sparkles rabbit-burst'); burst.setAttribute('aria-hidden', 'true');
+      burst.style.cssText = `left:${b.left - r.left + b.width / 2}px;top:${b.top - r.top + b.height / 2}px`;
+      for (let i = 0; i < 8; i++) { const s = el('i'), a = (i / 8) * Math.PI * 2; s.style.cssText = `--x:${50 + 40 * Math.cos(a)}%;--y:${50 + 40 * Math.sin(a)}%;--s:${10 + (i % 3) * 4}px;--d:0s;--c:hsl(${i * 45} 100% 65%);--dh:0;--l:0`; burst.append(s); }
+      lane.append(burst); setTimeout(() => burst.remove(), 1400);
+      stop();
+    });
+    later(4000);
   })();
 })();
