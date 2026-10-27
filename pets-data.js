@@ -1,4 +1,6 @@
-// Every pet (intelligent app), from astras-pet-os pet-programs.json on main, 2026-10-18. Regenerate; do not edit by hand.
+// Every pet (intelligent app), from astras-pet-os pet-programs.json on main, 2026-10-27. `icon` is the pet's picture under the hub's
+// art/latest (the address that never changes); cyber.js reads the live list and index first and uses this only when GitHub does not answer.
+// Regenerate; do not edit by hand.
 window.PETS = [
  {
   "number": 1,
@@ -8,7 +10,7 @@ window.PETS = [
   "repo": "astras-pet-os",
   "repo_exists": true,
   "text": "Organizes the pets (intelligent apps). His daily rounds keep every pet’s status and mood, the roster, the System Map and the profile README up to date, and list what needs Astra.",
-  "icon": "astras-pet-os-20261012.png"
+  "icon": "icons/astras-pet-os.png"
  },
  {
   "number": 2,
@@ -18,17 +20,17 @@ window.PETS = [
   "repo": "github-goldfish",
   "repo_exists": true,
   "text": "Swims through every public word on a GitHub account and flags document-control, blatant, organizational and systemic errors.",
-  "icon": "github-goldfish-20261012.png"
+  "icon": "icons/github-goldfish.png"
  },
  {
   "number": 3,
-  "pet": "Chip",
+  "pet": "Data Chip",
   "program": "Data Dealer",
   "stage": "registered",
   "repo": "data-dealer",
   "repo_exists": true,
   "text": "Reports the health of Data Dealer, Astra’s large and important data project: its site, data, services and open work, so she sees at a glance what needs her.",
-  "icon": "data-dealer-20261012.png"
+  "icon": "icons/data-dealer.png"
  },
  {
   "number": 4,
@@ -38,7 +40,7 @@ window.PETS = [
   "repo": "api-fairy",
   "repo_exists": true,
   "text": "Keeps notes about your API keys, never the keys themselves: where each lives and what uses it, which keys have gone stale, and which new keys to get. Lives in the corner of the Windows desktop.",
-  "icon": "api-fairy-20261012.png"
+  "icon": "icons/api-fairy.png"
  },
  {
   "number": 5,
@@ -47,8 +49,8 @@ window.PETS = [
   "stage": "registered",
   "repo": "unity-unicorn",
   "repo_exists": true,
-  "text": "A local Unity and VRChat desk with avatar plans, 26 dated tools, open-arch audits, concise summaries and evidenced execution history.",
-  "icon": "unity-unicorn-20261012.png"
+  "text": "A local Unity and VRChat desk for organizing Unity worlds and avatar plans. It contains tools to develop each, a working closet by Devilish, and pages that display world information.",
+  "icon": "icons/unity-unicorn.png"
  },
  {
   "number": 6,
@@ -58,7 +60,7 @@ window.PETS = [
   "repo": "learn-python",
   "repo_exists": true,
   "text": "A Python practice desk with short output exercises, answer checks and saved progress alongside the original lessons.",
-  "icon": "learn-python-20261012.png"
+  "icon": "icons/learn-python.png"
  },
  {
   "number": 7,
@@ -68,7 +70,7 @@ window.PETS = [
   "repo": "the-astral-plane",
   "repo_exists": true,
   "text": "Watches the health of VRChat AI Astra, both while she runs and while she is being worked on offline, so problems show up before a session.",
-  "icon": null
+  "icon": "frames/astra-wisp/idle.png"
  },
  {
   "number": 8,
@@ -78,7 +80,7 @@ window.PETS = [
   "repo": "health-hummy",
   "repo_exists": true,
   "text": "Personal health tracker: weight lifting by body group and sets, cardio, and pole plans. Your data stays on your PC and is never committed.",
-  "icon": "health-hummy-20261012.png"
+  "icon": "icons/health-hummy.png"
  },
  {
   "number": 9,
@@ -88,27 +90,27 @@ window.PETS = [
   "repo": "finance-finch",
   "repo_exists": true,
   "text": "Personal finance tracker across your bank, savings and investment accounts. It reads balances and never moves money.",
-  "icon": "finance-finch-20261012.png"
+  "icon": "icons/finance-finch.png"
  },
  {
   "number": 10,
   "pet": "Mommy's Mommies",
   "program": "Mommy’s Green Room",
   "stage": "registered",
-  "repo": "mommys",
+  "repo": "mommys-mommies",
   "repo_exists": true,
   "text": "A local planning room for Mommy's classes and events, with session details, readiness and notes. Calendar and Discord connections are planned.",
-  "icon": "mommys-20261012.png"
+  "icon": "frames/mommys-mommies/idle.png"
  },
  {
   "number": 11,
-  "pet": "Patty",
+  "pet": "Paper Patty",
   "program": "Paper Girl",
   "stage": "registered",
   "repo": "paper-girl",
   "repo_exists": true,
   "text": "Runs Paper Girl, a free science discovery desk: real research, publisher explanations and fresh articles.",
-  "icon": "paper-girl-20261012.png"
+  "icon": "icons/paper-girl.png"
  },
  {
   "number": 12,
@@ -118,7 +120,7 @@ window.PETS = [
   "repo": "file-master",
   "repo_exists": true,
   "text": "Organizes your files and finds systemic errors. Shows every mass change before making it, with undo.",
-  "icon": "file-master-20261012.png"
+  "icon": "icons/file-master.png"
  },
  {
   "number": 13,
@@ -128,7 +130,7 @@ window.PETS = [
   "repo": "findastra-discord-presence",
   "repo_exists": true,
   "text": "Opens the installed OpenAI and Anthropic Discord presence controls, with a manual setup checklist.",
-  "icon": "findastra-discord-presence-20261012.png"
+  "icon": "icons/findastra-discord-presence.png"
  },
  {
   "number": 14,
@@ -138,7 +140,7 @@ window.PETS = [
   "repo": "portfolio-puffer",
   "repo_exists": true,
   "text": "Drafts and tracks portfolio updates locally. GitHub and LinkedIn connections are planned; publishing is manual.",
-  "icon": "portfolio-puffer-20261012.png"
+  "icon": "icons/portfolio-puffer.png"
  },
  {
   "number": 15,
@@ -148,7 +150,7 @@ window.PETS = [
   "repo": "drum-dog",
   "repo_exists": true,
   "text": "Saves and samples music found online for Ableton Live, and plans releases: the first album, DJ mixes and where each one is hosted. Ableton Live connections are planned.",
-  "icon": "drum-dog-20261012.png"
+  "icon": "icons/drum-dog.png"
  },
  {
   "number": 16,
@@ -158,7 +160,7 @@ window.PETS = [
   "repo": "vscode-angel",
   "repo_exists": true,
   "text": "Records code-review findings and next steps, then exports a Markdown worklist. Editor connections are planned.",
-  "icon": "vscode-angel-20261012.png"
+  "icon": "icons/vscode-angel.png"
  },
  {
   "number": 17,
@@ -168,7 +170,7 @@ window.PETS = [
   "repo": "ghost-protocol",
   "repo_exists": true,
   "text": "Watches the public Ghost Protocol website and checks Astra’s own security against its research: a personal cybersecurity checklist and the steps she has completed.",
-  "icon": "ghost-protocol-20261012.png"
+  "icon": "icons/ghost-protocol.png"
  },
  {
   "number": 18,
@@ -178,7 +180,7 @@ window.PETS = [
   "repo": "project-parrot",
   "repo_exists": true,
   "text": "Planned: periodically reviews OneNote for new project ideas and reminds Astra to start them.",
-  "icon": "project-parrot-20261012.png"
+  "icon": "icons/project-parrot.png"
  },
  {
   "number": 19,
@@ -188,17 +190,17 @@ window.PETS = [
   "repo": "voicemeeter-bug",
   "repo_exists": true,
   "text": "A small Windows desktop pet for restarting Voicemeeter's audio engine when audio needs repair. Its browser page explains how to open the installed app.",
-  "icon": "voicemeeter-bug-20261012.png"
+  "icon": "icons/voicemeeter-bug.png"
  },
  {
   "number": 20,
-  "pet": "Sugarcube",
+  "pet": "Spoonfed Sugarcube",
   "program": "Spoonfed",
   "stage": "pipeline",
   "repo": "spoonfed",
   "repo_exists": true,
   "text": "Helps choose where to eat by spinning restaurant choices while respecting locked preferences and keeping favorite spots.",
-  "icon": "spoonfed-20261012.png"
+  "icon": "icons/spoonfed.png"
  },
  {
   "number": 21,
@@ -208,7 +210,7 @@ window.PETS = [
   "repo": "claude-bot",
   "repo_exists": true,
   "text": "Claude’s twin of ChatGPT’s BSOD desktop pet, in looks and in function: an orange face on the Windows desktop that shows Claude’s live status in a bubble and opens quick chat.",
-  "icon": "claude-bot-20261012.png"
+  "icon": "icons/claude-bot.png"
  },
  {
   "number": 22,
@@ -218,7 +220,7 @@ window.PETS = [
   "repo": "rgbee",
   "repo_exists": true,
   "text": "Plans and previews lighting scenes for every RGB light in the room: room lights, mouse pad, mouse, PC and keyboard. Sending scenes to the real lights is planned.",
-  "icon": "rgbee-20261012.png"
+  "icon": "icons/rgbee.png"
  },
  {
   "number": 23,
@@ -228,7 +230,7 @@ window.PETS = [
   "repo": "mine-mole",
   "repo_exists": true,
   "text": "Manages the cryptocurrency mining program on Astra’s PC and checks whether mining is worth the power.",
-  "icon": "mine-mole-20261012.png"
+  "icon": "icons/mine-mole.png"
  },
  {
   "number": 24,
@@ -238,7 +240,7 @@ window.PETS = [
   "repo": "mail-snail",
   "repo_exists": true,
   "text": "Organizes your mail: sorts it, cleans it up and deletes what you no longer need, always with your OK first. Connects to no mail account yet.",
-  "icon": "mail-snail-20261012.png"
+  "icon": "icons/mail-snail.png"
  },
  {
   "number": 25,
@@ -248,7 +250,7 @@ window.PETS = [
   "repo": "patch-cat",
   "repo_exists": true,
   "text": "Keeps Windows, drivers and apps patched against security holes (its confirmed security role; the rest of its job is Astra’s to choose).",
-  "icon": "patch-cat-20261012.png"
+  "icon": "icons/patch-cat.png"
  },
  {
   "number": 26,
@@ -258,7 +260,7 @@ window.PETS = [
   "repo": "meme-fiend",
   "repo_exists": true,
   "text": "Archives your favourite memes, especially from Discord, and will run a tool for making your own (not built yet). Your memes stay on your PC.",
-  "icon": "meme-fiend-20261012.png"
+  "icon": "icons/meme-fiend.png"
  },
  {
   "number": 27,
@@ -268,7 +270,7 @@ window.PETS = [
   "repo": "astras-gif-maker",
   "repo_exists": true,
   "text": "Makes GIFs in the browser.",
-  "icon": "astras-gif-maker-20261012.png"
+  "icon": "icons/astras-gif-maker.png"
  },
  {
   "number": 28,
@@ -278,7 +280,7 @@ window.PETS = [
   "repo": "backup-beaver",
   "repo_exists": true,
   "text": "Like API Fairy for backups: keeps track of when the last backup ran, where it is, and how to get to it.",
-  "icon": "backup-beaver-20261012.png"
+  "icon": "icons/backup-beaver.png"
  },
  {
   "number": 29,
@@ -288,7 +290,7 @@ window.PETS = [
   "repo": "rift-rabbit",
   "repo_exists": true,
   "text": "A white rabbit that preps and tracks VR software and performance.",
-  "icon": "rift-rabbit-20261012.png"
+  "icon": "icons/rift-rabbit.png"
  },
  {
   "number": 30,
@@ -298,7 +300,7 @@ window.PETS = [
   "repo": "fuzzboi-friend",
   "repo_exists": true,
   "text": "Watches over the Fuzzbois website, which generates the Fuzzboi art, and shows its health with his mood. Mostly for fun: swap his look any time.",
-  "icon": "fuzzboi-friend-20261012.png"
+  "icon": "icons/fuzzboi-friend.png"
  },
  {
   "number": 31,
@@ -308,7 +310,7 @@ window.PETS = [
   "repo": "wifi-butterfly",
   "repo_exists": true,
   "text": "Watches the radios: unknown Wi-Fi networks and Bluetooth devices nearby (its confirmed security role; the rest of its job is Astra’s to choose).",
-  "icon": "wifi-butterfly-20261012.png"
+  "icon": "icons/wifi-butterfly.png"
  },
  {
   "number": 32,
@@ -318,7 +320,7 @@ window.PETS = [
   "repo": "deck-duck",
   "repo_exists": true,
   "text": "Helps you manage your Elgato Stream Deck: what every button does, on every profile.",
-  "icon": "deck-duck-20261012.png"
+  "icon": "icons/deck-duck.png"
  },
  {
   "number": 33,
@@ -328,7 +330,7 @@ window.PETS = [
   "repo": "mesh-moth",
   "repo_exists": true,
   "text": "Manages Astra’s Meshtastic node: its place in the radio mesh, its health and its messages.",
-  "icon": "mesh-moth-20261012.png"
+  "icon": "icons/mesh-moth.png"
  },
  {
   "number": 34,
@@ -338,7 +340,7 @@ window.PETS = [
   "repo": "raspberry-berry",
   "repo_exists": true,
   "text": "Keeps track of Astra’s Raspberry Pi projects and tells her which Pis need a backup or an OS update.",
-  "icon": "raspberry-berry-20261012.png"
+  "icon": "icons/raspberry-berry.png"
  },
  {
   "number": 35,
@@ -348,7 +350,7 @@ window.PETS = [
   "repo": "chat-rat",
   "repo_exists": true,
   "text": "Saves local AI conversations and imported exports, filed by model and YYYYMMDD date, with a button that opens each folder.",
-  "icon": "chat-rat-20261012.png"
+  "icon": "icons/chat-rat.png"
  },
  {
   "number": 36,
@@ -358,87 +360,86 @@ window.PETS = [
   "repo": "platform-platypus",
   "repo_exists": true,
   "text": "Keeps Astra's pages working on iPhone, Android, iPad and desktop: shows a page on every device at once, checks it, tracks what each watched site still needs, and compares screenshots from two platforms.",
-  "icon": "platform-platypus-20261012.png"
+  "icon": "icons/platform-platypus.png"
  },
  {
   "number": 37,
   "pet": "Dubstep Gunsmith",
   "program": "Dubstep Armory",
   "stage": "seed",
-  "repo": "pet-program-37",
-  "repo_exists": false,
-  "text": "Catalogs avatar gun effects and loadouts for Astra’s avatars. Its source is still only on the PC, not on GitHub.",
-  "icon": null
+  "repo": "dubstep-armory",
+  "repo_exists": true,
+  "text": "Catalogs avatar gun effects and loadouts for Astra’s avatars. Its source is still only on the PC, not on GitHub."
  },
  {
   "number": 38,
   "pet": "Pole Puff",
   "program": "Infinite Studio",
   "stage": "seed",
-  "repo": "pet-program-38",
-  "repo_exists": false,
+  "repo": "infinite-studio",
+  "repo_exists": true,
   "text": "Manages Astra's Infinite Pole.",
-  "icon": "pole-puff-20261012.png"
+  "icon": "icons/pole-puff.png"
  },
  {
   "number": 39,
   "pet": "Procreate Panda",
   "program": "Bamboo Studio",
   "stage": "seed",
-  "repo": "pet-program-39",
-  "repo_exists": false,
+  "repo": "bamboo-studio",
+  "repo_exists": true,
   "text": "Handles the redlines Astra makes in Procreate and manages her Procreate tools and drawings.",
-  "icon": "procreate-panda-20261012.png"
+  "icon": "icons/procreate-panda.png"
  },
  {
   "number": 40,
   "pet": "Skill Scout",
   "program": "Luna's Log",
   "stage": "seed",
-  "repo": "pet-program-40",
-  "repo_exists": false,
+  "repo": "lunas-log",
+  "repo_exists": true,
   "text": "Watches the agent and skill files (AGENTS.md, CLAUDE.md, SKILL.md) for every AI assistant and model, and tracks what changed, who changed it and why.",
-  "icon": "skill-scout-20261012.png"
+  "icon": "icons/skill-scout.png"
  },
  {
   "number": 41,
   "pet": "OSC Sealion",
   "program": "OSC Sonar",
   "stage": "seed",
-  "repo": "pet-program-41",
-  "repo_exists": false,
+  "repo": "osc-sonar",
+  "repo_exists": true,
   "text": "Monitors OSC packets and finds problems when several apps share channels to VRChat, OSCGoesBrrr and VRCFaceTracking.",
-  "icon": "osc-sealion-20261012.png"
+  "icon": "icons/osc-sealion.png"
  },
  {
   "number": 42,
   "pet": "Piranesi Nessi",
   "program": "Nessi's Ocean",
   "stage": "seed",
-  "repo": "pet-program-42",
-  "repo_exists": false,
+  "repo": "nessis-ocean",
+  "repo_exists": true,
   "text": "Piranesi Nessi's world caretaker for Piranesi House: its Unity project, preview website and use of shared Unity Unicorn tools. Runtime is planned.",
-  "icon": "piranesi-nessi-20261012.png"
+  "icon": "icons/piranesi-nessi.png"
  },
  {
   "number": 43,
   "pet": "Photo Dodo",
   "program": "Photo Roost",
   "stage": "seed",
-  "repo": "pet-program-43",
-  "repo_exists": false,
+  "repo": "photo-roost",
+  "repo_exists": true,
   "text": "Keeps track of all your saved pictures: where each one is, what it shows, and whether it is backed up.",
-  "icon": "photo-dodo-20261012.png"
+  "icon": "icons/photo-dodo.png"
  },
  {
   "number": 44,
   "pet": "Video Vulture",
   "program": "Video Vault",
   "stage": "seed",
-  "repo": "pet-program-44",
-  "repo_exists": false,
+  "repo": "video-vault",
+  "repo_exists": true,
   "text": "Keeps track of all your saved videos, the same way Photo Dodo does for pictures: where each one is, what it shows, and whether it is backed up.",
-  "icon": "video-vulture-20261012.png"
+  "icon": "icons/video-vulture.png"
  },
  {
   "number": 45,
@@ -448,7 +449,7 @@ window.PETS = [
   "repo": "the-cats-closet",
   "repo_exists": true,
   "text": "Organizes your closet (what you own and what goes together) and keeps your favourite places to shop.",
-  "icon": "closet-cat-20261012.png"
+  "icon": "icons/closet-cat.png"
  },
  {
   "number": 46,
@@ -456,319 +457,290 @@ window.PETS = [
   "program": "Iron Gates",
   "stage": "roadmap",
   "repo": "iron-gates",
-  "repo_exists": false,
-  "text": "Security and approvals: human-facing approvals and security monitoring. Issues the grants and the short-lived agent keys; never approves her own.",
-  "icon": null
+  "repo_exists": true,
+  "text": "Security and approvals: human-facing approvals and security monitoring. Issues the grants and the short-lived agent keys; never approves her own."
  },
  {
   "number": 47,
   "pet": "Queue Quokka",
   "program": "Task Island",
   "stage": "roadmap",
-  "repo": "pet-program-47",
-  "repo_exists": false,
-  "text": "Tasks: watches retries, stalled jobs and agent handoffs.",
-  "icon": null
+  "repo": "task-island",
+  "repo_exists": true,
+  "text": "Tasks: watches retries, stalled jobs and agent handoffs."
  },
  {
   "number": 48,
   "pet": "Log Lynx",
   "program": "Log Den",
-  "stage": "roadmap",
-  "repo": "pet-program-48",
-  "repo_exists": false,
+  "stage": "registered",
+  "repo": "log-den",
+  "repo_exists": true,
   "text": "Observability: correlates logs, traces, health and failures.",
-  "icon": null
+  "icon": "icons/log-den.png"
  },
  {
   "number": 49,
   "pet": "Server Salamander",
   "program": "Server Hearth",
   "stage": "roadmap",
-  "repo": "pet-program-49",
-  "repo_exists": false,
-  "text": "Hosts: home servers, uptime, service health.",
-  "icon": null
+  "repo": "server-hearth",
+  "repo_exists": true,
+  "text": "Hosts: home servers, uptime, service health."
  },
  {
   "number": 50,
   "pet": "Docker Dragon",
   "program": "Container Hoard",
   "stage": "roadmap",
-  "repo": "pet-program-50",
-  "repo_exists": false,
-  "text": "Containers: Docker health and authorized management.",
-  "icon": null
+  "repo": "container-hoard",
+  "repo_exists": true,
+  "text": "Containers: Docker health and authorized management."
  },
  {
   "number": 51,
   "pet": "Test Tortoise",
   "program": "Test Track",
   "stage": "roadmap",
-  "repo": "pet-program-51",
-  "repo_exists": false,
-  "text": "Quality: tests and release verification.",
-  "icon": null
+  "repo": "test-track",
+  "repo_exists": true,
+  "text": "Quality: tests and release verification."
  },
  {
   "number": 52,
   "pet": "Token Toucan",
   "program": "Token Canopy",
   "stage": "roadmap",
-  "repo": "pet-program-52",
-  "repo_exists": false,
-  "text": "AI cost: model tokens, budgets and inference usage.",
-  "icon": null
+  "repo": "token-canopy",
+  "repo_exists": true,
+  "text": "AI cost: model tokens, budgets and inference usage."
  },
  {
   "number": 53,
   "pet": "Packet Piranha",
   "program": "Packet River",
-  "stage": "roadmap",
-  "repo": "pet-program-53",
-  "repo_exists": false,
+  "stage": "registered",
+  "repo": "packet-river",
+  "repo_exists": true,
   "text": "Network: packet loss, DNS, latency, routing.",
-  "icon": null
+  "icon": "icons/packet-river.png"
  },
  {
   "number": 54,
   "pet": "Calendar Crow",
   "program": "Crow's Nest",
   "stage": "roadmap",
-  "repo": "pet-program-54",
-  "repo_exists": false,
-  "text": "Calendar: scheduling, conflicts and reminders.",
-  "icon": null
+  "repo": "crows-nest",
+  "repo_exists": true,
+  "text": "Calendar: scheduling, conflicts and reminders."
  },
  {
   "number": 55,
   "pet": "Browser Bat",
   "program": "Browser Belfry",
   "stage": "roadmap",
-  "repo": "pet-program-55",
-  "repo_exists": false,
-  "text": "Web and marketing operations: website QA and authorized browser work.",
-  "icon": null
+  "repo": "browser-belfry",
+  "repo_exists": true,
+  "text": "Web and marketing operations: website QA and authorized browser work."
  },
  {
   "number": 56,
   "pet": "Data Dragonfly",
   "program": "Data Marsh",
   "stage": "roadmap",
-  "repo": "pet-program-56",
-  "repo_exists": false,
-  "text": "Data engineering: data integrity, schemas, pipelines.",
-  "icon": null
+  "repo": "data-marsh",
+  "repo_exists": true,
+  "text": "Data engineering: data integrity, schemas, pipelines."
  },
  {
   "number": 57,
   "pet": "Update Urchin",
   "program": "Update Tidepool",
   "stage": "roadmap",
-  "repo": "pet-program-57",
-  "repo_exists": false,
-  "text": "Dependency updates: packages, compatibility, rollback prep.",
-  "icon": null
+  "repo": "update-tidepool",
+  "repo_exists": true,
+  "text": "Dependency updates: packages, compatibility, rollback prep."
  },
  {
   "number": 58,
   "pet": "Linux Penguin",
   "program": "Linux Iceberg",
-  "stage": "roadmap",
-  "repo": "pet-program-58",
-  "repo_exists": false,
-  "text": "Linux administration, SSH, systemd, packages.",
-  "icon": null
+  "stage": "pipeline",
+  "repo": "linux-iceberg",
+  "repo_exists": true,
+  "text": "Linux administration, SSH, systemd, packages."
  },
  {
   "number": 59,
   "pet": "Stock Fox",
   "program": "Market Meadow",
   "stage": "roadmap",
-  "repo": "pet-program-59",
-  "repo_exists": false,
-  "text": "Not decided yet: Stock Fox’s job is Astra’s to choose.",
-  "icon": null
+  "repo": "market-meadow",
+  "repo_exists": true,
+  "text": "Not decided yet: Stock Fox’s job is Astra’s to choose."
  },
  {
   "number": 60,
   "pet": "Passport Pelican",
   "program": "Passport Harbor",
   "stage": "roadmap",
-  "repo": "pet-program-60",
-  "repo_exists": false,
-  "text": "Passport/ID metadata, visa research and deadlines, encrypted.",
-  "icon": null
+  "repo": "passport-harbor",
+  "repo_exists": true,
+  "text": "Passport/ID metadata, visa research and deadlines, encrypted."
  },
  {
   "number": 61,
   "pet": "Journal Jellyfish",
   "program": "Journal Lagoon",
   "stage": "roadmap",
-  "repo": "pet-program-61",
-  "repo_exists": false,
-  "text": "Private travel diary and itineraries.",
-  "icon": null
+  "repo": "journal-lagoon",
+  "repo_exists": true,
+  "text": "Private travel diary and itineraries."
  },
  {
   "number": 62,
   "pet": "Shell Squid",
   "program": "Shell Trench",
   "stage": "roadmap",
-  "repo": "pet-program-62",
-  "repo_exists": false,
-  "text": "Bash, terminal scripting and guarded automation.",
-  "icon": null
+  "repo": "shell-trench",
+  "repo_exists": true,
+  "text": "Bash, terminal scripting and guarded automation."
  },
  {
   "number": 63,
   "pet": "Kernel Koala",
   "program": "Kernel Grove",
-  "stage": "roadmap",
-  "repo": "pet-program-63",
-  "repo_exists": false,
-  "text": "Processes, memory, drivers and OS internals.",
-  "icon": null
+  "stage": "pipeline",
+  "repo": "kernel-grove",
+  "repo_exists": true,
+  "text": "Processes, memory, drivers and OS internals."
  },
  {
   "number": 64,
   "pet": "Proxy Axolotl",
   "program": "Proxy Lake",
   "stage": "roadmap",
-  "repo": "pet-program-64",
-  "repo_exists": false,
-  "text": "Reverse proxies, TLS and secure private remote access.",
-  "icon": null
+  "repo": "proxy-lake",
+  "repo_exists": true,
+  "text": "Reverse proxies, TLS and secure private remote access."
  },
  {
   "number": 65,
   "pet": "Cluster Crab",
   "program": "Cluster Shore",
   "stage": "roadmap",
-  "repo": "pet-program-65",
-  "repo_exists": false,
-  "text": "Distributed services and orchestration.",
-  "icon": null
+  "repo": "cluster-shore",
+  "repo_exists": true,
+  "text": "Distributed services and orchestration."
  },
  {
   "number": 66,
   "pet": "Storage Stoat",
   "program": "Storage Warren",
   "stage": "roadmap",
-  "repo": "pet-program-66",
-  "repo_exists": false,
-  "text": "NAS, ZFS, snapshots and capacity health.",
-  "icon": null
+  "repo": "storage-warren",
+  "repo_exists": true,
+  "text": "NAS, ZFS, snapshots and capacity health."
  },
  {
   "number": 67,
   "pet": "White Hat Weasel",
   "program": "White Hat Lab",
   "stage": "roadmap",
-  "repo": "pet-program-67",
-  "repo_exists": false,
-  "text": "Authorized security assessment and remediation.",
-  "icon": null
+  "repo": "white-hat-lab",
+  "repo_exists": true,
+  "text": "Authorized security assessment and remediation."
  },
  {
   "number": 68,
   "pet": "Port Spider",
   "program": "Port Web",
   "stage": "roadmap",
-  "repo": "pet-program-68",
-  "repo_exists": false,
-  "text": "Authorized port and service exposure checks.",
-  "icon": null
+  "repo": "port-web",
+  "repo_exists": true,
+  "text": "Authorized port and service exposure checks."
  },
  {
   "number": 69,
   "pet": "Cipher Owl",
   "program": "Cipher Hollow",
   "stage": "roadmap",
-  "repo": "pet-program-69",
-  "repo_exists": false,
-  "text": "Encryption, keys, certificates and crypto education.",
-  "icon": null
+  "repo": "cipher-hollow",
+  "repo_exists": true,
+  "text": "Encryption, keys, certificates and crypto education."
  },
  {
   "number": 70,
   "pet": "Forensic Ferret",
   "program": "Evidence Locker",
-  "stage": "roadmap",
-  "repo": "pet-program-70",
-  "repo_exists": false,
+  "stage": "registered",
+  "repo": "evidence-locker",
+  "repo_exists": true,
   "text": "Incident timelines and log analysis.",
-  "icon": null
+  "icon": "icons/evidence-locker.png"
  },
  {
   "number": 71,
   "pet": "Llama Librarian",
   "program": "Model Library",
   "stage": "roadmap",
-  "repo": "pet-program-71",
-  "repo_exists": false,
-  "text": "Local model inventory, downloads and compatibility.",
-  "icon": null
+  "repo": "model-library",
+  "repo_exists": true,
+  "text": "Local model inventory, downloads and compatibility."
  },
  {
   "number": 72,
   "pet": "Inference Iguana",
   "program": "Benchmark Rock",
-  "stage": "roadmap",
-  "repo": "pet-program-72",
-  "repo_exists": false,
-  "text": "Inference benchmarks, GPU/VRAM, latency.",
-  "icon": null
+  "stage": "pipeline",
+  "repo": "benchmark-rock",
+  "repo_exists": true,
+  "text": "Inference benchmarks, GPU/VRAM, latency, and the graphics card watch: what is using it and how much of its memory."
  },
  {
   "number": 73,
   "pet": "Agent Ant",
   "program": "Agent Colony",
   "stage": "roadmap",
-  "repo": "pet-program-73",
-  "repo_exists": false,
-  "text": "Agent experiments and tool-use evaluation.",
-  "icon": null
+  "repo": "agent-colony",
+  "repo_exists": true,
+  "text": "Agent experiments and tool-use evaluation."
  },
  {
   "number": 74,
   "pet": "Roaming Raven",
   "program": "Roam Map",
   "stage": "roadmap",
-  "repo": "pet-program-74",
-  "repo_exists": false,
-  "text": "Travel connectivity, VPN/tailnet and remote access.",
-  "icon": null
+  "repo": "roam-map",
+  "repo_exists": true,
+  "text": "Travel connectivity, VPN/tailnet and remote access."
  },
  {
   "number": 75,
   "pet": "Cache Coyote",
   "program": "Cache Canyon",
   "stage": "roadmap",
-  "repo": "pet-program-75",
-  "repo_exists": false,
-  "text": "Offline-first documents, caches and queued actions.",
-  "icon": null
+  "repo": "cache-canyon",
+  "repo_exists": true,
+  "text": "Offline-first documents, caches and queued actions."
  },
  {
   "number": 76,
   "pet": "Sync Mink",
   "program": "Sync Stream",
   "stage": "roadmap",
-  "repo": "pet-program-76",
-  "repo_exists": false,
-  "text": "Cross-device sync and conflict resolution.",
-  "icon": null
+  "repo": "sync-stream",
+  "repo_exists": true,
+  "text": "Cross-device sync and conflict resolution."
  },
  {
   "number": 77,
   "pet": "Triage Tapir",
   "program": "The Triage Desk",
   "stage": "seed",
-  "repo": "pet-program-77",
-  "repo_exists": false,
-  "text": "Triages the vet-clinic: labels tickets, checks them for leaked secrets, and tests offered cures in isolation. Never merges anything.",
-  "icon": null
+  "repo": "the-triage-desk",
+  "repo_exists": true,
+  "text": "Triages the vet-clinic: labels tickets, checks them for leaked secrets, and tests offered cures in isolation. Never merges anything."
  },
  {
   "number": 78,
@@ -777,8 +749,7 @@ window.PETS = [
   "stage": "seed",
   "repo": "the-police-station",
   "repo_exists": true,
-  "text": "Runs The Police Station: watches every write and every agent key use, live; switches a tool, connection or key OFF (never ON); alerts Gatekeeper Goddess and Astra (L4); raises the alarm everywhere on a live break or a past breach.",
-  "icon": null
+  "text": "Runs The Police Station: watches every write and every agent key use, live; switches a tool, connection or key OFF (never ON); alerts Gatekeeper Goddess and Astra (L4); raises the alarm everywhere on a live break or a past breach."
  },
  {
   "number": 79,
@@ -787,8 +758,7 @@ window.PETS = [
   "stage": "seed",
   "repo": "ai-doghouse",
   "repo_exists": true,
-  "text": "Keeps vetted research on AI agents, agentic harnesses, security and provenance, applies it to Astra’s PetOS, and writes the research paper.",
-  "icon": null
+  "text": "Keeps vetted research on AI agents, agentic harnesses, security and provenance, applies it to Astra’s PetOS, and writes the research paper."
  },
  {
   "number": 80,
@@ -796,19 +766,17 @@ window.PETS = [
   "program": "The Recovery Room",
   "stage": "seed",
   "repo": "the-recovery-room",
-  "repo_exists": false,
-  "text": "After a shutdown, rebuilds the farm from the verified release, restores clean backups from before the incident, and restarts everything in the safe order.",
-  "icon": null
+  "repo_exists": true,
+  "text": "After a shutdown, rebuilds the farm from the verified release, restores clean backups from before the incident, and restarts everything in the safe order."
  },
  {
   "number": 81,
   "pet": "Intel Owl",
   "program": "Threat Observatory",
   "stage": "seed",
-  "repo": "pet-program-81",
-  "repo_exists": false,
-  "text": "Researches emerging cyber threats, CVEs, adversary tactics and public advisories, including lawful Tor-based intelligence sources when separately authorized. Shares defensive findings with File Master and security pets; distinct from Cipher Owl and Skill Scout.",
-  "icon": null
+  "repo": "threat-observatory",
+  "repo_exists": true,
+  "text": "Researches emerging cyber threats, CVEs, adversary tactics and public advisories, including lawful Tor-based intelligence sources when separately authorized. Shares defensive findings with File Master and security pets; distinct from Cipher Owl and Skill Scout."
  },
  {
   "number": 82,
@@ -816,9 +784,9 @@ window.PETS = [
   "program": "The Threshold",
   "stage": "seed",
   "repo": "the-threshold",
-  "repo_exists": false,
+  "repo_exists": true,
   "text": "Door Dormouse manages Liminal Doors: floors, build choices, tools, Unity project metadata and preview website. Browser prototype; L3 and Unity execution are not connected.",
-  "icon": null
+  "icon": "desktop-art/door-dormouse/idle.png"
  },
  {
   "number": 83,
@@ -827,7 +795,16 @@ window.PETS = [
   "stage": "pipeline",
   "repo": "role-fairy",
   "repo_exists": true,
-  "text": "Runs Mommy’s Role Fairy, a cute single-choice Discord role picker: new members get a welcome-channel link to the picker and everyone can change their role any time.",
-  "icon": null
+  "text": "Runs Fairy Ring: every Discord bot Astra uses. Sets up and looks after a bot for each server, starting with role pickers; assigns or changes members’ roles when asked; and keeps each bot’s permissions, servers and health in one place, only where she has been granted. Discord Damsel keeps Astra’s own presence."
+ },
+ {
+  "number": 84,
+  "pet": "Workflow Whale",
+  "program": "Workflow Whirlpool",
+  "stage": "pipeline",
+  "repo": "workflow-whirlpool",
+  "repo_exists": true,
+  "text": "Pairs a private PC screen with an iPad for deliberate captures, PencilKit markup, handwritten notes, image return and separately enabled remote scrolling.",
+  "icon": "icons/workflow-whirlpool.png"
  }
 ];
