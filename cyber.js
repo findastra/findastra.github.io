@@ -96,7 +96,6 @@
   };
   boot();
 
-  // ---------- about: left blank for now (Astra, 2026-10-27) ----------
 
   // ---------- tickers: what changed lately, and the projects being worked on now ----------
   // From GitHub's public search (merged pull requests and commits by findastra); the snapshot in updates-data.js when
@@ -227,12 +226,13 @@
   };
   const cleanText = (t) => t.replace(/^👉\s*\S+\s*[—-]\s*/, '');
   const shown = (text) => !query || text.toLowerCase().includes(query);
-  // a repo link only when the repo is public (private ones would 404 for visitors)
-  const repoLink = (repo, text) => (byName[repo] ? link('https://github.com/findastra/' + repo, null, text || repo + ' ↗') : null);
 
   // ---------- Polaroids: the picture on top, what it is written in marker on the white border below ----------
   // With no picture yet, the photo is still developing: a dark square glowing in the Polaroid's own color.
-  function polaroid({ key, name, kind, text, pics, href, meta, shot }) {
+  // Everything about a project is on the Polaroid (Astra, 2026-10-27): its name (a link to the repo), its code and the date it
+  // last changed, written in marker on the white border, with little repo and site tags under them; under it, the
+  // repo's own GitHub description.
+  function polaroid({ key, name, kind, date, text, pics, repo, site, shot }) {
     const c = el('article', 'polaroid'); const h = paint(c, key);
     const photo = el(pics.length && !shot ? 'button' : 'div', 'photo');
     if (shot) photo.append(shot);
@@ -242,19 +242,22 @@
       if (pics.length > 1) photo.append(el('span', 'count', pics.length + ' pictures'));
       photo.onclick = () => openGallery(pics);
     } else photo.append(el('span', 'developing', 'still developing…'));
-    const title = href ? link(href, 'title', name) : el('b', 'title', name);
-    if (href && href.startsWith('#')) title.removeAttribute('target'), title.removeAttribute('rel');
-    const note = el('div', 'note'); note.append(title, el('span', 'kind', kind));
+    const title = repo || site ? link(repo || site, 'title', name) : el('b', 'title', name);
+    const note = el('div', 'note'), tags = el('div', 'tags');
+    if (repo) tags.append(link(repo, null, 'repo ↗'));
+    if (site) tags.append(link(site, null, 'site ↗'));
+    note.append(title, el('span', 'kind', [kind, date].filter(Boolean).join(' · ')), tags);
     const frame = el('div', 'frame'); frame.append(el('i', 'tape'), photo, note);
     const info = el('div', 'info');
     if (text) { const p = el('p', null, text); p.title = text; info.append(p); }
-    const m = el('div', 'meta'); m.append(...meta.filter(Boolean)); info.append(m);
     c.append(sparkles(h, 5), frame, info); return c;
   }
   const worldPics = (w) => [...w.local, ...picturesOf(w.repo), ...(w.extra || []).flatMap(picturesOf)];
+  // a world: its repo (when public) gives the link, date and description; the README's words when it is private
   const worldCard = (w) => {
-    const pics = worldPics(w);
-    return polaroid({ key: w.repo, name: w.name, kind: w.kind, text: w.text, pics, meta: [repoLink(w.repo)] });
+    const r = byName[w.repo];
+    return polaroid({ key: w.repo, name: w.name, kind: w.kind.replace(' · PC VR / desktop', ''), date: r ? when(r.pushed_at) : '', text: cleanText((r && r.description) || w.text), pics: worldPics(w),
+      repo: r ? 'https://github.com/findastra/' + w.repo : null, site: r && r.homepage });
   };
   // Moodglass's picture: what it does, drawn live (Astra, 2026-10-27): a mosaic of Liminal Doors' floors (the world's concept
   // art, findastra/liminal-doors) as the background, with a plain Discord window over it and Moodglass's ✎ + ⏻ buttons
@@ -277,8 +280,8 @@
   // Discord and Web & More: the repo name, written out with spaces, and its language
   const extraCard = (r) => {
     const repoUrl = 'https://github.com/findastra/' + r.name;
-    return polaroid({ key: r.name, shot: r.name === 'moodglass' ? moodglassShot() : null, name: r.name.replace(/-/g, ' '), kind: r.language || 'project', text: cleanText(r.description || 'No description yet.'), pics: picturesOf(r.name), href: r.homepage || repoUrl,
-      meta: [link(repoUrl, null, 'repo ↗'), r.homepage ? link(r.homepage, null, 'site ↗') : null, el('span', null, when(r.pushed_at))] });
+    return polaroid({ key: r.name, shot: r.name === 'moodglass' ? moodglassShot() : null, name: r.name.replace(/-/g, ' '), kind: r.language || 'project', date: when(r.pushed_at),
+      text: cleanText(r.description || 'No description yet.'), pics: picturesOf(r.name), repo: repoUrl, site: r.homepage });
   };
 
   // ---------- stars: every pet, with its hosted icon, and its repo's pictures and links when the repo is public ----------

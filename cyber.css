@@ -16,16 +16,19 @@ body { margin: 0; background: #0b0b0b; color: var(--ink); font: 17px/1.65 Inter,
 /* the pole on the left, from Mommy's website: a glowing pole, a floor label per section, and a bead on the one you are on */
 :root { --rail: 52px; }
 #pole { position: fixed; left: 0; top: 0; bottom: 0; z-index: 40; width: var(--rail); pointer-events: none; background: #050505; border-right: 2px solid #1e1e1e; }
-#pole::before { content: ""; position: absolute; top: 0; bottom: 0; left: calc(var(--rail) / 2 - 3px); width: 6px; border-radius: 6px;
-  background: linear-gradient(180deg, #fff 0%, #dde0f5 12%, #ff8fd0 40%, #ff2e7e 68%, #e5123f 100%); box-shadow: 0 0 14px rgba(255, 46, 126, .85), 0 0 40px rgba(255, 46, 126, .35); }
+/* matte chrome, white and gray (Astra, 2026-10-27: "make it like a matcap chrome") */
+#pole::before { content: ""; position: absolute; top: 0; bottom: 0; left: calc(var(--rail) / 2 - 4px); width: 8px; border-radius: 8px;
+  background: linear-gradient(90deg, #5c5c5c 0%, #f4f4f4 28%, #a9a9a9 46%, #e2e2e2 62%, #6e6e6e 82%, #3a3a3a 100%);
+  box-shadow: 0 0 10px rgba(255, 255, 255, .18); }
 #bead { position: absolute; top: 60px; left: calc(var(--rail) / 2 - 11px); width: 22px; height: 22px; border-radius: 50%;
-  background: radial-gradient(circle at 32% 30%, #fff, #ff8fd0 45%, #ff2e7e 100%); box-shadow: 0 0 18px #ff2e7e, 0 0 44px rgba(255, 46, 126, .6); transition: top .18s cubic-bezier(.4, 1.4, .5, 1); }
+  background: radial-gradient(circle at 34% 30%, #fff 0, #e6e6e6 18%, #9a9a9a 52%, #4a4a4a 78%, #d0d0d0 100%); box-shadow: 0 0 10px rgba(255, 255, 255, .45), 0 2px 6px #000;
+  transition: top .18s cubic-bezier(.4, 1.4, .5, 1); }
 .floors { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: space-around; align-items: center; padding: 12vh 0; }
 .floors a { pointer-events: auto; cursor: pointer; text-decoration: none; min-height: 44px; min-width: 28px; display: flex; align-items: center; justify-content: center;
-  font: 400 10px/1 var(--mono); letter-spacing: .14em; color: #c9c9c9; writing-mode: vertical-rl; text-orientation: mixed; background: #0b0b0b; padding: 6px 2px; opacity: .55;
+  font: 400 10px/1 var(--mono); letter-spacing: .14em; color: #c9c9c9; writing-mode: vertical-rl; text-orientation: mixed; transform: rotate(180deg); background: #0b0b0b; padding: 6px 2px; opacity: .55;
   transition: opacity .25s, color .25s, text-shadow .25s; }
 .floors a:hover, .floors a:focus-visible { opacity: 1; background: #0b0b0b; color: #fff; }
-.floors a.on { opacity: 1; color: #fff; text-shadow: 0 0 10px #ff2e7e; }
+.floors a.on { opacity: 1; color: #fff; text-shadow: 0 0 8px #fff; }
 /* film grain over everything */
 body::after { content: ""; position: fixed; inset: 0; z-index: 60; pointer-events: none; opacity: .09;
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
@@ -67,20 +70,25 @@ h3 { display: inline-block; font: 700 12px var(--mono); text-transform: uppercas
 .dots { background: radial-gradient(circle, #2f2f2f 1.5px, transparent 2px) 0 0 / 13px 13px, linear-gradient(#161616, #0c0c0c); }
 .checker { background: repeating-conic-gradient(#111 0 25%, #1c1c1c 0 50%) 0 0 / 44px 44px; }
 .lines { background: repeating-linear-gradient(#151515 0 3px, #1e1e1e 3px 4px); }
-#about h2 { text-shadow: 6px 6px 0 #3a3a3a, 12px 12px 0 #2a2a2a; }
-#projects h2 { text-transform: none; background: repeating-linear-gradient(-45deg, #d8d8d8 0 7px, #5a5a5a 7px 11px); -webkit-background-clip: text; background-clip: text; color: transparent; }
+/* sections are separated by a black band; each has its own pattern */
+.block + .block, .ticker + .block { border-top: 10px solid #000; }
+.weave { background: repeating-linear-gradient(45deg, #1d1d1d 0 2px, transparent 2px 14px), repeating-linear-gradient(-45deg, #1d1d1d 0 2px, transparent 2px 14px), #121212; }
 #arcade h2 { text-shadow: 4px 4px 0 #555, 8px 8px 0 #000; }
 
 /* tickers between sections: what changed lately, and what is being worked on now */
 .ticker { position: relative; z-index: 2; margin: -16px -24px; padding: 13px 0 13px 0; overflow: hidden; white-space: nowrap; background: #050505; color: #d6d6d6;
   border-block: 2px solid #3c3c3c; box-shadow: 0 7px 0 #000; transform: rotate(-1.4deg); font: 500 clamp(14px, 1.7vw, 17px)/1.2 var(--mono); }
+/* the working on bar sits a little lower, apart from the live updates bar (Astra, 2026-10-27) */
+#tick-now { margin-top: 44px; }
 .ticker.flip { background: #1c1c1c; color: #cfcfcf; border-color: #000; box-shadow: 0 -7px 0 #000; transform: rotate(1.2deg); }
 .tick-label { position: absolute; z-index: 1; left: 0; top: 0; bottom: 0; display: grid; place-items: center; padding: 0 16px 0 34px; background: #8a8a8a; color: #000;
   font: 700 12px var(--mono); text-transform: uppercase; letter-spacing: .14em; box-shadow: 8px 0 14px #000; }
 /* the white rabbit hops along the top edge of the live updates bar (Astra, 2026-10-27: "I don't see the bunny hopping along the
    top of it"): its lane is tilted like the bar and sits on the bar's top border, in the hero's bottom padding, so its hops
    (up to 14 px) never cover the bar's words */
-.rabbit-lane { position: relative; z-index: 3; height: 0; margin: 0 -24px; transform: rotate(-1.4deg); }
+.rabbit-lane { position: relative; z-index: 3; height: 64px; margin: -64px -24px 0; overflow: hidden; pointer-events: none; transform: rotate(-1.4deg); }
+/* the lane clips the rabbit at its edges, so running off the side never widens the page and shifts everything (Astra, 2026-10-27) */
+.rabbit-lane .white-rabbit { pointer-events: auto; }
 .white-rabbit { position: absolute; z-index: 0; bottom: 14px; left: -60px; display: none; width: 38px; height: 32px; padding: 4px; border: 0; background: none; color: #fff;
   cursor: pointer; filter: drop-shadow(0 0 5px rgba(255, 255, 255, .8)); }
 .white-rabbit.running { display: block; }
@@ -92,6 +100,8 @@ h3 { display: inline-block; font: 700 12px var(--mono); text-transform: uppercas
 .ticker.flip .track { animation-direction: reverse; }
 .ticker:hover .track, .ticker:focus-within .track { animation-play-state: paused; }
 .ticker .item { display: inline-flex; align-items: baseline; gap: .55em; padding-right: 2.4em; }
+/* the words after a project name: a pale, almost white tint of its color (Astra, 2026-10-27) */
+.ticker .item > span:not([class]) { color: color-mix(in srgb, var(--c, #fff) 28%, #e6e6e6); }
 .ticker .item::after { content: "✦"; color: #5a5a5a; margin-left: 1.8em; }
 .ticker .repo { color: var(--c, #fff); font-weight: 700; text-decoration: none; }
 .ticker .repo:hover { background: var(--c, #fff); color: #000; }
@@ -158,7 +168,6 @@ body.unmasked .hero { --bg: #8d8d8d; --ink: #070707; --muted: #2c2c2c;
   60% { filter: invert(1); transform: translate(-2px, 3px) skewX(-5deg); }
 }
 
-/* about: left blank for now (Astra, 2026-10-27) */
 .chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 0; margin: 0; list-style: none; }
 .chips li { font: 13px var(--mono); border: 2px solid var(--ink); background: var(--panel); padding: 2px 9px; }
 .chips li:nth-child(3n+2) { background: var(--ink); color: var(--bg); }
@@ -224,17 +233,10 @@ body.unmasked .hero { --bg: #8d8d8d; --ink: #070707; --muted: #2c2c2c;
 .contents a { font: 13px var(--mono); text-decoration: none; border: 2px solid #555; padding: 5px 10px; background: #0a0a0a; box-shadow: 3px 3px 0 #000; }
 .contents a b { color: #8a8a8a; margin-right: 4px; }
 .contents a:hover, .contents a:focus-visible { background: #e4e4e4; color: #000; border-color: #e4e4e4; outline: none; }
-.chapters { position: relative; margin-top: 30px; padding-left: 34px; }
-.chapters::before { content: ""; position: absolute; left: 9px; top: 18px; bottom: 30px; border-left: 2px dashed #4a4a4a; }
-.chapter { position: relative; padding: 18px 0 56px; scroll-margin-top: 70px; }
+/* each project group is its own section (Astra, 2026-10-27); hidden while a search finds nothing in it */
+.chapter { scroll-margin-top: 60px; }
 .chapter.empty { display: none; }
-/* each chapter's node on the rail is a small fat star */
-.chapter::before { content: ""; position: absolute; left: -36px; top: 26px; width: 24px; height: 24px; background: #e4e4e4;
-  clip-path: polygon(50% 0, 62% 33%, 98% 35%, 70% 57%, 79% 92%, 50% 72%, 21% 92%, 30% 57%, 2% 35%, 38% 33%); }
-.chapter > header { max-width: 70ch; margin-bottom: 26px; }
-.chapter > header .num { display: block; font: 700 14px var(--mono); color: #8a8a8a; letter-spacing: .08em; }
-.chapter > header h3 { display: block; border: 0; margin: 2px 0 6px; padding: 0; font: 900 clamp(2rem, 5vw, 3.2rem)/1 Inter, sans-serif; text-transform: none; letter-spacing: -.02em; }
-.chapter > header p { margin: 0; color: var(--muted); }
+.lede { max-width: 70ch; margin: -14px 0 26px; color: var(--muted); }
 
 /* Polaroids: every project; what each one is, written in marker on the white border (Astra, 2026-10-27) */
 .polaroids { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 44px 30px; padding: 16px 0 20px; }
@@ -276,7 +278,11 @@ body.unmasked .hero { --bg: #8d8d8d; --ink: #070707; --muted: #2c2c2c;
 a.title:hover, a.title:focus-visible { color: color-mix(in srgb, var(--c) 45%, #000); outline: none; }
 .note .kind { font: .9rem/1.15 "Permanent Marker", cursive; color: #5a5a5a; rotate: 1deg; }
 .polaroid .info p { margin: 18px auto 6px; max-width: 32ch; font-size: 14.5px; color: #c8c8c8; }
-.polaroid .meta { display: flex; gap: .8em; justify-content: center; flex-wrap: wrap; font: 12px var(--mono); color: var(--muted); }
+/* the repo and site tags, small stamps under the code and date */
+.polaroid .tags { display: flex; justify-content: center; gap: 6px; margin-top: 3px; }
+.polaroid .tags:empty { display: none; }
+.polaroid .tags a { font: 700 10px var(--mono); color: #151515; background: color-mix(in srgb, var(--c) 35%, #fff); border: 1.5px solid #151515; padding: 0 5px; text-decoration: none; rotate: -2deg; }
+.polaroid .tags a:hover, .polaroid .tags a:focus-visible { background: #151515; color: #fff; outline: none; }
 
 /* the pet jar: filled to the top with small stars, each holding its pet's icon; shaking it lets one out full size, tipping it
    out lays out all of them */
@@ -427,7 +433,6 @@ a.title:hover, a.title:focus-visible { color: color-mix(in srgb, var(--c) 45%, #
 @media (max-width: 900px) {
   .hero { grid-template-columns: 1fr; padding-top: 36px; }
   .arcade, .contacts { grid-template-columns: 1fr; }
-  .chapters { padding-left: 26px; }
   .jar-stage { grid-template-columns: 1fr; min-height: 0; }
   .jar-out { min-height: 380px; }
 }

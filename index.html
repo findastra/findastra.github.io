@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&family=JetBrains+Mono:wght@400;700&family=VT323&family=Permanent+Marker&display=swap">
-<link rel="stylesheet" href="cyber.css?v=20261027i">
+<link rel="stylesheet" href="cyber.css?v=20261027l">
 </head>
 <body>
 <!-- the fat star every pet window is cut from (R 100, r 70; rounded by the stroke in cyber.css) -->
@@ -18,9 +18,9 @@
 </defs></svg>
 
 <header class="top">
-  <a class="brand" href="#top">find<span>:\</span>astra</a>
+  <a class="brand" href="#top">find <span>/</span>astra</a>
   <nav aria-label="Sections">
-    <a href="#about">about</a><a href="#vr">vr</a><a href="#discord">discord</a><a href="#web">web</a><a href="#pets">petos</a><a href="#arcade">arcade</a><a href="#contact">contact</a>
+    <a href="#vr">vr</a><a href="#discord">discord</a><a href="#web">web</a><a href="#pets">petos</a><a href="#arcade">arcade</a><a href="#contact">contact</a>
   </nav>
 </header>
 
@@ -29,8 +29,7 @@
 <nav id="pole" aria-label="Section navigation">
   <div id="bead"></div>
   <div class="floors">
-    <a href="#top" data-f="top">TOP</a>
-    <a href="#about" data-f="about">ABOUT</a>
+    <a href="#top" data-f="top">TERMINAL</a>
     <a href="#vr" data-f="vr">VR</a>
     <a href="#discord" data-f="discord">DISCORD</a>
     <a href="#web" data-f="web">WEB</a>
@@ -79,45 +78,40 @@
     <div class="track"></div>
   </section>
 
-  <section class="block light" id="about">
-    <p class="kicker">// 01 · the plain version</p>
-    <h2>About</h2>
-    <!-- left blank for now (Astra, 2026-10-27) -->
-  </section>
-
   <!-- the projects worked on most recently -->
   <section class="ticker flip" id="tick-now" aria-label="Working on now">
     <span class="tick-label">working on</span>
     <div class="track"></div>
   </section>
 
-  <section class="block dots" id="projects">
-    <p class="kicker">// 02 · everything, live from GitHub</p>
-    <h2>Projects</h2>
-    <!-- the GitHub profile README's groups, top to bottom: VR & VRChat, Discord, Web & More, then Astra's PetOS (Astra, 2026-10-27) -->
+  <!-- the projects, one section each, in the GitHub profile README's order (VR & VRChat, Discord, Web & More), then Astra's
+       PetOS; each its own pattern, black between them, and a floor of its own on the pole (Astra, 2026-10-27) -->
+  <section class="block light chapter" id="vr">
+    <p class="kicker">// 01 · vr &amp; vrchat</p>
+    <h2>VR &amp; VRChat</h2>
+    <p class="lede">VRChat worlds I build in Unity. Tap a photo for more pictures.</p>
     <div class="filters">
-      <nav class="contents" aria-label="Project chapters">
-        <a href="#vr"><b>01</b> vr &amp; vrchat</a><a href="#discord"><b>02</b> discord</a><a href="#web"><b>03</b> web &amp; more</a><a href="#pets"><b>04</b> astra's petos</a>
-      </nav>
       <input id="search" type="search" placeholder="search worlds, projects, pets" aria-label="Search worlds, projects and pets">
+      <p class="muted mono" id="project-source"></p>
     </div>
-    <p class="muted mono" id="project-source"></p>
-
-    <div class="chapters">
-      <article class="chapter" id="vr">
-        <header><span class="num">## 01</span><h3>VR &amp; VRChat</h3><p>VRChat worlds I build in Unity. Tap a photo for more pictures.</p></header>
         <div class="polaroids" id="world-list"></div>
-      </article>
-      <article class="chapter" id="discord">
-        <header><span class="num">## 02</span><h3>Discord</h3><p>Discord add-ons and presence cards.</p></header>
+  </section>
+  <section class="block dots chapter" id="discord">
+    <p class="kicker">// 02 · discord</p>
+    <h2>Discord</h2>
+    <p class="lede">Discord add-ons and presence cards.</p>
         <div class="polaroids" id="discord-list"></div>
-      </article>
-      <article class="chapter" id="web">
-        <header><span class="num">## 03</span><h3>Web &amp; More</h3><p>Websites and tools.</p></header>
+  </section>
+  <section class="block checker chapter" id="web">
+    <p class="kicker">// 03 · web &amp; more</p>
+    <h2>Web &amp; More</h2>
+    <p class="lede">Websites and tools.</p>
         <div class="polaroids" id="web-list"></div>
-      </article>
-      <article class="chapter" id="pets">
-        <header><span class="num">## 04</span><h3>Astra's PetOS</h3><p>Every project of mine gets a pet: a small app with a face, its own program, and a job. Together they are <a href="https://github.com/findastra/astras-pet-os">Astra's PetOS</a>. Portfolio Puffer keeps this page. Shake the jar and a pet falls out.</p></header>
+  </section>
+  <section class="block weave chapter" id="pets">
+    <p class="kicker">// 04 · astra's petos</p>
+    <h2>Astra's PetOS</h2>
+    <p class="lede">Every project of mine gets a pet: a small app with a face, its own program, and a job. Together they are <a href="https://github.com/findastra/astras-pet-os">Astra's PetOS</a>. Portfolio Puffer keeps this page. Shake the jar and a pet falls out.</p>
         <!-- the pet jar, filled to the top: shake it and a pet comes out; tip it out to see all of them -->
         <div class="jar-stage" id="pet-jar">
           <div class="jar-side">
@@ -141,12 +135,10 @@
           </div>
           <div class="jar-all grid" hidden></div>
         </div>
-      </article>
-    </div>
   </section>
 
   <section class="block light lines" id="arcade">
-    <p class="kicker">// 03 · play</p>
+    <p class="kicker">// 05 · play</p>
     <h2>Arcade</h2>
     <div class="arcade">
       <div class="cab spread">
@@ -217,7 +209,7 @@
   </section>
 
   <section class="block mid" id="contact">
-    <p class="kicker">// 04 · contact</p>
+    <p class="kicker">// 06 · contact</p>
     <h2>Contact</h2>
     <div class="contacts">
       <article class="contact">
@@ -228,7 +220,7 @@
           <li><a href="mailto:audrajvolk@icloud.com">audrajvolk@icloud.com</a></li>
           <li><a href="tel:+12064341199">(206) 434-1199</a></li>
         </ul>
-      </article>
+  </section>
       <article class="contact">
         <b>Astra</b>
         <p class="role">VR Programmer, Dance Performer, &amp; Content Creator</p>
@@ -237,7 +229,7 @@
           <li><a href="https://www.tiktok.com/@findastra" target="_blank" rel="noopener">@findastra</a> on VR TikTok</li>
           <li><a href="https://www.tiktok.com/@astra_on_fire" target="_blank" rel="noopener">@astra_on_fire</a> on Pole Dance TikTok</li>
         </ul>
-      </article>
+  </section>
     </div>
   </section>
 
@@ -266,7 +258,7 @@
 <script src="updates-data.js?v=20261018c"></script>
 <script src="lettering-data.js?v=20261019a"></script>
 <script src="lettering.js?v=20261027a"></script>
-<script src="cyber.js?v=20261027h"></script>
+<script src="cyber.js?v=20261027l"></script>
 <script src="games-20261027.js?v=20261027b"></script>
 </body>
 </html>
