@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&family=JetBrains+Mono:wght@400;700&family=VT323&display=swap">
-<link rel="stylesheet" href="cyber.css?v=20261019a">
+<link rel="stylesheet" href="cyber.css?v=20261027a">
 </head>
 <body>
 <!-- the fat star every pet window is cut from (R 100, r 70; rounded by the stroke in cyber.css) -->
@@ -22,7 +22,7 @@
 <header class="top">
   <a class="brand" href="#top">find<span>/</span>astra</a>
   <nav aria-label="Sections">
-    <a href="#about">about</a><a href="#projects">petos</a><a href="#worlds">worlds</a><a href="#pets">pets</a><a href="#arcade">arcade</a><a href="#contact">contact</a>
+    <a href="#about">about</a><a href="#worlds">worlds</a><a href="#avatars">avatars</a><a href="#pets">petos</a><a href="#extras">more</a><a href="#arcade">arcade</a><a href="#contact">contact</a>
   </nav>
 </header>
 
@@ -93,63 +93,35 @@
 
   <section class="block dots" id="projects">
     <p class="kicker">// 02 · everything, live from GitHub</p>
-    <h2>Astra's PetOS</h2>
-    <p class="lead">Every project of mine gets a pet: a small app with a face, its own program, and a job. Together they are <a href="https://github.com/findastra/astras-pet-os">Astra's PetOS</a>. Portfolio Puffer keeps this page.</p>
+    <h2>Projects</h2>
+    <!-- four chapters, read top to bottom like the GitHub profile README: worlds, avatars, Astra's PetOS, everything else (Astra, 2026-10-27) -->
     <div class="filters">
-      <button class="btn hot" id="pour-all" aria-pressed="false">tip out every jar</button>
-      <input id="search" type="search" placeholder="search pets, worlds, projects" aria-label="Search pets, worlds and projects">
+      <nav class="contents" aria-label="Project chapters">
+        <a href="#worlds"><b>01</b> worlds</a><a href="#avatars"><b>02</b> avatars</a><a href="#pets"><b>03</b> astra's petos</a><a href="#extras"><b>04</b> everything else</a>
+      </nav>
+      <input id="search" type="search" placeholder="search worlds, avatars, pets, projects" aria-label="Search worlds, avatars, pets and projects">
     </div>
     <p class="muted mono" id="project-source"></p>
 
-    <h3 class="sky-label">Other projects</h3>
-    <div class="sky" id="cloud-list"></div>
-
-    <!-- two jars, filled to the top: shake one and a world or pet comes out; tip it out to see all of them -->
-    <div class="jars">
-      <div class="jar-stage" id="worlds">
-        <div class="jar-side">
-          <button class="jar" aria-label="Shake the worlds jar. One world comes out.">
-            <svg class="jar-glass" viewBox="0 0 300 380" aria-hidden="true">
-              <rect class="jar-lid" x="66" y="6" width="168" height="40" rx="8"/>
-              <path class="jar-lid-lines" d="M80 16H220M80 26H220M80 36H220"/>
-              <path class="jar-body" d="M92 46h116v22c0 10 8 16 22 22 26 11 40 30 40 58v186c0 22-14 36-36 36H66c-22 0-36-14-36-36V148c0-28 14-47 40-58 14-6 22-12 22-22z"/>
-            </svg>
-            <span class="jar-stars"></span>
-            <svg class="jar-shine" viewBox="0 0 300 380" aria-hidden="true">
-              <path d="M58 160c-4 40-4 120 2 170" /><path d="M74 140c-2 8-3 16-3 24" />
-            </svg>
-            <span class="jar-label">worlds</span>
-          </button>
-          <p class="mono jar-count"></p>
-          <div class="jar-buttons"><button class="btn hot shake">shake the jar</button><button class="btn pour" aria-expanded="false"></button></div>
-        </div>
-        <div class="jar-out" aria-live="polite">
-          <p class="jar-hint">Shake the jar.<br>One world falls out.</p>
-        </div>
-        <div class="jar-all planets" hidden></div>
-      </div>
-      <div class="jar-stage" id="pets">
-        <div class="jar-side">
-          <button class="jar" aria-label="Shake the pets jar. One pet comes out.">
-            <svg class="jar-glass" viewBox="0 0 300 380" aria-hidden="true">
-              <rect class="jar-lid" x="66" y="6" width="168" height="40" rx="8"/>
-              <path class="jar-lid-lines" d="M80 16H220M80 26H220M80 36H220"/>
-              <path class="jar-body" d="M92 46h116v22c0 10 8 16 22 22 26 11 40 30 40 58v186c0 22-14 36-36 36H66c-22 0-36-14-36-36V148c0-28 14-47 40-58 14-6 22-12 22-22z"/>
-            </svg>
-            <span class="jar-stars"></span>
-            <svg class="jar-shine" viewBox="0 0 300 380" aria-hidden="true">
-              <path d="M58 160c-4 40-4 120 2 170" /><path d="M74 140c-2 8-3 16-3 24" />
-            </svg>
-            <span class="jar-label">pets</span>
-          </button>
-          <p class="mono jar-count"></p>
-          <div class="jar-buttons"><button class="btn hot shake">shake the jar</button><button class="btn pour" aria-expanded="false"></button></div>
-        </div>
-        <div class="jar-out" aria-live="polite">
-          <p class="jar-hint">Shake the jar.<br>One pet falls out.</p>
-        </div>
-        <div class="jar-all grid" hidden></div>
-      </div>
+    <div class="chapters">
+      <article class="chapter" id="worlds">
+        <header><span class="num">## 01</span><h3>Worlds</h3><p>VRChat worlds I build in Unity. Tap a planet for its pictures.</p></header>
+        <div class="planets" id="world-list"></div>
+      </article>
+      <article class="chapter" id="avatars">
+        <header><span class="num">## 02</span><h3>Avatars</h3><p>Avatars, avatar effects, and the avatar classes at Mommy's.</p></header>
+        <div class="mirrors" id="avatar-list"></div>
+      </article>
+      <article class="chapter" id="pets">
+        <header><span class="num">## 03</span><h3>Astra's PetOS</h3><p>Every project of mine gets a pet: a small app with a face, its own program, and a job. Together they are <a href="https://github.com/findastra/astras-pet-os">Astra's PetOS</a>. Portfolio Puffer keeps this page. Pick a pet to open its window.</p></header>
+        <div class="pet-pick" id="pet-pick" aria-live="polite"><p class="pick-hint">Pick a pet.</p></div>
+        <div class="pet-list" id="pet-list"></div>
+        <button class="btn" id="pets-more" aria-expanded="false"></button>
+      </article>
+      <article class="chapter" id="extras">
+        <header><span class="num">## 04</span><h3>Everything else</h3><p>Discord add-ons, websites and tools.</p></header>
+        <div id="extra-list"></div>
+      </article>
     </div>
   </section>
 
@@ -168,6 +140,57 @@
         <p class="muted mono" id="mem-stat"></p>
         <div class="board" id="board"></div>
         <button class="btn" id="mem-new">new board</button>
+      </div>
+      <!-- the Fuzzboi Forge, same rules and art as findastra.github.io/fuzzboi-factory; every Fuzzboi made here moves into the cyber home -->
+      <div class="cab">
+        <h3>Fuzzboi Forge</h3>
+        <p class="muted">Type any six-digit hex code. That exact Fuzzboi appears, and moves into the cyber home.</p>
+        <form class="fz-row" id="fz-form">
+          <label class="sr-only" for="fz-code">Six-digit hex code</label>
+          <span class="fz-hash">#</span><input id="fz-code" maxlength="6" autocomplete="off" spellcheck="false" placeholder="456900" inputmode="text">
+          <button class="btn hot" type="submit">make it</button>
+          <button class="btn" type="button" id="fz-random">random</button>
+          <button class="btn" type="button" id="fz-save">save png</button>
+        </form>
+        <div class="fz-out">
+          <canvas id="fz-cv" width="512" height="512" aria-label="Your Fuzzboi"></canvas>
+          <dl class="fz-traits" id="fz-traits"></dl>
+        </div>
+        <p class="muted mono" id="fz-note" aria-live="polite">Loading the Fuzzboi art…</p>
+      </div>
+      <div class="cab">
+        <h3>Fuzzboi cyber home</h3>
+        <p class="muted mono" id="home-count"></p>
+        <canvas class="home" id="home" aria-label="The Fuzzboi cyber home. Tap a Fuzzboi to see its code."></canvas>
+        <p class="muted mono" id="home-pick" aria-live="polite"></p>
+        <div class="fz-row"><button class="btn" id="home-out" disabled>let them out</button><button class="btn" id="home-clear" disabled>empty the home</button></div>
+      </div>
+      <!-- the two games from Mommy's website (findastra/mommys-website) -->
+      <div class="cab">
+        <h3>Sparkle catcher</h3>
+        <p class="muted">From Mommy's. Tap the sparkles before they burn out. Miss three and the set ends.</p>
+        <div class="screen"><canvas id="beatC" aria-label="Sparkle catcher"></canvas></div>
+        <div class="hud mono"><span>score <b id="bScore">0</b></span><span>combo <b id="bCombo">0</b></span><span>best <b id="bBest">0</b></span></div>
+        <button class="btn" id="beatBtn">start set</button>
+      </div>
+      <div class="cab">
+        <h3>Avatar lab</h3>
+        <p class="muted">From Mommy's Avatar Academy. Build a look.</p>
+        <div class="labstage"><svg id="labSvg" viewBox="0 0 200 230" width="196" height="225" role="img" aria-label="Editable chibi avatar"></svg></div>
+        <div class="labrow">
+          <label class="lab-group" for="labHairGroup">Hairstyle collection<select id="labHairGroup"><option value="all">All 40 styles</option><option value="girls">Girls · 20 styles</option><option value="boys">Boys · 20 styles</option></select></label>
+          <button class="lab-b" data-avatar-part="hair">Hairstyle<small id="lb-hair">—</small></button>
+          <button class="lab-b" data-avatar-part="bangs">Bangs<small id="lb-bangs">—</small></button>
+          <button class="lab-b" data-avatar-part="head">Accessory 1 · Head<small id="lb-head">—</small></button>
+          <button class="lab-b" data-avatar-part="body">Accessory 2 · Body<small id="lb-body">—</small></button>
+          <button class="lab-b" data-avatar-part="fit">Outfit<small id="lb-fit">—</small></button>
+          <button class="lab-b" data-avatar-part="fx">Sparkles<small id="lb-fx">—</small></button>
+          <button class="lab-b" id="labLashes" data-avatar-part="lashes" aria-pressed="true">Lashes<small id="lb-lashes">On</small></button>
+        </div>
+        <p class="muted mono">Click a part to shuffle its look and colors.</p>
+        <p id="labPalette" class="muted mono" aria-live="polite"></p>
+        <div class="fz-row"><button class="btn hot" id="labRand">randomize</button><button class="btn" id="labSave">name this look</button></div>
+        <p id="labName" class="lab-name"></p>
       </div>
     </div>
   </section>
@@ -217,6 +240,7 @@
 <script src="updates-data.js?v=20261018c"></script>
 <script src="lettering-data.js?v=20261019a"></script>
 <script src="lettering.js?v=20261019a"></script>
-<script src="cyber.js?v=20261020a"></script>
+<script src="cyber.js?v=20261027a"></script>
+<script src="games-20261027.js?v=20261027a"></script>
 </body>
 </html>
