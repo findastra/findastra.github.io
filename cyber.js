@@ -15,15 +15,22 @@
   // new icon shows here by itself; pets-data.js is the snapshot for when GitHub does not answer.
   const HUB = 'https://raw.githubusercontent.com/findastra/astras-pet-os/main/', LATEST = HUB + 'art/latest/';
   let pets = PETS, hosted = null; // hosted: every path under art/latest, once the hub's index answers
+  // from the hub's pets.json: each pet's art folder name (Data Chip draws as "chip") and its own live website
+  let artByRepo = {}, liveSiteByRepo = {}, pageByRepo = null;
+  const PAGES = 'https://findastra.github.io/astras-pet-os/apps/pet-programs/';
   const slug = (s) => String(s || '').toLowerCase().replace(/[’']/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-  // a pet's picture: its repo's icon, else its own drawing (frames, then desktop art), found by repo or by pet name
+  // a pet's picture: its newest drawing (desktop art, the one its pet program page shows, then its mood and web frames),
+  // found by art name, repo or pet name; else its repo's small app icon (Astra, 2026-10-27: "the stars need updated art")
   const iconOf = (p) => {
     if (!p) return null;
     if (!hosted) return p.icon ? LATEST + p.icon : null;
-    const hit = [...new Set([p.repo, slug(p.pet)].filter(Boolean))]
-      .flatMap((n) => ['icons/' + n + '.png', 'frames/' + n + '/idle.png', 'desktop-art/' + n + '/idle.png']).find((t) => hosted.has(t));
+    const names = [...new Set([artByRepo[p.repo], p.repo, slug(p.pet)].filter(Boolean))];
+    const hit = names.flatMap((n) => ['desktop-art/' + n + '/idle.png', 'moods/' + n + '/idle.png', 'frames/' + n + '/idle.png'])
+      .concat(names.map((n) => 'icons/' + n + '.png')).find((t) => hosted.has(t));
     return hit ? LATEST + hit : null;
   };
+  // a pet's website: its own live site, else its pet program page on the hub's GitHub Pages, else its public repo's site
+  const siteOf = (p, r) => liveSiteByRepo[p.repo] || (pageByRepo ? pageByRepo[p.repo] && PAGES + pageByRepo[p.repo] : p.site) || (r && r.homepage) || null;
   // the hub's pet-programs.json, in pets-data.js's shape (a program with no pet named yet is left out)
   const livePets = (j) => (j.programs || []).filter((p) => p.icon).map((p) => ({ number: p.number, pet: p.icon, program: p.program, stage: p.stage,
     repo: p.repo, repo_exists: p.repo_exists, text: (p.mini_descriptor && p.mini_descriptor.text) || '' }));
@@ -282,7 +289,7 @@
   };
   function star({ p, r, pics }) {
     const c = el('article', 'card'); const h = paint(c, r ? r.name : p.pet);
-    const repoUrl = r ? 'https://github.com/findastra/' + r.name : null, icon = iconOf(p);
+    const repoUrl = r ? 'https://github.com/findastra/' + r.name : null, icon = iconOf(p), site = siteOf(p, r);
     let thumb;
     if (pics.length) {
       thumb = el('button', 'thumb'); thumb.setAttribute('aria-label', 'open pictures of ' + p.pet);
@@ -299,7 +306,7 @@
     if (icon && pics.length) { const im = el('img'); im.src = icon; im.alt = ''; im.loading = 'lazy'; tip.append(im); }
     else tip.textContent = '✦';
     const body = el('div', 'body');
-    const name = r ? link(r.homepage || repoUrl, 'name', p.pet) : el('b', 'name', p.pet); name.title = p.pet; body.append(name);
+    const name = site || repoUrl ? link(site || repoUrl, 'name', p.pet) : el('b', 'name', p.pet); name.title = p.pet; body.append(name);
     body.append(el('div', 'pet', [p.program, r ? r.name : null].filter(Boolean).join(' · ') || 'program not named yet'));
     const text = cleanText((r && r.description) || p.text || 'No description yet.');
     const desc = el('p', null, text); desc.title = text; body.append(desc);
@@ -309,7 +316,7 @@
     const win = el('div', 'win'); win.append(thumb, body);
     c.append(sparkles(h), shape('star', '-111 -116 229 220'), tip);
     if (repoUrl) c.append(link(repoUrl, 'arm l', 'repo ↗'));
-    if (r && r.homepage) c.append(link(r.homepage, 'arm r', 'site ↗'));
+    if (site) c.append(link(site, 'arm r', 'site ↗'));
     c.append(win); return c;
   }
 
@@ -487,15 +494,27 @@
     .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
     .then((d) => useRepos(d.filter((r) => !r.fork && !r.private).map((r) => ({ name: r.name, description: r.description || '', language: r.language || '', pushed_at: r.pushed_at, homepage: r.homepage || (r.has_pages ? `https://findastra.github.io/${r.name}/` : '') })), true))
     .catch(() => {});
-  // the hub's live pet list and picture index: new pets and new icons show up without changing this site
-  Promise.allSettled([fetch(HUB + 'pet-programs.json').then((r) => (r.ok ? r.json() : Promise.reject(r.status))), fetch(LATEST + 'index.json').then((r) => (r.ok ? r.json() : Promise.reject(r.status)))])
-    .then(([programs, index]) => {
+  // the hub's live pet list, picture index, pets.json and pet program pages: new pets, new drawings and new pages show up
+  // without changing this site
+  const getJson = (u) => fetch(u).then((r) => (r.ok ? r.json() : Promise.reject(r.status)));
+  Promise.allSettled([getJson(HUB + 'pet-programs.json'), getJson(LATEST + 'index.json'), getJson(HUB + 'pets.json'),
+    getJson('https://api.github.com/repos/findastra/astras-pet-os/contents/apps/pet-programs')])
+    .then(([programs, index, hubPets, pages]) => {
       if (index.status === 'fulfilled') hosted = new Set(Object.keys(index.value.pictures || {}).map((k) => k.replace(/^art\/latest\//, '')));
+      if (hubPets.status === 'fulfilled') for (const p of hubPets.value.pets || []) {
+        if (p.art) artByRepo[p.repo] = p.art;
+        if (p.interface_live_url) liveSiteByRepo[p.repo] = p.interface_live_url;
+      }
+      // each repo's newest page, <repo>-YYYYMMDD.html
+      if (pages.status === 'fulfilled') {
+        pageByRepo = {};
+        for (const f of pages.value.map((x) => x.name).sort()) { const m = /^(.+)-\d{8}\.html$/.exec(f); if (m) pageByRepo[m[1]] = f; }
+      }
       if (programs.status === 'fulfilled') {
         const live = livePets(programs.value);
         if (live.length) { pets = live; for (const p of pets) if (p.repo && !petByRepo[p.repo]) petByRepo[p.repo] = p; }
       }
-      if (index.status === 'fulfilled' || programs.status === 'fulfilled') { source(liveRepos); render(); }
+      if ([index, programs, hubPets, pages].some((x) => x.status === 'fulfilled')) { source(liveRepos); render(); }
     });
 
   // ---------- the portrait, in color: each of its colors sparkles in that color ----------

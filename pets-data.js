@@ -1,6 +1,6 @@
-// Every pet (intelligent app), from astras-pet-os pet-programs.json on main, 2026-10-27. `icon` is the pet's picture under the hub's
-// art/latest (the address that never changes); cyber.js reads the live list and index first and uses this only when GitHub does not answer.
-// Regenerate; do not edit by hand.
+// Every pet (intelligent app), from astras-pet-os pet-programs.json and pets.json on main, 2026-10-27. `icon` is the pet's newest
+// drawing under the hub's art/latest (the address that never changes); `site` is its website (its own, else its pet program page).
+// cyber.js reads the hub live first and uses this only when GitHub does not answer. Regenerate; do not edit by hand.
 window.PETS = [
  {
   "number": 1,
@@ -10,7 +10,8 @@ window.PETS = [
   "repo": "astras-pet-os",
   "repo_exists": true,
   "text": "Organizes the pets (intelligent apps). His daily rounds keep every pet’s status and mood, the roster, the System Map and the profile README up to date, and list what needs Astra.",
-  "icon": "icons/astras-pet-os.png"
+  "icon": "desktop-art/farmer/idle.png",
+  "site": "https://findastra.github.io/astras-pet-os/apps/pet-programs/astras-pet-os-20261018.html"
  },
  {
   "number": 2,
@@ -20,7 +21,8 @@ window.PETS = [
   "repo": "github-goldfish",
   "repo_exists": true,
   "text": "Swims through every public word on a GitHub account and flags document-control, blatant, organizational and systemic errors.",
-  "icon": "icons/github-goldfish.png"
+  "icon": "frames/goldfish/idle.png",
+  "site": "https://findastra.github.io/astras-pet-os/apps/pet-programs/github-goldfish-20261018.html"
  },
  {
   "number": 3,
@@ -30,7 +32,8 @@ window.PETS = [
   "repo": "data-dealer",
   "repo_exists": true,
   "text": "Reports the health of Data Dealer, Astra’s large and important data project: its site, data, services and open work, so she sees at a glance what needs her.",
-  "icon": "icons/data-dealer.png"
+  "icon": "desktop-art/chip/idle.png",
+  "site": "https://findastra.github.io/astras-pet-os/apps/data-dealer-20261008.html"
  },
  {
   "number": 4,
@@ -40,7 +43,8 @@ window.PETS = [
   "repo": "api-fairy",
   "repo_exists": true,
   "text": "Keeps notes about your API keys, never the keys themselves: where each lives and what uses it, which keys have gone stale, and which new keys to get. Lives in the corner of the Windows desktop.",
-  "icon": "icons/api-fairy.png"
+  "icon": "frames/api-fairy/idle.png",
+  "site": "https://findastra.github.io/astras-pet-os/apps/pet-programs/api-fairy-20261018.html"
  },
  {
   "number": 5,
@@ -50,7 +54,8 @@ window.PETS = [
   "repo": "unity-unicorn",
   "repo_exists": true,
   "text": "A local Unity and VRChat desk for organizing Unity worlds and avatar plans. It contains tools to develop each, a working closet by Devilish, and pages that display world information.",
-  "icon": "icons/unity-unicorn.png"
+  "icon": "frames/unity-unicorn/idle.png",
+  "site": "https://findastra.github.io/astras-pet-os/apps/pet-programs/unity-unicorn-20261018.html"
  },
  {
   "number": 6,
@@ -60,7 +65,8 @@ window.PETS = [
   "repo": "learn-python",
   "repo_exists": true,
   "text": "A Python practice desk with short output exercises, answer checks and saved progress alongside the original lessons.",
-  "icon": "icons/learn-python.png"
+  "icon": "desktop-art/python-panther/idle.png",
+  "site": "https://findastra.github.io/astras-pet-os/apps/pet-programs/learn-python-20261018.html"
  },
  {
   "number": 7,
@@ -70,7 +76,8 @@ window.PETS = [
   "repo": "the-astral-plane",
   "repo_exists": true,
   "text": "Watches the health of VRChat AI Astra, both while she runs and while she is being worked on offline, so problems show up before a session.",
-  "icon": "frames/astra-wisp/idle.png"
+  "icon": "desktop-art/astra-wisp/idle.png",
+  "site": "https://findastra.github.io/astras-pet-os/apps/pet-programs/the-astral-plane-20261018.html"
  },
  {
   "number": 8,
@@ -80,7 +87,8 @@ window.PETS = [
   "repo": "health-hummy",
   "repo_exists": true,
   "text": "Personal health tracker: weight lifting by body group and sets, cardio, and pole plans. Your data stays on your PC and is never committed.",
-  "icon": "icons/health-hummy.png"
+  "icon": "desktop-art/health-hummy/idle.png",
+  "site": "https://findastra.github.io/astras-pet-os/apps/pet-programs/health-hummy-20261018.html"
  },
  {
   "number": 9,
@@ -90,7 +98,8 @@ window.PETS = [
   "repo": "finance-finch",
   "repo_exists": true,
   "text": "Personal finance tracker across your bank, savings and investment accounts. It reads balances and never moves money.",
-  "icon": "icons/finance-finch.png"
+  "icon": "desktop-art/finance-finch/idle.png",
+  "site": "https://findastra.github.io/astras-pet-os/apps/pet-programs/finance-finch-20261018.html"
  },
  {
   "number": 10,
@@ -100,7 +109,8 @@ window.PETS = [
   "repo": "mommys-mommies",
   "repo_exists": true,
   "text": "A local planning room for Mommy's classes and events, with session details, readiness and notes. Calendar and Discord connections are planned.",
-  "icon": "frames/mommys-mommies/idle.png"
+  "icon": "desktop-art/mommys-mommies/idle.png",
+  "site": "https://findastra.github.io/astras-pet-os/apps/pet-programs/mommys-mommies-20261018.html"
  },
  {
   "number": 11,
@@ -110,7 +120,8 @@ window.PETS = [
   "repo": "paper-girl",
   "repo_exists": true,
   "text": "Runs Paper Girl, a free science discovery desk: real research, publisher explanations and fresh articles.",
-  "icon": "icons/paper-girl.png"
+  "icon": "desktop-art/paper-girl/idle.png",
+  "site": "https://findastra.github.io/paper-girl/"
  },
  {
   "number": 12,
@@ -120,7 +131,8 @@ window.PETS = [
   "repo": "file-master",
   "repo_exists": true,
   "text": "Organizes your files and finds systemic errors. Shows every mass change before making it, with undo.",
-  "icon": "icons/file-master.png"
+  "icon": "desktop-art/file-master/idle.png",
+  "site": "https://findastra.github.io/astras-pet-os/apps/pet-programs/file-master-20261018.html"
  },
  {
   "number": 13,
@@ -130,7 +142,8 @@ window.PETS = [
   "repo": "findastra-discord-presence",
   "repo_exists": true,
   "text": "Opens the installed OpenAI and Anthropic Discord presence controls, with a manual setup checklist.",
-  "icon": "icons/findastra-discord-presence.png"
+  "icon": "desktop-art/discord-damsel/idle.png",
+  "site": "https://findastra.github.io/astras-pet-os/apps/pet-programs/findastra-discord-presence-20261018.html"
  },
  {
   "number": 14,
@@ -140,7 +153,8 @@ window.PETS = [
   "repo": "portfolio-puffer",
   "repo_exists": true,
   "text": "Drafts and tracks portfolio updates locally. GitHub and LinkedIn connections are planned; publishing is manual.",
-  "icon": "icons/portfolio-puffer.png"
+  "icon": "desktop-art/portfolio-puffer/idle.png",
+  "site": "https://findastra.github.io/astras-pet-os/apps/pet-programs/portfolio-puffer-20261018.html"
  },
  {
   "number": 15,
@@ -150,7 +164,8 @@ window.PETS = [
   "repo": "drum-dog",
   "repo_exists": true,
   "text": "Saves and samples music found online for Ableton Live, and plans releases: the first album, DJ mixes and where each one is hosted. Ableton Live connections are planned.",
-  "icon": "icons/drum-dog.png"
+  "icon": "desktop-art/drum-dog/idle.png",
+  "site": "https://findastra.github.io/astras-pet-os/apps/pet-programs/drum-dog-20261018.html"
  },
  {
   "number": 16,
@@ -160,7 +175,8 @@ window.PETS = [
   "repo": "vscode-angel",
   "repo_exists": true,
   "text": "Records code-review findings and next steps, then exports a Markdown worklist. Editor connections are planned.",
-  "icon": "icons/vscode-angel.png"
+  "icon": "desktop-art/vscode-angel/idle.png",
+  "site": "https://findastra.github.io/astras-pet-os/apps/pet-programs/vscode-angel-20261018.html"
  },
  {
   "number": 17,
@@ -170,7 +186,8 @@ window.PETS = [
   "repo": "ghost-protocol",
   "repo_exists": true,
   "text": "Watches the public Ghost Protocol website and checks Astra’s own security against its research: a personal cybersecurity checklist and the steps she has completed.",
-  "icon": "icons/ghost-protocol.png"
+  "icon": "desktop-art/ghost-protocol/idle.png",
+  "site": "https://findastra.github.io/ghost-protocol/"
  },
  {
   "number": 18,
@@ -180,7 +197,8 @@ window.PETS = [
   "repo": "project-parrot",
   "repo_exists": true,
   "text": "Planned: periodically reviews OneNote for new project ideas and reminds Astra to start them.",
-  "icon": "icons/project-parrot.png"
+  "icon": "desktop-art/project-parrot/idle.png",
+  "site": "https://findastra.github.io/astras-pet-os/apps/pet-programs/project-parrot-20261018.html"
  },
  {
   "number": 19,
@@ -190,7 +208,8 @@ window.PETS = [
   "repo": "voicemeeter-bug",
   "repo_exists": true,
   "text": "A small Windows desktop pet for restarting Voicemeeter's audio engine when audio needs repair. Its browser page explains how to open the installed app.",
-  "icon": "icons/voicemeeter-bug.png"
+  "icon": "desktop-art/voicemeeter-bug/idle.png",
+  "site": "https://findastra.github.io/astras-pet-os/apps/pet-programs/voicemeeter-bug-20261018.html"
  },
  {
   "number": 20,
@@ -200,7 +219,8 @@ window.PETS = [
   "repo": "spoonfed",
   "repo_exists": true,
   "text": "Helps choose where to eat by spinning restaurant choices while respecting locked preferences and keeping favorite spots.",
-  "icon": "icons/spoonfed.png"
+  "icon": "desktop-art/spoonfed-sugarcube/idle.png",
+  "site": "https://findastra.github.io/astras-pet-os/apps/pet-programs/spoonfed-20261018.html"
  },
  {
   "number": 21,
@@ -210,7 +230,8 @@ window.PETS = [
   "repo": "claude-bot",
   "repo_exists": true,
   "text": "Claude’s twin of ChatGPT’s BSOD desktop pet, in looks and in function: an orange face on the Windows desktop that shows Claude’s live status in a bubble and opens quick chat.",
-  "icon": "icons/claude-bot.png"
+  "icon": "icons/claude-bot.png",
+  "site": "https://findastra.github.io/astras-pet-os/apps/pet-programs/claude-bot-20261018.html"
  },
  {
   "number": 22,
@@ -220,7 +241,8 @@ window.PETS = [
   "repo": "rgbee",
   "repo_exists": true,
   "text": "Plans and previews lighting scenes for every RGB light in the room: room lights, mouse pad, mouse, PC and keyboard. Sending scenes to the real lights is planned.",
-  "icon": "icons/rgbee.png"
+  "icon": "desktop-art/rgbee/idle.png",
+  "site": "https://findastra.github.io/astras-pet-os/apps/pet-programs/rgbee-20261018.html"
  },
  {
   "number": 23,
@@ -230,7 +252,8 @@ window.PETS = [
   "repo": "mine-mole",
   "repo_exists": true,
   "text": "Manages the cryptocurrency mining program on Astra’s PC and checks whether mining is worth the power.",
-  "icon": "icons/mine-mole.png"
+  "icon": "desktop-art/mine-mole/idle.png",
+  "site": "https://findastra.github.io/astras-pet-os/apps/pet-programs/mine-mole-20261018.html"
  },
  {
   "number": 24,
@@ -240,7 +263,8 @@ window.PETS = [
   "repo": "mail-snail",
   "repo_exists": true,
   "text": "Organizes your mail: sorts it, cleans it up and deletes what you no longer need, always with your OK first. Connects to no mail account yet.",
-  "icon": "icons/mail-snail.png"
+  "icon": "desktop-art/mail-snail/idle.png",
+  "site": "https://findastra.github.io/astras-pet-os/apps/pet-programs/mail-snail-20261018.html"
  },
  {
   "number": 25,
@@ -250,7 +274,8 @@ window.PETS = [
   "repo": "patch-cat",
   "repo_exists": true,
   "text": "Keeps Windows, drivers and apps patched against security holes (its confirmed security role; the rest of its job is Astra’s to choose).",
-  "icon": "icons/patch-cat.png"
+  "icon": "desktop-art/patch-cat/idle.png",
+  "site": "https://findastra.github.io/astras-pet-os/apps/pet-programs/patch-cat-20261018.html"
  },
  {
   "number": 26,
@@ -260,7 +285,8 @@ window.PETS = [
   "repo": "meme-fiend",
   "repo_exists": true,
   "text": "Archives your favourite memes, especially from Discord, and will run a tool for making your own (not built yet). Your memes stay on your PC.",
-  "icon": "icons/meme-fiend.png"
+  "icon": "desktop-art/meme-fiend/idle.png",
+  "site": "https://findastra.github.io/astras-pet-os/apps/pet-programs/meme-fiend-20261018.html"
  },
  {
   "number": 27,
@@ -270,7 +296,8 @@ window.PETS = [
   "repo": "astras-gif-maker",
   "repo_exists": true,
   "text": "Makes GIFs in the browser.",
-  "icon": "icons/astras-gif-maker.png"
+  "icon": "desktop-art/gif-giraffe/idle.png",
+  "site": "https://findastra.github.io/astras-pet-os/apps/pet-programs/astras-gif-maker-20261018.html"
  },
  {
   "number": 28,
@@ -280,7 +307,8 @@ window.PETS = [
   "repo": "backup-beaver",
   "repo_exists": true,
   "text": "Like API Fairy for backups: keeps track of when the last backup ran, where it is, and how to get to it.",
-  "icon": "icons/backup-beaver.png"
+  "icon": "desktop-art/backup-beaver/idle.png",
+  "site": "https://findastra.github.io/astras-pet-os/apps/pet-programs/backup-beaver-20261018.html"
  },
  {
   "number": 29,
@@ -290,7 +318,8 @@ window.PETS = [
   "repo": "rift-rabbit",
   "repo_exists": true,
   "text": "A white rabbit that preps and tracks VR software and performance.",
-  "icon": "icons/rift-rabbit.png"
+  "icon": "desktop-art/rift-rabbit/idle.png",
+  "site": "https://findastra.github.io/astras-pet-os/apps/pet-programs/rift-rabbit-20261018.html"
  },
  {
   "number": 30,
@@ -300,7 +329,8 @@ window.PETS = [
   "repo": "fuzzboi-friend",
   "repo_exists": true,
   "text": "Watches over the Fuzzbois website, which generates the Fuzzboi art, and shows its health with his mood. Mostly for fun: swap his look any time.",
-  "icon": "icons/fuzzboi-friend.png"
+  "icon": "icons/fuzzboi-friend.png",
+  "site": "https://findastra.github.io/astras-pet-os/apps/pet-programs/fuzzboi-friend-20261018.html"
  },
  {
   "number": 31,
@@ -310,7 +340,8 @@ window.PETS = [
   "repo": "wifi-butterfly",
   "repo_exists": true,
   "text": "Watches the radios: unknown Wi-Fi networks and Bluetooth devices nearby (its confirmed security role; the rest of its job is Astra’s to choose).",
-  "icon": "icons/wifi-butterfly.png"
+  "icon": "desktop-art/wifi-butterfly/idle.png",
+  "site": "https://findastra.github.io/astras-pet-os/apps/pet-programs/wifi-butterfly-20261018.html"
  },
  {
   "number": 32,
@@ -320,7 +351,8 @@ window.PETS = [
   "repo": "deck-duck",
   "repo_exists": true,
   "text": "Helps you manage your Elgato Stream Deck: what every button does, on every profile.",
-  "icon": "icons/deck-duck.png"
+  "icon": "desktop-art/deck-duck/idle.png",
+  "site": "https://findastra.github.io/astras-pet-os/apps/pet-programs/deck-duck-20261018.html"
  },
  {
   "number": 33,
@@ -330,7 +362,8 @@ window.PETS = [
   "repo": "mesh-moth",
   "repo_exists": true,
   "text": "Manages Astra’s Meshtastic node: its place in the radio mesh, its health and its messages.",
-  "icon": "icons/mesh-moth.png"
+  "icon": "desktop-art/mesh-moth/idle.png",
+  "site": "https://findastra.github.io/astras-pet-os/apps/pet-programs/mesh-moth-20261018.html"
  },
  {
   "number": 34,
@@ -340,7 +373,8 @@ window.PETS = [
   "repo": "raspberry-berry",
   "repo_exists": true,
   "text": "Keeps track of Astra’s Raspberry Pi projects and tells her which Pis need a backup or an OS update.",
-  "icon": "icons/raspberry-berry.png"
+  "icon": "desktop-art/raspberry-berry/idle.png",
+  "site": "https://findastra.github.io/astras-pet-os/apps/pet-programs/raspberry-berry-20261018.html"
  },
  {
   "number": 35,
@@ -350,7 +384,8 @@ window.PETS = [
   "repo": "chat-rat",
   "repo_exists": true,
   "text": "Saves local AI conversations and imported exports, filed by model and YYYYMMDD date, with a button that opens each folder.",
-  "icon": "icons/chat-rat.png"
+  "icon": "desktop-art/chat-rat/idle.png",
+  "site": "https://findastra.github.io/astras-pet-os/apps/pet-programs/chat-rat-20261018.html"
  },
  {
   "number": 36,
@@ -360,7 +395,8 @@ window.PETS = [
   "repo": "platform-platypus",
   "repo_exists": true,
   "text": "Keeps Astra's pages working on iPhone, Android, iPad and desktop: shows a page on every device at once, checks it, tracks what each watched site still needs, and compares screenshots from two platforms.",
-  "icon": "icons/platform-platypus.png"
+  "icon": "frames/platform-platypus/idle.png",
+  "site": "https://findastra.github.io/platform-platypus/"
  },
  {
   "number": 37,
@@ -477,7 +513,8 @@ window.PETS = [
   "repo": "log-den",
   "repo_exists": true,
   "text": "Observability: correlates logs, traces, health and failures.",
-  "icon": "icons/log-den.png"
+  "icon": "frames/log-lynx/idle.png",
+  "site": "https://findastra.github.io/astras-pet-os/apps/pet-programs/log-den-20261018.html"
  },
  {
   "number": 49,
@@ -523,7 +560,8 @@ window.PETS = [
   "repo": "packet-river",
   "repo_exists": true,
   "text": "Network: packet loss, DNS, latency, routing.",
-  "icon": "icons/packet-river.png"
+  "icon": "frames/packet-piranha/idle.png",
+  "site": "https://findastra.github.io/astras-pet-os/apps/pet-programs/packet-river-20261018.html"
  },
  {
   "number": 54,
@@ -568,7 +606,8 @@ window.PETS = [
   "stage": "pipeline",
   "repo": "linux-iceberg",
   "repo_exists": true,
-  "text": "Linux administration, SSH, systemd, packages."
+  "text": "Linux administration, SSH, systemd, packages.",
+  "site": "https://findastra.github.io/astras-pet-os/apps/pet-programs/linux-iceberg-20261018.html"
  },
  {
   "number": 59,
@@ -613,7 +652,8 @@ window.PETS = [
   "stage": "pipeline",
   "repo": "kernel-grove",
   "repo_exists": true,
-  "text": "Processes, memory, drivers and OS internals."
+  "text": "Processes, memory, drivers and OS internals.",
+  "site": "https://findastra.github.io/astras-pet-os/apps/pet-programs/kernel-grove-20261018.html"
  },
  {
   "number": 64,
@@ -677,7 +717,8 @@ window.PETS = [
   "repo": "evidence-locker",
   "repo_exists": true,
   "text": "Incident timelines and log analysis.",
-  "icon": "icons/evidence-locker.png"
+  "icon": "frames/forensic-ferret/idle.png",
+  "site": "https://findastra.github.io/astras-pet-os/apps/pet-programs/evidence-locker-20261018.html"
  },
  {
   "number": 71,
@@ -695,7 +736,8 @@ window.PETS = [
   "stage": "pipeline",
   "repo": "benchmark-rock",
   "repo_exists": true,
-  "text": "Inference benchmarks, GPU/VRAM, latency, and the graphics card watch: what is using it and how much of its memory."
+  "text": "Inference benchmarks, GPU/VRAM, latency, and the graphics card watch: what is using it and how much of its memory.",
+  "site": "https://findastra.github.io/astras-pet-os/apps/pet-programs/benchmark-rock-20261018.html"
  },
  {
   "number": 73,
@@ -795,7 +837,8 @@ window.PETS = [
   "stage": "pipeline",
   "repo": "role-fairy",
   "repo_exists": true,
-  "text": "Runs Fairy Ring: every Discord bot Astra uses. Sets up and looks after a bot for each server, starting with role pickers; assigns or changes members’ roles when asked; and keeps each bot’s permissions, servers and health in one place, only where she has been granted. Discord Damsel keeps Astra’s own presence."
+  "text": "Runs Fairy Ring: every Discord bot Astra uses. Sets up and looks after a bot for each server, starting with role pickers; assigns or changes members’ roles when asked; and keeps each bot’s permissions, servers and health in one place, only where she has been granted. Discord Damsel keeps Astra’s own presence.",
+  "site": "https://findastra.github.io/astras-pet-os/apps/pet-programs/role-fairy-20261018.html"
  },
  {
   "number": 84,
@@ -805,6 +848,7 @@ window.PETS = [
   "repo": "workflow-whirlpool",
   "repo_exists": true,
   "text": "Pairs a private PC screen with an iPad for deliberate captures, PencilKit markup, handwritten notes, image return and separately enabled remote scrolling.",
-  "icon": "icons/workflow-whirlpool.png"
+  "icon": "icons/workflow-whirlpool.png",
+  "site": "https://findastra.github.io/astras-pet-os/apps/pet-programs/workflow-whirlpool-20261018.html"
  }
 ];
