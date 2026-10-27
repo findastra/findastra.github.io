@@ -1,6 +1,6 @@
-// The arcade's newer games (Astra, 2026-10-27): the Fuzzboi Forge and the Fuzzboi cyber home it fills, and the two games from
+// The arcade's newer games (Astra, 2026-10-27): the Fuzzboi Factory and the Fuzzboi Cyber Dome it fills, and the two games from
 // Mommy's website (findastra/mommys-website): the sparkle catcher ("Catch the beat") and the Avatar Lab. The cabinets stay
-// black and gray; the art inside them keeps its own colors. Fuzzboi rules and drawing come from the Fuzzboi Forge itself
+// black and gray; the art inside them keeps its own colors. Fuzzboi rules and drawing come from the Fuzzboi Factory itself
 // (findastra/fuzzboi-factory site/fuzzboi.js, served at findastra.github.io/fuzzboi-factory/), one copy of the rules.
 (() => {
   const $ = (id) => document.getElementById(id);
@@ -13,16 +13,40 @@
   // a canvas drawn at the screen's pixel density; returns its size in CSS pixels
   const fit = (cv) => { const r = cv.getBoundingClientRect(), d = Math.min(devicePixelRatio || 1, 2); cv.width = Math.max(1, r.width * d); cv.height = Math.max(1, r.height * d); cv.getContext('2d').setTransform(d, 0, 0, d, 0, 0); return r; };
 
-  // ---------- Fuzzboi Forge: type a six-digit code, get that exact Fuzzboi; each one moves into the cyber home ----------
+  // ---------- Fuzzboi Factory: type a six-digit code, get that exact Fuzzboi; each one moves into the Cyber Dome ----------
   const RULES = 'https://findastra.github.io/fuzzboi-factory/site/fuzzboi.js';
   const LAYERS = 'https://raw.githubusercontent.com/findastra/astras-pet-os/main/desktop-art/fuzzboi-friend/layers/';
   const HOME_MAX = 30, HOME_KEY = 'findastra-fuzzboi-home-v1';
   const layers = new Map();
   let F = null, layersIn = 0;
-  const forge = $('fz-cv'), codeIn = $('fz-code'), note = $('fz-note');
+  const factoryCv = $('fz-cv'), note = $('fz-note');
+  // six big boxes, one per digit, each with what it decides written under it, as on the Fuzzboi Factory's own page
+  // (Astra, 2026-10-27: "I liked it when I could enter them in and it was big and obvious")
+  const POS = ['Style', 'Color', 'Acc 1', 'Acc 2', 'Acc 3', 'Rare?'];
+  const boxes = POS.map((label, i) => {
+    const w = el('label', 'fz-digit'), inp = el('input'); inp.maxLength = 1; inp.autocomplete = 'off'; inp.spellcheck = false; inp.setAttribute('aria-label', `Position ${i + 1}: ${label}`);
+    w.append(inp, el('span', null, label)); $('fz-digits').append(w); return inp;
+  });
+  const codeIn = { get value() { return boxes.map((b) => b.value).join('').toUpperCase(); }, set value(v) { [...String(v).padEnd(6, ' ').slice(0, 6)].forEach((ch, i) => (boxes[i].value = ch.trim())); } };
+  boxes.forEach((inp, i) => {
+    inp.addEventListener('input', async () => {
+      inp.value = inp.value.replace(/[^0-9a-f]/gi, '').slice(-1).toUpperCase();
+      if (inp.value && i < 5) { boxes[i + 1].focus(); boxes[i + 1].select(); }
+      if (codeIn.value.length === 6) { await ready; make(codeIn.value); }
+    });
+    inp.addEventListener('keydown', (e) => {
+      if (e.key === 'Backspace' && !inp.value && i > 0) boxes[i - 1].focus();
+      if (e.key === 'ArrowLeft' && i > 0) boxes[i - 1].focus();
+      if (e.key === 'ArrowRight' && i < 5) boxes[i + 1].focus();
+    });
+    inp.addEventListener('paste', async (e) => {
+      const t = (e.clipboardData.getData('text') || '').replace(/[^0-9a-f]/gi, '').toUpperCase();
+      if (t.length > 1) { e.preventDefault(); codeIn.value = t.slice(0, 6); if (t.length >= 6) { await ready; make(codeIn.value); } }
+    });
+  });
   const loadScript = (src) => new Promise((ok, no) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = no; document.head.append(s); });
   const ready = (async () => {
-    try { await loadScript(RULES); F = window.Fuzzboi; } catch { note.textContent = 'The Fuzzboi Forge did not answer. Try again in a minute.'; return; }
+    try { await loadScript(RULES); F = window.Fuzzboi; } catch { note.textContent = 'The Fuzzboi Factory did not answer. Try again in a minute.'; return; }
     try { layersIn = await F.loadLayers(LAYERS, layers, true); } catch {}
   })();
   // draws one Fuzzboi on a transparent canvas (the home has its own background); a rough stand-in if the art did not load
@@ -40,12 +64,12 @@
     }
     return c;
   }
-  function make(code, moveIn = true) {
+  function make(code, moveIn = false) {
     if (!F) return;
     const d = F.decode(code);
     if (!/^[0-9A-F]{6}$/.test(d.code)) { note.textContent = d.flags.map((f) => f[1]).join(' '); return; }
     codeIn.value = d.code;
-    if (F.missing(d.parts, layers).length) F.drawStandIn(forge, d.parts); else F.drawLayers(forge, d.parts, layers);
+    if (F.missing(d.parts, layers).length) F.drawStandIn(factoryCv, d.parts); else F.drawLayers(factoryCv, d.parts, layers);
     $('fz-traits').replaceChildren(...F.describe(d.parts).flatMap(([k, v, swatch]) => {
       const dd = el('dd', null, v); if (swatch) { const i = el('i'); i.style.background = swatch; dd.prepend(i); }
       return [el('dt', null, k), dd];
@@ -57,97 +81,120 @@
     // a made Fuzzboi gets a link of its own (#fuzzboi-456900 opens it and moves it in)
     if (moveIn) try { history.replaceState(null, '', '#fuzzboi-' + d.code); } catch {}
   }
-  $('fz-form').addEventListener('submit', async (e) => { e.preventDefault(); await ready; make(codeIn.value.trim()); });
-  codeIn.addEventListener('input', () => { codeIn.value = codeIn.value.toUpperCase().replace(/[^0-9A-F]/g, '').slice(0, 6); });
+  $('fz-form').addEventListener('submit', async (e) => { e.preventDefault(); await ready; make(codeIn.value); });
   $('fz-random').onclick = async () => { await ready; make(Math.floor(Math.random() * 0x1000000).toString(16).toUpperCase().padStart(6, '0')); };
-  $('fz-save').onclick = async () => { await ready; if (F && codeIn.value.length === 6) F.savePng(forge, `fuzzboi-${codeIn.value}.png`).catch(() => (note.textContent = 'This browser would not save the picture.')); };
+  // tap the Fuzzboi itself to save it, too (Astra, 2026-10-27: "make sure people can save it directly from there")
+  factoryCv.title = 'Tap to save this Fuzzboi'; factoryCv.style.cursor = 'pointer'; factoryCv.onclick = () => $('fz-save').click();
+  $('fz-send').onclick = async () => { await ready; if (F && codeIn.value.length === 6) { note.textContent = home.add(codeIn.value); $('home').scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'center' }); } };
+  $('fz-save').onclick = async () => { await ready; if (F && codeIn.value.length === 6) F.savePng(factoryCv, `fuzzboi-${codeIn.value}.png`).catch(() => (note.textContent = 'This browser would not save the picture.')); };
 
-  // ---------- the cyber home: every Fuzzboi made above moves in, up to 30; they wander and hop ----------
+  // ---------- the Cyber Dome (it was the cyber home): every Fuzzboi made above moves in, up to 30; they bounce around like
+  // particles and boing off each other (Astra, 2026-10-27) ----------
   const home = (() => {
+    // the dome is a sphere drawn as a white grid that slowly turns (Astra, 2026-10-27: "just a big sphere that's a grid"); each
+    // Fuzzboi lives at x, y, z inside it (the sphere's radius is 1), smaller at the back, bigger at the front
     const cv = $('home'), cx = cv.getContext('2d');
-    let W = 0, H = 0, picked = null;
-    const folks = [];
-    const floorTop = () => H * .42; // the back wall meets the floor here
+    let W = 0, H = 0, picked = null, turn = 0;
+    const folks = [], boings = [];
     function resize() { const r = fit(cv); W = r.width; H = r.height; }
     new ResizeObserver(resize).observe(cv); resize();
-    // big while the home is empty, smaller as it fills, so all 30 fit
-    const sizeFor = () => Math.max(52, Math.min(130, W / (2.6 + folks.length * .35)));
-    function spawn(code, at) {
-      const p = F.decode(code).parts;
-      return { code, art: sprite(p, 192), x: at ? at.x : 40 + Math.random() * Math.max(1, W - 80), y: at ? at.y : floorTop() + 20 + Math.random() * Math.max(1, H - floorTop() - 40),
-        vx: (Math.random() - .5) * .6, vy: (Math.random() - .5) * .3, hop: 0, t: Math.random() * 100, born: performance.now() };
+    const R = () => Math.min(W, H) * .46;
+    // a Fuzzboi's size as a share of the sphere: big while the dome is nearly empty, smaller as it fills, so all 30 fit
+    const share = () => Math.max(.18, Math.min(.42, 1.1 / (2.4 + folks.length * .3)));
+    const rand = () => Math.random() * 2 - 1;
+    function spawn(code) {
+      const p = F.decode(code).parts, sp = .006 + Math.random() * .004;
+      let v = [rand(), rand(), rand()], n = Math.hypot(...v) || 1; v = v.map((x) => (x / n) * sp);
+      return { code, art: sprite(p, 192), x: rand() * .3, y: rand() * .3, z: .5, vx: v[0], vy: v[1], vz: v[2], squash: 0, spin: 0, born: performance.now() };
     }
     function save() { store.set(HOME_KEY, folks.map((f) => f.code)); count(); }
     function count() {
       $('home-count').textContent = `${folks.length} of ${HOME_MAX} moved in`;
       $('home-out').disabled = !picked; $('home-clear').disabled = !folks.length;
-      $('home-pick').textContent = picked ? `#${picked.code} · tap “let them out” to give the spot to someone new` : folks.length ? 'Tap a Fuzzboi to see its code.' : 'Nobody lives here yet. Make a Fuzzboi above and it moves in.';
+      $('home-pick').textContent = picked ? `#${picked.code} · tap “let them out” to give the spot to someone new` : folks.length ? 'Tap a Fuzzboi to see its code.' : 'Nobody lives here yet. Make a Fuzzboi above and send it in.';
     }
     function add(code) {
-      if (folks.length >= HOME_MAX) return `The cyber home is full (${HOME_MAX}). Let one out to make room.`;
+      if (folks.length >= HOME_MAX) return `The Cyber Dome is full (${HOME_MAX}). Let one out to make room.`;
       folks.push(spawn(code)); save();
-      return `#${code} moved into the cyber home (${folks.length} of ${HOME_MAX}).`;
+      return `#${code} moved into the Cyber Dome (${folks.length} of ${HOME_MAX}).`;
     }
     cv.addEventListener('pointerdown', (e) => {
-      const r = cv.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top, s = sizeFor();
-      const hit = [...folks].sort((a, b) => b.y - a.y).find((f) => Math.abs(f.x - x) < s * .45 && y > f.y - s * .95 && y < f.y + s * .05);
+      const r = cv.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
+      const hit = [...folks].filter((f) => f.ss).sort((p, q) => q.z - p.z).find((f) => Math.hypot(f.sx - x, f.sy - y) < f.ss * .45);
       picked = hit === picked ? null : hit || null;
-      if (picked) { picked.hop = 1; codeIn.value = picked.code; make(picked.code, false); }
+      if (picked) { picked.squash = 1; codeIn.value = picked.code; make(picked.code, false); }
       count();
     });
     $('home-out').onclick = () => { if (!picked) return; folks.splice(folks.indexOf(picked), 1); picked = null; save(); };
     $('home-clear').onclick = () => { folks.length = 0; picked = null; save(); };
-    // the room: graphite walls, a neon grid floor in perspective, a window of falling code
-    function room(t) {
-      const ft = floorTop();
-      cx.fillStyle = '#121212'; cx.fillRect(0, 0, W, ft);
-      cx.fillStyle = '#0a0a0a'; cx.fillRect(0, ft, W, H - ft);
-      cx.strokeStyle = 'rgba(0, 225, 255, .35)'; cx.lineWidth = 1;
-      for (let i = 0; i <= 12; i++) { const x = (i / 12) * W; cx.beginPath(); cx.moveTo(W / 2 + (x - W / 2) * .35, ft); cx.lineTo(x, H); cx.stroke(); }
-      for (let j = 1; j <= 7; j++) { const y = ft + (H - ft) * Math.pow(j / 7, 1.7); cx.beginPath(); cx.moveTo(0, y); cx.lineTo(W, y); cx.stroke(); }
-      cx.strokeStyle = '#ff3ea5'; cx.lineWidth = 2; cx.beginPath(); cx.moveTo(0, ft); cx.lineTo(W, ft); cx.stroke();
-      // window on the back wall
-      const ww = Math.min(150, W * .24), wh = ft * .6, wx = W * .68, wy = ft * .16;
-      cx.fillStyle = '#000'; cx.fillRect(wx, wy, ww, wh);
-      cx.save(); cx.beginPath(); cx.rect(wx, wy, ww, wh); cx.clip();
-      cx.fillStyle = 'rgba(198, 255, 0, .7)'; cx.font = '11px JetBrains Mono, monospace';
-      for (let c = 0; c < ww / 12; c++) { const y = ((t * .04 + c * 37) % (wh + 40)) - 20; cx.fillText('01ア✦'[(c + Math.floor(t / 300)) % 4], wx + 3 + c * 12, wy + y); }
-      cx.restore();
-      cx.strokeStyle = '#555'; cx.lineWidth = 3; cx.strokeRect(wx, wy, ww, wh); cx.beginPath(); cx.moveTo(wx + ww / 2, wy); cx.lineTo(wx + ww / 2, wy + wh); cx.stroke();
-      // a little sign
-      cx.fillStyle = '#ff3ea5'; cx.font = '700 13px JetBrains Mono, monospace'; cx.fillText('FUZZBOI CYBER HOME', 14, 26);
+    // the sphere: an outline, rings of latitude seen a little from above, and meridians that turn
+    function globe() {
+      const r = R(), ox = W / 2, oy = H / 2, tilt = .28;
+      cx.fillStyle = '#060606'; cx.fillRect(0, 0, W, H);
+      const glow = cx.createRadialGradient(ox - r * .3, oy - r * .35, r * .1, ox, oy, r);
+      glow.addColorStop(0, 'rgba(255, 255, 255, .07)'); glow.addColorStop(1, 'rgba(255, 255, 255, .01)');
+      cx.fillStyle = glow; cx.beginPath(); cx.arc(ox, oy, r, 0, 7); cx.fill();
+      cx.lineWidth = 1; cx.strokeStyle = 'rgba(255, 255, 255, .2)';
+      for (let k = -3; k <= 3; k++) { const lat = (k / 4) * (Math.PI / 2), rx = Math.cos(lat) * r; cx.beginPath(); cx.ellipse(ox, oy + Math.sin(lat) * r * Math.cos(tilt), rx, rx * Math.sin(tilt), 0, 0, 7); cx.stroke(); }
+      for (let k = 0; k < 8; k++) { const ph = turn + (k / 8) * Math.PI, rx = Math.abs(Math.sin(ph)) * r; cx.beginPath(); cx.ellipse(ox, oy, rx, r, 0, 0, 7); cx.stroke(); }
+      cx.lineWidth = 2; cx.strokeStyle = 'rgba(255, 255, 255, .65)'; cx.beginPath(); cx.arc(ox, oy, r, 0, 7); cx.stroke();
+      cx.fillStyle = '#f2f2f2'; cx.font = '700 13px JetBrains Mono, monospace'; cx.fillText('FUZZBOI CYBER DOME', 14, 26);
     }
     function frame(t) {
       requestAnimationFrame(frame);
       if (!W) return;
-      room(t);
-      const s = sizeFor(), ft = floorTop();
+      if (!reduced) turn += .003;
+      globe();
+      const r = R(), sh = share(), rr = sh / 2; // a Fuzzboi's radius inside the unit sphere
       for (const f of folks) {
         if (!reduced) {
-          f.t += 1; f.x += f.vx; f.y += f.vy;
-          if (Math.random() < .006) { f.vx = (Math.random() - .5) * .9; f.vy = (Math.random() - .5) * .4; }
-          if (Math.random() < .003) f.hop = 1;
-          if (f.x < s * .4 || f.x > W - s * .4) f.vx *= -1;
-          if (f.y < ft + s * .3 || f.y > H - 6) f.vy *= -1;
-          f.x = Math.min(Math.max(f.x, s * .4), W - s * .4); f.y = Math.min(Math.max(f.y, ft + s * .3), H - 6);
+          f.x += f.vx; f.y += f.vy; f.z += f.vz;
+          // off the inside of the sphere like a ball: reflect along the wall's normal
+          const d = Math.hypot(f.x, f.y, f.z), lim = 1 - rr;
+          if (d > lim) {
+            const nx = f.x / d, ny = f.y / d, nz = f.z / d, dot = f.vx * nx + f.vy * ny + f.vz * nz;
+            if (dot > 0) { f.vx -= 2 * dot * nx; f.vy -= 2 * dot * ny; f.vz -= 2 * dot * nz; f.squash = .6; }
+            f.x = nx * lim; f.y = ny * lim; f.z = nz * lim;
+          }
         }
-        f.hop = Math.max(0, f.hop - .04);
+        f.squash = Math.max(0, f.squash - .05); f.spin *= .94;
       }
-      for (const f of [...folks].sort((a, b) => a.y - b.y)) {
-        const drop = Math.max(0, 1 - (t - f.born) / 650); // a new one drops in from above
-        const depth = .7 + .3 * ((f.y - ft) / Math.max(1, H - ft)), size = s * depth;
-        const lift = Math.sin(f.hop * Math.PI) * size * .35 + drop * drop * H * .8 + (reduced ? 0 : Math.sin(f.t / 18) * 1.5);
-        cx.fillStyle = 'rgba(0, 0, 0, .55)'; cx.beginPath(); cx.ellipse(f.x, f.y, size * .32, size * .08, 0, 0, 7); cx.fill();
-        if (f === picked) { cx.strokeStyle = '#' + f.code; cx.lineWidth = 3; cx.beginPath(); cx.ellipse(f.x, f.y, size * .42, size * .12, 0, 0, 7); cx.stroke(); }
-        cx.drawImage(f.art, f.x - size / 2, f.y - size * .92 - lift, size, size);
+      // two that meet bounce apart like billiard balls, squish, spin a little and say boing
+      if (!reduced) for (let i = 0; i < folks.length; i++) for (let k = i + 1; k < folks.length; k++) {
+        const p = folks[i], q = folks[k], dx = q.x - p.x, dy = q.y - p.y, dz = q.z - p.z, d = Math.hypot(dx, dy, dz), min = rr * 2 * .8;
+        if (!d || d >= min) continue;
+        const nx = dx / d, ny = dy / d, nz = dz / d, rel = (p.vx - q.vx) * nx + (p.vy - q.vy) * ny + (p.vz - q.vz) * nz;
+        if (rel > 0) {
+          p.vx -= rel * nx; p.vy -= rel * ny; p.vz -= rel * nz; q.vx += rel * nx; q.vy += rel * ny; q.vz += rel * nz;
+          p.squash = q.squash = 1; p.spin = (Math.random() - .5) * .9; q.spin = (Math.random() - .5) * .9;
+          boings.push({ x: (p.x + q.x) / 2, y: (p.y + q.y) / 2, z: Math.max(p.z, q.z), t: 1, word: ['boing!', 'boop', 'bonk!', 'sproing'][Math.floor(Math.random() * 4)] });
+        }
+        const push = (min - d) / 2; p.x -= nx * push; p.y -= ny * push; p.z -= nz * push; q.x += nx * push; q.y += ny * push; q.z += nz * push;
       }
-      if (folks.length >= HOME_MAX) { cx.fillStyle = '#c6ff00'; cx.font = '700 13px JetBrains Mono, monospace'; cx.fillText('FULL HOUSE', W - 104, 26); }
+      // back to front; nearer is bigger and a little lower in the view
+      const view = (x, y, z) => { const near = (z + 1) / 2, k = .82 + .18 * near; return { sx: W / 2 + x * r * k, sy: H / 2 + y * r * k, near }; };
+      for (const f of [...folks].sort((p, q) => p.z - q.z)) {
+        const v = view(f.x, f.y, f.z), grow = Math.min(1, (t - f.born) / 450);
+        const size = sh * r * 2 * (.55 + .6 * v.near) * (grow < 0 ? 1 : grow);
+        f.sx = v.sx; f.sy = v.sy; f.ss = size;
+        cx.globalAlpha = .55 + .45 * v.near;
+        if (f === picked) { cx.strokeStyle = '#' + f.code; cx.lineWidth = 3; cx.beginPath(); cx.arc(v.sx, v.sy, size * .5, 0, 7); cx.stroke(); }
+        const sq = Math.sin(f.squash * Math.PI) * .22;
+        cx.save(); cx.translate(v.sx, v.sy); cx.rotate(f.spin); cx.scale(1 + sq, 1 - sq);
+        cx.drawImage(f.art, -size / 2, -size / 2, size, size); cx.restore();
+      }
+      cx.globalAlpha = 1;
+      cx.font = '700 13px JetBrains Mono, monospace'; cx.textAlign = 'center';
+      for (const b of boings) { const v = view(b.x, b.y, b.z); cx.fillStyle = `rgba(255, 255, 255, ${b.t})`; cx.fillText(b.word, v.sx, v.sy - r * sh - (1 - b.t) * 18); b.t -= .025; }
+      cx.textAlign = 'start';
+      for (let i = boings.length - 1; i >= 0; i--) if (boings[i].t <= 0) boings.splice(i, 1);
+      if (folks.length >= HOME_MAX) { cx.fillStyle = '#f2f2f2'; cx.font = '700 13px JetBrains Mono, monospace'; cx.fillText('FULL HOUSE', W - 104, 26); }
     }
     ready.then(() => {
       if (!F) return;
       // the same Fuzzbois move back in on the next visit (kept in this browser only)
       const saved = store.get(HOME_KEY, []);
-      if (Array.isArray(saved)) for (const code of saved.slice(0, HOME_MAX)) if (/^[0-9A-F]{6}$/.test(code)) { const f = spawn(code); f.born = -1e9; folks.push(f); }
+      if (Array.isArray(saved)) for (const code of saved.slice(0, HOME_MAX)) if (/^[0-9A-F]{6}$/.test(code)) { const f = spawn(code); f.born = -1e9; f.x = rand() * .5; f.y = rand() * .5; f.z = rand() * .5; folks.push(f); }
       count();
       const linked = /^#fuzzboi-([0-9A-F]{6})$/i.exec(location.hash);
       make(linked ? linked[1].toUpperCase() : '456900', !!linked && !(Array.isArray(saved) && saved.includes(linked[1].toUpperCase())));
@@ -160,12 +207,44 @@
   // ---------- the sparkle catcher, from Mommy's website ("Catch the beat"): tap the sparkles before they burn out ----------
   (() => {
     const bc = $('beatC'), bx = bc.getContext('2d');
-    const HUES = [330, 318, 345, 300, 42, 200];
+    // the sparkle the game throws comes from the Sparkle Creator below it: how many points, how sharp, what color, how it spins
+    const SPARK = { points: [4, 5, 6, 8], sharp: [['Sharp', .28], ['Soft', .5], ['Puffy', .72]], color: [['Pink', [330, 318, 345, 300]], ['Gold', [42, 48, 36, 54]],
+      ['Ice', [190, 200, 210, 180]], ['Mint', [150, 160, 140, 170]], ['Lilac', [270, 280, 260, 290]], ['Rainbow', [0, 30, 55, 120, 205, 275, 320, -1]]], spin: ['Twirl', 'Still', 'Wobble'] };
+    const spark = Object.assign({ points: 0, sharp: 0, color: 0, spin: 0 }, store.get('findastra-sparkle', {}));
+    for (const k of Object.keys(SPARK)) if (!(spark[k] >= 0 && spark[k] < SPARK[k].length)) spark[k] = 0;
+    const hues = () => SPARK.color[spark.color][1];
+    const isRainbow = () => SPARK.color[spark.color][0] === 'Rainbow';
+    let nextHue = 0;
+    // a hue of -1 is white; the rainbow is soft pastel
+    const tint = (h, l, a) => (h < 0 ? `hsla(0,0%,100%,${a})` : `hsla(${h},100%,${isRainbow() ? Math.min(92, l + 6) : l}%,${a})`);
+    // one sparkle: a star with the chosen points and sharpness, turned by the chosen spin
+    function drawSpark(c, x, y, r, age, hue, a) {
+      const n = SPARK.points[spark.points], inner = SPARK.sharp[spark.sharp][1], mode = SPARK.spin[spark.spin];
+      const turn = mode === 'Twirl' ? age * 3 : mode === 'Wobble' ? Math.sin(age * 9) * .35 : 0;
+      c.fillStyle = tint(hue, 84, a); c.shadowColor = tint(hue, 64, a); c.shadowBlur = r * .8;
+      c.beginPath();
+      for (let i = 0; i < n * 2; i++) { const rr = i % 2 ? r * inner : r, an = (i * Math.PI) / n + turn - Math.PI / 2; c.lineTo(x + Math.cos(an) * rr, y + Math.sin(an) * rr); }
+      c.closePath(); c.fill(); c.shadowBlur = 0;
+    }
     let targets = [], pops = [], score = 0, combo = 0, best = store.get('findastra-beat-best', 0) || 0, miss = 0, on = false, spawnIn = 0;
     const bS = $('bScore'), bC = $('bCombo'), bB = $('bBest'); bB.textContent = best;
     let w = 0, h = 0;
     const size = () => { const r = fit(bc); w = r.width; h = r.height; };
     new ResizeObserver(size).observe(bc); size();
+    const prev = $('sparkPrev'), px = prev.getContext('2d');
+    function showSpark() {
+      for (const k of Object.keys(SPARK)) { const v = SPARK[k][spark[k]]; $('sp-' + k).textContent = Array.isArray(v) ? v[0] : String(v); }
+      store.set('findastra-sparkle', spark);
+    }
+    (function preview(t) {
+      requestAnimationFrame(preview);
+      px.fillStyle = '#060606'; px.fillRect(0, 0, 192, 192);
+      const hs = hues(), hue = hs[Math.floor(t / 900) % hs.length];
+      px.save(); px.globalCompositeOperation = 'lighter'; drawSpark(px, 96, 96, 62, reduced ? 0 : t / 2600, hue, 1); px.restore();
+    })(0);
+    document.querySelectorAll('[data-spark]').forEach((b) => (b.onclick = () => { const k = b.dataset.spark; spark[k] = (spark[k] + 1) % SPARK[k].length; showSpark(); }));
+    $('sparkRand').onclick = () => { for (const k of Object.keys(SPARK)) spark[k] = Math.floor(Math.random() * SPARK[k].length); showSpark(); };
+    showSpark();
     function start() { targets = []; score = 0; combo = 0; miss = 0; on = true; spawnIn = 0; bS.textContent = 0; bC.textContent = 0; $('beatBtn').textContent = 'playing…'; }
     function end() { on = false; $('beatBtn').textContent = 'start set'; if (score > best) { best = score; bB.textContent = best; store.set('findastra-beat-best', best); } }
     function loop() {
@@ -175,22 +254,22 @@
       for (let i = 1; i < 4; i++) { bx.beginPath(); bx.moveTo(0, h * i / 4); bx.lineTo(w, h * i / 4); bx.stroke(); }
       if (on && --spawnIn <= 0) {
         spawnIn = Math.max(16, 46 - score * .28);
-        targets.push({ x: 24 + Math.random() * (w - 48), y: 24 + Math.random() * (h - 48), t: 1, hue: HUES[(Math.random() * 4) | 0], sp: .010 + Math.min(.014, score * .00013) });
+        const hs = hues();
+        const hue = isRainbow() ? hs[nextHue++ % hs.length] : hs[(Math.random() * hs.length) | 0];
+        targets.push({ x: 24 + Math.random() * (w - 48), y: 24 + Math.random() * (h - 48), t: 1, hue, sp: .010 + Math.min(.014, score * .00013) });
       }
       bx.save(); bx.globalCompositeOperation = 'lighter';
       for (const t of targets) {
         t.t -= t.sp;
         const R = 10 + (1 - t.t) * 16, a = Math.max(0, t.t);
-        bx.strokeStyle = `hsla(${t.hue},100%,72%,${a})`; bx.lineWidth = 3;
+        bx.strokeStyle = tint(t.hue, 72, a); bx.lineWidth = 3;
         bx.beginPath(); bx.arc(t.x, t.y, R + 12 * t.t, 0, 6.283); bx.stroke();
-        bx.fillStyle = `hsla(${t.hue},100%,86%,${a})`; bx.beginPath();
-        for (let i = 0; i < 8; i++) { const rr = i % 2 ? 4 : 12, an = i * Math.PI / 4 + (1 - t.t) * 3; bx.lineTo(t.x + Math.cos(an) * rr, t.y + Math.sin(an) * rr); }
-        bx.closePath(); bx.fill();
+        drawSpark(bx, t.x, t.y, 13, 1 - t.t, t.hue, a);
       }
       // the burst where a sparkle was caught
       for (const p of pops) {
         p.x += p.vx; p.y += p.vy; p.vy += .05; p.life -= .03;
-        bx.fillStyle = `hsla(${p.hue},100%,80%,${Math.max(0, p.life)})`; bx.beginPath(); bx.arc(p.x, p.y, 2.2, 0, 6.283); bx.fill();
+        bx.fillStyle = tint(p.hue, 80, Math.max(0, p.life)); bx.beginPath(); bx.arc(p.x, p.y, 2.2, 0, 6.283); bx.fill();
       }
       bx.restore();
       pops = pops.filter((p) => p.life > 0);
@@ -236,14 +315,17 @@
    girls:[['High pigtails','pigtail',0,58],['Blunt pigtails','pigtail',1,62],['Side-swept pigtails','pigtail',2,52],['Wispy pigtails','pigtail',3,72],['Split-fringe pigtails','pigtail',4,48],['Heart-fringe pigtails','pigtail',5,65],['Choppy pigtails','pigtail',6,55],['Baby-bang pigtails','pigtail',7,40],['Blunt bob','bob',1,30],['French bob','bob',7,22],['Side bob','bob',2,36],['Long curtain hair','long',0,83],['Long waves','wave',3,78],['Long side part','long',9,74],['Space buns','buns',4,20],['Low double buns','buns',5,42],['Twin braids','braids',0,72],['High ponytail','pony',2,65],['Layered shag','shag',6,44],['Soft pixie','pixie',8,17]],
    boys:[['Curtain crop','crop',0,14],['Textured crop','crop',6,18],['Side-part crop','crop',2,12],['Blunt fringe','crop',1,20],['Wispy fringe','crop',3,19],['Split fringe crop','crop',4,16],['Short quiff','quiff',2,17],['Tall quiff','quiff',9,26],['Side undercut','undercut',2,18],['Split undercut','undercut',4,15],['Soft curls','curls',3,26],['Tight curls','curls',7,18],['Tousled waves','wave',6,27],['Wolf cut','shag',9,46],['Long curtain cut','bob',0,37],['Short spikes','spikes',6,18],['Tall spikes','spikes',7,29],['Swept-back bun','topknot',8,28],['Short ponytail','pony',4,34],['Braided sides','braids',2,35]]
   };
-  const AV_HEAD=['None','Devil horns','Halo','Cat ears','Star clips','Moon crown','Crystal crown','Heart antennae','Rabbit ears','Bear ears','Headphones','Goggles','Bow headband','Flower crown','Tiny top hat','Beret','Witch hat','Butterfly clips','Leaf sprout','Satellite rings'];
-  const AV_BODY=['None','Neck bow','Heart pendant','Star pendant','Pearl collar','Crossbody sash','Ribbon belt','Chain belt','Mini backpack','Angel wings','Bat wings','Shoulder cape','Scarf','Rose brooch','Moon brooch','Double bows','Harness straps','Heart purse','Arm cuffs','Devil tail'];
+  const AV_HEAD=['None','Devil horns','Halo','Cat ears','Star clips','Moon crown','Double bows','Heart antennae','Rabbit ears','Bear ears','Headphones','Goggles','Bow headband','Flower crown','Tiny top hat','Beret','Witch hat','Butterfly clips','Leaf sprout','Satellite rings'];
+  const AV_BODY=['None','Neck bow','Heart pendant','Star pendant','Pearl collar','Crossbody sash','Ribbon belt','Chain belt','Mini backpack','Angel wings','Bat wings','Shoulder cape','Scarf','Rose brooch','Moon brooch','Long tie','Harness straps','Heart purse','Heart pocket','Devil tail'];
   const AV_FX=['Four-point glints','Tiny diamonds','Twinkle stars','Star halo','Heart dust','Pearl bubbles','Snowflakes','Comet trails','Confetti','Orbit rings','Crescent moons','Fireflies','Crystal shards','Cross glints','Petal drift','Spiral dust','Dotted aura','Star shower','Diamond crown','Ribbon sparks'];
+  // lash styles (Astra, 2026-10-27: "some that have like three, some that have two, some that are just a cute little swoop")
+  const AV_LASHES=['Three flicks','Two flicks','Swoop','Off'];
+  const AV_LASH_D=['M79 90l-5-4M78 93l-6-1M81 87l-3-5M121 90l5-4M122 93l6-1M119 87l3-5','M79 90l-5-4M78 94l-6-1M121 90l5-4M122 94l6-1','M80 90Q75 91 72 85M120 90Q125 91 128 85',''];
   const AV_FITS=['Skater dress','Tunic','Jacket','Sweater','Vest','Split dress','Pleated dress','T-shirt','Overalls','Coat'];
   const avPick=n=>Math.floor(Math.random()*n);
   const avNext=(old,n)=>(old+1+avPick(n-1))%n;
   const avPalette=()=>[...AV_PALETTES[avPick(AV_PALETTES.length)]];
-  const avState={group:'all',hairGroup:'girls',hair:0,bangs:0,hairColors:avPalette(),head:1,headColors:avPalette(),body:1,bodyColors:avPalette(),fit:0,fitColors:avPalette(),fx:0,fxColors:avPalette(),lashes:true,seed:347};
+  const avState={group:'all',hairGroup:'girls',hair:0,bangs:0,hairColors:avPalette(),head:1,headColors:avPalette(),body:1,bodyColors:avPalette(),fit:0,fitColors:avPalette(),fx:0,fxColors:avPalette(),lashes:0,seed:347};
   const avPath=(d,c,s='',w=2)=>`<path d="${d}" fill="${c}"${s?` stroke="${s}" stroke-width="${w}"`:''}/>`;
   const avEllipse=(x,y,rx,ry,c,s='')=>`<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="${c}"${s?` stroke="${s}" stroke-width="2"`:''}/>`;
   const avLine=(d,c,w=2)=>avPath(d,'none',c,w);
@@ -296,7 +378,7 @@
    case 3:return sym(ear);
    case 4:return avStar(65,62,10,a)+avStar(135,62,10,b);
    case 5:return avPath('M66 48L65 29L83 38L100 19L117 38L135 29L134 48Z',a,b)+avEllipse(100,34,5,7,b);
-   case 6:return avPath('M66 48L72 26L86 43L100 15L114 43L128 26L134 48Z',a,b);
+   case 6:{const bow=(x,y)=>avPath(`M${x} ${y}l-13-8v16ZM${x} ${y}l13-8v16Z`,a,b)+avEllipse(x,y,3.5,3.5,b);return bow(70,54)+bow(130,54);} // two bows on the head, in place of the crystal crown
    case 7:return avLine('M72 48Q64 23 53 22M128 48Q136 23 147 22',b)+avHeart(53,23,.7,a)+avHeart(147,23,.7,a);
    case 8:return sym(avEllipse(74,26,10,27,a,b)+avEllipse(74,25,4,18,b));
    case 9:return sym(avEllipse(65,44,17,17,a,b)+avEllipse(65,44,9,9,b));
@@ -305,14 +387,17 @@
    case 12:return avLine('M60 62Q100 30 140 62',b,5)+avPath('M100 43L74 25L76 55ZM100 43L126 25L124 55Z',a,b);
    case 13:{let out='';for(let j=0;j<7;j++){let x=61+j*13,y=54-Math.sin(j/6*Math.PI)*16;out+=avStar(x,y,9,a,6)+avEllipse(x,y,3,3,b)}return out;}
    case 14:return avPath('M83 41L81 12H118L116 41Z',a,b)+avEllipse(100,42,31,6,b)+avLine('M83 32H116',b,5);
-   case 15:return avEllipse(95,43,43,18,a,b)+avLine('M97 27L101 20',b,4);
+   case 15:return `<g transform="rotate(-20 120 48)">${avEllipse(120,48,27,11,a,b)+avLine('M121 37L123 31',b,4)}</g>`; // smaller, crooked, on the side
    case 16:return avPath('M68 46L95 4L119 17L111 17L132 46Z',a,b)+avEllipse(100,47,46,7,b);
    case 17:return sym(avEllipse(62,53,9,13,a)+avEllipse(70,58,8,10,b)+avLine('M64 50L69 65',b));
    case 18:return avLine('M100 43V24',b,4)+avPath('M100 28Q73 6 74 27Q82 39 100 28ZM100 28Q127 6 126 27Q118 39 100 28Z',a,b);
    case 19:return avEllipse(100,35,46,12,'none',a)+avEllipse(100,35,32,18,'none',b)+avStar(142,29,6,b);
    }
   }
-  function avBody(){
+  // accessories that hang behind the body; drawn before the outfit so they tuck in behind it (2026-10-27)
+  const AV_BEHIND=new Set([8,9,10,19]);
+  function avBody(behind=false){
+   if(AV_BEHIND.has(avState.body)!==behind)return avState.body===8&&!behind?avLine('M88 128L80 160M112 128L120 160',avState.bodyColors[1],4):'';
    const [,a,b]=avState.bodyColors;
    const bow=(x,y)=>avPath(`M${x} ${y}l-16-9v18ZM${x} ${y}l16-9v18Z`,a,b)+avEllipse(x,y,4,4,b);
    switch(avState.body){
@@ -323,18 +408,18 @@
    case 4:{let s='';for(let i=0;i<7;i++)s+=avEllipse(83+i*5.6,133+Math.sin(i/6*Math.PI)*9,3,3,i%2?a:b);return s;}
    case 5:return avPath('M84 127L119 182L127 180L91 126Z',a,b);
    case 6:return avPath('M76 164H124V172H76Z',a,b)+bow(100,168);
-   case 7:return avLine('M74 163Q100 183 126 163',a,3)+avStar(100,177,5,b);
+   case 7:{let s='';for(let i=0;i<=10;i++){const t=i/10,x=74+t*52,y=160+Math.sin(t*Math.PI)*16;s+=avEllipse(x,y,4.2,2.8,'none',i%2?a:b).replace('stroke-width="2"','stroke-width="2.4"')}return s+avStar(100,177,8,b);} // a bigger chain
    case 8:return avPath('M62 140Q49 127 49 151V175H70ZM138 140Q151 127 151 151V175H130Z',a,b);
    case 9:return avPath('M78 143Q34 107 42 147L29 147Q40 175 74 164ZM122 143Q166 107 158 147L171 147Q160 175 126 164Z',a,b);
    case 10:return avPath('M78 143L35 119L42 147L28 164Q49 151 58 177L74 166ZM122 143L165 119L158 147L172 164Q151 151 142 177L126 166Z',a,b);
    case 11:return avPath('M86 128Q63 134 54 184L84 175L100 183L116 175L146 184Q137 134 114 128Z',a,b);
-   case 12:return avPath('M84 130H116V140H104L117 175L107 181L93 140H84Z',a,b);
+   case 12:return avPath('M76 126Q100 136 124 126V141Q112 145 106 143L119 175L109 181L95 143Q84 145 76 141Z',a,b); // wider on the neck
    case 13:return avStar(117,145,9,a,7)+avEllipse(117,145,4,4,b);
    case 14:return avPath('M123 136A10 10 0 1 0 123 156A8 8 0 0 1 123 136Z',a,b);
-   case 15:return bow(80,148)+bow(120,148);
-   case 16:return avLine('M84 128L117 180M116 128L83 180M78 155H122',a,4)+avEllipse(100,155,5,5,b);
+   case 15:return avPath('M95 127H105L103 134L108 172L100 182L92 172L97 134Z',a,b)+avLine('M96 142L104 148M95 155L105 161M94 168L106 174',b,1.5); // a long tie, in place of the double bows
+   case 16:return avLine('M88 126L131 184M112 126L69 184M72 155H128',a,4)+avEllipse(100,155,5,5,b); // the straps run to every edge of the outfit
    case 17:return avLine('M87 129L128 165',a,3)+avHeart(129,174,1.1,b);
-   case 18:return avPath('M70 154L79 156L76 173L65 170ZM130 154L121 156L124 173L135 170Z',a,b);
+   case 18:return avPath('M84 158H116L113 176Q100 179 87 176Z',a,b)+avHeart(100,169,.42,b); // a heart pocket, in place of the arm cuffs
    case 19:return avLine('M126 173Q178 211 165 149',a,5)+avPath('M165 141L154 159L174 155Z',b);
    }
   }
@@ -372,11 +457,11 @@
   const labSvg=document.getElementById('labSvg');
   function drawLab(){
    const hair=avHair();
-   const lashes=avState.lashes?avLine('M79 90l-5-4M78 94l-6-1M121 90l5-4M122 94l6-1','#2a1330',2.4):'';
-   labSvg.innerHTML=`<ellipse cx="100" cy="188" rx="52" ry="9" fill="#ff2e7e" opacity=".3"/>${hair.back}${avFit()}${avBody()}<circle cx="100" cy="88" r="42" fill="#f9d8c4"/>${hair.front}${avHead()}<g fill="#2a1330"><ellipse cx="85" cy="94" rx="6" ry="8"/><ellipse cx="115" cy="94" rx="6" ry="8"/></g>${lashes}<g fill="#fff"><circle cx="87" cy="91" r="2.3"/><circle cx="117" cy="91" r="2.3"/></g><ellipse cx="76" cy="106" rx="9" ry="5" fill="#ff8fd0" opacity=".55"/><ellipse cx="124" cy="106" rx="9" ry="5" fill="#ff8fd0" opacity=".55"/>${avLine('M95 108q5 5 10 0','#c4306b',2.4)}${avEffects()}`;
-   const labels={hair:AV_HAIR[avState.hairGroup][avState.hair][0],bangs:AV_BANGS[avState.bangs],head:AV_HEAD[avState.head],body:AV_BODY[avState.body],fit:AV_FITS[avState.fit],fx:AV_FX[avState.fx],lashes:avState.lashes?'On':'Off'};
+   const lashes=AV_LASH_D[avState.lashes]?avLine(AV_LASH_D[avState.lashes],'#2a1330',2.4):'';
+   labSvg.innerHTML=`<ellipse cx="100" cy="188" rx="52" ry="9" fill="#ff2e7e" opacity=".3"/>${hair.back}${avBody(true)}${avFit()}${avBody()}<circle cx="100" cy="88" r="42" fill="#f9d8c4"/>${hair.front}${avHead()}<g fill="#2a1330"><ellipse cx="85" cy="94" rx="6" ry="8"/><ellipse cx="115" cy="94" rx="6" ry="8"/></g>${lashes}<g fill="#fff"><circle cx="87" cy="91" r="2.3"/><circle cx="117" cy="91" r="2.3"/></g><ellipse cx="76" cy="106" rx="9" ry="5" fill="#ff8fd0" opacity=".55"/><ellipse cx="124" cy="106" rx="9" ry="5" fill="#ff8fd0" opacity=".55"/>${avLine('M95 108q5 5 10 0','#c4306b',2.4)}${avEffects()}`;
+   const labels={hair:AV_HAIR[avState.hairGroup][avState.hair][0],bangs:AV_BANGS[avState.bangs],head:AV_HEAD[avState.head],body:AV_BODY[avState.body],fit:AV_FITS[avState.fit],fx:AV_FX[avState.fx],lashes:AV_LASHES[avState.lashes]};
    for(const [part,label] of Object.entries(labels))document.getElementById('lb-'+part).textContent=label;
-   document.getElementById('labLashes').setAttribute('aria-pressed',String(avState.lashes));
+   document.getElementById('labLashes').setAttribute('aria-pressed',String(avState.lashes!==3));
    document.getElementById('labPalette').textContent='Hair colors: '+avState.hairColors[0]+' · '+avState.hairColors.slice(1).join(' / ');
    labSvg.setAttribute('aria-label',labels.hair+', '+labels.bangs+' bangs, '+labels.head+', '+labels.body+', '+labels.fx+', lashes '+labels.lashes.toLowerCase());
   }
@@ -390,7 +475,7 @@
    const part=button.dataset.avatarPart;
    if(part==='hair')avRandomHair();
    else if(part==='bangs'){avState.bangs=avNext(avState.bangs,AV_BANGS.length);avState.hairColors=avPalette()}
-   else if(part==='lashes')avState.lashes=!avState.lashes;
+   else if(part==='lashes')avState.lashes=(avState.lashes+1)%AV_LASHES.length;
    else{const options={head:AV_HEAD,body:AV_BODY,fit:AV_FITS,fx:AV_FX};avState[part]=avNext(avState[part],options[part].length);avState[part+'Colors']=avPalette();if(part==='fx')avState.seed=avPick(1e9)}
    drawLab();
   });

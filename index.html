@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&family=JetBrains+Mono:wght@400;700&family=VT323&family=Permanent+Marker&display=swap">
-<link rel="stylesheet" href="cyber.css?v=20261027b">
+<link rel="stylesheet" href="cyber.css?v=20261027w">
 </head>
 <body>
 <!-- the fat star every pet window is cut from (R 100, r 70; rounded by the stroke in cyber.css) -->
@@ -18,13 +18,35 @@
 </defs></svg>
 
 <header class="top">
-  <a class="brand" href="#top">find<span>/</span>astra</a>
+  <a class="brand" href="#top">find <span>/</span>astra</a>
   <nav aria-label="Sections">
-    <a href="#about">about</a><a href="#worlds">worlds</a><a href="#avatars">avatars</a><a href="#pets">petos</a><a href="#extras">more</a><a href="#arcade">arcade</a><a href="#contact">contact</a>
+    <a href="#vr">vr &amp; vrchat</a><a href="#discord">discord</a><a href="#web">web &amp; more</a><a href="#pets">astra's petos</a><a href="#arcade">arcade</a><a href="#contact">contact</a>
   </nav>
 </header>
 
+<!-- the pole on the left, from Mommy's website (findastra/mommys-website, its "pole rail"): a floor label per section and a
+     glowing bead that slides to the one you are on; click one to go there (Astra, 2026-10-27) -->
+<nav id="pole" aria-label="Section navigation">
+  <div id="bead"></div>
+  <div class="floors">
+    <a href="#top" data-f="top">TERMINAL</a>
+    <a href="#vr" data-f="vr">VR</a>
+    <a href="#discord" data-f="discord">DISCORD</a>
+    <a href="#web" data-f="web">WEB</a>
+    <a href="#pets" data-f="pets">PETOS</a>
+    <a href="#arcade" data-f="arcade">ARCADE</a>
+    <a href="#contact" data-f="contact">CONTACT</a>
+  </div>
+</nav>
+
 <main id="top">
+  <!-- what changed lately, from public GitHub activity (live, else the snapshot in updates-data.js): a slim news strip at the
+       very top (Astra, 2026-10-27: "move it at the top"), with the white rabbit hopping along just under it -->
+  <section class="ticker strip" id="tick-updates" aria-label="Live updates">
+    <span class="tick-label">live updates</span>
+    <div class="track"></div>
+  </section>
+  <div class="rabbit-lane" id="rabbit-lane"></div>
   <!-- hero: a terminal that tells the plain version, then unmasks -->
   <section class="hero dark">
     <canvas id="rain" aria-hidden="true"></canvas>
@@ -51,35 +73,8 @@
           <span class="letter-count" id="letter-count" aria-live="polite"></span>
         </figcaption>
       </figure>
-      <blockquote class="quote">
-        <p>Learn to program it, or it will program you.</p>
-        <footer>Audra J. Volk</footer>
-      </blockquote>
-    </div>
-  </section>
-
-  <!-- what changed lately, from public GitHub activity (live, else the snapshot in updates-data.js) -->
-  <section class="ticker" id="tick-updates" aria-label="Live updates">
-    <span class="tick-label">live updates:</span>
-    <div class="track"></div>
-  </section>
-
-  <section class="block light" id="about">
-    <p class="kicker">// 01 · the plain version</p>
-    <h2>About</h2>
-    <div class="about">
-      <div id="about-text"></div>
-      <div>
-        <h3>Known languages</h3>
-        <ul class="chips" id="languages"></ul>
-        <h3>Skill sets</h3>
-        <ul class="list" id="skills"></ul>
-      </div>
-      <div>
-        <h3>Work</h3>
-        <ul class="list" id="work"></ul>
-        <p class="muted" id="work-note">My work history is being written up. It goes here once I have read every word.</p>
-      </div>
+      <!-- the words are in the lettering above; only the credit is written out (Astra, 2026-10-27) -->
+      <p class="quote">Audra J. Volk</p>
     </div>
   </section>
 
@@ -89,29 +84,36 @@
     <div class="track"></div>
   </section>
 
-  <section class="block dots" id="projects">
-    <p class="kicker">// 02 · everything, live from GitHub</p>
-    <h2>Projects</h2>
-    <!-- four chapters, read top to bottom like the GitHub profile README: worlds, avatars, Astra's PetOS, everything else (Astra, 2026-10-27) -->
+  <!-- the projects, one section each, in the GitHub profile README's order (VR & VRChat, Discord, Web & More), then Astra's
+       PetOS; each its own pattern, black between them, and a floor of its own on the pole (Astra, 2026-10-27) -->
+  <section class="block light chapter" id="vr">
+    <p class="kicker">// 01 · vr &amp; vrchat</p>
+    <h2>VR &amp; VRChat</h2>
+    <p class="lede">VRChat worlds I build in Unity. Tap a photo for more pictures.</p>
     <div class="filters">
-      <nav class="contents" aria-label="Project chapters">
-        <a href="#worlds"><b>01</b> worlds</a><a href="#avatars"><b>02</b> avatars</a><a href="#pets"><b>03</b> astra's petos</a><a href="#extras"><b>04</b> everything else</a>
-      </nav>
-      <input id="search" type="search" placeholder="search worlds, avatars, pets, projects" aria-label="Search worlds, avatars, pets and projects">
+      <input id="search" type="search" placeholder="search worlds, projects, pets" aria-label="Search worlds, projects and pets">
+      <p class="muted mono" id="project-source"></p>
     </div>
-    <p class="muted mono" id="project-source"></p>
-
-    <div class="chapters">
-      <article class="chapter" id="worlds">
-        <header><span class="num">## 01</span><h3>Worlds</h3><p>VRChat worlds I build in Unity. Tap a photo for more pictures.</p></header>
         <div class="polaroids" id="world-list"></div>
-      </article>
-      <article class="chapter" id="avatars">
-        <header><span class="num">## 02</span><h3>Avatars</h3><p>Avatars, avatar effects, and the avatar classes at Mommy's.</p></header>
-        <div class="polaroids" id="avatar-list"></div>
-      </article>
-      <article class="chapter" id="pets">
-        <header><span class="num">## 03</span><h3>Astra's PetOS</h3><p>Every project of mine gets a pet: a small app with a face, its own program, and a job. Together they are <a href="https://github.com/findastra/astras-pet-os">Astra's PetOS</a>. Portfolio Puffer keeps this page. Shake the jar and a pet falls out.</p></header>
+  </section>
+  <section class="block dots chapter" id="discord">
+    <p class="kicker">// 02 · discord</p>
+    <h2>Discord</h2>
+    <p class="lede">Discord add-ons and presence cards.</p>
+        <div class="polaroids" id="discord-list"></div>
+  </section>
+  <section class="block checker chapter" id="web">
+    <p class="kicker">// 03 · web &amp; more</p>
+    <h2>Web &amp; More</h2>
+    <p class="lede">Websites and tools.</p>
+        <div class="polaroids" id="web-list"></div>
+  </section>
+  <section class="block weave chapter" id="pets">
+    <p class="kicker">// 04 · astra's petos</p>
+    <h2>Astra's PetOS</h2>
+    <p class="lede">Every project of mine gets a pet: a small app with a face, its own program, and a job. Together they are <a href="https://github.com/findastra/astras-pet-os">Astra's PetOS</a>. Portfolio Puffer keeps this page. Shake the jar and a pet falls out.</p>
+        <!-- Polaroids first (Astra, 2026-10-27): the System Map, what the pets look like, and every pet to flip through -->
+        <div class="polaroids" id="petos-list"></div>
         <!-- the pet jar, filled to the top: shake it and a pet comes out; tip it out to see all of them -->
         <div class="jar-stage" id="pet-jar">
           <div class="jar-side">
@@ -135,53 +137,48 @@
           </div>
           <div class="jar-all grid" hidden></div>
         </div>
-      </article>
-      <article class="chapter" id="extras">
-        <header><span class="num">## 04</span><h3>Everything else</h3><p>Discord add-ons, websites and tools.</p></header>
-        <div id="extra-list"></div>
-      </article>
-    </div>
   </section>
 
   <section class="block light lines" id="arcade">
-    <p class="kicker">// 03 · play</p>
+    <p class="kicker">// 05 · play</p>
     <h2>Arcade</h2>
     <div class="arcade">
-      <div class="cab">
+      <div class="cab spread">
         <h3>Hack the terminal</h3>
         <p class="muted">Pick the password. Likeness = letters in the right place. Four tries.</p>
-        <div id="hack"></div>
+        <!-- the game sits in a terminal window, like the one at the top of the page -->
+        <div class="hack-term"><span class="panel-label"><i></i><i></i><i></i>hack-the-terminal-tool-panel</span><div id="hack"></div></div>
         <button class="btn" id="hack-new">new terminal</button>
       </div>
-      <div class="cab">
+      <div class="cab spread">
         <h3>Pet memory</h3>
         <p class="muted mono" id="mem-stat"></p>
         <div class="board" id="board"></div>
-        <button class="btn" id="mem-new">new board</button>
+        <!-- easy: six pets; hard: one pet and six of its moods (Astra, 2026-10-27) -->
+        <div class="fz-row"><button class="btn" id="mem-new">new board</button><button class="btn" id="mem-hard" aria-pressed="false">hard: moods</button></div>
       </div>
-      <!-- the Fuzzboi Forge, same rules and art as findastra.github.io/fuzzboi-factory; every Fuzzboi made here moves into the cyber home -->
-      <div class="cab">
-        <h3>Fuzzboi Forge</h3>
-        <p class="muted">Type any six-digit hex code. That exact Fuzzboi appears, and moves into the cyber home.</p>
-        <form class="fz-row" id="fz-form">
-          <label class="sr-only" for="fz-code">Six-digit hex code</label>
-          <span class="fz-hash">#</span><input id="fz-code" maxlength="6" autocomplete="off" spellcheck="false" placeholder="456900" inputmode="text">
-          <button class="btn hot" type="submit">make it</button>
-          <button class="btn" type="button" id="fz-random">random</button>
-          <button class="btn" type="button" id="fz-save">save png</button>
+      <!-- the Fuzzboi Factory, same rules and art as findastra.github.io/fuzzboi-factory and the same six big code boxes; every
+           Fuzzboi made here can be sent into the Cyber Dome -->
+      <div class="cab spread">
+        <h3>Fuzzboi Factory</h3>
+        <p class="muted">Type any six-digit hex code (0–9, A–F). That exact Fuzzboi appears. Send it into the Cyber Dome below.</p>
+        <form class="fz-code" id="fz-form">
+          <span class="fz-hash">#</span>
+          <div class="fz-digits" id="fz-digits"></div>
         </form>
+        <div class="fz-row fz-buttons"><button class="btn hot" type="button" id="fz-random">roll a random fuzzboi</button><button class="btn" type="button" id="fz-send">send to the Cyber Dome</button><button class="btn" type="button" id="fz-save">save png</button></div>
         <div class="fz-out">
           <canvas id="fz-cv" width="512" height="512" aria-label="Your Fuzzboi"></canvas>
           <dl class="fz-traits" id="fz-traits"></dl>
         </div>
         <p class="muted mono" id="fz-note" aria-live="polite">Loading the Fuzzboi art…</p>
       </div>
-      <div class="cab">
-        <h3>Fuzzboi cyber home</h3>
+      <div class="cab spread">
+        <h3>Fuzzboi Cyber Dome</h3>
         <p class="muted mono" id="home-count"></p>
-        <canvas class="home" id="home" aria-label="The Fuzzboi cyber home. Tap a Fuzzboi to see its code."></canvas>
+        <canvas class="home" id="home" aria-label="The Fuzzboi Cyber Dome. Tap a Fuzzboi to see its code."></canvas>
         <p class="muted mono" id="home-pick" aria-live="polite"></p>
-        <div class="fz-row"><button class="btn" id="home-out" disabled>let them out</button><button class="btn" id="home-clear" disabled>empty the home</button></div>
+        <div class="fz-row"><button class="btn" id="home-out" disabled>let them out</button><button class="btn" id="home-clear" disabled>empty the dome</button></div>
       </div>
       <!-- the two games from Mommy's website (findastra/mommys-website) -->
       <div class="cab">
@@ -190,6 +187,20 @@
         <div class="screen"><canvas id="beatC" aria-label="Sparkle catcher"></canvas></div>
         <div class="hud mono"><span>score <b id="bScore">0</b></span><span>combo <b id="bCombo">0</b></span><span>best <b id="bBest">0</b></span></div>
         <button class="btn" id="beatBtn">start set</button>
+        <!-- the Sparkle Creator: design the sparkle, and the game above uses it (Astra, 2026-10-27) -->
+        <div class="spark-lab">
+          <h4>Sparkle creator</h4>
+          <div class="spark-row">
+            <canvas id="sparkPrev" width="192" height="192" aria-label="Your sparkle"></canvas>
+            <div class="labrow">
+              <button class="lab-b" data-spark="points">Points<small id="sp-points">—</small></button>
+              <button class="lab-b" data-spark="sharp">Shape<small id="sp-sharp">—</small></button>
+              <button class="lab-b" data-spark="color">Color<small id="sp-color">—</small></button>
+              <button class="lab-b" data-spark="spin">Spin<small id="sp-spin">—</small></button>
+            </div>
+          </div>
+          <button class="btn hot" id="sparkRand">randomize</button>
+        </div>
       </div>
       <div class="cab">
         <h3>Avatar lab</h3>
@@ -203,7 +214,7 @@
           <button class="lab-b" data-avatar-part="body">Accessory 2 · Body<small id="lb-body">—</small></button>
           <button class="lab-b" data-avatar-part="fit">Outfit<small id="lb-fit">—</small></button>
           <button class="lab-b" data-avatar-part="fx">Sparkles<small id="lb-fx">—</small></button>
-          <button class="lab-b" id="labLashes" data-avatar-part="lashes" aria-pressed="true">Lashes<small id="lb-lashes">On</small></button>
+          <button class="lab-b" id="labLashes" data-avatar-part="lashes" aria-pressed="true">Lashes<small id="lb-lashes">Three flicks</small></button>
         </div>
         <p class="muted mono">Click a part to shuffle its look and colors.</p>
         <p id="labPalette" class="muted mono" aria-live="polite"></p>
@@ -214,7 +225,7 @@
   </section>
 
   <section class="block mid" id="contact">
-    <p class="kicker">// 04 · contact</p>
+    <p class="kicker">// 06 · contact</p>
     <h2>Contact</h2>
     <div class="contacts">
       <article class="contact">
@@ -238,9 +249,14 @@
     </div>
   </section>
 
-  <footer class="foot dark">
-    <p class="links" id="links"></p>
-    <p class="muted">Made by Astra · built with Claude Code (Claude Opus 5.5), 2026-10-17 and 2026-10-18 · pictures found by GitHub Goldfish's project-image-generator (its repo is private)</p>
+  <!-- the unified footer, the same as on every pet program page (hub apps/pet-programs, Astra 2026-10-20): By Astra, ✦, the
+       photostar, ✦, Find Out More and the links (Astra, 2026-10-27) -->
+  <footer class="foot dark astra-footer" aria-label="By Astra and her links">
+  <div class="footer-line">
+  <div class="footer-group footer-by"><span class="footer-title">By Astra</span></div>
+  <span class="footer-sparkle" aria-hidden="true">✦</span><a class="footer-star" target="_blank" rel="noopener" href="https://findastra.github.io/astras-star-window/" title="Astra's photostar" aria-label="Astra's photostar"><img src="https://findastra.github.io/astras-star-window/star-window.svg" alt="" width="48" height="48" loading="lazy"></a>
+  <div class="footer-group footer-more"><span class="footer-title">Find Out More</span><span class="footer-icons"><a target="_blank" rel="noopener" href="https://github.com/findastra" title="GitHub: Astra" aria-label="GitHub: Astra"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 .8a11.2 11.2 0 0 0-3.54 21.83c.56.1.77-.24.77-.54v-2.09c-3.14.68-3.8-1.33-3.8-1.33-.51-1.3-1.25-1.65-1.25-1.65-1.02-.7.08-.68.08-.68 1.13.08 1.73 1.16 1.73 1.16 1 1.73 2.63 1.23 3.27.94.1-.73.4-1.23.71-1.51-2.51-.29-5.15-1.26-5.15-5.58 0-1.23.44-2.24 1.16-3.03-.12-.29-.5-1.43.11-2.98 0 0 .95-.3 3.08 1.16A10.7 10.7 0 0 1 12 6.12c.95 0 1.9.13 2.8.38 2.14-1.46 3.08-1.16 3.08-1.16.61 1.55.23 2.69.11 2.98.72.79 1.16 1.8 1.16 3.03 0 4.33-2.65 5.29-5.17 5.57.41.35.77 1.03.77 2.08v3.09c0 .3.2.65.78.54A11.2 11.2 0 0 0 12 .8Z"/></svg></a><a target="_blank" rel="noopener" href="https://discord.gg/YJUHtGGrJe" title="Mommy’s Discord: Join MMY" aria-label="Mommy’s Discord: Join MMY"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20.3 4.4A19.6 19.6 0 0 0 15.4 3l-.6 1.3a18.2 18.2 0 0 0-5.6 0L8.6 3a19.6 19.6 0 0 0-4.9 1.5C.6 9.1-.3 13.6.1 18a19.8 19.8 0 0 0 6 3l1.3-2.1c-.7-.3-1.4-.6-2-1l.5-.4a14.1 14.1 0 0 0 12.2 0l.5.4c-.6.4-1.3.7-2 1L18 21a19.8 19.8 0 0 0 6-3c.5-5.1-.8-9.6-3.7-13.6ZM8 15.3c-1.2 0-2.2-1.1-2.2-2.4S6.8 10.5 8 10.5s2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Zm8 0c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Z"/></svg></a><a target="_blank" rel="noopener" href="https://www.tiktok.com/@findastra" title="VR TikTok: @findastra" aria-label="VR TikTok: @findastra"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M16 2c.4 2.7 1.9 4.3 4.5 4.5v3.4a9 9 0 0 1-4.5-1.4v7.4a6.3 6.3 0 1 1-5.5-6.3v3.5a2.9 2.9 0 1 0 2 2.8V2Z"/></svg></a><a target="_blank" rel="noopener" href="https://www.tiktok.com/@astra_on_fire" title="Pole Dance TikTok: @astra_on_fire" aria-label="Pole Dance TikTok: @astra_on_fire"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M16 2c.4 2.7 1.9 4.3 4.5 4.5v3.4a9 9 0 0 1-4.5-1.4v7.4a6.3 6.3 0 1 1-5.5-6.3v3.5a2.9 2.9 0 1 0 2 2.8V2Z"/></svg></a><a target="_blank" rel="noopener" href="https://www.instagram.com/astra_on_fire" title="VRChat Instagram: @astra_on_fire" aria-label="VRChat Instagram: @astra_on_fire"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2.2c3.2 0 3.6 0 4.8.1 3.3.1 4.8 1.7 4.9 4.9.1 1.3.1 1.6.1 4.8s0 3.6-.1 4.8c-.1 3.2-1.7 4.8-4.9 4.9-1.3.1-1.6.1-4.8.1s-3.6 0-4.8-.1c-3.3-.1-4.8-1.7-4.9-4.9C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.8C2.4 3.9 3.9 2.4 7.2 2.3c1.2-.1 1.6-.1 4.8-.1ZM12 6.9a5.1 5.1 0 1 0 0 10.2 5.1 5.1 0 0 0 0-10.2Zm0 8.4a3.3 3.3 0 1 1 0-6.6 3.3 3.3 0 0 1 0 6.6Zm5.3-9.8a1.2 1.2 0 1 0 0 2.4 1.2 1.2 0 0 0 0-2.4Z"/></svg></a></span></div>
+  </div>
   </footer>
 </main>
 
@@ -257,8 +273,8 @@
 <script src="project-images.js?v=20261020a"></script>
 <script src="updates-data.js?v=20261018c"></script>
 <script src="lettering-data.js?v=20261019a"></script>
-<script src="lettering.js?v=20261019a"></script>
-<script src="cyber.js?v=20261027c"></script>
-<script src="games-20261027.js?v=20261027a"></script>
+<script src="lettering.js?v=20261027a"></script>
+<script src="cyber.js?v=20261027t"></script>
+<script src="games-20261027.js?v=20261027d"></script>
 </body>
 </html>
