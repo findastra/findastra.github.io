@@ -232,10 +232,11 @@
 
   // ---------- Polaroids: the picture on top, what it is written in marker on the white border below ----------
   // With no picture yet, the photo is still developing: a dark square glowing in the Polaroid's own color.
-  function polaroid({ key, name, kind, text, pics, href, meta }) {
+  function polaroid({ key, name, kind, text, pics, href, meta, shot }) {
     const c = el('article', 'polaroid'); const h = paint(c, key);
-    const photo = el(pics.length ? 'button' : 'div', 'photo');
-    if (pics.length) {
+    const photo = el(pics.length && !shot ? 'button' : 'div', 'photo');
+    if (shot) photo.append(shot);
+    else if (pics.length) {
       photo.setAttribute('aria-label', 'open pictures of ' + name);
       const im = el('img'); im.src = pics[0].src; im.alt = ''; im.loading = 'lazy'; photo.append(im);
       if (pics.length > 1) photo.append(el('span', 'count', pics.length + ' pictures'));
@@ -255,10 +256,28 @@
     const pics = worldPics(w);
     return polaroid({ key: w.repo, name: w.name, kind: w.kind, text: w.text, pics, meta: [repoLink(w.repo)] });
   };
+  // Moodglass's picture: what it does, drawn live (Astra, 2026-10-27): a mosaic of Liminal Doors' floors (the world's concept
+  // art, findastra/liminal-doors) as the background, with a plain Discord window over it and Moodglass's ✎ + ⏻ buttons
+  const LD = 'https://raw.githubusercontent.com/findastra/liminal-doors/main/concept-art/floors/';
+  const moodglassShot = () => {
+    const box = el('div', 'mg-shot'), mosaic = el('div', 'mg-mosaic');
+    for (const f of ['03-axolotl-pool-after-closing-20261015.png', '04-raccoon-last-laundrette-20261015.png', '06-crane-platform-between-trains-20261015.png', '18-snow-leopard-snow-in-the-lobby-20261015.png']) {
+      const im = el('img'); im.src = LD + f; im.alt = ''; im.loading = 'lazy'; mosaic.append(im);
+    }
+    const app = el('div', 'mg-discord'); app.setAttribute('aria-hidden', 'true');
+    const servers = el('div', 'mg-servers'); for (let i = 0; i < 4; i++) servers.append(el('i'));
+    const chans = el('div', 'mg-channels'); chans.append(el('b', null, '# liminal-doors'), el('span', null, '# general'), el('span', null, '# photos'));
+    const chat = el('div', 'mg-chat');
+    for (const w of [70, 48, 82, 56]) { const m = el('p', 'mg-msg'), line = el('span'); line.style.width = w + '%'; m.append(el('i'), line); chat.append(m); }
+    chat.append(el('div', 'mg-input'));
+    app.append(servers, chans, chat, el('div', 'mg-bar', '✎  +  ⏻'));
+    box.append(mosaic, app); box.setAttribute('role', 'img'); box.setAttribute('aria-label', 'Moodglass: a Discord window over a mosaic of Liminal Doors pictures');
+    return box;
+  };
   // Discord and Web & More: the repo name, written out with spaces, and its language
   const extraCard = (r) => {
     const repoUrl = 'https://github.com/findastra/' + r.name;
-    return polaroid({ key: r.name, name: r.name.replace(/-/g, ' '), kind: r.language || 'project', text: cleanText(r.description || 'No description yet.'), pics: picturesOf(r.name), href: r.homepage || repoUrl,
+    return polaroid({ key: r.name, shot: r.name === 'moodglass' ? moodglassShot() : null, name: r.name.replace(/-/g, ' '), kind: r.language || 'project', text: cleanText(r.description || 'No description yet.'), pics: picturesOf(r.name), href: r.homepage || repoUrl,
       meta: [link(repoUrl, null, 'repo ↗'), r.homepage ? link(r.homepage, null, 'site ↗') : null, el('span', null, when(r.pushed_at))] });
   };
 

@@ -63,3 +63,6 @@ Fuzzboi Forge, cyber home, sparkle catcher and Avatar Lab by a Claude Opus 5.5 s
 back with the hub's hosted icons, made the other chapters Polaroids, and turned the code rain rainbow, 2026-10-27.
 The find:astra logo, the credit-only quote, the random first lettering, the smaller terminal, the rainbow portrait sparkles,
 the blank About, the README's project groups and the unified footer by a Claude Opus 5.5 session, 2026-10-27.
+The white rabbit on the live updates bar (Gone Ghost's sprite; catching it changes the rain's colors), the pole from Mommy's
+website, the Moodglass picture (a Discord window over Liminal Doors' floors), the Fuzzboi Factory boxes, the Hack terminal window,
+the pet memory moods board and the Avatar Lab fixes by a Claude Opus 5.5 session, 2026-10-27.
