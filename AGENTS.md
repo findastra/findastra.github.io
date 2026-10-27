@@ -25,11 +25,12 @@ Astra's portfolio, served at <https://findastra.github.io>. **Portfolio Puffer**
 | `index.html`, `cyber.css`, `cyber.js` | The site (cyber design, picked by Astra 2026-10-17; restyled the same day at her request: black, white and grays everywhere, and the project windows are the only color, cut as fat stars; darker grays 2026-10-18). |
 | `profile-data.js` | The plain version: about, languages, skills, positions. Astra approves every change. |
 | `site-data.js` | Repo snapshot, used when the GitHub API does not answer. |
-| `pets-data.js` | Every pet, generated from `pet-programs.json` on astras-pet-os `main`. Regenerate; never hand-edit. |
+| `pets-data.js` | Every pet, generated from `pet-programs.json` on astras-pet-os `main`, with `icon` = its picture's path under the hub's `art/latest/`. Only the snapshot: `cyber.js` reads `pet-programs.json` and `art/latest/index.json` live from the hub, so new pets and new icons show without a change here. Regenerate; never hand-edit. |
+| Pet pictures and icons | **Not here.** They live only in the hub and load from `https://raw.githubusercontent.com/findastra/astras-pet-os/main/art/latest/` (icons `icons/<repo>.png`, pets `frames/<pet>/idle.png`), the address that never changes (Astra, 2026-10-24). Never copy one in: the hub's checker lists every copy. |
 | `project-images.js`, `art/projects/` | Pictures and site screenshots from GitHub Goldfish's `project-image-generator` (Puffer uses it by grant). Regenerate with `node scripts/project-image-generator-20261017.mjs findastra --out <this repo>\art\projects --js <this repo>\project-images.js --screenshots` in github-goldfish. Private repos (most since 2026-10-20): add `--include-private --update <this repo>\project-images.js --only <repo>`, which copies their pictures into `art/projects/`; a private pet's card shows them with no repo link. |
 | `art/worlds/` | Astra's own world renders. No other people in pictures without their OK. |
 | `updates-data.js`, `scripts/build-updates-20261018.mjs` | The two tickers ("live updates:"; working on). Live from GitHub search (merged PRs and commits by findastra); the snapshot when GitHub does not answer. Regenerate the snapshot with `node scripts/build-updates-20261018.mjs`. |
-| Projects (in `index.html`, `cyber.js`) | Four chapters read top to bottom like the GitHub profile README (Astra, 2026-10-27, replacing the star jars): **Worlds** (ringed planets; `WORLDS`, in the README's order and words), **Avatars** (arched mirrors; `AVATARS`, a starting list for Astra to check), **Astra's PetOS** (a small star for every pet in `pets-data.js`; pick one and its full star window opens above them) and **Everything else** (clouds, grouped like the README: Discord, Web & more). Every cloud, planet, mirror and star has sparkles in hues near its own color. |
+| Projects (in `index.html`, `cyber.js`) | Four chapters read top to bottom like the GitHub profile README (Astra, 2026-10-27): **Worlds** (`WORLDS`, in the README's order and words), **Avatars** (`AVATARS`, a starting list for Astra to check) and **Everything else** (grouped like the README: Discord, Web & more) are Polaroids, with the name and kind written in marker (Permanent Marker) on the white border and a strip of neon tape; one with no picture yet shows "still developing…". **Astra's PetOS** is the star jar (back by Astra's choice, 2026-10-27): a small star per pet holding its hosted icon (`iconOf`: the hub's `icons/<repo>.png`, else `frames/<pet>/idle.png`, else `desktop-art/<pet>/idle.png`); shake it and one pet's full star window falls out, tip it out to see all. |
 | `games-20261027.js` | The arcade's newer games (Astra, 2026-10-27): the Fuzzboi Forge (rules from `findastra.github.io/fuzzboi-factory/site/fuzzboi.js`, art from the hub's `desktop-art/fuzzboi-friend/layers/`), the Fuzzboi cyber home every made Fuzzboi moves into (up to 30, kept in the visitor's browser), and the sparkle catcher and Avatar Lab copied from `findastra/mommys-website`. |
 | `lettering-data.js`, `lettering.js`, `art/lettering/` | Astra's hand lettering slider in the hero (swipe, arrows, dots, arrow keys). Export the data file and pictures from Puffer's Handwritten Message Manager; never hand-draw or AI-draw lettering. |
 | `drafts/`, `parchment.html` | Earlier design drafts, kept for comparison. |
@@ -37,13 +38,13 @@ Astra's portfolio, served at <https://findastra.github.io>. **Portfolio Puffer**
 ## Rules
 - Static, no build, no dependencies besides Google Fonts. Pages serves `main` as is (`.nojekyll`).
 - Only the projects section and the hero portrait carry color (Astra, 2026-10-17 and 2026-10-18). The portrait's own colors
-  twinkle on it, and the planets, mirrors and stars twinkle in theirs, with the same sparkle. Everything else, new
+  twinkle on it, and the Polaroids and stars twinkle in theirs, with the same sparkle. The hero's code rain falls in rainbow colors (2026-10-27). Everything else, new
   sections included, stays black and gray; pet pictures outside the projects are shown in grayscale. The arcade games
   are the one exception inside a gray section: their art (Fuzzbois, sparkles, Avatar Lab looks) keeps its own colors in
   gray cabinets (2026-10-27).
 - Every stylesheet and script link in `index.html` carries `?v=<date + letter>`. Change it whenever those files change,
   so a browser holding a cached old `cyber.js` does not run it against the new page (Pages caches for 10 minutes). The star
-  and cloud shapes are `#star` and `#cloud` in `index.html`; the window layouts in `cyber.css` are placed inside them by
+  shape is `#star` in `index.html`; the window layouts in `cyber.css` are placed inside them by
   percentages, so change both together.
 - Fetched text goes into the page with `textContent`, never `innerHTML`.
 - Every project on GitHub appears (Astra, 2026-10-17); repos with no pictures yet show their pet or a placeholder and are
@@ -57,4 +58,5 @@ Claude Opus 5.5 session the same day. Grayscale and star-window restyle by a thi
 pets jars, ringed planets, sparkles) by a Claude Opus 5.5 session, 2026-10-18. Hand lettering slider by a Claude Opus 5.5 session, 2026-10-19.
 Private pictures and the saved repo list by a Claude Opus 5.5 session, 2026-10-20, after Astra made most repos private.
 Smaller hand lettering, the terminal as tall as the right column, the four project chapters in place of the jars, and the
-Fuzzboi Forge, cyber home, sparkle catcher and Avatar Lab by a Claude Opus 5.5 session, 2026-10-27.
+Fuzzboi Forge, cyber home, sparkle catcher and Avatar Lab by a Claude Opus 5.5 session, 2026-10-27. The same session put the pet jar
+back with the hub's hosted icons, made the other chapters Polaroids, and turned the code rain rainbow, 2026-10-27.

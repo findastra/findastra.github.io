@@ -5,18 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>findastra</title>
 <meta name="description" content="Audra, a.k.a. Astra: worlds, projects, pets, and how to reach me.">
-<link rel="icon" href="art/pets/portfolio-puffer.png">
+<link rel="icon" href="https://raw.githubusercontent.com/findastra/astras-pet-os/main/art/latest/frames/portfolio-puffer/idle.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&family=JetBrains+Mono:wght@400;700&family=VT323&display=swap">
-<link rel="stylesheet" href="cyber.css?v=20261027a">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&family=JetBrains+Mono:wght@400;700&family=VT323&family=Permanent+Marker&display=swap">
+<link rel="stylesheet" href="cyber.css?v=20261027b">
 </head>
 <body>
 <!-- the fat star every pet window is cut from (R 100, r 70; rounded by the stroke in cyber.css) -->
 <svg class="defs" aria-hidden="true" focusable="false"><defs>
   <path id="star" stroke-linejoin="round" d="M0-100L41.1-56.6L95.1-30.9L66.6 21.6L58.8 80.9L0 70L-58.8 80.9L-66.6 21.6L-95.1-30.9L-41.1-56.6Z"/>
-  <!-- the puffy cloud the other projects float in (viewBox 0 0 240 160) -->
-  <path id="cloud" stroke-linejoin="round" d="M52 146C24 146 10 128 16 108C2 98 4 70 30 66C28 38 58 22 84 34C96 10 140 6 158 32C184 18 220 34 216 66C238 74 240 112 220 124C224 140 206 150 188 146Z"/>
 </defs></svg>
 
 <header class="top">
@@ -105,18 +103,38 @@
 
     <div class="chapters">
       <article class="chapter" id="worlds">
-        <header><span class="num">## 01</span><h3>Worlds</h3><p>VRChat worlds I build in Unity. Tap a planet for its pictures.</p></header>
-        <div class="planets" id="world-list"></div>
+        <header><span class="num">## 01</span><h3>Worlds</h3><p>VRChat worlds I build in Unity. Tap a photo for more pictures.</p></header>
+        <div class="polaroids" id="world-list"></div>
       </article>
       <article class="chapter" id="avatars">
         <header><span class="num">## 02</span><h3>Avatars</h3><p>Avatars, avatar effects, and the avatar classes at Mommy's.</p></header>
-        <div class="mirrors" id="avatar-list"></div>
+        <div class="polaroids" id="avatar-list"></div>
       </article>
       <article class="chapter" id="pets">
-        <header><span class="num">## 03</span><h3>Astra's PetOS</h3><p>Every project of mine gets a pet: a small app with a face, its own program, and a job. Together they are <a href="https://github.com/findastra/astras-pet-os">Astra's PetOS</a>. Portfolio Puffer keeps this page. Pick a pet to open its window.</p></header>
-        <div class="pet-pick" id="pet-pick" aria-live="polite"><p class="pick-hint">Pick a pet.</p></div>
-        <div class="pet-list" id="pet-list"></div>
-        <button class="btn" id="pets-more" aria-expanded="false"></button>
+        <header><span class="num">## 03</span><h3>Astra's PetOS</h3><p>Every project of mine gets a pet: a small app with a face, its own program, and a job. Together they are <a href="https://github.com/findastra/astras-pet-os">Astra's PetOS</a>. Portfolio Puffer keeps this page. Shake the jar and a pet falls out.</p></header>
+        <!-- the pet jar, filled to the top: shake it and a pet comes out; tip it out to see all of them -->
+        <div class="jar-stage" id="pet-jar">
+          <div class="jar-side">
+            <button class="jar" aria-label="Shake the pets jar. One pet comes out.">
+              <svg class="jar-glass" viewBox="0 0 300 380" aria-hidden="true">
+                <rect class="jar-lid" x="66" y="6" width="168" height="40" rx="8"/>
+                <path class="jar-lid-lines" d="M80 16H220M80 26H220M80 36H220"/>
+                <path class="jar-body" d="M92 46h116v22c0 10 8 16 22 22 26 11 40 30 40 58v186c0 22-14 36-36 36H66c-22 0-36-14-36-36V148c0-28 14-47 40-58 14-6 22-12 22-22z"/>
+              </svg>
+              <span class="jar-stars"></span>
+              <svg class="jar-shine" viewBox="0 0 300 380" aria-hidden="true">
+                <path d="M58 160c-4 40-4 120 2 170" /><path d="M74 140c-2 8-3 16-3 24" />
+              </svg>
+              <span class="jar-label">pets</span>
+            </button>
+            <p class="mono jar-count"></p>
+            <div class="jar-buttons"><button class="btn hot shake">shake the jar</button><button class="btn pour" aria-expanded="false"></button></div>
+          </div>
+          <div class="jar-out" aria-live="polite">
+            <p class="jar-hint">Shake the jar.<br>One pet falls out.</p>
+          </div>
+          <div class="jar-all grid" hidden></div>
+        </div>
       </article>
       <article class="chapter" id="extras">
         <header><span class="num">## 04</span><h3>Everything else</h3><p>Discord add-ons, websites and tools.</p></header>
@@ -235,12 +253,12 @@
 
 <script src="profile-data.js?v=20261018c"></script>
 <script src="site-data.js?v=20261020a"></script>
-<script src="pets-data.js?v=20261018c"></script>
+<script src="pets-data.js?v=20261027a"></script>
 <script src="project-images.js?v=20261020a"></script>
 <script src="updates-data.js?v=20261018c"></script>
 <script src="lettering-data.js?v=20261019a"></script>
 <script src="lettering.js?v=20261019a"></script>
-<script src="cyber.js?v=20261027a"></script>
+<script src="cyber.js?v=20261027b"></script>
 <script src="games-20261027.js?v=20261027a"></script>
 </body>
 </html>
