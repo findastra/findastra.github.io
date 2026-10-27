@@ -42,7 +42,8 @@
     if (!m) return [];
     const list = [];
     const committed = m.images || [];
-    for (const i of committed) list.push({ src: i.url, cap: repo + ' · ' + i.path });
+    // still pictures before GIFs: the GIFs are small animations and look blurry blown up (Astra, 2026-10-27)
+    for (const i of [...committed].sort((x, y) => /\.gif$/i.test(x.path) - /\.gif$/i.test(y.path))) list.push({ src: i.url, cap: repo + ' · ' + i.path });
     if (m.screenshot) list.push({ src: 'art/projects/' + m.screenshot, cap: repo + ' · live site' });
     if (!committed.some((i) => /(^|\/)docs\/images\//.test(i.path))) {
       for (const pg of m.pages || []) {
@@ -179,15 +180,21 @@
   // Web & More, all as Polaroids with their names written on the white border, then Astra's PetOS as the star jar ----------
   // VR & VRChat: her six worlds, in the profile README's words (findastra/findastra README). DETOUR into VR is in the
   // README's VR group but is not a world, so it is left out here (Astra: "there should be only like 6 worlds").
+  const LD = 'https://raw.githubusercontent.com/findastra/liminal-doors/main/concept-art/floors/';
+  const RM = 'https://raw.githubusercontent.com/findastra/the-rainbow-maker/main/Art/rainbow-maker/';
   const WORLDS = [
     { name: "Astra's Infinite Pole", kind: 'VRChat world · PC VR / desktop', text: 'An infinite pole, a spiral staircase, phone booths that can talk to each other no matter how far down you fall, and tons of glitter too.', repo: 'astras-infinite-pole',
       local: [{ src: 'art/worlds/infinite-pole-spawn.jpg', cap: "Astra's Infinite Pole · the spawn" }] },
     { name: 'Piranesi House', kind: 'VRChat world · PC VR / desktop', text: "Inspired by Susanna Clarke's Piranesi: an endless labyrinth of marble statues on an island, with a tide that rises and falls, a colossus you can sit in, and a very special developers' easter egg.", repo: 'piranesi-house', local: [] },
-    { name: 'Liminal Doors', kind: 'VRChat world · PC VR / desktop', text: 'Doors that open onto quiet in-between places: an empty pool after closing, a laundrette with a sky turning in one washer, a platform between trains. Every door hides a unique crystal animal.', repo: 'liminal-doors', local: [] },
+    // the pictures each world has so far (Astra, 2026-10-27); proper captures from the worlds come later
+    { name: 'Liminal Doors', kind: 'VRChat world · PC VR / desktop', text: 'Doors that open onto quiet in-between places: an empty pool after closing, a laundrette with a sky turning in one washer, a platform between trains. Every door hides a unique crystal animal.', repo: 'liminal-doors', local: ['03-axolotl-pool-after-closing', '04-raccoon-last-laundrette', '06-crane-platform-between-trains', '18-snow-leopard-snow-in-the-lobby', '30-swan-door-at-sunrise']
+      .map((f) => ({ src: LD + f + '-20261015.png', cap: 'Liminal Doors · ' + f.replace(/^d+-/, '').replace(/-/g, ' ') })) },
     { name: "Mommy's World", kind: 'VRChat world · PC VR / desktop', text: "The VRChat home of Mommy's Rave House, Dance & Avatar Academy.", repo: 'mommys-world',
       local: [{ src: 'art/worlds/phone-booth.jpg', cap: 'A pink phone booth above the clouds' }], extra: ['mommys', 'role-fairy'] },
-    { name: 'The Rainbow Maker', kind: 'VRChat world · PC VR / desktop', text: 'The mechanics of the Kikkerland Rainbow Maker: watch its tiny gear train turn and spin a crystal that refracts rainbows across the room.', repo: 'the-rainbow-maker', local: [] },
-    { name: 'The Cooling Tower', kind: 'VRChat world · PC VR / desktop', text: "A rave world inside a nuclear plant's cooling tower: break into the facility and power it up with music. The Stack, the Turbine Hall, then the Reactor Hall.", repo: 'the-cooling-tower', local: [] },
+    { name: 'The Rainbow Maker', kind: 'VRChat world · PC VR / desktop', text: 'The mechanics of the Kikkerland Rainbow Maker: watch its tiny gear train turn and spin a crystal that refracts rainbows across the room.', repo: 'the-rainbow-maker', local: [
+      { src: RM + 'rainbow-maker-preview-20261022.mp4', cap: 'The Rainbow Maker · turning', type: 'video' },
+      { src: RM + 'rainbow-maker-still-20261022.png', cap: 'The Rainbow Maker' }, { src: RM + 'rainbow-maker-crystals-cycles-20261023.png', cap: 'The Rainbow Maker · the crystals' }] },
+    { name: 'The Cooling Tower', kind: 'VRChat world · PC VR / desktop', text: "A rave world inside a nuclear plant's cooling tower: break into the facility and power it up with music. The Stack, the Turbine Hall, then the Reactor Hall.", repo: 'the-cooling-tower', local: [{ src: 'https://findastra.github.io/the-cooling-tower/mini-model/the-cooling-tower-mini-model-20261024.html', cap: 'The Cooling Tower · Mini Model', type: 'frame' }] },
   ];
   // vrchat-ai-astra was renamed the-astral-plane (2026-10-18); the pet list may still use the old name
   const RENAMED = { 'vrchat-ai-astra': 'the-astral-plane' };
@@ -234,20 +241,36 @@
   // repo's own GitHub description.
   function polaroid({ key, name, kind, date, text, pics, repo, site, shot }) {
     const c = el('article', 'polaroid'); const h = paint(c, key);
-    const photo = el(pics.length && !shot ? 'button' : 'div', 'photo');
+    const photo = el(pics.length && !shot && !pics.some((p) => p.type === 'frame') ? 'button' : 'div', 'photo');
     if (shot) photo.append(shot);
-    else if (pics.length) {
+    else if (!pics.length) photo.append(el('span', 'developing', 'still developing…'));
+    let flip = null;
+    if (!shot && pics.length) {
+      let at = 0;
+      // each picture can also be a video (plays by itself, muted, on a loop) or a live page you can move around in
+      const media = (p) => {
+        if (p.type === 'video') { const v = el('video'); Object.assign(v, { src: p.src, muted: true, loop: true, autoplay: !reduced, playsInline: true, preload: 'metadata' }); return v; }
+        // a live page starts once the Polaroid scrolls near (the browser's own lazy loading never starts it inside the scaled frame)
+        if (p.type === 'frame') { const f = el('iframe', 'live'); f.title = p.cap; new IntersectionObserver((seen, io) => { if (seen.some((s) => s.isIntersecting)) { f.src = p.src; io.disconnect(); } }, { rootMargin: '400px' }).observe(photo); return f; }
+        const im = el('img'); im.src = p.src; im.alt = ''; im.loading = 'lazy'; return im;
+      };
+      let shown = media(pics[0]); photo.append(shown);
+      const still = () => !pics[at].type;
       photo.setAttribute('aria-label', 'open pictures of ' + name);
-      const im = el('img'); im.src = pics[0].src; im.alt = ''; im.loading = 'lazy'; photo.append(im);
-      if (pics.length > 1) photo.append(el('span', 'count', pics.length + ' pictures'));
-      photo.onclick = () => openGallery(pics);
-    } else photo.append(el('span', 'developing', 'still developing…'));
+      photo.onclick = (e) => { if (still()) openGallery(pics.filter((p) => !p.type), pics.filter((p) => !p.type).indexOf(pics[at])); };
+      // more than one picture: two small arrows in the white border's bottom corners flip through them (Astra, 2026-10-27)
+      if (pics.length > 1) {
+        const count = el('span', 'count', `1 / ${pics.length}`); photo.append(count);
+        const go = (d) => { at = (at + d + pics.length) % pics.length; const next = media(pics[at]); shown.replaceWith(next); shown = next; count.textContent = `${at + 1} / ${pics.length}`; };
+        flip = ['‹', '›'].map((t, i) => { const b = el('button', 'flip ' + (i ? 'next' : 'prev'), t); b.type = 'button'; b.setAttribute('aria-label', (i ? 'next' : 'previous') + ' picture of ' + name); b.onclick = () => go(i ? 1 : -1); return b; });
+      }
+    }
     const title = repo || site ? link(repo || site, 'title', name) : el('b', 'title', name);
     const note = el('div', 'note'), tags = el('div', 'tags');
     if (repo) tags.append(link(repo, null, 'repo ↗'));
     if (site) tags.append(link(site, null, 'site ↗'));
     note.append(title, el('span', 'kind', [kind, date].filter(Boolean).join(' · ')), tags);
-    const frame = el('div', 'frame'); frame.append(el('i', 'tape'), photo, note);
+    const frame = el('div', 'frame'); frame.append(el('i', 'tape'), photo, note, ...(flip || []));
     const info = el('div', 'info');
     if (text) { const p = el('p', null, text); p.title = text; info.append(p); }
     c.append(sparkles(h, 5), frame, info); return c;
@@ -259,22 +282,17 @@
     return polaroid({ key: w.repo, name: w.name, kind: w.kind.replace(' · PC VR / desktop', ''), date: r ? when(r.pushed_at) : '', text: cleanText((r && r.description) || w.text), pics: worldPics(w),
       repo: r ? 'https://github.com/findastra/' + w.repo : null, site: r && r.homepage });
   };
-  // Moodglass's picture: what it does, drawn live (Astra, 2026-10-27): a mosaic of Liminal Doors' floors (the world's concept
-  // art, findastra/liminal-doors) as the background, with a plain Discord window over it and Moodglass's ✎ + ⏻ buttons
-  const LD = 'https://raw.githubusercontent.com/findastra/liminal-doors/main/concept-art/floors/';
+  // Moodglass's picture (Astra, 2026-10-27): a plain collage of Liminal Doors' floors (the world's public concept art,
+  // findastra/liminal-doors), the way Moodglass lays photos behind a chat, with the Discord logo over it
+  const DISCORD_MARK = 'M20.3 4.4A19.6 19.6 0 0 0 15.4 3l-.6 1.3a18.2 18.2 0 0 0-5.6 0L8.6 3a19.6 19.6 0 0 0-4.9 1.5C.6 9.1-.3 13.6.1 18a19.8 19.8 0 0 0 6 3l1.3-2.1c-.7-.3-1.4-.6-2-1l.5-.4a14.1 14.1 0 0 0 12.2 0l.5.4c-.6.4-1.3.7-2 1L18 21a19.8 19.8 0 0 0 6-3c.5-5.1-.8-9.6-3.7-13.6ZM8 15.3c-1.2 0-2.2-1.1-2.2-2.4S6.8 10.5 8 10.5s2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Zm8 0c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Z';
   const moodglassShot = () => {
     const box = el('div', 'mg-shot'), mosaic = el('div', 'mg-mosaic');
-    for (const f of ['03-axolotl-pool-after-closing-20261015.png', '04-raccoon-last-laundrette-20261015.png', '06-crane-platform-between-trains-20261015.png', '18-snow-leopard-snow-in-the-lobby-20261015.png']) {
+    for (const f of ['03-axolotl-pool-after-closing-20261015.png', '04-raccoon-last-laundrette-20261015.png', '06-crane-platform-between-trains-20261015.png',
+      '18-snow-leopard-snow-in-the-lobby-20261015.png', '27-jellyfish-room-of-curtains-20261015.png', '30-swan-door-at-sunrise-20261015.png']) {
       const im = el('img'); im.src = LD + f; im.alt = ''; im.loading = 'lazy'; mosaic.append(im);
     }
-    const app = el('div', 'mg-discord'); app.setAttribute('aria-hidden', 'true');
-    const servers = el('div', 'mg-servers'); for (let i = 0; i < 4; i++) servers.append(el('i'));
-    const chans = el('div', 'mg-channels'); chans.append(el('b', null, '# liminal-doors'), el('span', null, '# general'), el('span', null, '# photos'));
-    const chat = el('div', 'mg-chat');
-    for (const w of [70, 48, 82, 56]) { const m = el('p', 'mg-msg'), line = el('span'); line.style.width = w + '%'; m.append(el('i'), line); chat.append(m); }
-    chat.append(el('div', 'mg-input'));
-    app.append(servers, chans, chat, el('div', 'mg-bar', '✎  +  ⏻'));
-    box.append(mosaic, app); box.setAttribute('role', 'img'); box.setAttribute('aria-label', 'Moodglass: a Discord window over a mosaic of Liminal Doors pictures');
+    const logo = el('span', 'mg-logo'), svg = svgEl('svg', { viewBox: '0 0 24 24', 'aria-hidden': 'true' }); svg.append(svgEl('path', { d: DISCORD_MARK })); logo.append(svg);
+    box.append(mosaic, logo); box.setAttribute('role', 'img'); box.setAttribute('aria-label', 'Moodglass: a collage of Liminal Doors pictures with the Discord logo');
     return box;
   };
   // Discord and Web & More: the repo name, written out with spaces, and its language
