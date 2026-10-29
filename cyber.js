@@ -240,7 +240,7 @@
         { src: 'art/worlds/infinite-pole-spawn.jpg', cap: "Astra's Infinite Pole · the spawn" }] },
     { name: 'Piranesi House', kind: 'VRChat world · PC VR / desktop', text: "Inspired by Susanna Clarke's Piranesi: an endless labyrinth of marble statues on an island, with a tide that rises and falls, a colossus you can sit in, and a very special developers' easter egg.", repo: 'piranesi-house',
       // its labyrinth key, the Cross of the Four Winds map from Piranesi Nessi's key page (Astra, 2026-10-29)
-      local: [{ src: 'art/worlds/piranesi-house-labyrinth-key-20261029.png', cap: 'Piranesi House · the Cross of the Four Winds', fit: 'contain', bg: '#142225', size: 0.9, fill: '#142225', label: 'concept model' }] },
+      local: [{ src: 'art/worlds/piranesi-house-labyrinth-key-20261029.png', cap: 'Piranesi House · the Cross of the Four Winds', fit: 'contain', bg: '#142225', size: 0.9, fill: '#142225', label: 'maze layout' }] },
     // the pictures each world has so far (Astra, 2026-10-27); proper captures from the worlds come later
     { name: 'Liminal Doors', kind: 'VRChat world · PC VR / desktop', text: 'Doors that open onto quiet in-between places: an empty pool after closing, a laundrette with a sky turning in one washer, a platform between trains. Every door hides a unique crystal animal.', repo: 'liminal-doors', local: [ // all of its floors, the hummingbird's first (Astra, 2026-10-27)
       '09-hummingbird-upside-down-conservatory-20261015', '01-fox-pinkscape-20261020', '02-hare-faraway-field-20261015', '03-axolotl-pool-after-closing-20261015',
@@ -921,7 +921,11 @@
           { transform: 'translate(112px, -96px) rotate(88deg)', opacity: 1, offset: .72 }, { transform: 'translate(112px, -96px) rotate(88deg)', opacity: 0, offset: .78 },
           { transform: 'none', opacity: 0, offset: .9 }, { transform: 'none', opacity: 1, offset: 1 },
         ], { duration: T });
-        jar.classList.add('tipped'); setTimeout(dink, T * .26);
+        // the dink when the glass lands flat on the ground (Astra, 2026-10-29), read off the tip itself: its ease-in-out makes
+        // a fixed time ring before the glass gets there. 90° of the first 93° is .26 * 90 / 93 of the way
+        jar.classList.add('tipped');
+        const flat = () => { const p = tip.effect.getComputedTiming().progress; if (p == null || p >= .26 * 90 / 93) dink(); else requestAnimationFrame(flat); };
+        requestAnimationFrame(flat);
         // the stars inside fall with it (Astra, 2026-10-29): as it goes over they slide down to what is now the bottom, its
         // right-hand side, tumbling a little, and settle back when it stands up again
         const IW = inside.clientWidth || 240;
