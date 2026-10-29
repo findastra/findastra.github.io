@@ -78,7 +78,7 @@ window.UPDATES_SNAPSHOT = {
    "at": "2026-10-18T05:18:19Z"
   },
   {
-   "repo": "findastra-discord-presence",
+   "repo": "discord-tower",
    "title": "Discord Damsel at Mommy's Mommies' body ratio",
    "at": "2026-10-18T05:18:11Z"
   },
