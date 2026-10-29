@@ -797,6 +797,94 @@
     for (const d of ['M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8', 'M21 3v5h-5', 'M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16', 'M8 16H3v5']) s.append(svgEl('path', { d }));
     return s;
   };
+  // L1, the third-party app each pet works on top of, the most used one (Astra, 2026-10-29: "just pick the most commonly
+  // used third-party app at the top for it"; the Farmer's is "third-party apps", since he looks after all of them)
+  const L1 = {
+    "Friendly Farmer": "third-party apps",
+    "GitHub Goldfish": "GitHub",
+    "Data Chip": "Hugging Face",
+    "API Fairy": "GitHub & API sites",
+    "Unity Unicorn": "Unity",
+    "Python Panther": "Python",
+    "Astra Wisp": "VRChat",
+    "Health Hummy": "Apple Health",
+    "Finance Finch": "bank apps",
+    "Mommy's Mommies": "Google Calendar",
+    "Paper Patty": "arXiv",
+    "File Master": "Windows File Explorer",
+    "Discord Damsel": "Discord",
+    "Portfolio Puffer": "GitHub Pages",
+    "Drum Dog": "Ableton Live",
+    "VSCode Angel": "VS Code",
+    "Gone Ghost": "Ghost Protocol",
+    "Project Parrot": "OneNote",
+    "Voicemeeter Bug": "Voicemeeter",
+    "Spoonfed Sugarcube": "Google Maps",
+    "Claude Bot": "Claude",
+    "RGBee": "OpenRGB",
+    "Mine Mole": "NiceHash",
+    "Mail Snail": "Gmail",
+    "Patch Cat": "Windows Update",
+    "Meme Fiend": "Discord",
+    "Gif Giraffe": "FFmpeg",
+    "Backup Beaver": "OneDrive",
+    "Rift Rabbit": "SteamVR",
+    "Fuzzboi Friend": "GitHub Pages",
+    "Wifi Butterfly": "Windows Wi-Fi",
+    "Deck Duck": "Stream Deck",
+    "Mesh Moth": "Meshtastic",
+    "Raspberry Pi Berry": "Raspberry Pi OS",
+    "Chat Rat": "ChatGPT",
+    "Platform Platypus": "Chrome DevTools",
+    "Dubstep Gunsmith": "Unity",
+    "Pole Puff": "Unity",
+    "Procreate Panda": "Procreate",
+    "Skill Scout": "Claude Code & Codex",
+    "OSC Sealion": "VRChat OSC",
+    "Piranesi Nessi": "Unity",
+    "Photo Dodo": "Google Photos",
+    "Video Vulture": "Google Photos",
+    "Closet Cat": "online shops",
+    "Gatekeeper Goddess": "YubiKey",
+    "Queue Quokka": "GitHub Actions",
+    "Log Lynx": "Windows Event Viewer",
+    "Server Salamander": "Uptime Kuma",
+    "Docker Dragon": "Docker",
+    "Test Tortoise": "Node test runner",
+    "Token Toucan": "OpenAI & Anthropic",
+    "Packet Piranha": "Wireshark",
+    "Calendar Crow": "Google Calendar",
+    "Browser Bat": "Chrome",
+    "Data Dragonfly": "PostgreSQL",
+    "Update Urchin": "Dependabot",
+    "Linux Penguin": "Linux",
+    "Stock Fox": "stock market apps",
+    "Passport Pelican": "government travel sites",
+    "Journal Jellyfish": "Google Maps",
+    "Shell Squid": "Bash",
+    "Kernel Koala": "Task Manager",
+    "Proxy Axolotl": "Caddy",
+    "Cluster Crab": "Kubernetes",
+    "Storage Stoat": "TrueNAS",
+    "White Hat Weasel": "Kali Linux",
+    "Port Spider": "Nmap",
+    "Cipher Owl": "OpenSSL",
+    "Forensic Ferret": "Windows Event Viewer",
+    "Llama Librarian": "Ollama",
+    "Inference Iguana": "NVIDIA drivers",
+    "Agent Ant": "Claude & ChatGPT",
+    "Roaming Raven": "Tailscale",
+    "Cache Coyote": "the browser cache",
+    "Sync Mink": "OneDrive",
+    "Triage Tapir": "GitHub Issues",
+    "Pet Police Officer": "GitHub",
+    "AI Dashund": "research papers",
+    "Rescue Retriever": "GitHub Releases",
+    "Intel Owl": "CVE databases",
+    "Door Dormouse": "Unity",
+    "Role Fairy": "Discord",
+    "Workflow Whale": "iPad",
+  };
   const PET_SCALE = .8;
   function star({ p, r, pics }) {
     const c = el('article', 'card'); const h = paint(c, r ? r.name : p.pet); neonStar(c, p);
@@ -819,12 +907,16 @@
     const progEl = programLink && p.program ? link(programLink, 'pet', p.program) : el('div', 'pet', p.program || 'program not named yet');
     body.append(nameEl, progEl);
     const win = el('div', 'win'); win.append(big, body);
-    // the flip is back, and it turns over to another star with nothing on it yet (Astra, 2026-10-29: "I want the flipping
-    // feature still, but I just don't want anything on the backside of the star yet")
+    // the flip turns it over to another star (Astra, 2026-10-29), and that side is the technical one (Astra, 2026-10-29: "when
+    // you flip the stars, technical stuff's on that side"): its number and program, the app it works on top of (L1), its
+    // repo, its code and how far along it is, like a spec sheet
     const face = el('div', 'face'); face.append(shape('star', '-111 -116 229 220'), win, turnBtn);
     const back = el('div', 'back star-back');
     const backBtn = el('button', 'tip turn-btn'); backBtn.type = 'button'; backBtn.setAttribute('aria-label', 'flip back to ' + p.pet); backBtn.title = 'flip back'; backBtn.append(flipIcon());
-    back.append(shape('star', '-111 -116 229 220'), backBtn);
+    const spec = el('dl', 'spec');
+    for (const [k, v] of [['no.', p.number ? '#' + p.number : '—'], ['L1', L1[p.pet] || 'third-party apps'], ['repo', p.repo || '—'],
+      ['code', (r && r.language) || (r ? '—' : 'private')], ['stage', p.stage || '—']]) spec.append(el('dt', null, k), el('dd', null, v));
+    back.append(shape('star', '-111 -116 229 220'), spec, backBtn);
     const turn = el('div', 'turn'); turn.append(face, back);
     const flip = (on) => { c.classList.toggle('flipped', on); back.inert = !on; face.inert = on; };
     turnBtn.onclick = () => flip(true); backBtn.onclick = () => flip(false); back.inert = true;
@@ -1059,6 +1151,9 @@
       const at = (x, y, sc, rot) => `translate(${x}px, ${y}px) scale(${sc}) rotate(${rot}deg)`;
       // its full star goes in the slot now, unseen, so it knows where it is headed
       const card = land(); card.classList.remove('landed'); card.style.opacity = 0;
+      // the next empty space stays hidden until this star is in (Astra, 2026-10-29: "when the star gets to the spot, then the
+      // space moves over one"): the star's own place is already held for it, so nothing on the row moves while it flies
+      const next = all.querySelector('.slot'); if (next) next.style.visibility = 'hidden';
       const b = card.getBoundingClientRect(), slotX = b.left + b.width / 2 - mouth.x, slotY = b.top + b.height / 2 - mouth.y;
       const paper = (box.closest('.block') || box).getBoundingClientRect();
       const groundY = ground - size * .5 - mouth.y, wallX = paper.right - size * .55 - mouth.x, rad = size / 2;
@@ -1125,6 +1220,7 @@
         })(t1);
       });
       card.style.transform = ''; trailing = false;
+      if (next) next.style.visibility = '';
     }
 
     // empty the jar: every one left lands in the row at once; when none are left, they all go back in
@@ -1189,94 +1285,6 @@
     }
     render();
   }).catch(() => {});
-  // L1, the third-party app each pet works on top of, the most used one (Astra, 2026-10-29: "just pick the most commonly
-  // used third-party app at the top for it"; the Farmer's is "third-party apps", since he looks after all of them)
-  const L1 = {
-    "Friendly Farmer": "third-party apps",
-    "GitHub Goldfish": "GitHub",
-    "Data Chip": "Hugging Face",
-    "API Fairy": "GitHub & API sites",
-    "Unity Unicorn": "Unity",
-    "Python Panther": "Python",
-    "Astra Wisp": "VRChat",
-    "Health Hummy": "Apple Health",
-    "Finance Finch": "bank apps",
-    "Mommy's Mommies": "Google Calendar",
-    "Paper Patty": "arXiv",
-    "File Master": "Windows File Explorer",
-    "Discord Damsel": "Discord",
-    "Portfolio Puffer": "GitHub Pages",
-    "Drum Dog": "Ableton Live",
-    "VSCode Angel": "VS Code",
-    "Gone Ghost": "Ghost Protocol",
-    "Project Parrot": "OneNote",
-    "Voicemeeter Bug": "Voicemeeter",
-    "Spoonfed Sugarcube": "Google Maps",
-    "Claude Bot": "Claude",
-    "RGBee": "OpenRGB",
-    "Mine Mole": "NiceHash",
-    "Mail Snail": "Gmail",
-    "Patch Cat": "Windows Update",
-    "Meme Fiend": "Discord",
-    "Gif Giraffe": "FFmpeg",
-    "Backup Beaver": "OneDrive",
-    "Rift Rabbit": "SteamVR",
-    "Fuzzboi Friend": "GitHub Pages",
-    "Wifi Butterfly": "Windows Wi-Fi",
-    "Deck Duck": "Stream Deck",
-    "Mesh Moth": "Meshtastic",
-    "Raspberry Pi Berry": "Raspberry Pi OS",
-    "Chat Rat": "ChatGPT",
-    "Platform Platypus": "Chrome DevTools",
-    "Dubstep Gunsmith": "Unity",
-    "Pole Puff": "Unity",
-    "Procreate Panda": "Procreate",
-    "Skill Scout": "Claude Code & Codex",
-    "OSC Sealion": "VRChat OSC",
-    "Piranesi Nessi": "Unity",
-    "Photo Dodo": "Google Photos",
-    "Video Vulture": "Google Photos",
-    "Closet Cat": "online shops",
-    "Gatekeeper Goddess": "YubiKey",
-    "Queue Quokka": "GitHub Actions",
-    "Log Lynx": "Windows Event Viewer",
-    "Server Salamander": "Uptime Kuma",
-    "Docker Dragon": "Docker",
-    "Test Tortoise": "Node test runner",
-    "Token Toucan": "OpenAI & Anthropic",
-    "Packet Piranha": "Wireshark",
-    "Calendar Crow": "Google Calendar",
-    "Browser Bat": "Chrome",
-    "Data Dragonfly": "PostgreSQL",
-    "Update Urchin": "Dependabot",
-    "Linux Penguin": "Linux",
-    "Stock Fox": "stock market apps",
-    "Passport Pelican": "government travel sites",
-    "Journal Jellyfish": "Google Maps",
-    "Shell Squid": "Bash",
-    "Kernel Koala": "Task Manager",
-    "Proxy Axolotl": "Caddy",
-    "Cluster Crab": "Kubernetes",
-    "Storage Stoat": "TrueNAS",
-    "White Hat Weasel": "Kali Linux",
-    "Port Spider": "Nmap",
-    "Cipher Owl": "OpenSSL",
-    "Forensic Ferret": "Windows Event Viewer",
-    "Llama Librarian": "Ollama",
-    "Inference Iguana": "NVIDIA drivers",
-    "Agent Ant": "Claude & ChatGPT",
-    "Roaming Raven": "Tailscale",
-    "Cache Coyote": "the browser cache",
-    "Sync Mink": "OneDrive",
-    "Triage Tapir": "GitHub Issues",
-    "Pet Police Officer": "GitHub",
-    "AI Dashund": "research papers",
-    "Rescue Retriever": "GitHub Releases",
-    "Intel Owl": "CVE databases",
-    "Door Dormouse": "Unity",
-    "Role Fairy": "Discord",
-    "Workflow Whale": "iPad",
-  };
   const levelNote = (p) => (at, box) => {
     // what each of the four levels is for this pet, by name (Astra, 2026-10-29: "specifically for each one, what they are"):
     // L1 the program underneath (the other people's program it looks after, else its own code, its repo), L2 its pet program,

@@ -370,6 +370,11 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 .card .back { transform: rotateY(180deg); display: grid; place-content: center; justify-items: center; gap: 2.2cqw; }
 /* the back for now: the same star, empty */
 .card .back.star-back { display: block; }
+/* its spec sheet, in the middle of the star: small mono labels and values, in the star's own black */
+.card .spec { position: absolute; left: 50%; top: 56%; transform: translate(-50%, -50%); width: 52%; margin: 0; display: grid; grid-template-columns: auto 1fr;
+  gap: .9cqw 2.4cqw; font: 600 3.3cqw/1.2 var(--mono); color: #000; text-align: left; }
+.card .spec dt { font-weight: 400; opacity: .7; }
+.card .spec dd { margin: 0; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 700; }
 /* the pet and its program are links, in the star's own black */
 .card .body a { text-decoration: none; }
 /* the little arrow at the end, so people know to click (Astra, 2026-10-29) */
@@ -662,6 +667,15 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 .contact .role { margin: 6px 0 4px; font: 700 14px var(--mono); color: #cfcfcf; }
 .contact .muted { margin: 0 0 12px; }
 .contact .list { margin-top: 10px; }
+/* spritzed up (Astra, 2026-10-29): a neon edge across the top, the name glowing a little, what she does as neon chips */
+.contact { --n: #ff4fd8; position: relative; border-top: 4px solid var(--n); }
+.contact.vr { --n: #4ff0ff; }
+.contact b { text-shadow: 0 0 14px color-mix(in srgb, var(--n) 55%, transparent); }
+.contact .role { color: color-mix(in oklab, var(--n) 60%, #f2f2f2); }
+.contact .pitch { margin: 10px 0 12px; color: #e6e6e6; line-height: 1.5; }
+.contact .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 12px; padding: 0; list-style: none; }
+.contact .chips li { font: 700 11px/1 var(--mono); letter-spacing: .04em; text-transform: lowercase; padding: 6px 9px; color: #f2f2f2; background: #000;
+  border: 1.5px solid var(--n); border-radius: 99px; box-shadow: 0 0 8px color-mix(in srgb, var(--n) 45%, transparent); }
 
 /* arcade: black cabinets on white scanlines */
 .arcade { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 30px; }

@@ -51,6 +51,31 @@
     try { await loadScript(RULES); F = window.Fuzzboi; } catch { note.textContent = 'The Fuzzboi Factory did not answer. Try again in a minute.'; return; }
     try { layersIn = await F.loadLayers(LAYERS, layers, true); } catch {}
   })();
+  // neon outlines (Astra, 2026-10-29: "I don't like the black borders that they have, but I need their bodies to have different
+  // neon borders ... neon orange, neon pink ... neon green"): each body style's outline layer is drawn in its own neon, with a
+  // soft glow, here on the page; the Procreate art itself is unchanged
+  const NEON = { A: '#ff7a1a', B: '#ff2bd6', C: '#39ff14' }, neonCache = new Map();
+  function neonOutline(style) {
+    if (neonCache.has(style)) return neonCache.get(style);
+    const src = layers.get('outline' + style); if (!src) return null;
+    const w = src.naturalWidth || src.width, h = src.naturalHeight || src.height, c = document.createElement('canvas'); c.width = w; c.height = h;
+    const x = c.getContext('2d'); x.drawImage(src, 0, 0); x.globalCompositeOperation = 'source-in'; x.fillStyle = NEON[style] || '#ff2bd6'; x.fillRect(0, 0, w, h);
+    neonCache.set(style, c); return c;
+  }
+  // one layer of a Fuzzboi drawn at (0, 0, px): the outline in its neon, glowing; everything else as painted
+  function drawSlot(x, p, slot, px) {
+    if (slot !== 'outline') { x.drawImage(layers.get(slot === 'fill' ? 'fill' + p.style + p.color : slot), 0, 0, px, px); return; }
+    const o = neonOutline(p.style) || layers.get('outline' + p.style);
+    x.save(); x.shadowColor = NEON[p.style] || '#ff2bd6'; x.shadowBlur = px * .025; x.drawImage(o, 0, 0, px, px); x.restore();
+  }
+  // the factory's big picture, the same way: its background, then its layers with the neon outline
+  function drawFactory(cv, p) {
+    const any = layers.get('fill' + p.style + p.color), W = any.naturalWidth || any.width, H = any.naturalHeight || any.height;
+    if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+    const x = cv.getContext('2d'); x.fillStyle = p.bg; x.fillRect(0, 0, W, H);
+    const want = new Set(['fill', 'outline', 'eyes', ...p.accs.map(F.accLayer), ...p.rares.map((r) => 'rare' + r)]);
+    for (const slot of F.STACK) if (want.has(slot)) drawSlot(x, p, slot, W);
+  }
   // draws one Fuzzboi on a transparent canvas (the home has its own background); a rough stand-in if the art did not load
   function sprite(p, px) {
     const c = document.createElement('canvas'); c.width = c.height = px;
@@ -59,7 +84,7 @@
       const want = new Set(['fill', 'outline', 'eyes', ...p.accs.map(F.accLayer), ...p.rares.map((r) => 'rare' + r)]);
       for (const slot of F.STACK) {
         if (!want.has(slot)) continue;
-        x.drawImage(layers.get(slot === 'fill' ? 'fill' + p.style + p.color : slot === 'outline' ? 'outline' + p.style : slot), 0, 0, px, px);
+        drawSlot(x, p, slot, px);
       }
     } else {
       const big = document.createElement('canvas'); F.drawStandIn(big, p); x.drawImage(big, 0, 0, px, px);
@@ -78,7 +103,7 @@
       const extra = !base.has(slot), last = parts[parts.length - 1];
       let c = !extra && last && !last.extra ? last.c : null;
       if (!c) { c = document.createElement('canvas'); c.width = c.height = px; parts.push({ c, extra }); }
-      c.getContext('2d').drawImage(layers.get(slot === 'fill' ? 'fill' + p.style + p.color : slot === 'outline' ? 'outline' + p.style : slot), 0, 0, px, px);
+      drawSlot(c.getContext('2d'), p, slot, px);
     }
     // the smoke cloud is drawn right to the edge of its square, so where the square cuts it off it would show a straight
     // edge; only that last strip at the border fades away, so the cloud keeps its black outline everywhere else (Astra,
@@ -111,7 +136,7 @@
     const d = F.decode(code);
     if (!/^[0-9A-F]{6}$/.test(d.code)) { note.textContent = d.flags.map((f) => f[1]).join(' '); return; }
     codeIn.value = d.code;
-    if (F.missing(d.parts, layers).length) F.drawStandIn(factoryCv, d.parts); else F.drawLayers(factoryCv, d.parts, layers);
+    if (F.missing(d.parts, layers).length) F.drawStandIn(factoryCv, d.parts); else drawFactory(factoryCv, d.parts);
     $('fz-traits').replaceChildren(...F.describe(d.parts).flatMap(([k, v, swatch]) => {
       const dd = el('dd', null, v); if (swatch) { const i = el('i'); i.style.background = swatch; dd.prepend(i); }
       return [el('dt', null, k), dd];
