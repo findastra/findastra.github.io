@@ -20,7 +20,8 @@ main { padding-left: var(--rail); }
    Color means one thing: the section you are in. */
 /* the pole three quarters of what it was (Astra, 2026-10-29) */
 /* --float: the room between the paper and the pole, and the same on the right (Astra, 2026-10-29: "a little bit more space") */
-:root { --rail: 30px; --frame: #050505; --edge: #3d3d3d; --now: #ff2e4d; --float: 20px; }
+/* --rail: the pole's width, back to the 2026-10-28 chrome pole's (Astra, 2026-10-29) */
+:root { --rail: 52px; --frame: #050505; --edge: #3d3d3d; --now: #ff2e4d; --float: 20px; }
 /* the pole on the left, from Mommy's website: the chrome pole and a floor label per section */
 /* black, with the frame's gray line on its right; no code rain behind the pole scroll (Astra, 2026-10-29) */
 #pole { position: fixed; left: 0; top: 0; bottom: 0; z-index: 40; width: var(--rail); pointer-events: none; background: var(--frame); border-right: 2px solid var(--edge); border-left: 2px solid var(--edge); }
@@ -28,11 +29,11 @@ main { padding-left: var(--rail); }
    along its bottom, where the pole ends */
 /* (Astra, 2026-10-29) one square all the way round the window, the same light gray line on all four sides */
 .bezel { position: fixed; inset: 0; z-index: 41; pointer-events: none; border: 2px solid var(--edge); }
-/* a plain white pole with a soft glow (Astra, 2026-10-29: "I just want a white pole"; it was matte chrome) */
-/* a soft gray now, so the sparkle stands out on it (Astra, 2026-10-29) */
-/* square at both ends, no rounded caps (Astra, 2026-10-29) */
-#pole::before { content: ""; position: absolute; top: 0; bottom: 0; left: calc(50% - 3px); width: 6px; border-radius: 0;
-  background: #7d7d7d; box-shadow: 0 0 6px rgba(255, 255, 255, .12); }
+/* the matte chrome pole back as it was on 2026-10-28 (Astra, 2026-10-29: "put this back on instead of the other one"):
+   white and gray, rounded at its ends */
+#pole::before { content: ""; position: absolute; top: 0; bottom: 0; left: calc(50% - 4px); width: 8px; border-radius: 8px;
+  background: linear-gradient(90deg, #5c5c5c 0%, #f4f4f4 28%, #a9a9a9 46%, #e2e2e2 62%, #6e6e6e 82%, #3a3a3a 100%);
+  box-shadow: 0 0 10px rgba(255, 255, 255, .18); }
 /* the pole's sparkle is the scroll bar (Astra, 2026-10-29): it rides the pole with the page, glowing in the color of the
    section you are in; drag it to scroll. The browser's own scroll bar is hidden */
 /* the page's own pastel sparkle (Astra, 2026-10-29: "the exact same pastel sparkle"): the same four points, a pastel of the
@@ -60,17 +61,14 @@ html::-webkit-scrollbar { display: none; }
 :root { --c-top: #ff2e4d; --c-vr: #1fa4ff; --c-discord: #8c6bff; --c-web: #ff2bd6; --c-pets: #ff7a1a; --c-arcade: #fff01f; --c-contact: #39ff14; }
 .floors a:nth-child(1) { --c: var(--c-top); } .floors a:nth-child(2) { --c: var(--c-vr); } .floors a:nth-child(3) { --c: var(--c-discord); } .floors a:nth-child(4) { --c: var(--c-web); }
 .floors a:nth-child(5) { --c: var(--c-pets); } .floors a:nth-child(6) { --c: var(--c-arcade); } .floors a:nth-child(7) { --c: var(--c-contact); }
-/* the words sit right on the pole, no black block behind them, so it runs unbroken (Astra, 2026-10-29: "I don't like how it
-   just goes black, gray, white, gray"); white in the middle and shiny, glowing in its own color, like the sparkle, with a
-   thin dark edge so it reads over the white pole (Astra, 2026-10-29) */
-/* a new hand (Astra, 2026-10-29: "I don't like the text style"): written in the Polaroids' marker, each floor in its own
-   neon with a black edge so it reads over the pole; the one you are on is white-hot in its color */
-/* then (Astra, 2026-10-29): all white, thick like the section titles, each glowing in a pastel of its section's color; the
-   one you are on glows brighter */
-.floors a { --soft: color-mix(in srgb, var(--c) 72%, #fff); font-family: Inter, sans-serif; font-weight: 900; letter-spacing: .04em; color: #fff;
-  text-shadow: -1px 0 #000, 1px 0 #000, 0 -1px #000, 0 1px #000, 0 0 6px var(--soft), 0 0 12px color-mix(in srgb, var(--soft) 60%, transparent); }
-.floors a:hover, .floors a:focus-visible { background: none; color: #fff; text-shadow: -1px 0 #000, 1px 0 #000, 0 -1px #000, 0 1px #000, 0 0 8px var(--soft), 0 0 16px var(--soft); }
-.floors a.on { color: #fff; text-shadow: -1px 0 #000, 1px 0 #000, 0 -1px #000, 0 1px #000, 0 0 6px var(--soft), 0 0 14px var(--soft), 0 0 26px var(--soft); }
+/* the labels back as they were on 2026-10-28 (Astra, 2026-10-29: "put this back on"): capitals in the mono type, each in its
+   first neon (Terminal pink, VR red, Discord orange, Web yellow, PetOS green, Arcade blue, Contact purple), on a small dark
+   block across the pole, dimmed; the one you are on lit up and glowing */
+.floors a:nth-child(1) { --c: #ff2bd6; } .floors a:nth-child(2) { --c: #ff2e4d; } .floors a:nth-child(3) { --c: #ff7a1a; } .floors a:nth-child(4) { --c: #fff01f; }
+.floors a:nth-child(5) { --c: #39ff14; } .floors a:nth-child(6) { --c: #1f8fff; } .floors a:nth-child(7) { --c: #b14bff; }
+.floors a { font-family: var(--mono); font-weight: 700; letter-spacing: .1em; color: var(--c); background: #0b0b0b; opacity: .55; min-width: 28px; }
+.floors a:hover, .floors a:focus-visible { opacity: 1; background: #0b0b0b; color: var(--c); }
+.floors a.on { opacity: 1; color: var(--c); text-shadow: 0 0 8px var(--c), 0 0 16px var(--c); }
 /* film grain over everything */
 body::after { content: ""; position: fixed; inset: 0; z-index: 60; pointer-events: none; opacity: .09;
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
@@ -785,7 +783,7 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 }
 @media (max-width: 520px) {
   body { font-size: 16px; }
-  :root { --rail: 27px; }
+  :root { --rail: 36px; }
   .floors a { font-size: clamp(8px, calc((100vh - 230px) / 28), 13px); letter-spacing: .08em; }
   .block { --sheet: 28px; }
   /* the terminal on a phone: everything in it a size smaller, so it still shows its words above the buttons, like on a
