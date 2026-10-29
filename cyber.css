@@ -20,16 +20,17 @@ main { padding-left: var(--rail); }
    Color means one thing: the section you are in. */
 /* the pole three quarters of what it was (Astra, 2026-10-29) */
 /* --float: the room between the paper and the pole, and the same on the right (Astra, 2026-10-29: "a little bit more space") */
-:root { --rail: 30px; --frame: #050505; --edge: #3d3d3d; --now: #ff2bd6; --float: 20px; }
+:root { --rail: 30px; --frame: #050505; --edge: #3d3d3d; --now: #ff2e4d; --float: 20px; }
 /* the pole on the left, from Mommy's website: the chrome pole and a floor label per section */
 /* black, with the frame's gray line on its right; no code rain behind the pole scroll (Astra, 2026-10-29) */
 #pole { position: fixed; left: 0; top: 0; bottom: 0; z-index: 40; width: var(--rail); pointer-events: none; background: var(--frame); border-right: 2px solid var(--edge); }
 /* a plain white pole with a soft glow (Astra, 2026-10-29: "I just want a white pole"; it was matte chrome) */
+/* a soft gray now, so the sparkle stands out on it (Astra, 2026-10-29) */
 #pole::before { content: ""; position: absolute; top: 0; bottom: 0; left: calc(50% - 3px); width: 6px; border-radius: 6px;
-  background: #f4f4f4; box-shadow: 0 0 10px rgba(255, 255, 255, .3); }
+  background: #7d7d7d; box-shadow: 0 0 6px rgba(255, 255, 255, .12); }
 /* the pole's sparkle is the scroll bar (Astra, 2026-10-29): it rides the pole with the page, glowing in the color of the
    section you are in; drag it to scroll. The browser's own scroll bar is hidden */
-.rail-spark { position: absolute; left: 50%; width: 20px; height: 20px; translate: -50% 0; filter: drop-shadow(0 0 3px var(--now)) drop-shadow(0 0 9px var(--now)); transition: filter .4s; }
+.rail-spark { position: absolute; left: 50%; width: 28px; height: 28px; translate: -50% 0; filter: drop-shadow(0 0 0 #000) drop-shadow(0 0 4px var(--now)) drop-shadow(0 0 12px var(--now)) drop-shadow(0 0 20px var(--now)); transition: filter .4s; }
 /* a white core, and around it the section's color shimmering through the hues on either side of it (Astra, 2026-10-29) */
 .rail-spark::before { content: ""; position: absolute; inset: 0; background: var(--now); transition: background .4s;
   clip-path: polygon(50% 0, 58% 42%, 100% 50%, 58% 58%, 50% 100%, 42% 58%, 0 50%, 42% 42%);
@@ -50,8 +51,11 @@ html::-webkit-scrollbar { display: none; }
   font: 700 clamp(8px, calc((100vh - 230px) / 28), 16px)/1 var(--mono); letter-spacing: .1em; color: var(--c, #c9c9c9); writing-mode: vertical-rl; text-orientation: mixed; transform: rotate(180deg); padding: 6px 2px;
   transition: opacity .25s, color .25s, text-shadow .25s; }
 /* each floor its own color (Astra, 2026-10-27: "I want each section to have a color") */
-.floors a:nth-child(1) { --c: #ff2bd6; } .floors a:nth-child(2) { --c: #ff2e4d; } .floors a:nth-child(3) { --c: #ff7a1a; } .floors a:nth-child(4) { --c: #fff01f; }
-.floors a:nth-child(5) { --c: #39ff14; } .floors a:nth-child(6) { --c: #1f8fff; } .floors a:nth-child(7) { --c: #b14bff; }
+/* Astra, 2026-10-29: VR in VRChat's blue, Discord's purple, Web pink, PetOS orange, Arcade yellow, Contact green; the
+   Terminal takes the red that was left over */
+:root { --c-top: #ff2e4d; --c-vr: #1fa4ff; --c-discord: #8c6bff; --c-web: #ff2bd6; --c-pets: #ff7a1a; --c-arcade: #fff01f; --c-contact: #39ff14; }
+.floors a:nth-child(1) { --c: var(--c-top); } .floors a:nth-child(2) { --c: var(--c-vr); } .floors a:nth-child(3) { --c: var(--c-discord); } .floors a:nth-child(4) { --c: var(--c-web); }
+.floors a:nth-child(5) { --c: var(--c-pets); } .floors a:nth-child(6) { --c: var(--c-arcade); } .floors a:nth-child(7) { --c: var(--c-contact); }
 /* the words sit right on the pole, no black block behind them, so it runs unbroken (Astra, 2026-10-29: "I don't like how it
    just goes black, gray, white, gray"); white in the middle and shiny, glowing in its own color, like the sparkle, with a
    thin dark edge so it reads over the white pole (Astra, 2026-10-29) */
@@ -158,7 +162,8 @@ h3 { display: inline-block; font: 700 12px var(--mono); text-transform: uppercas
 /* hero */
 /* the terminal and the portrait: two squares the same size, straight, snug side by side (Astra, 2026-10-28); about as
    much room above them as below, one dot row less (Astra, 2026-10-29) */
-.hero { --sq: min(340px, 100%); position: relative; isolation: isolate; display: grid; grid-template-columns: repeat(2, var(--sq)); justify-content: center; gap: 48px;
+/* on a narrow window the squares stay well inside it, with the code rain showing all round them (Astra, 2026-10-29) */
+.hero { --sq: min(340px, 100% - 88px); position: relative; isolation: isolate; display: grid; grid-template-columns: repeat(2, var(--sq)); justify-content: center; gap: 48px;
   align-items: center; padding: 66px var(--wrap) 84px;
   background: radial-gradient(circle at 76% 42%, #3b3b3b 0, transparent 46%); color: var(--ink); }
 /* the rain and the dot grid sit behind the whole page; the hero is see-through, and the gaps between sections show it too */
@@ -202,7 +207,8 @@ main { position: relative; z-index: 1; }
 .term-actions { display: flex; gap: 10px; flex-wrap: wrap; padding: 10px 14px 14px; --ink: #f2f2f2; --bg: #000; --muted: #5c5c5c; }
 .who { display: flex; flex-direction: column; justify-content: center; text-align: center; }
 .portrait { margin: 0; width: 100%; aspect-ratio: 1; position: relative; }
-.portrait img { width: 100%; height: 100%; object-fit: cover; border: 3px solid var(--ink); }
+/* a little see-through, hiding among the falling numbers and the sparkles (Astra, 2026-10-29) */
+.portrait img { width: 100%; height: 100%; object-fit: cover; border: 3px solid var(--ink); opacity: .8; }
 /* the portrait's own colors twinkle on it (cyber.js samples them), rainbow: each one a little off its color, and all of
    them drifting round the hues (Astra, 2026-10-27); much more saturated and further round the rainbow (Astra, 2026-10-29) */
 .portrait .glitter { inset: 3px; z-index: 1; animation: rainbow-drift 14s linear infinite; }
@@ -251,9 +257,9 @@ body.unmasked #rain { opacity: .8; }
 body.unmasked .block::before, body.unmasked .ticker::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: var(--tint, #8a8fff);
   mix-blend-mode: color; opacity: .6; }
 body.unmasked .ticker { isolation: isolate; }
-body.unmasked #vr { --tint: #ff2e4d; } body.unmasked #discord { --tint: #ff7a1a; } body.unmasked #web { --tint: #fff01f; }
-body.unmasked #pets { --tint: #39ff14; } body.unmasked #arcade { --tint: #1f8fff; } body.unmasked #contact { --tint: #b14bff; }
-body.unmasked #tick-updates { --tint: #ff2bd6; } body.unmasked #tick-now { --tint: #ff2bd6; }
+body.unmasked #vr { --tint: var(--c-vr); } body.unmasked #discord { --tint: var(--c-discord); } body.unmasked #web { --tint: var(--c-web); }
+body.unmasked #pets { --tint: var(--c-pets); } body.unmasked #arcade { --tint: var(--c-arcade); } body.unmasked #contact { --tint: var(--c-contact); }
+body.unmasked #tick-updates { --tint: var(--c-top); } body.unmasked #tick-now { --tint: var(--c-top); }
 /* on the tinted panels the titles stay black, outlined in white, never colored (Astra, 2026-10-27) */
 body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 2px #f2f2f2; text-shadow: none; background: none; }
 .glitch { animation: glitch .8s steps(2) 1; }
@@ -348,14 +354,31 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 2px #f2f2f2; text
 .polaroid:nth-child(7n+7) { --lift: -5px; }
 .polaroid:hover, .polaroid:focus-within { z-index: 4; }
 .polaroid .sparkles { inset: -6% -4% 34%; }
-.polaroid .frame { position: relative; width: 100%; margin: 0 auto; padding: 12px 12px 0; background: #f2f2f2; box-shadow: 8px 8px 0 #000;
+/* the white border is drawn as strips round the photo, so the photo is a real window: a clear one shows the paper behind
+   (Astra, 2026-10-29) */
+.polaroid .frame { --edge-w: 12px; position: relative; width: 100%; margin: 0 auto; padding: var(--edge-w) var(--edge-w) 0; box-shadow: 8px 8px 0 #000;
+  background: linear-gradient(#f2f2f2 0 0) top / 100% var(--edge-w) no-repeat, linear-gradient(#f2f2f2 0 0) left / var(--edge-w) 100% no-repeat,
+    linear-gradient(#f2f2f2 0 0) right / var(--edge-w) 100% no-repeat;
   rotate: var(--tilt); transition: rotate .3s, transform .3s; }
+.polaroid .photo.clear { background: none; }
+.polaroid .photo.clear .developing { display: none; }
+/* black masked away: what is bright stays, what is dark fades into the paper */
+.polaroid .photo img.glow, .ai-card img.glow { -webkit-mask: var(--m) center / contain no-repeat; mask: var(--m) center / contain no-repeat; mask-mode: luminance; object-fit: contain;
+  filter: brightness(1.9) saturate(1.2); }
+/* AI Discord Presence: its two cards, one over the other */
+.ai-cards { position: absolute; inset: 0; display: grid; align-content: center; gap: 10px; padding: 8%; }
+.ai-card { display: flex; align-items: center; gap: 10px; padding: 8px; text-align: left; text-decoration: none; color: #f2f2f2;
+  background: rgba(17, 18, 20, .72); border-radius: 8px; box-shadow: 0 0 0 1px rgba(255, 255, 255, .12); }
+.ai-card:hover, .ai-card:focus-visible { background: rgba(17, 18, 20, .9); color: #fff; outline: none; box-shadow: 0 0 0 2px var(--c); }
+.ai-card img { width: 46%; aspect-ratio: 1; flex: none; animation: galaxy-turn 60s linear infinite; }
+.ai-card span { display: grid; min-width: 0; font: 600 12px/1.3 Inter, sans-serif; color: #b9bbbe; }
+.ai-card b { font: 800 14px/1.2 Inter, sans-serif; color: #fff; }
 .polaroid:hover .frame { rotate: 0deg; transform: scale(1.03); }
 /* a strip of neon tape holds each one up */
-#vr .polaroid { --c: #ff2e4d !important; }
-#discord .polaroid { --c: #ff7a1a !important; }
-#web .polaroid { --c: #fff01f !important; }
-#pets .polaroid { --c: #39ff14 !important; }
+#vr .polaroid { --c: var(--c-vr) !important; }
+#discord .polaroid { --c: var(--c-discord) !important; }
+#web .polaroid { --c: var(--c-web) !important; }
+#pets .polaroid { --c: var(--c-pets) !important; }
 .polaroid .tape { position: absolute; z-index: 1; left: 50%; top: -13px; width: 90px; height: 26px; translate: -50% 0; rotate: calc(var(--tilt) * -2.5);
   background: color-mix(in srgb, var(--c) 72%, transparent); box-shadow: 0 0 14px var(--c); }
 .polaroid .photo { position: relative; display: grid; place-items: center; width: 100%; aspect-ratio: 1; padding: 0; border: 0; overflow: hidden; cursor: zoom-in;
@@ -363,7 +386,8 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 2px #f2f2f2; text
 /* every picture fills the square exactly, so a tall or wide one never spills out and gets cut (Astra, 2026-10-27) */
 .polaroid .photo > img, .polaroid .photo > video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .4s; }
 /* the presence cards' galaxies turn slowly, like their animated cards (Astra, 2026-10-27: "make sure those are moving") */
-.polaroid .photo img[src$="galaxy.png"] { scale: 1.42; animation: galaxy-turn 60s linear infinite; }
+/* small enough that every spiral arm stays inside the frame as it turns (Astra, 2026-10-29: they were cut off) */
+.polaroid .photo img[src$="galaxy.png"] { scale: .94; animation: galaxy-turn 60s linear infinite; }
 @keyframes galaxy-turn { to { rotate: 360deg; } }
 .polaroid .photo img[src$=".svg"] { object-fit: contain; background: #0b0b0b; }
 /* a live page (the Cooling Tower's Mini Model) drawn at twice the size and scaled down, so it fits the photo; it spins by itself
@@ -372,10 +396,9 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 2px #f2f2f2; text
 /* bare: the page's title strip cropped off the top, and the picture a little lower so the model sits in the middle */
 .polaroid .photo iframe.live.bare { top: -10%; height: 300%; }
 /* the PetOS Polaroids: every pet's drawing in a little grid; the pet you flip to on a light background */
-.pet-grid { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(7, 1fr); align-content: center; gap: 2px; padding: 6px; background: #f6efe3; }
+.pet-grid { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(7, 1fr); align-content: center; gap: 2px; padding: 6px; }
 .pet-grid img { width: 100%; aspect-ratio: 1; object-fit: contain; }
 #petos-list { margin-bottom: 34px; }
-#petos-list .photo img[style*="contain"] { background: #f6efe3; }
 /* a sticky note hanging off a Polaroid's corner (the pet's intelligence levels on "Meet every pet") */
 .polaroid .sticky { position: absolute; right: -14px; bottom: 54px; z-index: 3; width: 92px; padding: 8px 6px 7px; background: #fff36b; color: #151515;
   font: 13px/1.25 "Permanent Marker", cursive; text-align: center; rotate: 7deg; box-shadow: 3px 4px 0 rgba(0, 0, 0, .55); }
@@ -404,7 +427,7 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 2px #f2f2f2; text
   color: #151515; font: 24px/1 "Permanent Marker", cursive; cursor: pointer; }
 .polaroid .flip.prev { left: var(--corner); } .polaroid .flip.next { right: var(--corner); }
 .polaroid .flip:hover, .polaroid .flip:focus-visible { color: #151515; text-shadow: 0 0 6px var(--c), 0 0 12px var(--c); outline: none; }
-.polaroid .note { display: grid; align-content: center; gap: 3px; min-height: 86px; padding: 10px 6px 14px; color: #151515; }
+.polaroid .note { display: grid; align-content: center; gap: 3px; min-height: 86px; padding: 10px 6px 14px; color: #151515; background: #f2f2f2; }
 .note .title { font: 1.35rem/1.05 "Permanent Marker", cursive; color: #151515; text-decoration: none; overflow-wrap: anywhere; rotate: -1.5deg; }
 a.title:hover, a.title:focus-visible { color: color-mix(in srgb, var(--c) 45%, #000); outline: none; }
 .note .kind { font: .9rem/1.15 "Permanent Marker", cursive; color: #5a5a5a; rotate: 1deg; }
@@ -558,7 +581,8 @@ a.title:hover, a.title:focus-visible { color: color-mix(in srgb, var(--c) 45%, #
 .lightbox button { background: transparent; color: #f2f2f2; border: 0; cursor: pointer; }
 .lightbox button:hover { background: #f2f2f2; color: #000; }
 
-.foot { position: relative; padding: 24px var(--wrap) 60px; background: #000; color: var(--ink); text-align: center; font-size: 14px; }
+/* as much room below the footer's line as above it (Astra, 2026-10-29) */
+.foot { position: relative; padding: 34px var(--wrap) 24px; background: #000; color: var(--ink); text-align: center; font-size: 14px; }
 .foot::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 10px; background: repeating-conic-gradient(#4a4a4a 0 25%, #000 0 50%) 0 0 / 10px 10px; }
 /* the unified footer, as on the pet program pages: centered, its groups after a pink ✦, no list */
 .astra-footer .footer-line { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px 18px; }
@@ -591,7 +615,7 @@ a.title:hover, a.title:focus-visible { color: color-mix(in srgb, var(--c) 45%, #
   .lightbox figure { padding: 44px 12px 12px; }
   .grid { grid-template-columns: 1fr; }
   .polaroids { gap: 34px 10px; }
-  .polaroid .frame { padding: 8px 8px 0; }
+  .polaroid .frame { --edge-w: 8px; }
   .note .title { font-size: 1.05rem; }
   .note .kind { font-size: .75rem; }
 }
