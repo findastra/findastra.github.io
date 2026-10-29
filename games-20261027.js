@@ -132,8 +132,15 @@
     const cv = $('home'), main = cv.getContext('2d'), gcv = document.createElement('canvas'), gx = gcv.getContext('2d');
     let cx = main; // the broken dome draws its sphere off screen first (gx), then cuts the pieces from it
     let W = 0, H = 0, picked = null, turn = 0, hue = 0;
-    const motes = Array.from({ length: 22 }, () => { const a = Math.random() * 7, d = Math.random() * .8, sp = .002 + Math.random() * .004, b = Math.random() * 7;
-      return { x: Math.cos(a) * d, y: Math.sin(a) * d, vx: Math.cos(b) * sp, vy: Math.sin(b) * sp, s: 4 + Math.random() * 6, h: Math.random() * 360, t: Math.random() * 7 }; });
+    // the sparkles kept in the dome: none to begin with; the Fuzzbois knock them off the walls (Astra, 2026-10-29)
+    const motes = [], stamps = new Map();
+    const stamp = (c) => {
+      if (stamps.has(c)) return stamps.get(c);
+      const k = document.createElement('canvas'); k.width = k.height = 32; const x = k.getContext('2d'), q = 16 * .22;
+      x.fillStyle = c; x.beginPath(); x.moveTo(16, 0); x.lineTo(16 + q, 16 - q); x.lineTo(32, 16); x.lineTo(16 + q, 16 + q); x.lineTo(16, 32); x.lineTo(16 - q, 16 + q); x.lineTo(0, 16); x.lineTo(16 - q, 16 - q); x.closePath(); x.fill();
+      stamps.set(c, k); return k;
+    };
+    const keepMote = (x, y, c) => { const b = Math.random() * 7, sp = .002 + Math.random() * .004; motes.push({ x, y, vx: Math.cos(b) * sp, vy: Math.sin(b) * sp, s: 3 + Math.random() * 6, c, t: Math.random() * 7 }); };
     const folks = [], boings = [];
     function resize() { const r = fit(cv); W = r.width; H = r.height; }
     new ResizeObserver(resize).observe(cv); resize();
@@ -171,10 +178,23 @@
       // the counter: how many are in, how many more until it breaks (Astra, 2026-10-29)
       const meter = $('dome-meter');
       if (meter) {
-        meter.querySelector('b').textContent = broken ? '✦' : k;
-        meter.querySelector('span').textContent = broken ? 'put the dome back together' : `of ${HOME_MAX} · ${HOME_MAX - k} more and it breaks`;
-        meter.style.setProperty('--fill', broken ? 1 : k / HOME_MAX); meter.classList.toggle('hot', !broken && crowded());
+        const fz = meter.querySelector('.fuzz');
+        fz.querySelector('b').textContent = broken ? '✦' : k;
+        fz.querySelector('span').textContent = broken ? 'put the dome back together' : `/ ${HOME_MAX} fuzzbois`;
+        fz.style.setProperty('--fill', broken ? 1 : k / HOME_MAX); fz.classList.toggle('hot', !broken && crowded());
+        meterSparks();
       }
+    }
+    // the sparkle meter: every sparkle they knock off the walls stays in the dome, up to SPARK_MAX, and that many breaks it too
+    // (Astra, 2026-10-29: "a sparkle counter, and then ... a fuzzboy counter. And if either one of them meets the threshold")
+    const SPARK_MAX = 6767;
+    let shownSparks = -1;
+    function meterSparks() {
+      const row = $('dome-meter') && $('dome-meter').querySelector('.spark'), m = broken ? 0 : motes.length;
+      if (!row || m === shownSparks) return; shownSparks = m;
+      row.querySelector('b').textContent = broken ? '✦' : m;
+      row.querySelector('span').textContent = broken ? 'they all burst out' : `/ ${SPARK_MAX} sparkles`;
+      row.style.setProperty('--fill', broken ? 1 : m / SPARK_MAX); row.classList.toggle('hot', !broken && m > SPARK_MAX * .8);
     }
     // let them out (Astra, 2026-10-29): every Fuzzboi bursts out of the dome onto the whole page, not just the window, so
     // they bounce off up and down it and go off screen, leaving pastel sparkles behind them. Grab one, drag it back over the
@@ -199,7 +219,7 @@
     function free(f, x, y, vx, vy) {
       const c2 = document.createElement('canvas'); c2.width = c2.height = 160; c2.className = 'fuzz';
       Object.assign(f, { out: true, node: c2, px: x, py: y, pvx: vx, pvy: vy, psq: 0, pspin: 0 });
-      c2.addEventListener('pointerdown', (e) => { held = f; lastPt = { x: e.clientX, y: e.clientY, t: performance.now(), vx: 0, vy: 0 }; c2.setPointerCapture(e.pointerId); c2.classList.add('held'); e.preventDefault(); });
+      c2.addEventListener('pointerdown', (e) => { held = f; f.orbit = null; lastPt = { x: e.clientX, y: e.clientY, t: performance.now(), vx: 0, vy: 0 }; c2.setPointerCapture(e.pointerId); c2.classList.add('held'); e.preventDefault(); });
       c2.addEventListener('pointermove', (e) => {
         if (held !== f) return;
         const t = performance.now(), dt = Math.max(1, t - lastPt.t);
@@ -220,7 +240,9 @@
     // what they bounce off (Astra, 2026-10-29: "bounce off of objects that are inside of this UI"): the Polaroids, the stars,
     // the jar, the terminal and portrait, the section titles and their tags, the contact cards. Where each one is on the page
     // is read again a few times a second, so they follow the page as it changes
-    const SOLID = '.polaroid .frame, #pet-jar .jar, .jar-all .card, .term, .portrait, .block h2, .block .kicker, .contact';
+    // and more to jump off (Astra, 2026-10-29): buttons, small titles, the lines under the section titles, the banners, the
+    // arcade's cabinets and their screens
+    const SOLID = '.polaroid .frame, #pet-jar .jar, .jar-all .card, .term, .portrait, .block h2, .block .kicker, .contact, .btn, .cab, .cab h3, .lede, .ticker, .fz-out canvas, .board, .hack-term, .screen';
     let solids = [], solidsAt = 0;
     const readSolids = () => {
       solids = [...document.querySelectorAll(SOLID)].map((n) => n.getBoundingClientRect()).filter((r) => r.width && r.height)
@@ -233,34 +255,47 @@
         if (!d || d >= rad) continue; // clear of it, or already inside it (then it just passes through and out)
         const ux = dx / d, uy = dy / d, dot = f.pvx * ux + f.pvy * uy;
         if (dot < 0) { f.pvx -= 2 * dot * ux; f.pvy -= 2 * dot * uy; f.psq = 1; f.pspin = (Math.random() - .5) * .6; }
+        // landing on top of something, it springs off it, up and a little to one side: that is how they climb
+        if (uy < -.6) hop(f);
         f.px = nx + ux * rad; f.py = ny + uy * rad;
       }
     }
+    // they want to get to the top (Astra, 2026-10-29: "climbing up to the top ... and they're jumping"): they fall, and
+    // whatever they land on, they jump off again, higher than they fell
+    const GRAVITY = .24;
+    const hop = (f) => { f.pvy = -(10 + Math.random() * 6); f.pvx = Math.max(-7, Math.min(7, f.pvx * .6 + (Math.random() - .5) * 7)); f.psq = 1; };
     function roam(t) {
       roaming = requestAnimationFrame(roam);
       const { w, h } = page(), s = bodySize(), half = s / 2;
       if (t - solidsAt > 300) { solidsAt = t; readSolids(); }
       if (layer.style.height !== h + 'px') layer.style.height = h + 'px';
       const trail = !reduced && t - trailT > 110; if (trail) trailT = t;
-      // a quirk (Astra, 2026-10-29): out of the dome, they like to hang out by the Avatar Lab's girl, either side of her, and
-      // she hops and blinks while they are near, happy they came
+      // a quirk (Astra, 2026-10-29): now and then, passing the Avatar Lab's girl, one swings round her a few times, then goes
+      // off again all over the page; she hops and blinks while any is circling her, happy it came
       const av = document.getElementById('labSvg'), ar = av && av.getBoundingClientRect(), near = [];
-      const spots = ar && ar.width ? [{ x: ar.left + scrollX - s * .7, y: ar.top + scrollY + ar.height * .5 }, { x: ar.right + scrollX + s * .7, y: ar.top + scrollY + ar.height * .5 }] : [];
+      const her = ar && ar.width ? { x: ar.left + scrollX + ar.width / 2, y: ar.top + scrollY + ar.height / 2, r: Math.max(ar.width, ar.height) * .62 + half * .6 } : null;
       for (const f of outside()) {
         if (f.sinking) continue;
         if (f !== held && !reduced) {
-          if (spots.length) {
-            const g = spots[f.code.charCodeAt(0) % 2], dx = g.x - f.px, dy = g.y - f.py, d = Math.hypot(dx, dy) || 1;
-            f.pvx += (dx / d) * .045; f.pvy += (dy / d) * .045;
-            if (d < s * 2.2) near.push(f);
+          if (f.orbit && her) {
+            const o = f.orbit; o.a += o.w; near.push(f);
+            f.px = her.x + Math.cos(o.a) * her.r; f.py = her.y + Math.sin(o.a) * her.r * .8;
+            // done circling: off it goes the way it was going round, and not back for a while
+            if (t > o.until) { f.pvx = -Math.sin(o.a) * o.w * her.r * 1.4; f.pvy = Math.cos(o.a) * o.w * her.r * 1.1 - 6; f.orbit = null; f.nextOrbit = t + 15000 + Math.random() * 20000; }
+          } else {
+            f.orbit = null;
+            f.pvy += GRAVITY; f.pvx *= .997;
+            f.pvx = Math.max(-9, Math.min(9, f.pvx)); f.pvy = Math.max(-18, Math.min(18, f.pvy));
+            f.px += f.pvx; f.py += f.pvy;
+            bounceOff(f, half * .8);
+            if (f.px < half && f.pvx < 0 || f.px > w - half && f.pvx > 0) { f.pvx = -f.pvx; f.psq = 1; f.pspin = (Math.random() - .5) * .6; }
+            if (f.py < half && f.pvy < 0) { f.pvy = -f.pvy * .6; f.psq = 1; }
+            if (f.py > h - half && f.pvy > 0) hop(f);
+            f.px = Math.min(w - half, Math.max(half, f.px)); f.py = Math.min(h - half, Math.max(half, f.py));
+            if (her && t > (f.nextOrbit || 0) && Math.hypot(f.px - her.x, f.py - her.y) < her.r * 1.6) {
+              f.orbit = { a: Math.atan2((f.py - her.y) / .8, f.px - her.x), w: (Math.random() < .5 ? -1 : 1) * (.03 + Math.random() * .02), until: t + 3500 + Math.random() * 2500 };
+            }
           }
-          f.px += f.pvx; f.py += f.pvy;
-          // a thrown or burst one eases back to a steady bounce, no wandering
-          const v = Math.hypot(f.pvx, f.pvy); if (v > 4) { f.pvx *= .99; f.pvy *= .99; } else if (v < 3) { f.pvx *= 1.02; f.pvy *= 1.02; }
-          bounceOff(f, half * .8);
-          if (f.px < half && f.pvx < 0 || f.px > w - half && f.pvx > 0) { f.pvx = -f.pvx; f.psq = 1; f.pspin = (Math.random() - .5) * .6; }
-          if (f.py < half && f.pvy < 0 || f.py > h - half && f.pvy > 0) { f.pvy = -f.pvy; f.psq = 1; f.pspin = (Math.random() - .5) * .6; }
-          f.px = Math.min(w - half, Math.max(half, f.px)); f.py = Math.min(h - half, Math.max(half, f.py));
         }
         f.psq = Math.max(0, f.psq - .06); f.pspin *= .95;
         const sq = Math.sin(f.psq * Math.PI) * .2;
@@ -314,22 +349,28 @@
     function explode() {
       if (broken) return;
       alarm();
-      const r = R(), n = 5, ox = W / 2, oy = H / 2;
-      broken = { pieces: Array.from({ length: n }, (_, i) => {
-        const a0 = (i / n) * Math.PI * 2 - Math.PI / 2, a1 = a0 + (Math.PI * 2) / n, mid = (a0 + a1) / 2, sp = 7 + Math.random() * 5;
+      const r = R(), n = 5, ox = W / 2, oy = H / 2, th = (Math.PI * 2) / n, cd = (2 / 3) * r * Math.sin(th / 2) / (th / 2);
+      // each piece is held by its middle (c: from the sphere's center to the piece's middle), so all of it stays in view
+      broken = { spin: 0, spinTo: 0, pieces: Array.from({ length: n }, (_, i) => {
+        const a0 = i * th - Math.PI / 2, a1 = a0 + th, mid = (a0 + a1) / 2, sp = 7 + Math.random() * 5;
         // where it comes to rest, and turned some eighths of a turn (never the right way up)
         const turnTo = (1 + Math.floor(Math.random() * 7)) * (Math.PI / 4);
-        return { a0, a1, x: ox, y: oy, vx: Math.cos(mid) * sp, vy: Math.sin(mid) * sp, rot: 0, vr: (Math.random() - .5) * .5, rotTo: turnTo, placed: false, settle: 0 };
+        return { a0, a1, c: { x: Math.cos(mid) * cd, y: Math.sin(mid) * cd }, x: ox + Math.cos(mid) * cd, y: oy + Math.sin(mid) * cd, vx: Math.cos(mid) * sp, vy: Math.sin(mid) * sp, rot: 0, vr: (Math.random() - .5) * .5, rotTo: turnTo, placed: false };
       }) };
+      // all the sparkles that were kept in the dome burst out with it, and plenty more
+      for (const m of motes) bits.push({ x: ox + m.x * r, y: oy + m.y * r, vx: m.x * (5 + Math.random() * 6), vy: m.y * (5 + Math.random() * 6), life: 1, s: m.s, c: m.c });
+      motes.length = 0;
       for (let i = 0; i < 6; i++) burst(ox + (Math.random() - .5) * r, oy + (Math.random() - .5) * r, 40, null, 7);
       letOut(true); count();
     }
-    // the point (x, y) on the canvas, inside which piece (topmost first)
+    // where a placed piece's middle sits, with the sphere turned by spin
+    const homeOf = (p, spin) => ({ x: W / 2 + p.c.x * Math.cos(spin) - p.c.y * Math.sin(spin), y: H / 2 + p.c.x * Math.sin(spin) + p.c.y * Math.cos(spin) });
+    // the point (x, y) on the canvas, inside which loose piece (topmost first)
     function pieceAt(x, y) {
       const r = R();
       for (let i = broken.pieces.length - 1; i >= 0; i--) {
         const p = broken.pieces[i]; if (p.placed) continue;
-        const dx = x - p.x, dy = y - p.y, c = Math.cos(-p.rot), s = Math.sin(-p.rot), lx = dx * c - dy * s, ly = dx * s + dy * c;
+        const dx = x - p.x, dy = y - p.y, c = Math.cos(-p.rot), s = Math.sin(-p.rot), lx = dx * c - dy * s + p.c.x, ly = dx * s + dy * c + p.c.y;
         let a = Math.atan2(ly, lx); while (a < p.a0) a += Math.PI * 2;
         if (Math.hypot(lx, ly) < r && a <= p.a1) return p;
       }
@@ -340,30 +381,49 @@
       burst(W / 2, H / 2, 120, null, 5);
       broken = null; count();
     }
+    // the puzzle by hand (Astra, 2026-10-29): drag a piece; while holding it, the scroll wheel turns it; tap one to turn it an
+    // eighth; drag anywhere else in the ring (or scroll there) to turn the whole sphere with the pieces already in, and line up
+    // the next one against it
+    const angleAt = (x, y) => Math.atan2(y - H / 2, x - W / 2);
     cv.addEventListener('pointermove', (e) => {
       if (!drag) return;
       const r = cv.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
       if (Math.hypot(x - drag.sx, y - drag.sy) > 6) drag.moved = true;
+      if (drag.sphere) { const a = angleAt(x, y); broken.spinTo += norm(a - drag.a); drag.a = a; return; }
       drag.p.x = x - drag.dx; drag.p.y = y - drag.dy;
     });
-    const dropPiece = () => {
-      if (!drag) return;
-      const p = drag.p, moved = drag.moved; drag = null;
-      if (!moved) { p.rotTo = p.rot + Math.PI / 4; return; }
-      // close enough to its place and the right way up: it clicks in
-      if (Math.hypot(p.x - W / 2, p.y - H / 2) < R() * .22 && Math.abs(norm(p.rotTo)) < .2) {
-        p.placed = true; p.x = W / 2; p.y = H / 2; p.rot = p.rotTo = 0;
-        const mid = (p.a0 + p.a1) / 2; burst(W / 2 + Math.cos(mid) * R() * .6, H / 2 + Math.sin(mid) * R() * .6, 24, null, 3);
+    function tryPlace(p) {
+      const home = homeOf(p, broken.spinTo);
+      // close enough to its place and turned the same way as the sphere: it clicks in
+      if (Math.hypot(p.x - home.x, p.y - home.y) < R() * .22 && Math.abs(norm(p.rotTo - broken.spinTo)) < .2) {
+        p.placed = true;
+        const mid = (p.a0 + p.a1) / 2 + broken.spin; burst(W / 2 + Math.cos(mid) * R() * .6, H / 2 + Math.sin(mid) * R() * .6, 24, null, 3);
         if (broken.pieces.every((q) => q.placed)) seal();
       }
+    }
+    const dropPiece = () => {
+      if (!drag) return;
+      const { p, moved, sphere } = drag; drag = null;
+      if (sphere) { for (const q of broken.pieces) if (!q.placed) tryPlace(q); return; }
+      if (!moved) p.rotTo = p.rot + Math.PI / 4;
+      tryPlace(p);
     };
     cv.addEventListener('pointerup', dropPiece); cv.addEventListener('pointercancel', dropPiece);
+    cv.addEventListener('wheel', (e) => {
+      if (!broken) return;
+      e.preventDefault();
+      const turn = e.deltaY * .004;
+      if (drag && !drag.sphere) drag.p.rotTo += turn; else broken.spinTo += turn;
+    }, { passive: false });
     cv.addEventListener('pointerdown', (e) => {
       const r = cv.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
       if (broken) {
-        const p = pieceAt(x, y); if (!p) return;
+        const p = pieceAt(x, y);
+        try { cv.setPointerCapture(e.pointerId); } catch {}
+        e.preventDefault();
+        if (!p) { if (Math.hypot(x - W / 2, y - H / 2) < R() * 1.1) drag = { sphere: true, a: angleAt(x, y), sx: x, sy: y, moved: false }; return; }
         broken.pieces.splice(broken.pieces.indexOf(p), 1); broken.pieces.push(p); // to the top
-        drag = { p, dx: x - p.x, dy: y - p.y, sx: x, sy: y, moved: false }; cv.setPointerCapture(e.pointerId); e.preventDefault();
+        drag = { p, dx: x - p.x, dy: y - p.y, sx: x, sy: y, moved: false };
         return;
       }
       const hit = inside().filter((f) => f.ss).sort((p, q) => q.z - p.z).find((f) => Math.hypot(f.sx - x, f.sy - y) < f.ss * .45);
@@ -382,7 +442,8 @@
       glow.addColorStop(0, 'rgba(255, 255, 255, .07)'); glow.addColorStop(1, 'rgba(255, 255, 255, .01)');
       cx.fillStyle = glow; cx.beginPath(); cx.arc(ox, oy, r, 0, 7); cx.fill();
       // LED lines (Astra, 2026-10-29): every line glows and runs through the rainbow, each a little round the wheel from the next
-      const led = (k, a) => `hsl(${(hue + k * 24) % 360} 100% 70% / ${a})`;
+      // a little softer than full neon (Astra, 2026-10-29)
+      const led = (k, a) => `hsl(${(hue + k * 24) % 360} 70% 72% / ${a})`;
       cx.lineWidth = 1.4; cx.shadowBlur = 6;
       for (let k = -3; k <= 3; k++) { const lat = (k / 4) * (Math.PI / 2), rx = Math.cos(lat) * r; cx.strokeStyle = cx.shadowColor = led(k + 3, .55); cx.beginPath(); cx.ellipse(ox, oy + Math.sin(lat) * r * Math.cos(tilt), rx, rx * Math.sin(tilt), 0, 0, 7); cx.stroke(); }
       for (let k = 0; k < 8; k++) { const ph = turn + (k / 8) * Math.PI, rx = Math.abs(Math.sin(ph)) * r; cx.strokeStyle = cx.shadowColor = led(k + 8, .55); cx.beginPath(); cx.ellipse(ox, oy, rx, r, 0, 0, 7); cx.stroke(); }
@@ -392,9 +453,10 @@
       // the page's pastel sparkles, bouncing round inside the dome
       for (const s of motes) {
         if (!reduced) { s.x += s.vx; s.y += s.vy; if (Math.hypot(s.x, s.y) > .9) { const d = Math.hypot(s.x, s.y), nx = s.x / d, ny = s.y / d, dot = s.vx * nx + s.vy * ny; s.vx -= 2 * dot * nx; s.vy -= 2 * dot * ny; s.x = nx * .9; s.y = ny * .9; } s.t += .05; }
-        const px = ox + s.x * r, py = oy + s.y * r, sz = s.s * (.6 + .4 * Math.sin(s.t)), q = sz * .22;
-        cx.fillStyle = `hsl(${(s.h + hue) % 360} 55% 80%)`; cx.globalAlpha = .55 + .45 * Math.sin(s.t + 1);
-        cx.beginPath(); cx.moveTo(px, py - sz); cx.lineTo(px + q, py - q); cx.lineTo(px + sz, py); cx.lineTo(px + q, py + q); cx.lineTo(px, py + sz); cx.lineTo(px - q, py + q); cx.lineTo(px - sz, py); cx.lineTo(px - q, py - q); cx.closePath(); cx.fill();
+        // up to 6,767 of them, so each is stamped from a small picture of its color, made once
+        const px = ox + s.x * r, py = oy + s.y * r, sz = s.s * (.6 + .4 * Math.sin(s.t));
+        cx.globalAlpha = .55 + .45 * Math.sin(s.t + 1);
+        cx.drawImage(stamp(s.c), px - sz, py - sz, sz * 2, sz * 2);
       }
       cx.globalAlpha = 1;
       if (!reduced) hue = (hue + .6) % 360;
@@ -427,6 +489,9 @@
               f.vx -= 2 * dot * nx; f.vy -= 2 * dot * ny; f.vz -= 2 * dot * nz; f.squash = .6;
               // it hits the side and sparkles burst off it, in a pastel of its own color (Astra, 2026-10-29)
               const v = view(nx * lim, ny * lim, nz * lim); burst(v.sx + nx * r * rr, v.sy + ny * r * rr, angry ? 7 : 5, paleOf(f.code), 2.5);
+              // and one stays, bouncing round the dome with the rest
+              keepMote(nx * .86, ny * .86, paleOf(f.code, [.3, .5, .7][Math.floor(Math.random() * 3)]));
+              if (motes.length >= SPARK_MAX) explode();
             }
             f.x = nx * lim; f.y = ny * lim; f.z = nz * lim;
           }
@@ -463,7 +528,7 @@
       for (const b of boings) { const v = view(b.x, b.y, b.z); cx.fillStyle = `rgba(255, 255, 255, ${b.t})`; cx.fillText(b.word, v.sx, v.sy - r * sh - (1 - b.t) * 18); b.t -= .025; }
       cx.textAlign = 'start';
       for (let i = boings.length - 1; i >= 0; i--) if (boings[i].t <= 0) boings.splice(i, 1);
-      sparks();
+      sparks(); meterSparks();
     }
     // the loose sparkles: drift out, slow down, twinkle and fade
     function sparks() {
@@ -484,13 +549,15 @@
       cx = gx; globe(); cx = main;
       cx.clearRect(0, 0, W, H);
       const r = R(), pieces = [...broken.pieces].sort((a, b) => b.placed - a.placed);
+      broken.spin += (broken.spinTo - broken.spin) * .2;
       for (const p of pieces) {
-        if (!p.placed && (!drag || drag.p !== p)) {
+        if (p.placed) { const h = homeOf(p, broken.spin); p.x = h.x; p.y = h.y; p.rot = p.rotTo = broken.spin; }
+        else if (!drag || drag.p !== p) {
           p.x += p.vx; p.y += p.vy; p.vx *= .9; p.vy *= .9; p.rot += p.vr; p.vr *= .92;
           if (Math.hypot(p.vx, p.vy) < .5) p.rot += (p.rotTo - p.rot) * .1;
-          p.x = Math.min(W - r * .3, Math.max(r * .3, p.x)); p.y = Math.min(H - r * .3, Math.max(r * .3, p.y));
-        } else if (drag && drag.p === p) p.rot += (p.rotTo - p.rot) * .2;
-        cx.save(); cx.translate(p.x, p.y); cx.rotate(p.rot);
+          p.x = Math.min(W - r * .35, Math.max(r * .35, p.x)); p.y = Math.min(H - r * .35, Math.max(r * .35, p.y));
+        } else p.rot += (p.rotTo - p.rot) * .2;
+        cx.save(); cx.translate(p.x, p.y); cx.rotate(p.rot); cx.translate(-p.c.x, -p.c.y);
         cx.beginPath(); cx.moveTo(0, 0); cx.arc(0, 0, r + 4, p.a0, p.a1); cx.closePath();
         cx.save(); cx.clip(); cx.drawImage(gcv, 0, 0, gcv.width, gcv.height, -W / 2, -H / 2, W, H); cx.restore();
         // the cracked edges
@@ -567,7 +634,8 @@
         spawnIn = Math.max(16, 46 - score * .28);
         const hs = hues();
         const hue = isRainbow() ? hs[nextHue++ % hs.length] : hs[(Math.random() * hs.length) | 0];
-        targets.push({ x: 24 + Math.random() * (w - 48), y: 24 + Math.random() * (h - 48), t: 1, hue, sp: .010 + Math.min(.014, score * .00013) });
+        // each lasts twice as long before it burns out (Astra, 2026-10-29: "twice as long duration for you to solve")
+        targets.push({ x: 24 + Math.random() * (w - 48), y: 24 + Math.random() * (h - 48), t: 1, hue, sp: (.010 + Math.min(.014, score * .00013)) / 2 });
       }
       bx.save(); bx.globalCompositeOperation = 'lighter';
       for (const t of targets) {

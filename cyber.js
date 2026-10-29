@@ -83,17 +83,31 @@
     await wait(250);
     await type('# another user is logged in on this machine. try: sudo unmask', 'hot');
   }
+  // the button goes both ways (Astra, 2026-10-29: the way back was broken): unmask, then mask again
+  let masking = false;
   $('unmask').onclick = async () => {
-    if (unmasked) return; unmasked = true;
-    await type('audra@findastra:~$ sudo unmask', 'ok');
-    await type('[sudo] password for audra: ********', 'dim', 8);
-    document.body.classList.add('glitch'); await wait(800); document.body.classList.remove('glitch');
-    document.body.classList.add('unmasked');
-    $('term-title').textContent = 'astra@findastra: ~';
-    await type('astra', 'hot', 40);
-    await type('noncorporeal dancer · reality-hacker · digital performer', '', 10);
-    await type(`${repos.length || ''} projects · ${pets.length} pets · worlds below. scroll.`, 'dim', 8);
-    $('unmask').textContent = 'unmasked ✓';
+    if (masking) return; masking = true;
+    if (!unmasked) {
+      unmasked = true;
+      await type('audra@findastra:~$ sudo unmask', 'ok');
+      await type('[sudo] password for audra: ********', 'dim', 8);
+      document.body.classList.add('glitch'); await wait(800); document.body.classList.remove('glitch');
+      document.body.classList.add('unmasked');
+      $('term-title').textContent = 'astra@findastra: ~';
+      await type('astra', 'hot', 40);
+      await type('noncorporeal dancer · reality-hacker · digital performer', '', 10);
+      await type(`${repos.length || ''} projects · ${pets.length} pets · worlds below. scroll.`, 'dim', 8);
+      $('unmask').textContent = 'sudo mask';
+    } else {
+      unmasked = false;
+      await type('astra@findastra:~$ sudo mask', 'ok');
+      document.body.classList.add('glitch'); await wait(800); document.body.classList.remove('glitch');
+      document.body.classList.remove('unmasked');
+      $('term-title').textContent = 'audra@findastra: ~';
+      await type('audra', '', 30);
+      $('unmask').textContent = 'sudo unmask';
+    }
+    masking = false;
   };
   boot();
   // the line to type into: a few commands, the rest answered like a real shell would (Astra, 2026-10-27)
@@ -108,7 +122,8 @@
     date: () => new Date().toString(),
     rabbit: () => 'follow the white rabbit. it hops along the bar below. catch it.',
     'find /astra': () => '/astra/vr  /astra/discord  /astra/web  /astra/petos  /astra/arcade  · found ' + (repos.length || 'many') + ' projects',
-    'sudo unmask': () => { if (unmasked) return 'already unmasked.'; $('unmask').click(); return ''; },
+    'sudo unmask': () => { if (unmasked) return 'already unmasked. try: sudo mask'; $('unmask').click(); return ''; },
+    'sudo mask': () => { if (!unmasked) return 'already masked.'; $('unmask').click(); return ''; },
     play: () => { go('arcade'); return 'cd arcade'; },
     clear: () => { term.replaceChildren(); return ''; },
   };
@@ -980,11 +995,20 @@
       // spots, with a little chance so they spread over the whole picture
       const first = [...spots].sort((a, b) => (b.sat * .7 + b.light * .3 + b.w * .5) - (a.sat * .7 + a.light * .3 + a.w * .5)).slice(0, 70);
       for (const sp of first) if (!picked.includes(sp)) picked.push(sp);
-      box.replaceChildren(...picked.map((sp, n) => {
-        const s = el('i'), k = hash('p' + sp.i);
-        s.style.cssText = `--x:${((sp.i % N + .5) / N * 100).toFixed(1)}%;--y:${((Math.floor(sp.i / N) + .5) / N * 100).toFixed(1)}%;--s:${8 + (k % 14)}px;--d:${((k >>> 8) % 40) / 10}s;--c:${sp.c};--dh:${[-150, -100, -50, 0, 50, 100, 150][(k >>> 12) % 7]};--l:0`;
+      // sizes vary, now and then a big one (Astra, 2026-10-29)
+      const size = (k) => (k % 9 === 0 ? 22 + ((k >>> 4) % 14) : 6 + (k % 13));
+      const one = (x, y, c, k) => {
+        const s = el('i');
+        s.style.cssText = `--x:${x.toFixed(1)}%;--y:${y.toFixed(1)}%;--s:${size(k)}px;--d:${((k >>> 8) % 40) / 10}s;--c:${c};--dh:${[-150, -100, -50, 0, 50, 100, 150][(k >>> 12) % 7]};--l:0`;
         return s;
-      }));
+      };
+      // and a scatter over the whole square, a little past its edges too, so no part of it is bare
+      const cover = [];
+      for (let gy = 0; gy < 6; gy++) for (let gx = 0; gx < 6; gx++) {
+        const k = hash('c' + gx + ':' + gy), x = -6 + gx * 22.4 + (k % 100) / 100 * 16, y = -6 + gy * 22.4 + ((k >>> 7) % 100) / 100 * 16;
+        cover.push(one(x, y, `hsl(${k % 360} 55% 80%)`, k));
+      }
+      box.replaceChildren(...picked.map((sp) => one((sp.i % N + .5) / N * 100, (Math.floor(sp.i / N) + .5) / N * 100, sp.c, hash('p' + sp.i))), ...cover);
     };
     if (img.complete && img.naturalWidth) go(); else img.addEventListener('load', go, { once: true });
   })();
@@ -1089,8 +1113,8 @@
       const y = col.y;
       const pal = PALETTES[palette], k = (i * 9 + y / 6 + t) % 360;
       const color = `hsl(${pal.from + (pal.span === 360 ? k : Math.abs(((k / 360) * 2 * pal.span) % (2 * pal.span) - pal.span))} 100% ${unmasked ? 55 : 62}%)`;
-      // unmasked: black code on white, glowing in the color it would have been
-      if (unmasked) { cx.fillStyle = '#050505'; cx.shadowColor = color; cx.shadowBlur = 9; } else { cx.fillStyle = color; cx.shadowBlur = 0; }
+      // unmasked: deep colored code on white, glowing in its color (Astra, 2026-10-29: more colorful; it was black)
+      if (unmasked) { cx.fillStyle = color.replace(/ 55%\)$/, ' 40%)'); cx.shadowColor = color; cx.shadowBlur = 8; } else { cx.fillStyle = color; cx.shadowBlur = 0; }
       // the next letter of this column's words; a short gap after them, then new words in another language
       const ch = col.w[col.at]; if (ch && ch !== ' ') cx.fillText(ch, i * 16 + 8, y);
       col.at++; col.y = y + 16;

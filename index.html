@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&family=JetBrains+Mono:wght@400;700&family=VT323&family=Permanent+Marker&display=swap">
-<link rel="stylesheet" href="cyber.css?v=20261030j">
+<link rel="stylesheet" href="cyber.css?v=20261030l">
 </head>
 <body>
 <!-- every star on the page is the Photostar's own outline (astras-star-window star-window.svg), scaled to this box (Astra, 2026-10-29) -->
@@ -181,8 +181,8 @@
       <div class="cab spread">
         <div class="cab-head"><h3>Fuzzboi Cyber Dome</h3><p class="muted mono" id="home-count"></p></div>
         <canvas class="home" id="home" aria-label="The Fuzzboi Cyber Dome. Tap a Fuzzboi to see its code."></canvas>
-        <!-- how many are in, and how many more until it breaks -->
-        <div class="dome-meter" id="dome-meter" aria-live="polite"><b>0</b><span></span><i></i></div>
+        <!-- two meters: Fuzzbois in, and sparkles collected; either one full breaks the dome -->
+        <div class="dome-meter" id="dome-meter" aria-live="polite"><div class="row fuzz"><b>0</b><span></span><i></i></div><div class="row spark"><b>0</b><span></span><i></i></div></div>
         <p class="muted mono" id="home-pick" aria-live="polite"></p>
         <div class="fz-row"><button class="btn" id="home-out" disabled>let them out</button><button class="btn" id="home-clear" disabled>empty the dome</button></div>
       </div>
@@ -279,7 +279,7 @@
 <script src="pets-data.js?v=20261027c"></script>
 <script src="project-images.js?v=20261020a"></script>
 <script src="updates-data.js?v=20261018c"></script>
-<script src="cyber.js?v=20261030j"></script>
-<script src="games-20261027.js?v=20261030j"></script>
+<script src="cyber.js?v=20261030l"></script>
+<script src="games-20261027.js?v=20261030m"></script>
 </body>
 </html>

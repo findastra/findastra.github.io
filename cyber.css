@@ -31,6 +31,8 @@ main { padding-left: var(--rail); }
 .pole-cap { position: absolute; left: 50%; z-index: 1; width: 18px; height: 7px; translate: -50% 0; border-radius: 50%; background: #9a9a9a;
   box-shadow: inset 0 -2px 0 #5c5c5c, 0 0 6px rgba(255, 255, 255, .15); }
 .pole-cap.top { top: 2px; } .pole-cap.bottom { bottom: 2px; }
+/* the discs are off again (Astra, 2026-10-29) */
+.pole-cap { display: none; }
 /* a plain white pole with a soft glow (Astra, 2026-10-29: "I just want a white pole"; it was matte chrome) */
 /* a soft gray now, so the sparkle stands out on it (Astra, 2026-10-29) */
 #pole::before { content: ""; position: absolute; top: 0; bottom: 0; left: calc(50% - 3px); width: 6px; border-radius: 6px;
@@ -137,7 +139,8 @@ h3 { display: inline-block; font: 700 12px var(--mono); text-transform: uppercas
 /* each section's little tag above its title, in that section's color, black writing on it so it reads (Astra, 2026-10-29) */
 #vr { --tag: var(--c-vr); } #discord { --tag: var(--c-discord); } #web { --tag: var(--c-web); } #pets { --tag: var(--c-pets); }
 #arcade { --tag: var(--c-arcade); } #contact { --tag: var(--c-contact); }
-.block .kicker { background: var(--tag, var(--ink)); color: #000; font-weight: 700; box-shadow: 3px 3px 0 #000, 0 0 12px color-mix(in srgb, var(--tag, transparent) 45%, transparent); }
+/* a little less saturated than the neon (Astra, 2026-10-29) */
+.block .kicker { background: color-mix(in oklab, var(--tag, var(--ink)) 78%, #8a8a8a); color: #000; font-weight: 700; box-shadow: 3px 3px 0 #000, 0 0 12px color-mix(in srgb, var(--tag, transparent) 45%, transparent); }
 /* "Astra's PetOS" as written, so the capitals do not run together (Astra, 2026-10-29: in all capitals it read wrong) */
 #pets h2 { text-transform: none; letter-spacing: -.035em; }
 
@@ -182,10 +185,11 @@ h3 { display: inline-block; font: 700 12px var(--mono); text-transform: uppercas
 /* on a narrow window the squares stay well inside it, with the code rain showing all round them (Astra, 2026-10-29) */
 .hero { --sq: min(340px, 100% - 88px); position: relative; isolation: isolate; display: grid; grid-template-columns: repeat(2, var(--sq)); justify-content: center; gap: 48px;
   align-items: center; padding: 66px var(--wrap) 84px;
-  background: radial-gradient(circle at 76% 42%, #3b3b3b 0, transparent 46%); color: var(--ink); }
+  /* no glow behind the portrait: only its own square, the code rain clear around it (Astra, 2026-10-29) */
+  background: none; color: var(--ink); }
 /* the rain and the dot grid sit behind the whole page; the hero is see-through, and the gaps between sections show it too */
 body { background: radial-gradient(#272727 1px, transparent 1.6px) 0 0 / 18px 18px fixed, #070707; }
-#rain { position: fixed; inset: 0; width: 100%; height: 100%; opacity: .55; z-index: 0; pointer-events: none; }
+#rain { position: fixed; inset: 0; width: 100%; height: 100%; opacity: .7; z-index: 0; pointer-events: none; }
 main { position: relative; z-index: 1; }
 .term { position: relative; display: flex; flex-direction: column; aspect-ratio: 1; box-sizing: border-box; background: #000; border: 2px solid var(--ink); }
 .term::before { content: ""; position: absolute; inset: 0; z-index: -1; transform: translate(14px, 14px); background: repeating-linear-gradient(45deg, var(--ink) 0 2px, transparent 2px 8px); }
@@ -222,6 +226,10 @@ main { position: relative; z-index: 1; }
 .term-body::-webkit-scrollbar-thumb { background: #5a5a5a; }
 .term-body::-webkit-scrollbar-button { display: none; }
 .term-actions { display: flex; gap: 10px; flex-wrap: wrap; padding: 10px 14px 14px; --ink: #f2f2f2; --bg: #000; --muted: #5c5c5c; }
+/* the buttons' edges a shade darker; the title on the striped bar sits on its own solid strip so it reads (Astra, 2026-10-29) */
+.term-actions .btn { border-color: #9a9a9a; }
+.term-actions .btn.hot { border-color: #6a6a6a; }
+.term-bar #term-title, .term-bar > span:not(.lights) { background: #f2f2f2; color: #000; font-weight: 700; padding: 0 6px; }
 .who { display: flex; flex-direction: column; justify-content: center; text-align: center; }
 .portrait { margin: 0; width: 100%; aspect-ratio: 1; position: relative; }
 /* a little see-through, hiding among the falling numbers and the sparkles (Astra, 2026-10-29) */
@@ -232,8 +240,11 @@ main { position: relative; z-index: 1; }
 @keyframes rainbow-drift { 0%, 100% { filter: hue-rotate(-70deg); } 50% { filter: hue-rotate(70deg); } }
 /* one more veil over the picture (Astra, 2026-10-29): fine diagonal lines the other way from the stripes behind, and a
    halftone of dots, so she keeps her shape but hides a little more */
+/* unmasked, she turns to her own negative: every color inverted, the hues turned back round so the tints still read
+   (Astra, 2026-10-29) */
+body.unmasked .portrait img { filter: invert(1) hue-rotate(180deg) saturate(1.3); }
 .portrait::after { content: ""; position: absolute; inset: 3px; z-index: 0; pointer-events: none;
-  background: repeating-linear-gradient(45deg, rgba(5, 5, 5, .5) 0 2px, transparent 2px 6px), radial-gradient(rgba(5, 5, 5, .45) 1px, transparent 1.6px) 0 0 / 5px 5px; }
+  background: repeating-linear-gradient(45deg, rgba(5, 5, 5, .28) 0 1.5px, transparent 1.5px 6px), radial-gradient(rgba(5, 5, 5, .22) 1px, transparent 1.6px) 0 0 / 5px 5px; }
 .portrait::before { content: ""; position: absolute; inset: 0; z-index: -1; transform: translate(-16px, 16px); background: repeating-linear-gradient(-45deg, #8c8c8c 0 3px, transparent 3px 8px); }
 /* Astra's hand lettering: transparent ink masks painted in --ink, so they follow the hero (white, then black when unmasked) */
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
@@ -272,7 +283,7 @@ main { position: relative; z-index: 1; }
 /* the unmask (Astra, 2026-10-27): the hero turns white, its falling code black and glowing in its colors; everywhere else the
    grays take on a soft tint of their section's color */
 body.unmasked .hero { --bg: #f7f7f7; --ink: #070707; --muted: #4a4a4a;
-  background: radial-gradient(circle at 76% 42%, #ffffff 0, transparent 46%); }
+  background: none; }
 body.unmasked { background: radial-gradient(#dcdcdc 1px, transparent 1.6px) 0 0 / 18px 18px fixed, #f4f4f4; }
 body.unmasked #rain { opacity: .8; }
 body.unmasked .block::before, body.unmasked .ticker::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: var(--tint, #8a8fff);
@@ -282,7 +293,10 @@ body.unmasked #vr { --tint: var(--c-vr); } body.unmasked #discord { --tint: var(
 body.unmasked #pets { --tint: var(--c-pets); } body.unmasked #arcade { --tint: var(--c-arcade); } body.unmasked #contact { --tint: var(--c-contact); }
 body.unmasked #tick-updates { --tint: var(--c-top); } body.unmasked #tick-now { --tint: var(--c-top); }
 /* on the tinted panels the titles stay black, outlined in white, never colored (Astra, 2026-10-27) */
-body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 2px #f2f2f2; text-shadow: none; background: none; }
+/* the white outline drawn round the letters, not as a stroke over them, so tight letters no longer cut into each other's
+   corners (Astra, 2026-10-29) */
+body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: none;
+  text-shadow: 2px 0 #f2f2f2, -2px 0 #f2f2f2, 0 2px #f2f2f2, 0 -2px #f2f2f2, 1.5px 1.5px #f2f2f2, -1.5px 1.5px #f2f2f2, 1.5px -1.5px #f2f2f2, -1.5px -1.5px #f2f2f2; }
 .glitch { animation: glitch .8s steps(2) 1; }
 @keyframes glitch {
   20% { filter: invert(1) contrast(2); transform: translate(-5px, 2px) skewX(6deg); }
@@ -310,7 +324,8 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 2px #f2f2f2; text
 @supports (color: hsl(from red h s l)) {
   .sparkles i { background: hsl(from var(--c) calc(h + var(--dh)) s min(calc(l + var(--l)), 92)); }
 }
-@keyframes twinkle { 0%, 100% { transform: scale(.35) rotate(0deg); opacity: .35; } 50% { transform: scale(1.15) rotate(45deg); opacity: 1; } }
+/* each one fades all the way out between twinkles, so they come and go instead of staying put (Astra, 2026-10-29) */
+@keyframes twinkle { 0%, 100% { transform: scale(.2) rotate(0deg); opacity: 0; } 50% { transform: scale(1.15) rotate(45deg); opacity: 1; } }
 
 /* the pet windows: fat stars */
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 0 22px; margin-top: 26px; }
@@ -451,7 +466,9 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 2px #f2f2f2; text
 /* a perfectly square note, its tape the same color as the strip holding up the Polaroid (Astra, 2026-10-29) */
 /* up off the writing, so every pet's name on the border can be read (Astra, 2026-10-29) */
 .polaroid .sticky { position: absolute; right: -14px; bottom: 116px; z-index: 3; width: 96px; aspect-ratio: 1; display: grid; align-content: center; padding: 6px;
-  background: #fff36b; color: #151515; font: 12px/1.25 "Permanent Marker", cursive; text-align: center; rotate: 7deg; box-shadow: 3px 4px 0 rgba(0, 0, 0, .55); }
+  background: #fff36b; color: #151515; font: 12px/1.25 "Permanent Marker", cursive; text-align: center; rotate: 7deg; box-shadow: 3px 4px 0 rgba(0, 0, 0, .55);
+  /* a black edge, so it shows where it lies over the white border (Astra, 2026-10-29) */
+  outline: 2px solid #111; }
 .polaroid .sticky::before { content: ""; position: absolute; left: 50%; top: -7px; width: 40px; height: 13px; translate: -50% 0; rotate: -4deg;
   background: color-mix(in srgb, var(--c) 72%, transparent); box-shadow: 0 0 8px var(--c); }
 .polaroid .sticky b { display: block; font: 700 9px var(--mono); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 3px; }
@@ -657,11 +674,14 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 2px #f2f2f2; text
 @keyframes dome-flash { 0%, 100% { filter: drop-shadow(0 0 0 transparent); } 50% { filter: drop-shadow(0 0 18px rgba(255, 40, 60, .85)); } }
 @media (prefers-reduced-motion: reduce) { .home.alarm { animation: dome-flash 1.6s ease-in-out infinite; } }
 /* the counter under the dome: how many are in, how many more until it breaks, and a bar filling toward 67 */
-.dome-meter { --fill: 0; display: grid; grid-template-columns: auto 1fr; align-items: baseline; gap: 4px 10px; font: 12px/1.3 var(--mono); color: #9a9a9a; }
-.dome-meter b { font: 900 2rem/1 Inter, sans-serif; color: #f2f2f2; }
+.dome-meter { display: grid; gap: 10px; }
+.dome-meter .row { --fill: 0; display: grid; grid-template-columns: auto 1fr; align-items: baseline; gap: 4px 10px; font: 12px/1.3 var(--mono); color: #9a9a9a; }
+.dome-meter b { font: 900 1.7rem/1 Inter, sans-serif; color: #f2f2f2; min-width: 2.2ch; }
 .dome-meter i { grid-column: 1 / -1; height: 8px; border: 1px solid #555; background: linear-gradient(90deg, #39ff14, #fff01f 50%, #ff2e4d) 0 0 / 100% 100%;
   clip-path: inset(0 calc((1 - var(--fill)) * 100%) 0 0); transition: clip-path .4s; }
-.dome-meter.hot b { color: #ff5a6e; text-shadow: 0 0 10px rgba(255, 40, 60, .7); }
+/* the sparkle meter fills in the page's pastels */
+.dome-meter .spark i { background: linear-gradient(90deg, hsl(320 55% 80%), hsl(200 55% 80%), hsl(140 55% 80%), hsl(50 55% 80%), hsl(0 55% 80%)); }
+.dome-meter .row.hot b { color: #ff5a6e; text-shadow: 0 0 10px rgba(255, 40, 60, .7); }
 /* the dome's count sits right under its name */
 .cab-head { display: grid; gap: 6px; }
 .cab-head h3 { margin: 0; justify-self: start; }
@@ -676,7 +696,8 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 2px #f2f2f2; text
 #sparkPrev { width: 112px; height: 112px; border: 2px solid #000; box-shadow: 4px 4px 0 #3a3a3a; }
 .spark-row .labrow { margin-top: 0; }
 #sparkRand { margin-top: 12px; }
-.labstage { display: flex; justify-content: center; padding: 6px 0; background: radial-gradient(circle at 50% 78%, #2e2e2e, transparent 66%); }
+/* she stands a little lower, down on her pink shadow in the middle of the band (Astra, 2026-10-29) */
+.labstage { display: flex; justify-content: center; padding: 22px 0 0; background: radial-gradient(circle at 50% 78%, #2e2e2e, transparent 66%); }
 .labrow { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 12px; }
 .lab-b { font: 700 12px var(--mono); text-align: left; color: #f2f2f2; background: #000; border: 2px solid #555; padding: 7px 9px; cursor: pointer; }
 .lab-b:hover, .lab-b:focus-visible { border-color: #f2f2f2; outline: none; }
