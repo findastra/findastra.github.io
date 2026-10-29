@@ -143,7 +143,7 @@ h3 { display: inline-block; font: 700 12px var(--mono); text-transform: uppercas
 #vr { --tag: var(--c-vr); } #discord { --tag: var(--c-discord); } #web { --tag: var(--c-web); } #pets { --tag: var(--c-pets); }
 #arcade { --tag: var(--c-arcade); } #contact { --tag: var(--c-contact); }
 /* a little less saturated than the neon (Astra, 2026-10-29) */
-.block .kicker { background: color-mix(in oklab, var(--tag, var(--ink)) 78%, #8a8a8a); color: #000; font-weight: 700; box-shadow: 3px 3px 0 #000, 0 0 12px color-mix(in srgb, var(--tag, transparent) 45%, transparent); }
+.block .kicker { background: color-mix(in oklab, var(--tag, var(--ink)) 68%, #8a8a8a); color: #000; font-weight: 700; box-shadow: 3px 3px 0 #000, 0 0 12px color-mix(in srgb, var(--tag, transparent) 45%, transparent); }
 /* "Astra's PetOS" as written, so the capitals do not run together (Astra, 2026-10-29: in all capitals it read wrong) */
 #pets h2 { letter-spacing: -.035em; }
 
@@ -454,7 +454,8 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 #web .polaroid { --c: var(--c-web) !important; }
 #pets .polaroid { --c: var(--c-pets) !important; }
 .polaroid .tape { position: absolute; z-index: 1; left: 50%; top: -13px; width: 90px; height: 26px; translate: -50% 0; rotate: calc(var(--tilt) * -2.5);
-  background: color-mix(in srgb, var(--c) 72%, transparent); box-shadow: 0 0 14px var(--c); }
+  /* a touch less saturated (Astra, 2026-10-29) */
+  background: color-mix(in srgb, color-mix(in oklab, var(--c) 80%, #9a9a9a) 72%, transparent); box-shadow: 0 0 12px color-mix(in oklab, var(--c) 80%, #9a9a9a); }
 .polaroid .photo { position: relative; display: grid; place-items: center; width: 100%; aspect-ratio: 1; padding: 0; border: 0; overflow: hidden; cursor: zoom-in;
   background: radial-gradient(circle at 30% 25%, color-mix(in srgb, var(--c) 55%, #000), #0b0b0b 72%); }
 /* every picture fills the square exactly, so a tall or wide one never spills out and gets cut (Astra, 2026-10-27) */
@@ -483,8 +484,9 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 /* up off the writing, so every pet's name on the border can be read (Astra, 2026-10-29) */
 /* always exactly square, whatever is written on it (Astra, 2026-10-29): a fixed size, the writing a size to fit */
 /* (not clipped, so its tape shows whole) */
-.polaroid .sticky { position: absolute; right: -14px; bottom: 116px; z-index: 3; width: 100px; height: 100px; display: grid; align-content: center; padding: 6px;
-  background: #fff36b; color: #151515; font: 14px/1.25 "Permanent Marker", cursive; text-align: center; rotate: 7deg; box-shadow: 3px 4px 0 rgba(0, 0, 0, .55);
+/* (a little lower and smaller, Astra 2026-10-29) */
+.polaroid .sticky { position: absolute; right: -14px; bottom: 98px; z-index: 3; width: 90px; height: 90px; display: grid; align-content: center; padding: 6px;
+  background: #fff36b; color: #151515; font: 12.5px/1.22 "Permanent Marker", cursive; text-align: center; rotate: 7deg; box-shadow: 3px 4px 0 rgba(0, 0, 0, .55);
   /* a black edge, so it shows where it lies over the white border (Astra, 2026-10-29) */
   outline: 2px solid #111; }
 .polaroid .sticky::before { content: ""; position: absolute; left: 50%; top: -7px; width: 40px; height: 13px; translate: -50% 0; rotate: -4deg;
@@ -736,13 +738,10 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 .lightbox figure { margin: 0; padding: 44px 16px 18px; }
 .lightbox img { margin: 0 auto; max-height: 76vh; object-fit: contain; }
 .lightbox.mono img { filter: grayscale(1) contrast(1.2); }
-.lightbox .lb-frame { display: block; width: 100%; height: 76vh; border: 0; background: #000; }
-.lightbox .lb-frame[hidden], .lightbox img[hidden] { display: none; }
-/* the "closer look" button on a live page's Polaroid, in the photo's bottom right corner */
-/* down on the white border at the top right, tipped the other way, like the sound sticker (Astra, 2026-10-29) */
-.polaroid .look { position: absolute; right: calc(var(--edge-w) - 4px); top: -10px; z-index: 4; padding: 5px 8px; border: 0; cursor: zoom-in; background: #111; color: #fff;
+/* a live page's own link (the System Map), a sticker on the white border at the top right, tipped like the sound sticker */
+.polaroid .look { position: absolute; right: calc(var(--edge-w) - 4px); top: -10px; z-index: 4; padding: 5px 8px; border: 0; background: #111; color: #fff; text-decoration: none;
   font: 11px/1 "Permanent Marker", cursive; rotate: 4deg; box-shadow: 2px 2px 0 rgba(0, 0, 0, .35); }
-.polaroid .look:hover, .polaroid .look:focus-visible { outline: 2px solid var(--c); }
+.polaroid .look:hover, .polaroid .look:focus-visible { background: #111; color: #fff; outline: 2px solid var(--c); }
 /* the Rainbow Maker's turning video with its gray cut away, drawn frame by frame on a canvas */
 .polaroid .photo .keyed { position: absolute; inset: 0; }
 .polaroid .photo .keyed video { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }

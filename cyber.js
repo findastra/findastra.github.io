@@ -57,15 +57,7 @@
 
   // ---------- lightbox (pictures keep their color) ----------
   const lb = $('lightbox'); let lbList = [], lbAt = 0;
-  // a live page (the Cooling Tower's model, the System Map) opens here too, big, to turn and zoom in (Astra, 2026-10-29:
-  // "a closer look tool on it, just the same way there is for the rainbow maker")
-  const lbFrame = document.createElement('iframe'); lbFrame.className = 'lb-frame'; lbFrame.hidden = true; $('lb-img').after(lbFrame);
-  const lbShow = () => {
-    const it = lbList[lbAt], live = it.type === 'frame';
-    $('lb-img').hidden = live; lbFrame.hidden = !live;
-    if (live) { if (lbFrame.src !== it.src) lbFrame.src = it.src; lbFrame.title = it.cap; } else { $('lb-img').src = it.src; $('lb-img').alt = it.cap; }
-    $('lb-cap').textContent = `${it.cap}   ${lbAt + 1} / ${lbList.length}`;
-  };
+  const lbShow = () => { const it = lbList[lbAt]; $('lb-img').src = it.src; $('lb-img').alt = it.cap; $('lb-cap').textContent = `${it.cap}   ${lbAt + 1} / ${lbList.length}`; };
   const openGallery = (list, at = 0, mono = false) => { if (!list.length) return; lbList = list; lbAt = at; lb.classList.toggle('mono', mono); lbShow(); lb.showModal(); };
   $('lb-close').onclick = () => lb.close();
   $('lb-prev').onclick = () => { lbAt = (lbAt - 1 + lbList.length) % lbList.length; lbShow(); };
@@ -266,8 +258,9 @@
         // one wide ring round the whole machine, a small fast one round each crystal, and a few glints on the glass
         // sparkles circling each of the two crystals, just wide of them so the crystals can be seen turning (Astra, 2026-10-29:
         // "go around the actual crystals"), and the spray thrown off those same rings: center x, y and radii, in percent
-        orbits: [[44, 79, 12, 9, 5, 5], [54, 68, 11, 8, 5, 6]], still: [[46, 30], [56, 40]],
-        spray: [[44, 79, 12, 9], [54, 68, 11, 8]] },
+        // (wide of the gems, so they are seen clearly; the sparkles only now and then cross in front of them)
+        orbits: [[44, 79, 17, 12, 5, 5], [54, 68, 16, 11, 5, 6]], still: [[46, 30], [56, 40]],
+        spray: [[44, 79, 18, 13], [54, 68, 17, 12]] },
       { src: 'art/worlds/rainbow-maker-still-clear-20261029.png', cap: 'The Rainbow Maker', fit: 'contain', clear: true, nudge: '0 7%' },
       { src: RM + 'rainbow-maker-crystals-cycles-20261023.png', cap: 'The Rainbow Maker · the crystals', fit: 'contain', bg: '#47423f' }] },
     { name: 'The Cooling Tower', siteLabel: 'see full mini model ↗', kind: 'VRChat world · PC VR / desktop', text: "A rave world inside a nuclear plant's cooling tower: break into the facility and power it up with music. The Stack, the Turbine Hall, then the Reactor Hall.", repo: 'the-cooling-tower', local: [{ src: 'https://findastra.github.io/the-cooling-tower/mini-model/the-cooling-tower-mini-model-20261024.html', cap: 'The Cooling Tower · Mini Model', type: 'frame', label: 'concept model', bare: true, back: 7 }] },
@@ -409,14 +402,16 @@
             const [cxp, cyp, rxp, ryp] = s.from[(Math.random() * s.from.length) | 0];
             const a = Math.random() * Math.PI * 2, sp = .6 + Math.random() * 2.4, ring = 1 + Math.random() * .15;
             dots.push({ x: r.left + r.width * (cxp + Math.cos(a) * rxp * ring) / 100, y: r.top + r.height * (cyp + Math.sin(a) * ryp * ring) / 100, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - .2,
-              life: 1, s: 3 + Math.random() * 7 + (Math.random() < .08 ? 9 : 0), hue: (Math.random() * 12 | 0) * 30, t: Math.random() * 7 });
+              // s: how big it ends up; each starts tiny and only grows as it flies away (Astra, 2026-10-29: "they start small and
+              // then they end up big", never a big one by the glass)
+              life: 1, s: 3 + Math.random() * 6 + (Math.random() < .08 ? 7 : 0), hue: (Math.random() * 12 | 0) * 30, t: Math.random() * 7 });
           }
         }
         if (dots.length > 1400) dots.splice(0, dots.length - 1400);
         for (let i = dots.length - 1; i >= 0; i--) {
           const p = dots[i]; p.x += p.vx; p.y += p.vy; p.vx *= .995; p.vy = p.vy * .995 + .006; p.life -= dt / 4200; p.t += .08;
           if (p.life <= 0 || p.x < -20 || p.x > innerWidth + 20 || p.y < -20 || p.y > innerHeight + 20) { dots.splice(i, 1); continue; }
-          const sz = p.s * (.55 + .45 * Math.sin(p.t)) * Math.min(1, p.life * 2);
+          const grown = Math.min(1, (1 - p.life) * 2.2), sz = p.s * (.12 + .88 * grown) * (.6 + .4 * Math.sin(p.t)) * Math.min(1, p.life * 2.5);
           x.globalAlpha = Math.min(1, p.life * 1.6) * (.6 + .4 * Math.sin(p.t + 1));
           x.drawImage(stamp(p.hue), p.x - sz, p.y - sz, sz * 2, sz * 2);
         }
@@ -429,7 +424,7 @@
   const orbitField = (h, orbits, still = []) => {
     const box = el('div', 'sparkles field'); box.setAttribute('aria-hidden', 'true');
     const movers = orbits.flatMap(([x, y, rx, ry, n, secs], o) => Array.from({ length: n }, (_, i) => {
-      const k = hash(h + ':o' + o + ':' + i), s = sparkle(k, x, y, 7 + (k >>> 12) % 10); box.append(s);
+      const k = hash(h + ':o' + o + ':' + i), s = sparkle(k, x, y, 3 + (k >>> 12) % 5); box.append(s);
       return { s, x, y, rx, ry, w: (Math.PI * 2) / (secs * 1000), a: (i / n) * Math.PI * 2 };
     }));
     for (const [x, y] of still) box.append(sparkle(hash(h + ':s' + x + y), x, y, 8));
@@ -506,6 +501,7 @@
           // view: the page drawn this many times the photo's size and shrunk to fit, so a page that keeps its panels a fixed
           // size gives its picture more room (the System Map's sphere, Astra 2026-10-29)
           if (p.view) f.style.setProperty('--view', p.view);
+          if (p.lift) f.style.height = `calc(var(--view, 2) * ${p.lift * 100}%)`;
           if (p.bare) f.addEventListener('load', () => { try { const st = f.contentDocument.createElement('style'); st.textContent = '.panel{display:none!important}'; f.contentDocument.head.append(st); } catch {} });
           // says: messages the page's own message box takes in turn, typed in the way a visitor would. Like back, below, it
           // can only reach in on the live site, where the page shares this site's address
@@ -546,12 +542,10 @@
       // border by the title, so it covers none of the picture (Astra, 2026-10-29: it hid the System Map's key)
       badge = el('span', 'badge'); badge.hidden = !pics[0].label; badge.textContent = pics[0].label || '';
       let shown = media(pics[0]); photo.append(shown, ...(field ? [field] : []));
-      // a live page gets a "closer look": it opens big in the viewer, to turn, scroll and zoom (Astra, 2026-10-29); its sticker
-      // goes on the white border with the rest, below
-      if (pics.some((p) => p.type === 'frame')) {
-        look = el('button', 'look', 'closer look ⤢'); look.type = 'button'; look.setAttribute('aria-label', 'take a closer look at ' + name);
-        look.onclick = (e) => { e.stopPropagation(); if (pics[at].type === 'frame') openGallery([pics[at]]); };
-      }
+      // a live page can carry a plain link to open it on its own (the System Map, Astra 2026-10-29: "just give the link
+      // straight up"), as a sticker on the white border with the rest, below
+      const open = pics.find((p) => p.open);
+      if (open) { look = link(open.open, 'look', 'open the map ↗'); look.setAttribute('aria-label', 'open ' + name + ' on its own page'); }
       const still = () => !pics[at].type;
       photo.setAttribute('aria-label', 'open pictures of ' + name);
       photo.onclick = (e) => { if (still()) openGallery(pics.filter((p) => !p.type), pics.filter((p) => !p.type).indexOf(pics[at])); };
@@ -1107,7 +1101,9 @@
     return [
       polaroid({ key: 'system-map', name: 'The System Map', kind, date, text: 'Every pet, program and tool in Astra\'s PetOS, and how they work together. Drag it around.',
         // drawn at twice the photo's size, so its key in the top left is big enough to read (Astra, 2026-10-29)
-        pics: [{ src: HUB_PAGES + 'system-map-20261012.html', cap: 'The System Map', type: 'frame', label: 'live', view: 2 }], repo: HUB_REPO }),
+        // (lift: drawn a little short of the photo's height, so the map's bottom bar, Spin and its 2D | 3D switch, sits up
+        // where it can be seen)
+        pics: [{ src: HUB_PAGES + 'system-map-20261012.html', cap: 'The System Map', type: 'frame', label: 'live', view: 2, lift: .93, open: HUB_PAGES + 'system-map-20261012.html' }], repo: HUB_REPO }),
       // the pets on the bare paper, and the one you flip to a little smaller (Astra, 2026-10-29)
       polaroid({ key: 'all-pets', name: 'The pets', kind, date, text: 'What they all look like. Each one is a small app with a face and a job.', pics: [], shot: petsShot(drawn), clear: true, repo: HUB_REPO,
         // its own sticky note (Astra, 2026-10-29): how many are drawn, and how far along all of them are, by the hub's stages
