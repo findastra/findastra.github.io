@@ -103,34 +103,74 @@
     const share = () => Math.max(.18, Math.min(.42, 1.1 / (2.4 + folks.length * .3)));
     const rand = () => Math.random() * 2 - 1;
     function spawn(code) {
-      const p = F.decode(code).parts, sp = .006 + Math.random() * .004;
+      const p = F.decode(code).parts, sp = .008 + Math.random() * .005;
       let v = [rand(), rand(), rand()], n = Math.hypot(...v) || 1; v = v.map((x) => (x / n) * sp);
       return { code, art: sprite(p, 192), x: rand() * .3, y: rand() * .3, z: .5, vx: v[0], vy: v[1], vz: v[2], squash: 0, spin: 0, born: performance.now() };
     }
     function save() { store.set(HOME_KEY, folks.map((f) => f.code)); count(); }
     function count() {
-      $('home-count').textContent = `${folks.length} of ${HOME_MAX} moved in`;
-      $('home-out').disabled = !picked; $('home-clear').disabled = !folks.length;
-      $('home-pick').textContent = picked ? `#${picked.code} · tap “let them out” to give the spot to someone new` : folks.length ? 'Tap a Fuzzboi to see its code.' : 'Nobody lives here yet. Make a Fuzzboi above and send it in.';
+      $('home-count').textContent = loose ? `${folks.length} out on your screen` : `${folks.length} of ${HOME_MAX} moved in`;
+      $('home-out').disabled = !folks.length; $('home-out').textContent = loose ? 'call them home' : 'let them out';
+      $('home-clear').disabled = !folks.length;
+      $('home-pick').textContent = loose ? 'They are loose on your screen. Keep scrolling; they come along.' : picked ? `#${picked.code}` : folks.length ? 'Tap a Fuzzboi to see its code.' : 'Nobody lives here yet. Make a Fuzzboi above and send it in.';
+    }
+    // let them out (Astra, 2026-10-29): every Fuzzboi in the dome bursts out onto the whole screen and keeps bouncing off its
+    // edges, over whatever the visitor is doing, until they are called home
+    let loose = null;
+    function letOut() {
+      const cvLoose = document.createElement('canvas'); cvLoose.className = 'fuzz-loose'; cvLoose.setAttribute('aria-hidden', 'true'); document.body.append(cvLoose);
+      const lx = cvLoose.getContext('2d'), dpr = Math.min(2, devicePixelRatio || 1), box = cv.getBoundingClientRect();
+      const size = () => Math.max(56, Math.min(120, innerWidth * .14));
+      const fitLoose = () => { cvLoose.width = innerWidth * dpr; cvLoose.height = innerHeight * dpr; lx.setTransform(dpr, 0, 0, dpr, 0, 0); };
+      fitLoose(); addEventListener('resize', fitLoose);
+      const ox = box.left + box.width / 2, oy = box.top + box.height / 2;
+      const run = folks.map((f) => {
+        const x = f.sx != null ? box.left + f.sx : ox, y = f.sy != null ? box.top + f.sy : oy, a = Math.atan2(y - oy, x - ox) || Math.random() * 7, sp = 4 + Math.random() * 4;
+        return { f, x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, squash: 0, spin: 0 };
+      });
+      let raf = 0;
+      const tick = () => {
+        raf = requestAnimationFrame(tick);
+        const s = size(), half = s / 2, Wl = innerWidth, Hl = innerHeight;
+        lx.clearRect(0, 0, Wl, Hl);
+        for (const b of run) {
+          if (!reduced) {
+            b.x += b.vx; b.y += b.vy;
+            // slow down to an easy bounce after the burst
+            const v = Math.hypot(b.vx, b.vy); if (v > 2.6) { b.vx *= .99; b.vy *= .99; }
+            if (b.x < half && b.vx < 0 || b.x > Wl - half && b.vx > 0) { b.vx = -b.vx; b.squash = 1; b.spin = (Math.random() - .5) * .6; }
+            if (b.y < half && b.vy < 0 || b.y > Hl - half && b.vy > 0) { b.vy = -b.vy; b.squash = 1; b.spin = (Math.random() - .5) * .6; }
+            b.x = Math.min(Wl - half, Math.max(half, b.x)); b.y = Math.min(Hl - half, Math.max(half, b.y));
+          }
+          b.squash = Math.max(0, b.squash - .06); b.spin *= .95;
+          const sq = Math.sin(b.squash * Math.PI) * .2;
+          lx.save(); lx.translate(b.x, b.y); lx.rotate(b.spin); lx.scale(1 + sq, 1 - sq); lx.drawImage(b.f.art, -half, -half, s, s); lx.restore();
+        }
+      };
+      tick();
+      loose = { add(f) { const a = Math.random() * 7; run.push({ f, x: ox, y: oy, vx: Math.cos(a) * 5, vy: Math.sin(a) * 5, squash: 0, spin: 0 }); }, home() { cancelAnimationFrame(raf); removeEventListener('resize', fitLoose); cvLoose.remove(); loose = null; for (const f of folks) { f.born = performance.now(); f.x = rand() * .4; f.y = rand() * .4; f.z = rand() * .4; } count(); } };
+      picked = null; count();
     }
     function add(code) {
       if (folks.length >= HOME_MAX) return `The Cyber Dome is full (${HOME_MAX}). Let one out to make room.`;
-      folks.push(spawn(code)); save();
+      const f = spawn(code); folks.push(f); if (loose) loose.add(f); save();
       return `#${code} moved into the Cyber Dome (${folks.length} of ${HOME_MAX}).`;
     }
     cv.addEventListener('pointerdown', (e) => {
+      if (loose) return;
       const r = cv.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
       const hit = [...folks].filter((f) => f.ss).sort((p, q) => q.z - p.z).find((f) => Math.hypot(f.sx - x, f.sy - y) < f.ss * .45);
       picked = hit === picked ? null : hit || null;
       if (picked) { picked.squash = 1; codeIn.value = picked.code; make(picked.code, false); }
       count();
     });
-    $('home-out').onclick = () => { if (!picked) return; folks.splice(folks.indexOf(picked), 1); picked = null; save(); };
-    $('home-clear').onclick = () => { folks.length = 0; picked = null; save(); };
+    $('home-out').onclick = () => { if (loose) loose.home(); else if (folks.length) letOut(); };
+    $('home-clear').onclick = () => { if (loose) loose.home(); folks.length = 0; picked = null; save(); };
     // the sphere: an outline, rings of latitude seen a little from above, and meridians that turn
     function globe() {
       const r = R(), ox = W / 2, oy = H / 2, tilt = .28;
-      cx.fillStyle = '#060606'; cx.fillRect(0, 0, W, H);
+      // no black square round it: the sphere floats on the cabinet (Astra, 2026-10-29)
+      cx.clearRect(0, 0, W, H);
       const glow = cx.createRadialGradient(ox - r * .3, oy - r * .35, r * .1, ox, oy, r);
       glow.addColorStop(0, 'rgba(255, 255, 255, .07)'); glow.addColorStop(1, 'rgba(255, 255, 255, .01)');
       cx.fillStyle = glow; cx.beginPath(); cx.arc(ox, oy, r, 0, 7); cx.fill();
@@ -138,13 +178,13 @@
       for (let k = -3; k <= 3; k++) { const lat = (k / 4) * (Math.PI / 2), rx = Math.cos(lat) * r; cx.beginPath(); cx.ellipse(ox, oy + Math.sin(lat) * r * Math.cos(tilt), rx, rx * Math.sin(tilt), 0, 0, 7); cx.stroke(); }
       for (let k = 0; k < 8; k++) { const ph = turn + (k / 8) * Math.PI, rx = Math.abs(Math.sin(ph)) * r; cx.beginPath(); cx.ellipse(ox, oy, rx, r, 0, 0, 7); cx.stroke(); }
       cx.lineWidth = 2; cx.strokeStyle = 'rgba(255, 255, 255, .65)'; cx.beginPath(); cx.arc(ox, oy, r, 0, 7); cx.stroke();
-      cx.fillStyle = '#f2f2f2'; cx.font = '700 13px JetBrains Mono, monospace'; cx.fillText('FUZZBOI CYBER DOME', 14, 26);
     }
     function frame(t) {
       requestAnimationFrame(frame);
       if (!W) return;
       if (!reduced) turn += .003;
       globe();
+      if (loose) return; // they are all out on the screen
       const r = R(), sh = share(), rr = sh / 2; // a Fuzzboi's radius inside the unit sphere
       for (const f of folks) {
         if (!reduced) {
@@ -188,7 +228,6 @@
       for (const b of boings) { const v = view(b.x, b.y, b.z); cx.fillStyle = `rgba(255, 255, 255, ${b.t})`; cx.fillText(b.word, v.sx, v.sy - r * sh - (1 - b.t) * 18); b.t -= .025; }
       cx.textAlign = 'start';
       for (let i = boings.length - 1; i >= 0; i--) if (boings[i].t <= 0) boings.splice(i, 1);
-      if (folks.length >= HOME_MAX) { cx.fillStyle = '#f2f2f2'; cx.font = '700 13px JetBrains Mono, monospace'; cx.fillText('FULL HOUSE', W - 104, 26); }
     }
     ready.then(() => {
       if (!F) return;

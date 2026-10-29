@@ -59,9 +59,12 @@ html::-webkit-scrollbar { display: none; }
 /* the words sit right on the pole, no black block behind them, so it runs unbroken (Astra, 2026-10-29: "I don't like how it
    just goes black, gray, white, gray"); white in the middle and shiny, glowing in its own color, like the sparkle, with a
    thin dark edge so it reads over the white pole (Astra, 2026-10-29) */
-.floors a { color: #fff; text-shadow: 0 0 1px #000, 0 0 2px #000, 0 0 5px var(--c), 0 0 10px var(--c); }
-.floors a:hover, .floors a:focus-visible { background: none; color: #fff; }
-.floors a.on { color: #fff; text-shadow: 0 0 1px #000, 0 0 2px #000, 0 0 6px var(--c), 0 0 12px var(--c), 0 0 22px var(--c); }
+/* a new hand (Astra, 2026-10-29: "I don't like the text style"): written in the Polaroids' marker, each floor in its own
+   neon with a black edge so it reads over the pole; the one you are on is white-hot in its color */
+.floors a { font-family: "Permanent Marker", cursive; font-weight: 400; letter-spacing: .08em; color: var(--c);
+  text-shadow: -1px 0 #000, 1px 0 #000, 0 -1px #000, 0 1px #000, 0 0 6px color-mix(in srgb, var(--c) 60%, transparent); }
+.floors a:hover, .floors a:focus-visible { background: none; color: #fff; text-shadow: -1px 0 #000, 1px 0 #000, 0 -1px #000, 0 1px #000, 0 0 8px var(--c); }
+.floors a.on { color: #fff; text-shadow: -1px 0 #000, 1px 0 #000, 0 -1px #000, 0 1px #000, 0 0 6px var(--c), 0 0 12px var(--c), 0 0 22px var(--c); }
 /* film grain over everything */
 body::after { content: ""; position: fixed; inset: 0; z-index: 60; pointer-events: none; opacity: .09;
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
@@ -208,7 +211,7 @@ main { position: relative; z-index: 1; }
 .who { display: flex; flex-direction: column; justify-content: center; text-align: center; }
 .portrait { margin: 0; width: 100%; aspect-ratio: 1; position: relative; }
 /* a little see-through, hiding among the falling numbers and the sparkles (Astra, 2026-10-29) */
-.portrait img { width: 100%; height: 100%; object-fit: cover; border: 3px solid var(--ink); opacity: .8; }
+.portrait img { width: 100%; height: 100%; object-fit: cover; border: 3px solid var(--ink); opacity: .6; }
 /* the portrait's own colors twinkle on it (cyber.js samples them), rainbow: each one a little off its color, and all of
    them drifting round the hues (Astra, 2026-10-27); much more saturated and further round the rainbow (Astra, 2026-10-29) */
 .portrait .glitter { inset: 3px; z-index: 1; animation: rainbow-drift 14s linear infinite; }
@@ -357,8 +360,9 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 2px #f2f2f2; text
 /* the white border is drawn as strips round the photo, so the photo is a real window: a clear one shows the paper behind
    (Astra, 2026-10-29) */
 .polaroid .frame { --edge-w: 12px; position: relative; width: 100%; margin: 0 auto; padding: var(--edge-w) var(--edge-w) 0; box-shadow: 8px 8px 0 #000;
-  background: linear-gradient(#f2f2f2 0 0) top / 100% var(--edge-w) no-repeat, linear-gradient(#f2f2f2 0 0) left / var(--edge-w) 100% no-repeat,
-    linear-gradient(#f2f2f2 0 0) right / var(--edge-w) 100% no-repeat;
+  /* each strip a pixel wider than the border, so no hairline shows where they meet the photo when the frame is tilted */
+  background: linear-gradient(#f2f2f2 0 0) top / 100% calc(var(--edge-w) + 1px) no-repeat, linear-gradient(#f2f2f2 0 0) left / calc(var(--edge-w) + 1px) 100% no-repeat,
+    linear-gradient(#f2f2f2 0 0) right / calc(var(--edge-w) + 1px) 100% no-repeat;
   rotate: var(--tilt); transition: rotate .3s, transform .3s; }
 .polaroid .photo.clear { background: none; }
 .polaroid .photo.clear .developing { display: none; }
@@ -366,13 +370,16 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 2px #f2f2f2; text
 .polaroid .photo img.glow, .ai-card img.glow { -webkit-mask: var(--m) center / contain no-repeat; mask: var(--m) center / contain no-repeat; mask-mode: luminance; object-fit: contain;
   filter: brightness(1.9) saturate(1.2); }
 /* AI Discord Presence: its two cards, one over the other */
-.ai-cards { position: absolute; inset: 0; display: grid; align-content: center; gap: 10px; padding: 8%; }
-.ai-card { display: flex; align-items: center; gap: 10px; padding: 8px; text-align: left; text-decoration: none; color: #f2f2f2;
-  background: rgba(17, 18, 20, .72); border-radius: 8px; box-shadow: 0 0 0 1px rgba(255, 255, 255, .12); }
-.ai-card:hover, .ai-card:focus-visible { background: rgba(17, 18, 20, .9); color: #fff; outline: none; box-shadow: 0 0 0 2px var(--c); }
-.ai-card img { width: 46%; aspect-ratio: 1; flex: none; animation: galaxy-turn 60s linear infinite; }
-.ai-card span { display: grid; min-width: 0; font: 600 12px/1.3 Inter, sans-serif; color: #b9bbbe; }
-.ai-card b { font: 800 14px/1.2 Inter, sans-serif; color: #fff; }
+/* laid out like a Discord profile's activity: "Playing" over the art, the app's name and what it is using beside it */
+.ai-cards { position: absolute; inset: 0; display: grid; align-content: center; gap: 8px; padding: 7%; }
+.ai-card { display: grid; grid-template-columns: 44% 1fr; grid-template-rows: auto 1fr; align-items: center; column-gap: 8px; padding: 6px 8px 8px; text-align: left;
+  text-decoration: none; color: #f2f2f2; background: rgba(30, 31, 34, .55); border-radius: 8px; box-shadow: 0 0 0 1px rgba(255, 255, 255, .08); }
+.ai-card:hover, .ai-card:focus-visible { background: rgba(30, 31, 34, .8); color: #fff; outline: none; box-shadow: 0 0 0 2px var(--c); }
+.ai-head { grid-column: 1 / -1; font: 700 9px/1.6 Inter, sans-serif; letter-spacing: .04em; text-transform: uppercase; color: #b5bac1; }
+.ai-card img { width: 100%; aspect-ratio: 1; animation: galaxy-turn 60s linear infinite; }
+.ai-words { display: grid; min-width: 0; font: 500 11px/1.3 Inter, sans-serif; color: #dbdee1; }
+.ai-words b { font: 700 13px/1.25 Inter, sans-serif; color: #fff; }
+.ai-words span:last-child { color: #949ba4; }
 .polaroid:hover .frame { rotate: 0deg; transform: scale(1.03); }
 /* a strip of neon tape holds each one up */
 #vr .polaroid { --c: var(--c-vr) !important; }
@@ -419,15 +426,18 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 2px #f2f2f2; text
 .photo .developing { font: 1.3rem/1 "Permanent Marker", cursive; color: color-mix(in srgb, var(--c) 55%, #fff); text-shadow: 0 0 12px var(--c); rotate: -7deg; }
 /* the little arrows snug in the white border's bottom corners, as far from the side as from the bottom, and "1 of 3"
    between them on the same line (Astra, 2026-10-29) */
-.polaroid .frame { --corner: 5px; --flip: 20px; }
-.polaroid .frame.flips .note { padding-bottom: calc(var(--flip) + var(--corner) + 2px); }
-.polaroid .count { position: absolute; left: 50%; bottom: var(--corner); height: var(--flip); display: grid; place-items: center; translate: -50% 3px;
+/* --lift-arrows: the marker arrow's ink sits low in its box, so the box rides 4px higher to leave the same gap under the arrow as
+   beside it (Astra, 2026-10-29) */
+.polaroid .frame { --corner: 5px; --flip: 20px; --lift-arrows: 4px; }
+.polaroid .frame.flips .note { padding-bottom: calc(var(--flip) + var(--corner) + var(--lift-arrows) + 2px); }
+.polaroid .count { position: absolute; left: 50%; bottom: calc(var(--corner) + var(--lift-arrows)); height: var(--flip); display: grid; place-items: center; translate: -50% 3px;
   font: 13px/1 "Permanent Marker", cursive; color: #6a6a6a; white-space: nowrap; rotate: -2deg; }
-.polaroid .flip { position: absolute; bottom: var(--corner); width: var(--flip); height: var(--flip); display: grid; place-items: center; padding: 0; border: 0; background: none;
+.polaroid .flip { position: absolute; bottom: calc(var(--corner) + var(--lift-arrows)); width: var(--flip); height: var(--flip); display: grid; place-items: center; padding: 0; border: 0; background: none;
   color: #151515; font: 24px/1 "Permanent Marker", cursive; cursor: pointer; }
 .polaroid .flip.prev { left: var(--corner); } .polaroid .flip.next { right: var(--corner); }
 .polaroid .flip:hover, .polaroid .flip:focus-visible { color: #151515; text-shadow: 0 0 6px var(--c), 0 0 12px var(--c); outline: none; }
-.polaroid .note { display: grid; align-content: center; gap: 3px; min-height: 86px; padding: 10px 6px 14px; color: #151515; background: #f2f2f2; }
+/* the writing strip runs the frame's full width, under the side strips, so the sides are one white all the way down */
+.polaroid .note { display: grid; align-content: center; gap: 3px; min-height: 86px; margin: -1px calc(-1 * var(--edge-w)) 0; padding: 11px calc(6px + var(--edge-w)) 14px; color: #151515; background: #f2f2f2; }
 .note .title { font: 1.35rem/1.05 "Permanent Marker", cursive; color: #151515; text-decoration: none; overflow-wrap: anywhere; rotate: -1.5deg; }
 a.title:hover, a.title:focus-visible { color: color-mix(in srgb, var(--c) 45%, #000); outline: none; }
 .note .kind { font: .9rem/1.15 "Permanent Marker", cursive; color: #5a5a5a; rotate: 1deg; }
@@ -471,6 +481,15 @@ a.title:hover, a.title:focus-visible { color: color-mix(in srgb, var(--c) 45%, #
 .jar-hint { margin: 0; font: 700 clamp(1.4rem, 3vw, 2rem)/1.2 var(--mono); color: #4a4a4a; text-align: center; }
 .flyer { position: absolute; z-index: 30; pointer-events: none; width: var(--s); height: var(--s); }
 .jar-all[hidden] { display: none; }
+/* the row of star slots under the jar: each shake fills the dashed one and a new one waits after it (Astra, 2026-10-29) */
+.jar-all .slot { position: relative; width: 100%; max-width: 420px; aspect-ratio: 229 / 220; justify-self: center; margin-bottom: -5%; }
+.jar-all .slot svg { position: absolute; inset: 6%; width: 88%; height: 88%; overflow: visible; }
+.jar-all .slot use { fill: none; stroke: #5a5a5a; stroke-width: 5; stroke-dasharray: 18 12; }
+.jar-all .card.landed { animation: land .45s cubic-bezier(.2, 1.6, .4, 1); }
+@keyframes land { from { transform: scale(.9); } }
+/* the stars, more neon: each glows in its own color (Astra, 2026-10-29) */
+.card .shape { filter: drop-shadow(0 0 6px var(--c)) drop-shadow(0 0 16px color-mix(in srgb, var(--c) 60%, transparent)); }
+.mini svg { filter: drop-shadow(0 0 3px var(--c)); }
 
 /* everything else: the README's groups, each a wall of Polaroids */
 .ticker[hidden] { display: none; }
@@ -543,7 +562,12 @@ a.title:hover, a.title:focus-visible { color: color-mix(in srgb, var(--c) 45%, #
 .fz-traits dd { margin: 0; color: #f2f2f2; display: flex; align-items: center; gap: 6px; }
 .fz-traits dd i { width: 14px; height: 14px; border: 2px solid #f2f2f2; }
 #fz-note, #home-pick, #home-count { min-height: 1.4em; font-size: 12px; }
-.home { display: block; width: 100%; aspect-ratio: 1; border: 2px solid #000; box-shadow: 6px 6px 0 #3a3a3a; background: #0a0a0a; cursor: pointer; touch-action: manipulation; }
+.home { display: block; width: 100%; aspect-ratio: 1; cursor: pointer; touch-action: manipulation; }
+/* the Fuzzbois let out of the dome, loose over the whole screen; clicks go through to the page */
+.fuzz-loose { position: fixed; inset: 0; z-index: 55; width: 100vw; height: 100vh; pointer-events: none; }
+/* each game's name in the Arcade's yellow, like the rest of its color (Astra, 2026-10-29) */
+.cab h3 { color: var(--c-arcade); border-bottom-color: var(--c-arcade); font-size: 14px; text-shadow: 0 0 8px color-mix(in srgb, var(--c-arcade) 70%, transparent);
+  box-shadow: 0 6px 10px -8px var(--c-arcade); }
 .screen { position: relative; aspect-ratio: 4 / 3; border: 2px solid #000; box-shadow: 6px 6px 0 #3a3a3a; background: #060606; touch-action: manipulation; }
 .screen canvas { display: block; width: 100%; height: 100%; }
 .hud { display: flex; justify-content: space-between; margin: 12px 0; color: #8a8a8a; }

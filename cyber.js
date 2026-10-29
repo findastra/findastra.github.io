@@ -288,8 +288,12 @@
   const SHOW_DESCRIPTIONS = false;
   // clear: the photo has no backing, so the paper shows through around the picture (Astra, 2026-10-29). The Discord galaxies
   // are drawn on black, so their black is masked away (glow) and the whole spiral fits inside the frame
-  const glows = (p) => /galaxy(-card)?\.(png|gif)$/.test(p.src);
-  const clearOf = (p) => !!(p && (p.clear || glows(p)));
+  // The two still galaxies have see-through copies here, their black turned into real see-through with the color kept at
+  // full strength, so they glow on the paper like they do on Discord (Astra, 2026-10-29: the masked ones looked dull)
+  const GALAXY = { anthropic: 'art/projects/galaxies/anthropic-galaxy.png', openai: 'art/projects/galaxies/openai-galaxy.png' };
+  const ownGalaxy = (src) => { const m = /findastra\/(anthropic|openai)-discord-presence\/main\/public\/galaxy\.png$/.exec(src); return m && GALAXY[m[1]]; };
+  const glows = (p) => /^https:.*galaxy(-card)?\.(png|gif)$/.test(p.src) && !ownGalaxy(p.src);
+  const clearOf = (p) => !!(p && (p.clear || glows(p) || ownGalaxy(p.src)));
   function polaroid({ key, name, kind, date, text, pics, repo, site, siteLabel, shot, sticky, clear }) {
     const c = el('article', 'polaroid'); const h = paint(c, key);
     const photo = el(pics.length && !shot && !pics.some((p) => p.type === 'frame') ? 'button' : 'div', 'photo');
@@ -310,7 +314,7 @@
           if (p.bare) f.addEventListener('load', () => { try { const st = f.contentDocument.createElement('style'); st.textContent = '.panel{display:none!important}'; f.contentDocument.head.append(st); } catch {} });
           new IntersectionObserver((seen, io) => { if (seen.some((s) => s.isIntersecting)) { f.src = p.src; io.disconnect(); } }, { rootMargin: '400px' }).observe(photo); return f;
         }
-        const im = el('img'); im.src = p.src; im.alt = ''; im.loading = 'lazy'; if (p.fit) im.style.objectFit = p.fit; if (p.bg) im.style.background = p.bg;
+        const im = el('img'); im.src = ownGalaxy(p.src) || p.src; im.alt = ''; im.loading = 'lazy'; if (p.fit) im.style.objectFit = p.fit; if (p.bg) im.style.background = p.bg;
         // size: a picture set in from the frame's edges, so the tape covers none of it
         if (p.size) im.style.scale = p.size;
         if (glows(p)) { im.classList.add('glow'); im.style.setProperty('--m', `url("${p.src}")`); }
@@ -377,16 +381,15 @@
   };
   // Photostar is one word (Astra, 2026-10-29)
   const NAMES = { 'astras-photostar': "Astra's Photostar" };
-  // AI Discord Presence's picture (Astra, 2026-10-29): its two Discord cards, OpenAI over Anthropic, each with its galaxy, on
-  // the bare paper
-  const AI = 'https://raw.githubusercontent.com/findastra/ai-discord-presence/main/';
+  // AI Discord Presence's picture (Astra, 2026-10-29): its two Discord cards, OpenAI over Anthropic, laid out like the
+  // activity on a Discord profile (the "Playing" line, the galaxy, the app, what it is using), on the bare paper
   const aiCardsShot = () => {
     const box = el('div', 'ai-cards');
-    for (const [app, who, using] of [['openai-discord-presence', 'OpenAI', 'Using Codex'], ['anthropic-discord-presence', 'Anthropic', 'Using Claude']]) {
-      const card = link('https://github.com/findastra/ai-discord-presence/tree/main/' + app, 'ai-card');
-      const g = el('img', 'glow'); g.src = AI + app + '/public/galaxy-card.gif'; g.alt = ''; g.loading = 'lazy'; g.style.setProperty('--m', `url("${g.src}")`);
-      const words = el('span'); words.append(el('b', null, who), el('span', null, using));
-      card.append(g, words); box.append(card);
+    for (const [app, who, using] of [['openai', 'OpenAI', 'Using Codex'], ['anthropic', 'Anthropic', 'Using Claude']]) {
+      const card = link('https://github.com/findastra/ai-discord-presence/tree/main/' + app + '-discord-presence', 'ai-card');
+      const g = el('img'); g.src = GALAXY[app]; g.alt = ''; g.loading = 'lazy';
+      const words = el('span', 'ai-words'); words.append(el('b', null, who), el('span', null, using), el('span', null, 'Discord Presence'));
+      card.append(el('span', 'ai-head', 'Playing'), g, words); box.append(card);
     }
     return box;
   };
@@ -405,8 +408,39 @@
     const own = r ? r.name : [p.repo, name].find((n) => n && IMG[n] && IMG[n].private);
     return { p, r, pics: own ? picturesOf(own) : [] };
   };
+  // each pet's star is the page's neon nearest its own colors (Astra, 2026-10-29): the hue its drawing leans to, from its
+  // colorful pixels, snapped to the section colors plus cyan; a pet with hardly any color keeps its hashed one
+  const NEON = [[350, '#ff2e4d'], [26, '#ff7a1a'], [56, '#fff01f'], [107, '#39ff14'], [186, '#00f0ff'], [210, '#1fa4ff'], [258, '#8c6bff'], [312, '#ff2bd6']];
+  const neonOf = new Map();
+  const petNeon = (src) => {
+    if (!src) return Promise.resolve(null);
+    if (!neonOf.has(src)) neonOf.set(src, new Promise((ok) => {
+      const im = new Image(); im.crossOrigin = 'anonymous';
+      im.onerror = () => ok(null);
+      im.onload = () => {
+        try {
+          const cv = document.createElement('canvas'); cv.width = cv.height = 32; const x = cv.getContext('2d', { willReadFrequently: true });
+          x.drawImage(im, 0, 0, 32, 32); const d = x.getImageData(0, 0, 32, 32).data;
+          let sx = 0, sy = 0, wt = 0;
+          for (let i = 0; i < d.length; i += 4) {
+            if (d[i + 3] < 128) continue;
+            const r = d[i] / 255, g = d[i + 1] / 255, b = d[i + 2] / 255, mx = Math.max(r, g, b), mn = Math.min(r, g, b), s = mx ? (mx - mn) / mx : 0;
+            if (s < .35 || mx < .3) continue;
+            const hue = mx === r ? ((g - b) / (mx - mn)) % 6 : mx === g ? (b - r) / (mx - mn) + 2 : (r - g) / (mx - mn) + 4;
+            const a = hue * Math.PI / 3, w = s * mx; sx += Math.cos(a) * w; sy += Math.sin(a) * w; wt += w;
+          }
+          if (wt < 6) return ok(null);
+          const hue = ((Math.atan2(sy, sx) * 180 / Math.PI) + 360) % 360, gap = (n) => Math.min(Math.abs(n - hue), 360 - Math.abs(n - hue));
+          ok(NEON.reduce((best, n) => (gap(n[0]) < gap(best[0]) ? n : best))[1]);
+        } catch { ok(null); }
+      };
+      im.src = src;
+    }));
+    return neonOf.get(src);
+  };
+  const neonStar = (node, p) => petNeon(iconOf(p)).then((c) => { if (c) node.style.setProperty('--c', c); });
   function star({ p, r, pics }) {
-    const c = el('article', 'card'); const h = paint(c, r ? r.name : p.pet);
+    const c = el('article', 'card'); const h = paint(c, r ? r.name : p.pet); neonStar(c, p);
     const repoUrl = r ? 'https://github.com/findastra/' + r.name : null, icon = iconOf(p), site = siteOf(p, r);
     let thumb;
     if (pics.length) {
@@ -443,7 +477,7 @@
   // seeded random, so the pile looks the same until the jar is shaken
   const rand = (seed) => () => ((seed = Math.imul(seed ^ (seed >>> 15), 2246822507) + 0x9e3779b9 >>> 0) / 4294967296);
   const miniStar = (e) => {
-    const m = el('span'); m.style.setProperty('--c', colorOf('pet-' + e.p.number));
+    const m = el('span'); m.style.setProperty('--c', colorOf('pet-' + e.p.number)); neonStar(m, e.p);
     const svg = svgEl('svg', { viewBox: '-111 -116 229 220', 'aria-hidden': 'true' }); svg.append(svgEl('use', { href: '#star' })); m.append(svg);
     const icon = iconOf(e.p); if (icon) { const im = el('img'); im.src = icon; im.alt = ''; im.loading = 'lazy'; m.append(im); }
     return m;
@@ -451,7 +485,21 @@
   function makeJar(id, kind) {
     const box = $(id), jar = box.querySelector('.jar'), inside = box.querySelector('.jar-stars'), out = box.querySelector('.jar-out'), all = box.querySelector('.jar-all');
     const shakeBtn = box.querySelector('.shake'), pourBtn = box.querySelector('.pour');
-    let items = [], outKey = null, shaking = false;
+    // every shake adds the pet that fell out to a row of star slots under the jar, and they stay until all are out or put
+    // back (Astra, 2026-10-29: "it just keeps extending the parchment paper down below the jar")
+    let items = [], caught = [], shaking = false, drawnFor = null;
+    const keyOf = (it) => kind.key(it);
+    const left = () => items.filter((it) => !caught.includes(keyOf(it)));
+    // the next empty slot: a dashed star where the next pet lands
+    const slot = () => {
+      const s = el('div', 'slot'); s.setAttribute('aria-hidden', 'true');
+      const svg = svgEl('svg', { viewBox: '-111 -116 229 220' }); svg.append(svgEl('use', { href: '#star' })); s.append(svg); return s;
+    };
+    function drawCaught() {
+      const byKey = new Map(items.map((it) => [keyOf(it), it]));
+      all.replaceChildren(...caught.filter((k) => byKey.has(k)).map((k) => kind.full(byKey.get(k))), ...(left().length ? [slot()] : []));
+      all.hidden = false;
+    }
     // glints: the same color-matched sparkle as the portrait, twinkling on the stars in the jar
     const glints = el('span', 'sparkles jar-glints'); glints.setAttribute('aria-hidden', 'true'); inside.after(glints);
     function fill(list) {
@@ -486,26 +534,30 @@
         m.style.top = (spots[i].y / H) * 100 + '%';
         m.style.setProperty('--r', Math.round(r() * 80 - 40) + 'deg');
         m.dataset.key = kind.key(it);
-        if (m.dataset.key === outKey) m.classList.add('gone');
+        if (caught.includes(m.dataset.key)) m.classList.add('gone');
         return m;
       }));
       glints.replaceChildren(...list.flatMap((it, i) => {
         const key = kind.key(it), h = hash(key);
         return Array.from({ length: kind.glints(h) }, (_, g) => {
           const k = hash(h + ':g' + g), a = (k % 628) / 100, d = rad * (.15 + ((k >>> 10) % 50) / 100);
-          const s = el('i'); s.dataset.key = key; s.hidden = key === outKey;
+          const s = el('i'); s.dataset.key = key; s.hidden = caught.includes(key);
           s.style.cssText = `--x:${((spots[i].x + Math.cos(a) * d) / W * 100).toFixed(1)}%;--y:${((spots[i].y + Math.sin(a) * d) / H * 100).toFixed(1)}%;--s:${Math.max(6, rad * (.45 + ((k >>> 16) % 40) / 100)).toFixed(1)}px;--d:${((k >>> 20) % 30) / 10}s;--c:${colorOf(key)};--dh:0;--l:40`;
           return s;
         });
       }));
-      box.querySelector('.jar-count').textContent = `${list.length} ${list.length === 1 ? kind.one : kind.many} in the jar`;
-      pourBtn.dataset.n = list.length;
-      if (!all.hidden) all.replaceChildren(...list.map(kind.full));
-      setPour(!all.hidden);
+      count();
+      if (drawnFor !== list) { drawnFor = list; drawCaught(); }
+    }
+    function count() {
+      const n = left().length;
+      box.querySelector('.jar-count').textContent = `${n} ${n === 1 ? kind.one : kind.many} in the jar`;
+      pourBtn.textContent = n ? `tip out all ${n}` : 'put them back in the jar';
+      shakeBtn.disabled = !n;
     }
     new ResizeObserver(() => fill(items)).observe(inside);
     async function shake() {
-      if (shaking || !items.length) return;
+      if (shaking || !left().length) return;
       shaking = true; jar.classList.add('shaking');
       const minis = [...inside.children];
       if (!reduced) {
@@ -517,44 +569,50 @@
         }
         await new Promise((ok) => setTimeout(ok, 640));
       }
-      // one with pictures comes out more often, and never the same one twice in a row
-      const choices = items.filter((it) => kind.key(it) !== outKey);
-      const withPics = choices.filter(kind.hasPics);
-      const pool = withPics.length && Math.random() < .65 ? withPics : choices.length ? choices : items;
-      const pick = pool[Math.floor(Math.random() * pool.length)];
-      const from = minis.find((m) => m.dataset.key === kind.key(pick));
-      minis.forEach((m) => m.classList.toggle('gone', m === from));
-      for (const g of glints.children) g.hidden = !!from && g.dataset.key === from.dataset.key;
+      // any one still in the jar, at random; one with pictures a little more often
+      const choices = left(), withPics = choices.filter(kind.hasPics);
+      const pool = withPics.length && Math.random() < .65 ? withPics : choices;
+      const pick = pool[Math.floor(Math.random() * pool.length)], key = keyOf(pick);
+      const from = minis.find((m) => m.dataset.key === key);
+      if (from) from.classList.add('gone');
+      for (const g of glints.children) if (g.dataset.key === key) g.hidden = true;
       jar.classList.remove('shaking');
-      if (!reduced && from) await fly(from, pick);
-      outKey = kind.key(pick);
-      out.replaceChildren(kind.full(pick));
+      if (!all.querySelector('.slot')) all.append(slot());
+      const into = all.querySelector('.slot');
+      // its own star climbs out of the jar's mouth and drops into the next slot, growing to full size as it lands
+      if (!reduced && from) await fly(from, pick, into);
+      caught.push(key);
+      const card = kind.full(pick); card.classList.add('landed'); into.before(card);
+      if (!left().length) into.remove();
+      out.querySelector('.jar-hint').innerHTML = left().length ? 'Shake again.<br>Another pet falls out.' : 'Every pet is out.';
+      count();
+      card.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'nearest' });
       shaking = false;
     }
-    // the chosen one climbs out of the jar's mouth and lands where its window opens
-    function fly(from, it) {
-      const st = box.getBoundingClientRect(), a = from.getBoundingClientRect(), mouth = jar.getBoundingClientRect(), b = out.getBoundingClientRect();
+    function fly(from, it, to) {
+      const st = box.getBoundingClientRect(), a = from.getBoundingClientRect(), mouth = jar.getBoundingClientRect(), b = to.getBoundingClientRect();
       const f = kind.mini(it); f.classList.add('flyer'); f.style.setProperty('--s', a.width + 'px');
       f.style.left = a.left - st.left + 'px'; f.style.top = a.top - st.top + 'px'; box.append(f);
       const at = (x, y, sc, rot) => `translate(${x}px, ${y}px) scale(${sc}) rotate(${rot}deg)`;
       const mx = mouth.left + mouth.width / 2 - a.left - a.width / 2, my = mouth.top - a.top - a.height;
-      const ex = b.left + b.width / 2 - a.left - a.width / 2, ey = b.top + b.height / 2 - a.top - a.height / 2;
+      const ex = b.left + b.width / 2 - a.left - a.width / 2, ey = b.top + b.height / 2 - a.top - a.height / 2, grow = b.width / a.width;
       return f.animate([
         { transform: at(0, 0, 1, 0) },
-        { transform: at(mx, my, 1.3, 200), offset: .45 },
-        { transform: at(ex, ey, 5, 400), opacity: .2 },
-      ], { duration: 820, easing: 'cubic-bezier(.4, 0, .3, 1)' }).finished.then(() => f.remove());
+        { transform: at(mx, my - 30, 1.4, 160), offset: .35 },
+        { transform: at((mx + ex) / 2, Math.min(my, ey) - 60, grow * .5, 300), offset: .6 },
+        { transform: at(ex, ey, grow, 360) },
+      ], { duration: 1100, easing: 'cubic-bezier(.45, 0, .35, 1)' }).finished.then(() => f.remove());
     }
-    // tipped out, every one in the jar is laid out full size below it
-    function setPour(open) {
-      all.hidden = !open; box.classList.toggle('open', open);
-      if (open && all.children.length !== items.length) all.replaceChildren(...items.map(kind.full));
-      pourBtn.setAttribute('aria-expanded', String(open));
-      pourBtn.textContent = open ? 'put them back in the jar' : `tip out all ${pourBtn.dataset.n || ''} ${kind.many}`;
+    // tip out: every one left lands in the row at once; when none are left, they all go back in the jar
+    function pour() {
+      if (shaking) return;
+      if (left().length) caught.push(...left().map(keyOf)); else caught = [];
+      out.querySelector('.jar-hint').innerHTML = left().length ? 'Shake the jar.<br>One pet falls out.' : 'Every pet is out.';
+      drawnFor = null; fill(items);
     }
     jar.addEventListener('click', shake);
     shakeBtn.addEventListener('click', () => { shake(); listenForPhoneShake(shake); });
-    pourBtn.addEventListener('click', () => setPour(all.hidden));
+    pourBtn.addEventListener('click', pour);
     // drag the jar side to side to shake it
     let drag = null;
     jar.addEventListener('pointerdown', (e) => { drag = { x: e.clientX, dir: 0, flips: 0, t: performance.now() }; });
@@ -566,7 +624,7 @@
       drag.dir = dir; drag.x = e.clientX;
       if (drag.flips >= 2 && performance.now() - drag.t < 1500) { drag = null; shake(); }
     });
-    return { fill, setPour };
+    return { fill };
   }
   // on a phone, shaking the phone shakes the jar (iPhone asks once, after the button)
   let listening = false, lastShake = 0;
@@ -881,11 +939,29 @@
 
   // ---------- the scroll bar: the pole's sparkle rides it with the page; drag it to scroll (Astra, 2026-10-29) ----------
   (() => {
-    const pole = $('pole'), bead = $('bead');
-    const max = () => document.documentElement.scrollHeight - innerHeight, room = () => pole.clientHeight - bead.offsetHeight;
-    const place = () => { bead.style.top = (max() > 0 ? (scrollY / max()) * room() : 0) + 'px'; };
+    // it sits on a section's floor label exactly while that section is at the top of the paper, and slides between labels in
+    // step with the page between them (Astra, 2026-10-29: it was moving with the whole page, not the section you are on)
+    const pole = $('pole'), bead = $('bead'), marks = [...document.querySelectorAll('.floors a')];
+    const max = () => document.documentElement.scrollHeight - innerHeight;
+    const knots = () => {
+      const p = pole.getBoundingClientRect(), half = bead.offsetHeight / 2, room = pole.clientHeight - bead.offsetHeight, m = max();
+      let last = 0;
+      return marks.map((a, i) => {
+        const s = $(a.dataset.f), r = a.getBoundingClientRect();
+        const at = i === 0 || !s ? 0 : Math.min(m, Math.max(last, s.getBoundingClientRect().top + scrollY - 90));
+        last = at;
+        return { s: at, y: Math.min(room, Math.max(0, r.top + r.height / 2 - p.top - half)) };
+      });
+    };
+    // straight lines between the knots, read either way: page to pole, or pole to page while the sparkle is dragged
+    const lerp = (k, v, from, to) => {
+      if (v <= k[0][from]) return k[0][to];
+      for (let i = 1; i < k.length; i++) if (v <= k[i][from]) { const a = k[i - 1], b = k[i], span = b[from] - a[from]; return span ? a[to] + (b[to] - a[to]) * (v - a[from]) / span : b[to]; }
+      return k[k.length - 1][to];
+    };
+    const place = () => { bead.style.top = lerp(knots(), scrollY, 's', 'y') + 'px'; };
     let grab = 0; // where on the sparkle it was taken hold of, so it does not jump under the pointer
-    const to = (y) => scrollTo({ top: Math.min(1, Math.max(0, (y - grab) / room())) * max(), behavior: 'instant' });
+    const to = (y) => scrollTo({ top: lerp(knots(), y - pole.getBoundingClientRect().top - grab, 'y', 's'), behavior: 'instant' });
     bead.addEventListener('pointerdown', (e) => { grab = e.clientY - bead.getBoundingClientRect().top; bead.setPointerCapture(e.pointerId); bead.classList.add('held'); e.preventDefault(); });
     bead.addEventListener('pointermove', (e) => { if (bead.classList.contains('held')) to(e.clientY); });
     for (const t of ['pointerup', 'pointercancel']) bead.addEventListener(t, () => bead.classList.remove('held'));
