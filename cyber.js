@@ -14,7 +14,7 @@
   // that never change (Astra, 2026-10-24). The hub's index of that folder and its pet list are read live, so a new pet or a
   // new icon shows here by itself; pets-data.js is the snapshot for when GitHub does not answer.
   const HUB = 'https://raw.githubusercontent.com/findastra/astras-pet-os/main/', LATEST = HUB + 'art/latest/';
-  let pets = PETS, hosted = null; // hosted: every path under art/latest, once the hub's index answers
+  let pets = PETS, hosted = null, hostedFrom = {}; // hosted: every path under art/latest, once the hub's index answers
   // from the hub's pets.json: each pet's art folder name (Data Chip draws as "chip") and its own live website
   let artByRepo = {}, liveSiteByRepo = {}, pageByRepo = null;
   const PAGES = 'https://findastra.github.io/astras-pet-os/apps/pet-programs/';
@@ -25,9 +25,14 @@
     if (!p) return null;
     if (!hosted) return p.icon ? LATEST + p.icon : null;
     const names = [...new Set([artByRepo[p.repo], p.repo, slug(p.pet)].filter(Boolean))];
-    const hit = names.flatMap((n) => ['desktop-art/' + n + '/idle.png', 'moods/' + n + '/idle.png', 'frames/' + n + '/idle.png'])
-      .concat(names.map((n) => 'icons/' + n + '.png')).find((t) => hosted.has(t));
-    return hit ? LATEST + hit : null;
+    // the newest drawing wins (Astra, 2026-10-29: "the butterfly looks like it's not up-to-date"): each art/latest path is
+    // kept by the hub's index along with the dated file it stands for, so the latest date is the newest drawing; on a tie,
+    // the desktop art first
+    const tries = names.flatMap((n) => ['desktop-art/' + n + '/idle.png', 'moods/' + n + '/idle.png', 'frames/' + n + '/idle.png'])
+      .concat(names.map((n) => 'icons/' + n + '.png')).filter((t) => hosted.has(t));
+    const dated = (t) => { const m = /(\d{8})(?=\.\w+$)/.exec(String(hostedFrom[t] || '')); return m ? +m[1] : 0; };
+    const hit = tries.map((t, i) => ({ t, d: dated(t), i })).sort((a, b) => b.d - a.d || a.i - b.i)[0];
+    return hit ? LATEST + hit.t : null;
   };
   // a pet's website: its own live site, else its pet program page on the hub's GitHub Pages, else its public repo's site
   const siteOf = (p, r) => liveSiteByRepo[p.repo] || (pageByRepo ? pageByRepo[p.repo] && PAGES + pageByRepo[p.repo] : p.site) || (r && r.homepage) || null;
@@ -1275,7 +1280,7 @@
   Promise.allSettled([getJson(HUB + 'pet-programs.json'), getJson(LATEST + 'index.json'), getJson(HUB + 'pets.json'),
     getJson('https://api.github.com/repos/findastra/astras-pet-os/contents/apps/pet-programs')])
     .then(([programs, index, hubPets, pages]) => {
-      if (index.status === 'fulfilled') hosted = new Set(Object.keys(index.value.pictures || {}).map((k) => k.replace(/^art\/latest\//, '')));
+      if (index.status === 'fulfilled') { const pics = index.value.pictures || {}; hosted = new Set(); for (const [k, v] of Object.entries(pics)) { const t = k.replace(/^art\/latest\//, ''); hosted.add(t); hostedFrom[t] = v; } }
       if (hubPets.status === 'fulfilled') for (const p of hubPets.value.pets || []) {
         if (p.art) artByRepo[p.repo] = p.art;
         if (p.interface_live_url) liveSiteByRepo[p.repo] = p.interface_live_url;

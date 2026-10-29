@@ -970,6 +970,15 @@
    document.getElementById('labName').textContent=name+' — saved to your library';
   };
   libBtn.onclick=()=>{libBox.hidden=!libBox.hidden;libBtn.setAttribute('aria-expanded',String(!libBox.hidden))};
+  // save png (Astra, 2026-10-29): the look as a picture, big and sharp, with a see-through background, named after it
+  document.getElementById('labPng').onclick=()=>{
+   const svg=labSvg.cloneNode(true);svg.setAttribute('xmlns','http://www.w3.org/2000/svg');svg.setAttribute('width','800');svg.setAttribute('height','920');
+   const url=URL.createObjectURL(new Blob([new XMLSerializer().serializeToString(svg)],{type:'image/svg+xml'})),img=new Image();
+   img.onload=()=>{const c=document.createElement('canvas');c.width=800;c.height=920;c.getContext('2d').drawImage(img,0,0,800,920);URL.revokeObjectURL(url);
+    c.toBlob(b=>{if(!b)return;const a=document.createElement('a'),name=(document.getElementById('labName').textContent.split(' — ')[0]||'my-look').trim();
+     a.href=URL.createObjectURL(b);a.download='avatar-lab-'+name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')+'.png';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);},'image/png');};
+   img.src=url;
+  };
   showLib();
   drawLab();
   }

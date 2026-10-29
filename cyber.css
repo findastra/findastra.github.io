@@ -885,9 +885,10 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
   .footer-sparkle { margin: 0; }
   .footer-star img { width: 40px; height: 40px; }
   .lab-group select { width: 100%; }
-  #labRand, #labSave, #labLibBtn { padding: 6px 8px; font-size: 11px; }
+  #labRand, #labSave, #labLibBtn, #labPng { padding: 6px 7px; font-size: 10.5px; }
   #labRand { order: 0; }
-  .cab .fz-row:has(#labSave) { flex-wrap: nowrap; gap: 8px; }
+  /* four buttons now (save png too), two by two on a phone */
+  .cab .fz-row:has(#labSave) { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .fz-digit input { font-size: 22px; }
   /* on a phone a smaller #, and the words under the numbers small enough to fit under each one (Astra, 2026-10-29) */
   .fz-code { --fzh: 44px; gap: 6px; }
