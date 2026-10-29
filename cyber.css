@@ -840,6 +840,16 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
   /* the Avatar lab too: the hairstyle collection across the whole row so its choice isn't cut off, and randomize, save and
      library side by side */
   .lab-group { grid-column: 1 / -1; }
+  /* the footer on a phone, never more than two rows (Astra, 2026-10-29): By Astra ✦ star ✦ Find Out More on the first, all
+     the links on the second, and less room above the star */
+  .foot { padding-top: 16px; }
+  .astra-footer .footer-line { flex-wrap: wrap; gap: 10px 8px; }
+  .astra-footer .footer-more { display: contents; }
+  .astra-footer .footer-title { font-size: 12px; white-space: nowrap; }
+  .astra-footer .footer-icons { flex: 0 0 100%; justify-content: center; }
+  .footer-group::before, .footer-sparkle { margin-right: 0; }
+  .footer-sparkle { margin: 0; }
+  .footer-star img { width: 40px; height: 40px; }
   .lab-group select { width: 100%; }
   #labRand, #labSave, #labLibBtn { padding: 6px 8px; font-size: 11px; }
   #labRand { order: 0; }
