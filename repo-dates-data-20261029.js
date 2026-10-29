@@ -1,0 +1,32 @@
+// Built by scripts/build-repo-dates-20261029.mjs on 2026-10-29: the day each public repo
+// was made on GitHub. Run it again after making a new repo.
+window.REPO_CREATED = {
+ "ai-discord-presence": "2026-10-08T02:46:28Z",
+ "anthropic-discord-presence": "2026-10-05T04:42:32Z",
+ "astras-gif-maker": "2026-10-09T22:46:29Z",
+ "astras-infinite-pole": "2026-09-12T21:01:38Z",
+ "astras-pet-os": "2026-10-09T02:19:59Z",
+ "astras-photostar": "2026-10-20T05:06:25Z",
+ "astras-star-window": "2026-10-20T04:47:41Z",
+ "detour-into-vr": "2026-10-09T21:34:50Z",
+ "dubstep-armory": "2026-10-14T10:01:37Z",
+ "findastra": "2026-10-05T04:37:14Z",
+ "findastra.github.io": "2026-10-17T07:22:13Z",
+ "fuzzboi-factory": "2021-08-08T00:21:18Z",
+ "ghost-protocol": "2026-09-13T01:27:42Z",
+ "infinite-studio": "2026-10-14T10:01:51Z",
+ "iris-the-origin-story": "2026-10-27T04:54:42Z",
+ "learn-python": "2023-08-12T07:45:14Z",
+ "liminal-doors": "2026-10-18T09:48:28Z",
+ "mommys-website": "2026-10-05T04:48:12Z",
+ "mommys-world": "2026-10-20T04:15:13Z",
+ "moodglass": "2026-10-25T04:06:20Z",
+ "openai-discord-presence": "2026-09-13T06:50:09Z",
+ "paper-girl": "2026-10-05T02:52:58Z",
+ "piranesi-house": "2026-10-05T14:44:14Z",
+ "pocket-message-board": "2026-10-20T02:44:18Z",
+ "rift-rabbit": "2026-10-09T22:50:51Z",
+ "the-cooling-tower": "2026-10-24T19:04:08Z",
+ "the-rainbow-maker": "2026-10-23T01:50:27Z",
+ "unity-unicorn": "2026-10-09T02:25:45Z"
+};

@@ -69,9 +69,11 @@ html::-webkit-scrollbar { display: none; }
    block across the pole, dimmed; the one you are on lit up and glowing */
 .floors a:nth-child(1) { --c: #ff2bd6; } .floors a:nth-child(2) { --c: #ff2e4d; } .floors a:nth-child(3) { --c: #ff7a1a; } .floors a:nth-child(4) { --c: #fff01f; }
 .floors a:nth-child(5) { --c: #39ff14; } .floors a:nth-child(6) { --c: #1f8fff; } .floors a:nth-child(7) { --c: #b14bff; }
-.floors a { font-family: var(--mono); font-weight: 700; letter-spacing: .1em; color: var(--c); background: #0b0b0b; opacity: .55; min-width: 28px; }
-.floors a:hover, .floors a:focus-visible { opacity: 1; background: #0b0b0b; color: var(--c); }
-.floors a.on { opacity: 1; color: var(--c); text-shadow: 0 0 8px var(--c), 0 0 16px var(--c); }
+/* the pole's words, the tape and the title tags a fifth softer, pastel rather than neon (Astra, 2026-10-29) */
+.floors a { --c-soft: color-mix(in oklab, var(--c) 78%, #e2e2e2); }
+.floors a { font-family: var(--mono); font-weight: 700; letter-spacing: .1em; color: var(--c-soft); background: #0b0b0b; opacity: .55; min-width: 28px; }
+.floors a:hover, .floors a:focus-visible { opacity: 1; background: #0b0b0b; color: var(--c-soft); }
+.floors a.on { opacity: 1; color: var(--c-soft); text-shadow: 0 0 8px var(--c-soft), 0 0 14px color-mix(in srgb, var(--c-soft) 70%, transparent); }
 /* film grain over everything */
 body::after { content: ""; position: fixed; inset: 0; z-index: 60; pointer-events: none; opacity: .09;
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
@@ -89,20 +91,29 @@ main { overflow-x: clip; }
   background: var(--frame); border-bottom: 2px solid var(--edge); color: #f2f2f2; }
 /* both banners have a stripe above and below (Astra, 2026-10-29), right against the hero, with no black edge, so the rain
    shows all the way to it */
-.race-stripe { height: 6px; background: repeating-conic-gradient(#5a5a5a 0 25%, #000 0 50%) 0 0 / 6px 6px; }
-/* each banner and its two stripes span the page from the pole scroll to the right edge, edged top and bottom in the frame's
-   gray (Astra, 2026-10-29) */
-.race-stripe:has(+ .ticker) { border-top: 2px solid var(--edge); }
-.ticker + .race-stripe { border-bottom: 2px solid var(--edge); }
+/* just two rows of checks, nothing else (Astra, 2026-10-29: "it's just supposed to be two squares stacked"): bigger squares so
+   they stay sharp on a phone, and no gray line along their outside edge, which read as a broken third row */
+.race-stripe { height: 8px; background: repeating-conic-gradient(#5a5a5a 0 25%, #000 0 50%) 0 0 / 8px 8px; }
 .brand { font: 700 18px var(--mono); color: #f2f2f2; text-decoration: none; white-space: nowrap; }
 .brand span { color: #777; }
 .brand:hover { background: none; color: #fff; }
 /* the search reads as the next part of the path: the same font as "find /astra /", a touch smaller, about as tall as the
    slash, right after it (Astra, 2026-10-29) */
 #search { flex: 0 1 190px; min-width: 0; box-sizing: border-box; height: 1.4em; font: 700 16px/1 var(--mono); color: #f2f2f2; background: #0a0a0a; border: 1px solid #555; padding: 0 4px; }
+/* a hair closer to the last /, so it reads as find /astra /search (Astra, 2026-10-29) */
+#search { margin-left: -4px; }
 #search::placeholder { color: #777; }
 #search:focus { outline: 2px dashed #8a8a8a; outline-offset: 3px; }
 #search.none { border-style: dashed; color: #8a8a8a; }
+/* the search's drop-down (Astra, 2026-10-29): what matches, under the box; pick one and the page goes there */
+.search-list { position: fixed; z-index: 70; margin: 0; padding: 4px; list-style: none; max-height: min(60vh, 420px); overflow-y: auto; background: #0a0a0a; border: 1px solid #555; box-shadow: 6px 6px 0 #000; font: 13px/1.3 var(--mono); }
+.search-list[hidden] { display: none; }
+.search-list li { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; align-items: baseline; padding: 6px 8px; cursor: pointer; color: #f2f2f2; }
+.search-list li small { grid-column: 2; color: #8a8a8a; font-size: 11px; }
+.search-list li i { font-style: normal; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: #8a8a8a; min-width: 6ch; }
+.search-list li[aria-selected="true"], .search-list li:hover { background: #2a2a2a; }
+/* where the search took you, outlined a moment */
+.found { outline: 3px dashed #f2f2f2; outline-offset: 6px; transition: outline-color 1s; }
 /* every match on the page, and the one it is on */
 ::highlight(page-find) { background: #5a5a5a; color: #fff; }
 ::highlight(page-find-now) { background: #f2f2f2; color: #000; }
@@ -128,19 +139,20 @@ h3 { display: inline-block; font: 700 12px var(--mono); text-transform: uppercas
 .light { background: linear-gradient(#262626 1px, transparent 1px) 0 0 / 100% 28px, linear-gradient(90deg, #262626 1px, transparent 1px) 0 0 / 28px 100%, #1b1b1b; }.mid { background: repeating-linear-gradient(-45deg, #242424 0 16px, #2d2d2d 16px 32px); }
 .dots { background: radial-gradient(circle, #2f2f2f 1.5px, transparent 2px) 0 0 / 13px 13px, linear-gradient(#161616, #0c0c0c); }
 .checker { background: repeating-conic-gradient(#111 0 25%, #1c1c1c 0 50%) 0 0 / 44px 44px; }
-.lines { background: repeating-linear-gradient(#151515 0 3px, #1e1e1e 3px 4px); }
+/* stripes big enough to see on a phone (Astra, 2026-10-29: "not visible from the human eye on the phone") */
+.lines { background: repeating-linear-gradient(#151515 0 7px, #262626 7px 9px); }
 /* sections are separated by an open gap one grid square tall, where the code rain falls through (Astra, 2026-10-29);
    each has its own pattern */
 .block + .block, .ticker + .block, .race-stripe + .block { margin-top: 28px; }
 .weave { background: repeating-linear-gradient(45deg, #1d1d1d 0 2px, transparent 2px 14px), repeating-linear-gradient(-45deg, #1d1d1d 0 2px, transparent 2px 14px), #121212; }
-#arcade h2 { text-shadow: 4px 4px 0 #555, 8px 8px 0 #000; }
+/* every section's title written like the Arcade's (Astra, 2026-10-29): a gray shadow and a black one behind it */
+.block h2 { text-shadow: 4px 4px 0 #555, 8px 8px 0 #000; }
 /* each section's little tag above its title, in that section's color, black writing on it so it reads (Astra, 2026-10-29) */
 #vr { --tag: var(--c-vr); } #discord { --tag: var(--c-discord); } #web { --tag: var(--c-web); } #pets { --tag: var(--c-pets); }
 #arcade { --tag: var(--c-arcade); } #contact { --tag: var(--c-contact); }
 /* a little less saturated than the neon (Astra, 2026-10-29) */
-.block .kicker { background: color-mix(in oklab, var(--tag, var(--ink)) 68%, #8a8a8a); color: #000; font-weight: 700; box-shadow: 3px 3px 0 #000, 0 0 12px color-mix(in srgb, var(--tag, transparent) 45%, transparent); }
+.block .kicker { background: color-mix(in oklab, var(--tag, var(--ink)) 54%, #c4c4c4); color: #000; font-weight: 700; box-shadow: 3px 3px 0 #000, 0 0 10px color-mix(in srgb, var(--tag, transparent) 30%, transparent); }
 /* "Astra's PetOS" as written, so the capitals do not run together (Astra, 2026-10-29: in all capitals it read wrong) */
-#pets h2 { letter-spacing: -.035em; }
 
 /* tickers: what changed lately, right under the header, and what is being worked on now, under the hero. Both are the same
    slim, straight news strip; working on runs the other way (Astra, 2026-10-28: "make it straight", "the same size as the other one") */
@@ -182,7 +194,7 @@ h3 { display: inline-block; font: 700 12px var(--mono); text-transform: uppercas
    much room above them as below, one dot row less (Astra, 2026-10-29) */
 /* on a narrow window the squares stay well inside it, with the code rain showing all round them (Astra, 2026-10-29) */
 .hero { --sq: min(340px, 100% - 88px); position: relative; isolation: isolate; display: grid; grid-template-columns: repeat(2, var(--sq)); justify-content: center; gap: 48px;
-  align-items: center; padding: 48px var(--wrap) 84px; /* one dot row less on top again (Astra, 2026-10-29) */
+  align-items: center; padding: 48px var(--wrap) 66px; /* one dot row less on top, and one less below (Astra, 2026-10-29) */
   /* no glow behind the portrait: only its own square, the code rain clear around it (Astra, 2026-10-29) */
   background: none; color: var(--ink); }
 /* the rain and the dot grid sit behind the whole page; the hero is see-through, and the gaps between sections show it too */
@@ -192,6 +204,20 @@ main { position: relative; z-index: 1; }
 .term { position: relative; display: flex; flex-direction: column; aspect-ratio: 1; box-sizing: border-box; background: #000; border: 2px solid var(--ink); }
 .term::before { content: ""; position: absolute; inset: 0; z-index: -1; transform: translate(14px, 14px); background: repeating-linear-gradient(45deg, var(--ink) 0 2px, transparent 2px 8px); }
 .term-bar { display: flex; align-items: center; gap: 6px; padding: 8px 12px; background: repeating-linear-gradient(#f2f2f2 0 2px, #9c9c9c 2px 3px); border-bottom: 2px solid #f2f2f2; font: 12px var(--mono); color: #000; }
+/* the hero terminal as a Linux one (Astra, 2026-10-29): a flat dark title bar with its title in the middle, like GNOME's
+   Terminal, the lights still on the left; and the shell's colored prompt */
+.term > .term-bar { position: relative; justify-content: flex-start; padding: 7px 10px; background: #2d2d2d; border-bottom: 1px solid #111; color: #e6e6e6; }
+.term > .term-bar #term-title { position: absolute; left: 50%; translate: -50% 0; margin: 0; padding: 0; background: none; color: #e6e6e6; font-weight: 700; white-space: nowrap; pointer-events: none; }
+.term .ps-user { color: #5fd35f; font-weight: 700; }
+.term .ps-path { color: #5c9dff; font-weight: 700; }
+.term .ps { color: #e6e6e6; font-weight: 400; }
+#term-prompt .ps-user, #term-prompt .ps-path { font-weight: 700; }
+/* the user@findastra part shifts slowly through the neon colors (Astra, 2026-10-29: "noticeable, but not too fast"), and the
+   path a step behind it */
+@keyframes ps-neon { 0%, 100% { color: #39ff88; } 17% { color: #39e6ff; } 33% { color: #4f7dff; } 50% { color: #b84dff; } 67% { color: #ff3fb4; } 83% { color: #ffe14d; } }
+.term .ps-user { animation: ps-neon 12s linear infinite; text-shadow: 0 0 6px currentColor; }
+.term .ps-path { animation: ps-neon 12s linear infinite -2s; }
+@media (prefers-reduced-motion: reduce) { .term .ps-user, .term .ps-path { animation: none; } }
 /* the paired lights from the pet program pages' tool panels (astras-pet-os pet-program-page-20261018.css, Unity Stable):
    left ON/OFF (green, red), right checked and works or report issues (blue, yellow). A click moves a light to its next state
    and a bubble says what it means; nothing on hover (Astra, 2026-10-29) */
@@ -379,6 +405,9 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 .card .win { position: absolute; left: 20.96%; width: 55.02%; top: 24%; height: 64%; display: grid; grid-template-rows: 68fr 32fr; row-gap: .6cqw; }
 .card .pet-big { position: relative; display: grid; place-items: center; min-height: 0; font: 400 11cqw/1 VT323, var(--mono); }
 .card .pet-big img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; filter: drop-shadow(0 3px 0 rgba(0, 0, 0, .35)); }
+/* a drawing cut to its paint: whole, a little in from the window's sides and top, standing on the window's bottom, so every
+   pet sits the same way above its name */
+.card .pet-big img.inked { inset: 8% 8% 0; width: 84%; height: 92%; object-position: 50% 100%; }
 .card .body { display: flex; flex-direction: column; align-items: center; text-align: center; gap: .4cqw; min-height: 0; overflow: hidden; }
 /* big enough to read (Astra, 2026-10-29) */
 .card .name { font: 900 5.2cqw/1.1 Inter, sans-serif; letter-spacing: -.01em; color: #000; max-width: 100%;
@@ -402,7 +431,7 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 /* a full row reaches --hang past the paper on both sides, so its first and last Polaroids just hang off the edges; cyber.js
    sizes them (--pw) so a row fills that width exactly (Astra, 2026-10-29) */
 /* rows far enough apart that no tape or sticky note lands on the Polaroid above (Astra, 2026-10-29: "make sure they're all separate") */
-.polaroids { --hang: 6px; display: flex; flex-wrap: wrap; justify-content: center; gap: 72px 32px; padding: 28px 0 32px;
+.polaroids { --hang: 34px; display: flex; flex-wrap: wrap; justify-content: center; gap: 48px 32px; padding: 28px 0 0;
   margin-inline: calc(-1 * (var(--sheet, 0px) + var(--hang))); }
 /* one Polaroid under the other (a phone): the wall stays on the paper instead of hanging just off it */
 .polaroids.single { margin-inline: 0; }
@@ -434,8 +463,11 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
    using, what it is working on, and the elapsed time in green */
 /* the real Discord cards, one over the other on the bare paper */
 .ai-real { position: absolute; inset: 0; display: grid; align-content: center; gap: 10px; padding: 6%; }
-.ai-real-card { display: block; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 0 rgba(0, 0, 0, .35); }
-.ai-real-card img { display: block; width: 100%; height: auto; }
+/* only the card itself (Astra, 2026-10-29: the dark around it "needs to be actually completely transparent"): the GIF is
+   648 by 308 with the card from 24 to 623 across and 24 to 283 down, so the window is that 600 by 260 and the corners round
+   like the card's */
+.ai-real-card { display: block; aspect-ratio: 600 / 260; border-radius: 2% / 4.6%; overflow: hidden; }
+.ai-real-card img { display: block; width: 108%; height: auto; margin: -4% 0 0 -4%; max-width: none; }
 .ai-cards { position: absolute; inset: 0; display: grid; align-content: center; gap: 8px; padding: 8% 7%; }
 .ai-card { display: grid; grid-template-columns: 30% 1fr; grid-template-rows: auto 1fr; align-items: center; column-gap: 8px; padding: 5px 8px 7px; text-align: left;
   text-decoration: none; color: #f2f2f2; background: #232428; border-radius: 8px; box-shadow: 0 0 0 1px rgba(255, 255, 255, .08), 0 3px 8px rgba(0, 0, 0, .5); }
@@ -457,7 +489,7 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 #pets .polaroid { --c: var(--c-pets) !important; }
 .polaroid .tape { position: absolute; z-index: 1; left: 50%; top: -13px; width: 90px; height: 26px; translate: -50% 0; rotate: calc(var(--tilt) * -2.5);
   /* a touch less saturated (Astra, 2026-10-29) */
-  background: color-mix(in srgb, color-mix(in oklab, var(--c) 80%, #9a9a9a) 72%, transparent); box-shadow: 0 0 12px color-mix(in oklab, var(--c) 80%, #9a9a9a); }
+  background: color-mix(in srgb, color-mix(in oklab, var(--c) 64%, #c8c8c8) 72%, transparent); box-shadow: 0 0 10px color-mix(in oklab, var(--c) 64%, #c8c8c8); }
 .polaroid .photo { position: relative; display: grid; place-items: center; width: 100%; aspect-ratio: 1; padding: 0; border: 0; overflow: hidden; cursor: zoom-in;
   background: radial-gradient(circle at 30% 25%, color-mix(in srgb, var(--c) 55%, #000), #0b0b0b 72%); }
 /* every picture fills the square exactly, so a tall or wide one never spills out and gets cut (Astra, 2026-10-27) */
@@ -487,12 +519,15 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 /* always exactly square, whatever is written on it (Astra, 2026-10-29): a fixed size, the writing a size to fit */
 /* (not clipped, so its tape shows whole) */
 /* (a little lower and smaller, Astra 2026-10-29) */
-.polaroid .sticky { position: absolute; right: -14px; bottom: 98px; z-index: 3; width: 90px; height: 90px; display: grid; align-content: center; padding: 6px;
+.polaroid .sticky { position: absolute; right: -14px; bottom: 98px; z-index: 3; width: 104px; height: 104px; display: grid; align-content: center; padding: 6px;
   background: #fff36b; color: #151515; font: 12.5px/1.22 "Permanent Marker", cursive; text-align: center; rotate: 7deg; box-shadow: 3px 4px 0 rgba(0, 0, 0, .55);
   /* a black edge, so it shows where it lies over the white border (Astra, 2026-10-29) */
   outline: 2px solid #111; }
 /* a note naming things (the levels) gets a smaller hand, so long names fit inside the square */
-.polaroid .sticky.names { font-size: 10px; line-height: 1.1; gap: 3px; text-align: left; overflow-wrap: anywhere; }
+/* both notes in the same hand, the levels note's (Astra, 2026-10-29), lined up on the left, every line on one line: a line too
+   long for the square is drawn a little smaller to fit (fitLines in cyber.js), never wrapped */
+.polaroid .sticky.names { font-size: 10px; line-height: 1.15; gap: 3px; text-align: left; justify-items: start; }
+.polaroid .sticky.names > div { white-space: nowrap; }
 .polaroid .sticky::before { content: ""; position: absolute; left: 50%; top: -7px; width: 40px; height: 13px; translate: -50% 0; rotate: -4deg;
   background: color-mix(in srgb, var(--c) 72%, transparent); box-shadow: 0 0 8px var(--c); }
 .polaroid .sticky b { display: block; font: 700 9px var(--mono); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 3px; }
@@ -505,7 +540,9 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 /* the sound button for a video, on the border at the top right, like the sticker on the left */
 .polaroid .sound { position: absolute; right: calc(var(--edge-w) - 4px); top: -11px; z-index: 2; width: 30px; height: 26px; padding: 0; border: 0; cursor: pointer;
   background: #111; color: #fff; font: 14px/26px system-ui, sans-serif; rotate: 4deg; box-shadow: 2px 2px 0 rgba(0, 0, 0, .35); }
-.polaroid .sound:hover, .polaroid .sound:focus-visible { background: #000; outline: 2px solid var(--c); }
+/* no colored square round it (Astra, 2026-10-29) */
+.polaroid .sound:hover, .polaroid .sound:focus, .polaroid .sound:focus-visible { background: #000; outline: none; }
+.polaroid .sound { -webkit-tap-highlight-color: transparent; }
 .polaroid .sound[hidden] { display: none; }
 .polaroid .photo:hover img { transform: scale(1.06); }
 /* the galaxies only grow with the Polaroid, not a second time under the pointer (Astra, 2026-10-29) */
@@ -526,7 +563,8 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
    beside it (Astra, 2026-10-29) */
 .polaroid .frame { --corner: 5px; --flip: 28px; --lift-arrows: 6px; }
 .polaroid .frame.flips .note { padding-bottom: calc(var(--flip) + var(--corner) + var(--lift-arrows) + 2px); }
-.polaroid .count { position: absolute; left: 50%; bottom: calc(var(--corner) + var(--lift-arrows)); height: var(--flip); display: grid; place-items: center; translate: -50% 3px;
+/* "1 of 3" level with the middle of the arrows either side of it (Astra, 2026-10-29), measured on a straightened Polaroid */
+.polaroid .count { position: absolute; left: 50%; bottom: calc(var(--corner) + var(--lift-arrows)); height: var(--flip); display: grid; place-items: center; translate: -50% 6.5px;
   font: 13px/1 "Permanent Marker", cursive; color: #6a6a6a; white-space: nowrap; rotate: -2deg; }
 .polaroid .flip { position: absolute; bottom: calc(var(--corner) + var(--lift-arrows)); width: var(--flip); height: var(--flip); display: grid; place-items: center; padding: 0; border: 0; background: none;
   color: #151515; font: 34px/1 "Permanent Marker", cursive; cursor: pointer; }
@@ -621,7 +659,9 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 .contact .list { margin-top: 10px; }
 
 /* arcade: black cabinets on white scanlines */
-.arcade { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+.arcade { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 30px; }
+/* a cabinet never wider than its column, so none runs off the paper on a phone (Astra, 2026-10-29) */
+.cab { min-width: 0; }
 .cab { --bg: #0c0c0c; --ink: #f2f2f2; --muted: #8c8c8c; background: var(--bg); color: var(--ink); border: 3px solid #000; padding: 20px; box-shadow: 10px 10px 0 #3a3a3a; }
 .cab:nth-child(even) { box-shadow: -10px 10px 0 #3a3a3a; }
 .cab h3 { margin-top: 0; }
@@ -635,6 +675,9 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 /* its bar is the terminal's own (Astra, 2026-10-29: "if it's going to be a tool panel ... it needs to have the buttons"): the
    striped bar with the paired lights left of its name, which stays on one line */
 .hack-term .term-bar { white-space: nowrap; overflow: hidden; }
+/* and matching the hero terminal, a Linux one (Astra, 2026-10-29): the flat dark bar, its name in the middle */
+.hack-term > .term-bar { position: relative; padding: 7px 10px; background: #2d2d2d; border-bottom: 1px solid #111; color: #e6e6e6; }
+.hack-term > .term-bar > span:not(.lights) { position: absolute; left: 50%; translate: -50% 0; max-width: calc(100% - 84px); margin: 0; padding: 0; background: none; color: #e6e6e6; font-weight: 700; pointer-events: none; }
 .hack-term .term-bar > span:not(.lights) { overflow: hidden; text-overflow: ellipsis; }
 .hack-term.is-off #hack { opacity: .08; pointer-events: none; transition: opacity .3s; }
 #hack { flex: 1; display: flex; flex-direction: column; justify-content: space-evenly; padding: 12px 16px; background: repeating-linear-gradient(transparent 0 2px, rgba(255, 255, 255, .035) 2px 3px); }
@@ -808,7 +851,7 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 
 @media (max-width: 900px) {
   .hero { grid-template-columns: var(--sq); gap: 32px; }
-  .arcade, .contacts { grid-template-columns: 1fr; }
+  .arcade, .contacts { grid-template-columns: minmax(0, 1fr); }
   .jar-stage { grid-template-columns: minmax(0, 1fr); min-height: 0; }
   .jar-out { display: none; }
   /* the holder takes the width and the jar fills it: a jar 100% of a holder that shrinks to the jar came out 0 wide, so the
@@ -841,6 +884,8 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
   /* the Avatar lab too: the hairstyle collection across the whole row so its choice isn't cut off, and randomize, save and
      library side by side */
   .lab-group { grid-column: 1 / -1; }
+  /* the jar's two lines stay two lines on a phone (Astra, 2026-10-29) */
+  .jar-hint { font-size: 12.5px; }
   /* the footer on a phone, never more than two rows (Astra, 2026-10-29): By Astra ✦ star ✦ Find Out More on the first, all
      the links on the second, and less room above the star */
   .foot { padding-top: 16px; }
@@ -852,9 +897,10 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
   .footer-sparkle { margin: 0; }
   .footer-star img { width: 40px; height: 40px; }
   .lab-group select { width: 100%; }
-  #labRand, #labSave, #labLibBtn { padding: 6px 8px; font-size: 11px; }
+  #labRand, #labSave, #labLibBtn, #labPng { padding: 6px 7px; font-size: 10.5px; }
   #labRand { order: 0; }
-  .cab .fz-row:has(#labSave) { flex-wrap: nowrap; gap: 8px; }
+  /* four buttons now (save png too), two by two on a phone */
+  .cab .fz-row:has(#labSave) { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .fz-digit input { font-size: 22px; }
   /* on a phone a smaller #, and the words under the numbers small enough to fit under each one (Astra, 2026-10-29) */
   .fz-code { --fzh: 44px; gap: 6px; }
@@ -863,7 +909,7 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
   .fz-digit span { font-size: 8.5px; letter-spacing: -.02em; }
   .lightbox figure { padding: 44px 12px 12px; }
   .grid { grid-template-columns: 1fr; }
-  .polaroids { gap: 60px 20px; }
+  .polaroids { gap: 44px 20px; }
   .polaroid .frame { --edge-w: 8px; }
   .note .title { font-size: 1.05rem; }
   .note .kind { font-size: .75rem; }

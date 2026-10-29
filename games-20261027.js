@@ -649,7 +649,9 @@
       const saved = [];
       count(); showScore();
       const linked = /^#fuzzboi-([0-9]{6})$/.exec(location.hash);
-      make(linked ? linked[1].toUpperCase() : '456900', !!linked && !(Array.isArray(saved) && saved.includes(linked[1].toUpperCase())));
+      // the first one on the page (Astra, 2026-10-29: "light blue and yellow vibes and princess and crown", "give it cheese
+      // also"): 046590, light blue A4 with a crown, a flower, cheese and a blush, on blue
+      make(linked ? linked[1].toUpperCase() : '046590', !!linked && !(Array.isArray(saved) && saved.includes(linked[1].toUpperCase())));
       requestAnimationFrame(frame);
     });
     count();
@@ -719,8 +721,10 @@
         spawnIn = Math.max(16, 46 - score * .28);
         const hs = hues();
         const hue = isRainbow() ? hs[nextHue++ % hs.length] : hs[(Math.random() * hs.length) | 0];
-        // each lasts twice as long before it burns out (Astra, 2026-10-29: "twice as long duration for you to solve")
-        targets.push({ x: 24 + Math.random() * (w - 48), y: 24 + Math.random() * (h - 48), t: 1, hue, sp: (.010 + Math.min(.014, score * .00013)) / 2 });
+        // the first game's pace again, quick from the start (Astra, 2026-10-29: "I liked the mechanics ... the way it was the
+        // first time"), but each sparkle lasting about a third longer before it burns out, for more time to tap it; twice as
+        // long slowed the whole game down
+        targets.push({ x: 24 + Math.random() * (w - 48), y: 24 + Math.random() * (h - 48), t: 1, hue, sp: (.010 + Math.min(.014, score * .00013)) / 1.35 });
       }
       bx.save(); bx.globalCompositeOperation = 'lighter';
       for (const t of targets) {
@@ -966,6 +970,15 @@
    document.getElementById('labName').textContent=name+' — saved to your library';
   };
   libBtn.onclick=()=>{libBox.hidden=!libBox.hidden;libBtn.setAttribute('aria-expanded',String(!libBox.hidden))};
+  // save png (Astra, 2026-10-29): the look as a picture, big and sharp, with a see-through background, named after it
+  document.getElementById('labPng').onclick=()=>{
+   const svg=labSvg.cloneNode(true);svg.setAttribute('xmlns','http://www.w3.org/2000/svg');svg.setAttribute('width','800');svg.setAttribute('height','920');
+   const url=URL.createObjectURL(new Blob([new XMLSerializer().serializeToString(svg)],{type:'image/svg+xml'})),img=new Image();
+   img.onload=()=>{const c=document.createElement('canvas');c.width=800;c.height=920;c.getContext('2d').drawImage(img,0,0,800,920);URL.revokeObjectURL(url);
+    c.toBlob(b=>{if(!b)return;const a=document.createElement('a'),name=(document.getElementById('labName').textContent.split(' — ')[0]||'my-look').trim();
+     a.href=URL.createObjectURL(b);a.download='avatar-lab-'+name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')+'.png';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);},'image/png');};
+   img.src=url;
+  };
   showLib();
   drawLab();
   }

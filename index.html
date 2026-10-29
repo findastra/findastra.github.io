@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&family=JetBrains+Mono:wght@400;700&family=VT323&family=Permanent+Marker&display=swap">
-<link rel="stylesheet" href="cyber.css?v=20261031s">
+<link rel="stylesheet" href="cyber.css?v=20261031zn">
 </head>
 <body>
 <!-- every star on the page is the Photostar's own outline (astras-star-window star-window.svg), scaled to this box (Astra, 2026-10-29) -->
@@ -20,7 +20,8 @@
 <header class="top">
   <a class="brand" href="#top">find <span>/</span>astra <span>/</span></a>
   <!-- finds any words on the page (Astra, 2026-10-28); the pole on the left is the section menu -->
-  <input id="search" type="search" placeholder="search" aria-label="Search this page" autocomplete="off">
+  <input id="search" type="search" placeholder="search" aria-label="Search this page" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="search-list" aria-autocomplete="list">
+  <ul id="search-list" class="search-list" role="listbox" aria-label="Places on this page" hidden></ul>
 </header>
 
 <!-- the pole on the left, from Mommy's website (findastra/mommys-website, its "pole rail"): a floor label per section and a
@@ -111,7 +112,8 @@
   <section class="block weave chapter" id="pets">
     <p class="kicker">// 04 · astra's petos</p>
     <h2>Astra's PetOS</h2>
-    <p class="lede">Every project of mine gets a pet: a small app with a face, its own program, and a job. Together they are <a href="https://github.com/findastra/astras-pet-os">Astra's PetOS</a>. Portfolio Puffer keeps this page. Tip the jar and a pet falls out.</p>
+    <!-- shorter, and plain about the levels (Astra, 2026-10-29) -->
+    <p class="lede">Every project gets a pet. L1 is the program, L2 its pet program, L3 the pet, L4 me. Together they are <a href="https://github.com/findastra/astras-pet-os">Astra's PetOS</a>.</p>
         <!-- Polaroids first (Astra, 2026-10-27): the System Map, what the pets look like, and every pet to flip through -->
         <div class="polaroids" id="petos-list"></div>
         <!-- the pet jar, filled to the top: shake it and a pet comes out; tip it out to see all of them -->
@@ -147,10 +149,10 @@
     <h2>Arcade</h2>
     <div class="arcade">
       <div class="cab spread">
+        <!-- no words under the games' names: their buttons show how to play (Astra, 2026-10-29) -->
         <h3>Hack the terminal</h3>
-        <p class="muted">Pick the password. Likeness = letters in the right place. Four tries.</p>
         <!-- the game sits in a terminal window, like the one at the top of the page -->
-        <div class="hack-term"><div class="term-bar"><span class="lights"><button type="button" class="light onoff" aria-label="hack the terminal: on" aria-pressed="true"></button><button type="button" class="light care" aria-label="hack the terminal: checked, works"></button></span><span>hack-the-terminal-tool-panel</span></div><div id="hack"></div></div>
+        <div class="hack-term"><div class="term-bar"><span class="lights"><button type="button" class="light onoff" aria-label="hack the terminal: on" aria-pressed="true"></button><button type="button" class="light care" aria-label="hack the terminal: checked, works"></button></span><span>hack-the-terminal-tool</span></div><div id="hack"></div></div>
         <button class="btn" id="hack-new">new terminal</button>
       </div>
       <div class="cab spread">
@@ -164,7 +166,6 @@
            Fuzzboi made here can be sent into the Cyber Dome -->
       <div class="cab spread">
         <h3>Fuzzboi Factory</h3>
-        <p class="muted">Type any six numbers (0–9). That exact Fuzzboi appears. Send it into the Cyber Dome below.</p>
         <form class="fz-code" id="fz-form">
           <span class="fz-hash">#</span>
           <div class="fz-digits" id="fz-digits"></div>
@@ -188,7 +189,6 @@
       <!-- the two games from Mommy's website (findastra/mommys-website) -->
       <div class="cab">
         <h3>Sparkle catcher</h3>
-        <p class="muted">From Mommy's. Tap the sparkles before they burn out. Miss three and the set ends.</p>
         <div class="screen"><canvas id="beatC" aria-label="Sparkle catcher"></canvas></div>
         <div class="hud mono"><span>score <b id="bScore">0</b></span><span>combo <b id="bCombo">0</b></span><span>best <b id="bBest">0</b></span></div>
         <!-- high scores: the five best sets in this browser (Astra, 2026-10-29) -->
@@ -211,7 +211,6 @@
       </div>
       <div class="cab">
         <h3>Avatar lab</h3>
-        <p class="muted">From Mommy's Avatar Academy. Build a look.</p>
         <div class="labstage"><svg id="labSvg" viewBox="0 0 200 230" width="196" height="225" role="img" aria-label="Editable chibi avatar"></svg></div>
         <div class="labrow">
           <label class="lab-group" for="labHairGroup">Hairstyle collection<select id="labHairGroup"><option value="all">All 40 styles</option><option value="girls">Girls · 20 styles</option><option value="boys">Boys · 20 styles</option></select></label>
@@ -223,9 +222,8 @@
           <button class="lab-b" data-avatar-part="fx">Sparkles<small id="lb-fx">—</small></button>
           <button class="lab-b" id="labLashes" data-avatar-part="lashes" aria-pressed="true">Lashes<small id="lb-lashes">Three flicks</small></button>
         </div>
-        <p class="muted mono">Click a part to shuffle its look and colors.</p>
         <p id="labPalette" class="muted mono" aria-live="polite"></p>
-        <div class="fz-row"><button class="btn hot" id="labRand">randomize</button><button class="btn" id="labSave">save this look</button><button class="btn" id="labLibBtn" aria-expanded="false" aria-controls="labLib">library</button></div>
+        <div class="fz-row"><button class="btn hot" id="labRand">randomize</button><button class="btn" id="labSave">save this look</button><button class="btn" id="labLibBtn" aria-expanded="false" aria-controls="labLib">library</button><button class="btn" id="labPng">save png</button></div>
         <p id="labName" class="lab-name"></p>
         <div class="lab-lib" id="labLib" hidden></div>
       </div>
@@ -281,8 +279,8 @@
 <script src="pets-data.js?v=20261027c"></script>
 <script src="project-images.js?v=20261020a"></script>
 <script src="updates-data.js?v=20261018c"></script>
-<script src="real-dates-data-20261029.js?v=20261029a"></script>
-<script src="cyber.js?v=20261031n"></script>
-<script src="games-20261027.js?v=20261031g"></script>
+<script src="repo-dates-data-20261029.js?v=20261029a"></script>
+<script src="cyber.js?v=20261031zk"></script>
+<script src="games-20261027.js?v=20261031j"></script>
 </body>
 </html>

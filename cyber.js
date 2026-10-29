@@ -14,7 +14,7 @@
   // that never change (Astra, 2026-10-24). The hub's index of that folder and its pet list are read live, so a new pet or a
   // new icon shows here by itself; pets-data.js is the snapshot for when GitHub does not answer.
   const HUB = 'https://raw.githubusercontent.com/findastra/astras-pet-os/main/', LATEST = HUB + 'art/latest/';
-  let pets = PETS, hosted = null; // hosted: every path under art/latest, once the hub's index answers
+  let pets = PETS, hosted = null, hostedFrom = {}; // hosted: every path under art/latest, once the hub's index answers
   // from the hub's pets.json: each pet's art folder name (Data Chip draws as "chip") and its own live website
   let artByRepo = {}, liveSiteByRepo = {}, pageByRepo = null;
   const PAGES = 'https://findastra.github.io/astras-pet-os/apps/pet-programs/';
@@ -25,9 +25,14 @@
     if (!p) return null;
     if (!hosted) return p.icon ? LATEST + p.icon : null;
     const names = [...new Set([artByRepo[p.repo], p.repo, slug(p.pet)].filter(Boolean))];
-    const hit = names.flatMap((n) => ['desktop-art/' + n + '/idle.png', 'moods/' + n + '/idle.png', 'frames/' + n + '/idle.png'])
-      .concat(names.map((n) => 'icons/' + n + '.png')).find((t) => hosted.has(t));
-    return hit ? LATEST + hit : null;
+    // the newest drawing wins (Astra, 2026-10-29: "the butterfly looks like it's not up-to-date"): each art/latest path is
+    // kept by the hub's index along with the dated file it stands for, so the latest date is the newest drawing; on a tie,
+    // the desktop art first
+    const tries = names.flatMap((n) => ['desktop-art/' + n + '/idle.png', 'moods/' + n + '/idle.png', 'frames/' + n + '/idle.png'])
+      .concat(names.map((n) => 'icons/' + n + '.png')).filter((t) => hosted.has(t));
+    const dated = (t) => { const m = /(\d{8})(?=\.\w+$)/.exec(String(hostedFrom[t] || '')); return m ? +m[1] : 0; };
+    const hit = tries.map((t, i) => ({ t, d: dated(t), i })).sort((a, b) => b.d - a.d || a.i - b.i)[0];
+    return hit ? LATEST + hit.t : null;
   };
   // a pet's website: its own live site, else its pet program page on the hub's GitHub Pages, else its public repo's site
   const siteOf = (p, r) => liveSiteByRepo[p.repo] || (pageByRepo ? pageByRepo[p.repo] && PAGES + pageByRepo[p.repo] : p.site) || (r && r.homepage) || null;
@@ -71,12 +76,20 @@
 
   // ---------- hero terminal ----------
   const term = $('term');
-  const line = (text, cls) => { const p = el('div', cls, text); term.append(p); return p; };
+  // a Linux prompt (Astra, 2026-10-29: "look like a Linux terminal"): user@host in green, the path in blue, the rest plain
+  const PROMPT = /^(\w+@[\w.]+)(:)([^$\s]*)(\$)(.*)$/;
+  const paintPrompt = (p) => {
+    const m = PROMPT.exec(p.textContent); if (!m) return p;
+    p.replaceChildren(el('span', 'ps-user', m[1]), m[2], el('span', 'ps-path', m[3]), m[4], m[5]); p.classList.add('ps');
+    return p;
+  };
+  const line = (text, cls) => { const p = el('div', cls, text); term.append(paintPrompt(p)); return p; };
   const wait = (ms) => new Promise((r) => setTimeout(r, reduced ? 0 : ms));
   async function type(text, cls, speed = 12) {
     const p = line('', cls);
     if (reduced) { p.textContent = text; return; }
     for (const ch of text) { p.textContent += ch; await wait(speed); }
+    paintPrompt(p);
   }
   let unmasked = false;
   async function boot() {
@@ -113,6 +126,7 @@
     }
     masking = false;
   };
+  paintPrompt($('term-prompt'));
   boot();
   // the line to type into: a few commands, the rest answered like a real shell would (Astra, 2026-10-27)
   const SECTIONS = { vr: 'vr', discord: 'discord', web: 'web', petos: 'pets', pets: 'pets', arcade: 'arcade', contact: 'contact', top: 'top' };
@@ -143,7 +157,7 @@
     else if (/^echo\s+/.test(cmd)) out = raw.slice(5);
     else out = `${raw.split(' ')[0]}: command not found. try help`;
     if (out) line(out, 'dim');
-    $('term-prompt').textContent = `${who()}@findastra:~$`;
+    paintPrompt(Object.assign($('term-prompt'), { textContent: `${who()}@findastra:~$` }));
     term.scrollTop = term.scrollHeight;
   });
 
@@ -248,7 +262,10 @@
         { src: 'art/worlds/infinite-pole-spawn.jpg', cap: "Astra's Infinite Pole · the spawn" }] },
     { name: 'Piranesi House', kind: 'VRChat world · PC VR / desktop', text: "Inspired by Susanna Clarke's Piranesi: an endless labyrinth of marble statues on an island, with a tide that rises and falls, a colossus you can sit in, and a very special developers' easter egg.", repo: 'piranesi-house',
       // its labyrinth key, the Cross of the Four Winds map from Piranesi Nessi's key page (Astra, 2026-10-29)
-      local: [{ src: 'art/worlds/piranesi-house-labyrinth-key-20261029.png', cap: 'Piranesi House · the Cross of the Four Winds', fit: 'contain', bg: '#142225', size: 0.97, fill: '#142225', label: 'maze layout' }] },
+      local: [{ src: 'art/worlds/piranesi-house-labyrinth-key-20261029.png', cap: 'Piranesi House · the Cross of the Four Winds', fit: 'contain', bg: '#142225', size: 0.97, fill: '#142225', label: 'maze layout' },
+        // then the real world (Astra, 2026-10-29): the hall of lilies under the round window, and the domes from above
+        { src: 'art/worlds/piranesi-house-lily-hall-20261029.webp', cap: 'Piranesi House · the hall of lilies' },
+        { src: 'art/worlds/piranesi-house-domes-from-above-20261029.webp', cap: 'Piranesi House · the domes from above' }] },
     // the pictures each world has so far (Astra, 2026-10-27); proper captures from the worlds come later
     { name: 'Liminal Doors', kind: 'VRChat world · PC VR / desktop', text: 'Doors that open onto quiet in-between places: an empty pool after closing, a laundrette with a sky turning in one washer, a platform between trains. Every door hides a unique crystal animal.', repo: 'liminal-doors', local: [ // all of its floors, the hummingbird's first (Astra, 2026-10-27)
       '09-hummingbird-upside-down-conservatory-20261015', '01-fox-pinkscape-20261020', '02-hare-faraway-field-20261015', '03-axolotl-pool-after-closing-20261015',
@@ -265,8 +282,8 @@
         ...(i ? {} : { crop: [40, 0, 467, 427, 507, 508], cover: true }) })) },
     { name: "Mommy's World", kind: 'VRChat world · PC VR / desktop', text: "The VRChat home of Mommy's Rave House, Dance & Avatar Academy.", repo: 'mommys-world',
       // first, "baby girl, I'm a star", playing on a loop with its sound off until you turn it on (Astra, 2026-10-29)
-      local: [{ src: 'art/worlds/mommys-world-baby-girl-im-a-star-20261029.mp4', cap: "Mommy's World · baby girl, I'm a star", type: 'video', sound: true, label: 'world coming soon' },
-        { src: 'art/worlds/phone-booth.jpg', label: 'concept art', cap: 'A pink phone booth above the clouds' }], extra: ['mommys', 'role-fairy'] },
+      // not the pink phone booth, which is not Mommy's World (Astra, 2026-10-29)
+      local: [{ src: 'art/worlds/mommys-world-baby-girl-im-a-star-20261029.mp4', cap: "Mommy's World · baby girl, I'm a star", type: 'video', sound: true, label: 'world coming soon' }], extra: ['mommys', 'role-fairy'] },
     // first the still with its gray cut away, so it shines over the paper (Astra, 2026-10-29); the video and the crystals keep theirs
     // first its turning video with the gray cut away, so it turns on the bare paper (Astra, 2026-10-29), sparkles circling it and
     // pouring out of its crystals across the page; only that 3D model now, not the still or the crystals (Astra, 2026-10-29)
@@ -276,7 +293,9 @@
         // sparkles circling each of the two crystals, just wide of them so the crystals can be seen turning (Astra, 2026-10-29:
         // "go around the actual crystals"), and the spray thrown off those same rings: center x, y and radii, in percent
         // (wide of the gems, so they are seen clearly; the sparkles only now and then cross in front of them)
-        orbits: [[44, 79, 17, 12, 5, 5], [54, 68, 16, 11, 5, 6]], still: [[46, 30], [56, 40]],
+        // more of them, spinning in circles round the whole machine too (Astra, 2026-10-29): a wide ring round all of it and a
+        // tilted one inside turning the other way, bigger sparkles on those two; [x, y, rx, ry, how many, seconds, size]
+        orbits: [[44, 79, 17, 12, 8, 5], [54, 68, 16, 11, 8, 6], [50, 52, 44, 40, 14, 16, [5, 8]], [50, 56, 34, 24, 10, -11, [4, 6]]], still: [[46, 30], [56, 40]],
         spray: [[44, 79, 18, 13], [54, 68, 17, 12]] }] },
     { name: 'The Cooling Tower', siteLabel: 'see full mini model ↗', kind: 'VRChat world · PC VR / desktop', text: "A rave world inside a nuclear plant's cooling tower: break into the facility and power it up with music. The Stack, the Turbine Hall, then the Reactor Hall.", repo: 'the-cooling-tower', local: [{ src: 'https://findastra.github.io/the-cooling-tower/mini-model/the-cooling-tower-mini-model-20261024.html', cap: 'The Cooling Tower · Mini Model', type: 'frame', label: 'concept model', bare: true, back: 7 }] },
   ];
@@ -294,10 +313,13 @@
   const isOther = (r) => !/^pet-program-\d+$/.test(r.name) && !WORLD_REPOS.has(r.name) && !PETOS_REPOS.has(r.name) && !petByRepo[r.name] && !HIDDEN.has(r.name);
   let repos = [], byName = {}, query = '';
   const when = (iso) => { const d = new Date(iso); return isNaN(d) ? '' : d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }); };
-  // the date a Polaroid shows: the repo's last real change, skipping README and docs passes (Astra, 2026-10-29), from
-  // real-dates-data-20261029.js; GitHub's last push when a repo is not in it yet
-  const REAL_DATES = window.REAL_DATES || {};
-  const lastReal = (r) => (r && (REAL_DATES[r.name] || r.pushed_at)) || '';
+  // the date a Polaroid shows, and the order within a section: the day the repo was made (Astra, 2026-10-29: "go back to
+  // like the date it was created and then organize them in that order"), from GitHub's list or repo-dates-data-20261029.js
+  const REPO_CREATED = window.REPO_CREATED || {};
+  // the System Map in the PetOS Polaroid is named Astra's PetOS (Astra, 2026-10-29: "not AJ's PetOS"). The map keeps the
+  // name a visitor gave it in this browser, under the same address as this site, so a name saved here once comes back
+  try { if (localStorage.getItem('petos-system-name') !== "Astra's PetOS") localStorage.setItem('petos-system-name', "Astra's PetOS"); } catch {}
+  const made = (r) => (r && (r.created_at || REPO_CREATED[r.name] || r.pushed_at)) || '';
   // The Polaroids' tape, the stars and their sparkles are the only color on the page. Each keeps its color and tilt (hashed from its name).
   const COLORS = ['#ff3ea5', '#00e1ff', '#c6ff00', '#ff9500', '#c7a6ff', '#ffe500', '#ff5c5c', '#00f5a0', '#5ab0ff', '#ff8ef0'];
   const hash = (s) => { let h = 2166136261; for (const ch of s) h = Math.imul(h ^ ch.codePointAt(0), 16777619); return h >>> 0; };
@@ -315,7 +337,8 @@
     const box = el('div', 'sparkles'); box.setAttribute('aria-hidden', 'true');
     for (let i = 0; i < n; i++) {
       const k = hash(h + ':' + i), a = (i / n) * Math.PI * 2 + ((k % 60) - 30) / 60, rad = 44 + (k >>> 6) % 11;
-      box.append(sparkle(k, (50 + rad * Math.cos(a)).toFixed(1), (50 + rad * Math.sin(a)).toFixed(1), 9 + (k >>> 10) % 14));
+      // a third smaller (Astra, 2026-10-29: "about 50% bigger than it should be"), with a big one now and then
+      box.append(sparkle(k, (50 + rad * Math.cos(a)).toFixed(1), (50 + rad * Math.sin(a)).toFixed(1), k % 7 === 0 ? 13 + (k >>> 10) % 6 : 6 + (k >>> 10) % 7));
     }
     return box;
   };
@@ -326,6 +349,22 @@
   // moves a picture shown with object-fit: contain so its drawing, where its painted pixels are, sits in the middle of its box,
   // without changing its size (Astra, 2026-10-29: the pets centered in their stars and frames, "just moving them around").
   // scale: how much it is shrunk, so its offset shrinks with it
+  // a pet's drawing cut down to where it is painted (Astra, 2026-10-29: "none of it's getting cut off in the stars", the same
+  // room between every pet and its name): the cropped drawing is then fitted whole and set on the bottom of its window
+  const cropToInk = (im) => {
+    const probe = new Image(); probe.crossOrigin = 'anonymous';
+    probe.onload = () => { try {
+      const W = probe.naturalWidth, H = probe.naturalHeight, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+      const x = cv.getContext('2d', { willReadFrequently: true }); x.drawImage(probe, 0, 0); const d = x.getImageData(0, 0, W, H).data;
+      let l = W, r = -1, t = H, b = -1;
+      for (let y = 0; y < H; y++) for (let k = 0; k < W; k++) if (d[(y * W + k) * 4 + 3] > 24) { if (k < l) l = k; if (k > r) r = k; if (y < t) t = y; if (y > b) b = y; }
+      if (r < l) return;
+      const out = document.createElement('canvas'); out.width = r - l + 1; out.height = b - t + 1;
+      out.getContext('2d').drawImage(cv, l, t, out.width, out.height, 0, 0, out.width, out.height);
+      im.src = out.toDataURL(); im.classList.add('inked');
+    } catch {} };
+    probe.src = im.src;
+  };
   const centerByInk = (im, scale = 1) => {
     const probe = new Image(); probe.crossOrigin = 'anonymous';
     probe.onload = () => { try {
@@ -442,8 +481,9 @@
   };
   const orbitField = (h, orbits, still = []) => {
     const box = el('div', 'sparkles field'); box.setAttribute('aria-hidden', 'true');
-    const movers = orbits.flatMap(([x, y, rx, ry, n, secs], o) => Array.from({ length: n }, (_, i) => {
-      const k = hash(h + ':o' + o + ':' + i), s = sparkle(k, x, y, 3 + (k >>> 12) % 5); box.append(s);
+    // a ring may name its sparkles' size [smallest, spread]; a negative seconds turns it the other way
+    const movers = orbits.flatMap(([x, y, rx, ry, n, secs, size = [3, 5]], o) => Array.from({ length: n }, (_, i) => {
+      const k = hash(h + ':o' + o + ':' + i), s = sparkle(k, x, y, size[0] + (k >>> 12) % size[1]); box.append(s);
       return { s, x, y, rx, ry, w: (Math.PI * 2) / (secs * 1000), a: (i / n) * Math.PI * 2 };
     }));
     for (const [x, y] of still) box.append(sparkle(hash(h + ':s' + x + y), x, y, 8));
@@ -582,7 +622,9 @@
     // GitHub repo, then its code, then the date; no site tags
     const title = repo ? link(repo, 'title', name) : el('b', 'title', name);
     const note = el('div', 'note');
-    note.append(title, el('span', 'kind', [kind, date].filter(Boolean).join(' · ')), ...(badge ? [badge] : []), ...(sound ? [sound.b] : []), ...(look ? [look] : []));
+    // every note the same four parts (Astra, 2026-10-29): the title, what kind of thing it is · the language it is written in,
+    // then the date on its own line
+    note.append(title, ...(kind ? [el('span', 'kind', kind)] : []), ...(date ? [el('span', 'kind date', date)] : []), ...(badge ? [badge] : []), ...(sound ? [sound.b] : []), ...(look ? [look] : []));
     if (sound) sound.show(pics[0]);
     // "1 of 3" sits on the bottom edge between the arrows, level with them (Astra, 2026-10-29)
     const frame = el('div', flip ? 'frame flips' : 'frame'); frame.append(el('i', 'tape'), photo, note, ...(flip || []), ...(count ? [count] : []));
@@ -596,7 +638,9 @@
   // a world: its repo (when public) gives the link, date and description; the README's words when it is private
   const worldCard = (w) => {
     const r = byName[w.repo];
-    return polaroid({ key: w.repo, name: w.name, kind: (r && r.language) || w.kind.replace(' · PC VR / desktop', ''), date: r ? when(lastReal(r)) : '', text: cleanText((r && r.description) || w.text), pics: worldPics(w),
+    // every world says what it is (Astra, 2026-10-29: "all the stuff that is a VRChat world needs to say VRChat world"), then
+    // its one most common language, GitHub's own pick (UdonSharp counts as C#)
+    return polaroid({ key: w.repo, name: w.name, kind: 'VRChat world' + (r && r.language ? ' · ' + r.language : ''), date: r ? when(made(r)) : '', text: cleanText((r && r.description) || w.text), pics: worldPics(w),
       repo: r ? 'https://github.com/findastra/' + w.repo : null });
   };
   // Moodglass's picture (Astra, 2026-10-27): a staggered collage the way Moodglass lays photos behind a chat, edge to edge
@@ -654,10 +698,24 @@
     return box;
   };
   const SHOTS = { moodglass: moodglassShot, 'ai-discord-presence': realCardsShot };
+  // the two presence apps show two pictures each (Astra, 2026-10-29: "should only be two on each of those"): first the
+  // turning galaxy, the "really fancy spiral", a little smaller so it is not zoomed in to the edges, then the app
+  const TWO = new Set(['openai-discord-presence', 'anthropic-discord-presence']);
+  const picsOf = (name) => {
+    const all = [...(SITE_PICS[name] || []), ...picturesOf(name)];
+    if (!TWO.has(name)) return all;
+    const galaxy = all.find((p) => /galaxy(-card)?\.(png|gif)$/i.test(p.src));
+    return [galaxy && { ...galaxy, size: .8 }, all[0]].filter(Boolean);
+  };
+  // what kind of thing each one is, for the line under its title (Astra, 2026-10-29: "title, type of software, language, date")
+  const TYPES = { 'ai-discord-presence': 'Discord app', 'openai-discord-presence': 'Discord app', 'anthropic-discord-presence': 'Discord app', moodglass: 'Discord plugin' };
+  const typeOf = (r) => TYPES[r.name] || (/^iris/i.test(r.name) ? 'Story' : 'Website');
+  // the two presence apps' code lives in ai-discord-presence now, so GitHub gives their own repos no language
+  const LANGS = { 'openai-discord-presence': 'JavaScript', 'anthropic-discord-presence': 'JavaScript' };
   const extraCard = (r) => {
     const repoUrl = 'https://github.com/findastra/' + r.name, shot = SHOTS[r.name];
-    return polaroid({ key: r.name, shot: shot ? shot() : null, clear: r.name === 'ai-discord-presence', name: nameOf(r.name), kind: r.language || '', date: when(lastReal(r)),
-      text: cleanText(r.description || 'No description yet.'), pics: [...(SITE_PICS[r.name] || []), ...picturesOf(r.name)], repo: repoUrl });
+    return polaroid({ key: r.name, shot: shot ? shot() : null, clear: r.name === 'ai-discord-presence', name: nameOf(r.name), kind: [typeOf(r), r.language || LANGS[r.name]].filter(Boolean).join(' · '), date: when(made(r)),
+      text: cleanText(r.description || 'No description yet.'), pics: picsOf(r.name), repo: repoUrl });
   };
 
   // ---------- stars: every pet, with its hosted icon, and its repo's pictures and links when the repo is public ----------
@@ -726,15 +784,18 @@
     const big = el('div', 'pet-big');
     // each pet's drawing centered in its window by where it is painted, all at the same scale (Astra, 2026-10-29)
     // all at one cutesy size, the same for every pet, so none comes near the star's pale edge (Astra, 2026-10-29)
-    if (icon) { const im = el('img'); im.src = icon; im.alt = p.pet; im.loading = 'lazy'; im.style.scale = PET_SCALE; big.append(im); centerByInk(im, PET_SCALE); } else big.textContent = '{ }';
+    if (icon) { const im = el('img'); im.src = icon; im.alt = p.pet; im.loading = 'lazy'; big.append(im); cropToInk(im); } else big.textContent = '{ }';
     // the star's top point is its button: the usual turn-over arrows in a circle (Astra, 2026-10-29); more buttons, when there
     // are more, go on its other points
     const turnBtn = el('button', 'tip turn-btn'); turnBtn.type = 'button'; turnBtn.setAttribute('aria-label', 'flip the star to see ' + p.pet + "'s program"); turnBtn.title = 'flip';
     turnBtn.append(flipIcon());
     const body = el('div', 'body');
-    body.append(el('b', 'name', p.pet), el('div', 'pet', [p.program, r ? r.name : null].filter(Boolean).join(' · ') || 'program not named yet'));
+    // the pet, and under it the pet program it runs (Astra, 2026-10-29)
+    body.append(el('b', 'name', p.pet), el('div', 'pet', p.program || 'program not named yet'));
     const win = el('div', 'win'); win.append(big, body);
-    const face = el('div', 'face'); face.append(shape('star', '-111 -116 229 220'), turnBtn, win);
+    // no flip for now (Astra, 2026-10-29: "we'll get it ready later"); when it comes back it turns over to another star, not
+    // a square
+    const face = el('div', 'face'); face.append(shape('star', '-111 -116 229 220'), win);
     // the back: the pet program, as one big square, with only its links and a way back
     const back = el('div', 'back'), sq = el(pics.length ? 'button' : 'div', 'square');
     if (pics.length) { const im = el('img'); im.src = pics[0].src; im.alt = ''; im.loading = 'lazy'; sq.append(im); sq.setAttribute('aria-label', 'open pictures of ' + p.pet); sq.onclick = () => openGallery(pics); }
@@ -786,7 +847,7 @@
     // in front of the glass and behind it ("they need to be on the other side of the jar too")
     const scatter = (seed, n, cls) => {
       const box = el('div', 'sparkles ' + cls); box.setAttribute('aria-hidden', 'true');
-      for (let i = 0; i < n; i++) { const k = hash(seed + ':' + i); box.append(sparkle(k, (4 + (k % 92)).toFixed(1), (4 + ((k >>> 8) % 92)).toFixed(1), 5 + (k >>> 12) % 11)); }
+      for (let i = 0; i < n; i++) { const k = hash(seed + ':' + i); box.append(sparkle(k, (4 + (k % 92)).toFixed(1), (4 + ((k >>> 8) % 92)).toFixed(1), k % 7 === 0 ? 11 + (k >>> 12) % 4 : 4 + (k >>> 12) % 6)); }
       return box;
     };
     const ring = scatter(id + ':front', 24, 'ring'), ringBack = scatter(id + ':back', 20, 'ring back');
@@ -1100,29 +1161,43 @@
     const pet = p[at], lv = levels[pet.pet];
     box.classList.add('names');
     box.replaceChildren(...[`L1 – ${(lv && lv.others) || pet.repo || '—'}`, `L2 – ${pet.program || '—'}`, `L3 – ${pet.pet}`, 'L4 – Astra'].map((t) => el('div', null, t)));
+    fitLines(box);
   };
+  // each line of a note on one line (Astra, 2026-10-29: "I don't want to see them go a line lower"): a line wider than the
+  // square is drawn smaller, just enough to fit; the others keep the note's own size
+  const fitLines = (box) => requestAnimationFrame(() => {
+    const room = box.clientWidth - parseFloat(getComputedStyle(box).paddingLeft) * 2;
+    for (const d of box.children) {
+      d.style.fontSize = '';
+      const w = d.scrollWidth, size = parseFloat(getComputedStyle(d).fontSize);
+      if (w > room && room > 0) d.style.fontSize = Math.max(5.5, size * room / w * .98) + 'px';
+    }
+  });
   function petosCards() {
     const drawn = pets.filter(iconOf), hub = byName['astras-pet-os'], HUB_REPO = 'https://github.com/findastra/astras-pet-os';
     // like the rest: the hub's code and the day it last changed
-    const kind = (hub && hub.language) || 'HTML', date = hub ? when(lastReal(hub)) : '';
+    const lang = (hub && hub.language) || 'HTML', date = hub ? when(made(hub)) : '';
     return [
-      polaroid({ key: 'system-map', name: 'The System Map', kind, date, text: 'Every pet, program and tool in Astra\'s PetOS, and how they work together. Drag it around.',
+      polaroid({ key: 'system-map', name: 'The System Map', kind: 'Live map · ' + lang, date, text: 'Every pet, program and tool in Astra\'s PetOS, and how they work together. Drag it around.',
         // drawn at twice the photo's size, so its key in the top left is big enough to read (Astra, 2026-10-29)
         // (lift: drawn a little short of the photo's height, so the map's bottom bar, Spin and its 2D | 3D switch, sits up
         // where it can be seen)
         pics: [{ src: HUB_PAGES + 'system-map-20261012.html', cap: 'The System Map', type: 'frame', label: 'live', view: 2, lift: .93, open: HUB_PAGES + 'system-map-20261012.html' }], repo: HUB_REPO }),
       // the pets on the bare paper, and the one you flip to a little smaller (Astra, 2026-10-29); Meet every pet in the middle,
       // the pets grid on the right
-      polaroid({ key: 'meet-pets', name: 'Meet every pet', kind, date, repo: HUB_REPO, text: 'One at a time, no shaking needed.',
+      polaroid({ key: 'meet-pets', name: 'Meet every pet', kind: 'Pet gallery · ' + lang, date, repo: HUB_REPO, text: 'One at a time, no shaking needed.',
         pics: drawn.map((p) => ({ src: iconOf(p), cap: p.pet, label: p.pet, fit: 'contain', size: 0.78, clear: true, center: true })), sticky: levelNote(drawn) }),
-      polaroid({ key: 'all-pets', name: 'The pets', kind, date, text: 'What they all look like. Each one is a small app with a face and a job.', pics: [], shot: petsShot(drawn), clear: true, repo: HUB_REPO,
+      polaroid({ key: 'all-pets', name: 'The pets', kind: 'Pet gallery · ' + lang, date, text: 'What they all look like. Each one is a small app with a face and a job.', pics: [], shot: petsShot(drawn), clear: true, repo: HUB_REPO,
         // its own sticky note (Astra, 2026-10-29): how far along all of them are, most done first, by the hub's stages
         // (registered is done; pipeline is on GitHub; seed has its name and no repo yet; roadmap is still a plan), then how
         // many are drawn
         sticky: (at, box) => {
           const n = (s) => pets.filter((p) => p.stage === s).length;
-          box.replaceChildren(...[[n('registered'), 'done'], [n('pipeline'), 'pipeline'], [n('seed'), 'seed'], [n('roadmap'), 'roadmap'], [drawn.length, 'drawn']]
+          // in this order (Astra, 2026-10-29): done, drawn, seed, pipeline, roadmap; in the levels note's hand, on the left
+          box.classList.add('names');
+          box.replaceChildren(...[[n('registered'), 'done'], [drawn.length, 'drawn'], [n('seed'), 'seed'], [n('pipeline'), 'pipeline'], [n('roadmap'), 'roadmap']]
             .filter(([k, what]) => k || what === 'done').map(([k, what]) => el('div', null, `${k} ${what}`)));
+          fitLines(box);
         } }),
     ];
   }
@@ -1135,28 +1210,99 @@
     petJar.fill(pets.filter(iconOf).map(petEntry).filter(({ p, r }) => shown(`${p.pet} ${p.program} ${p.text} ${p.repo} ${(r && r.description) || ''}`))
       .sort((a, b) => (b.pics.length > 0) - (a.pics.length > 0) || (b.r ? 1 : 0) - (a.r ? 1 : 0) || a.p.number - b.p.number));
     // Discord and Web & More, newest first
-    const others = repos.filter(isOther).filter((r) => shown(`${r.name} ${r.description}`)).sort((a, b) => String(lastReal(b)).localeCompare(String(lastReal(a))));
-    $('discord-list').replaceChildren(...others.filter((r) => DISCORD.has(r.name)).map(extraCard));
+    const others = repos.filter(isOther).filter((r) => shown(`${r.name} ${r.description}`)).sort((a, b) => String(made(a)).localeCompare(String(made(b)))); // oldest first, so the newest (Iris) is last
+    // AI Discord Presence first, then the rest in the order they were made (Astra, 2026-10-29)
+    $('discord-list').replaceChildren(...others.filter((r) => DISCORD.has(r.name)).sort((a, b) => (b.name === 'ai-discord-presence') - (a.name === 'ai-discord-presence')).map(extraCard));
     $('web-list').replaceChildren(...others.filter((r) => !DISCORD.has(r.name)).map(extraCard));
     for (const ch of document.querySelectorAll('.chapter')) ch.classList.toggle('empty', !!query && !ch.querySelector('.polaroid, .mini'));
   }
   // each wall of Polaroids gets as many per row as fit near 250px wide, sized so a full row spans the wall exactly: its
   // first and last hang just off the paper, and a short last row sits in the middle (Astra, 2026-10-29). On a phone, or a
   // window as narrow as one, it is one Polaroid under the other, never side by side (Astra, 2026-10-29), and each sits well
-  // inside the paper, its tilt and sticky note too, not hanging off it (Astra, 2026-10-29: "they look too big right now")
+  // inside the paper, its tilt and sticky note too, not hanging off it (Astra, 2026-10-29: "they look too big right now",
+  // then "just slightly bigger")
   const sizeWall = (wall) => {
     const w = wall.getBoundingClientRect().width - 1, gap = parseFloat(getComputedStyle(wall).columnGap) || 0;
     const n = w < 560 ? 1 : Math.max(2, Math.round((w + gap) / (250 + gap)));
     wall.classList.toggle('single', n === 1);
-    wall.style.setProperty('--pw', (n === 1 ? Math.min(270, Math.floor(w * .8)) : Math.floor((w - (n - 1) * gap) / n * 10) / 10) + 'px');
+    wall.style.setProperty('--pw', (n === 1 ? Math.min(310, Math.floor(w * .9)) : Math.floor((w - (n - 1) * gap) / n * 10) / 10) + 'px');
   };
   const walls = new ResizeObserver((seen) => seen.forEach((s) => sizeWall(s.target)));
   document.querySelectorAll('.polaroids').forEach((wall) => walls.observe(wall));
-  // the header's search finds any words on the page: every match is lit, typing goes to the first, Enter to the next and
-  // Shift+Enter back (Astra, 2026-10-28: "that search bar will search anything on the page")
+  // every paper ends as far below its last thing as its title starts below its top edge (Astra, 2026-10-29: "the same size
+  // across the board"): the Polaroids' lifts and tilts, the jar and the walls' own padding left some sections too long, so
+  // each section's bottom padding is set to make up the difference
+  const LAST = '.frame, .sticky, .jar, .jar-stage, .jar-side > :not([hidden]), .cab, .contact, .chapter > p, .btn, h2, .kicker';
+  let evening = 0;
+  const evenPaper = () => {
+    cancelAnimationFrame(evening);
+    evening = requestAnimationFrame(() => {
+      for (const b of document.querySelectorAll('main .block')) {
+        b.style.paddingBottom = '';
+        const sheet = parseFloat(getComputedStyle(b).paddingTop), edge = b.getBoundingClientRect().bottom;
+        let low = -Infinity;
+        for (const e of b.querySelectorAll(LAST)) { if (!e.offsetParent && getComputedStyle(e).position !== 'fixed') continue; const r = e.getBoundingClientRect(); if (r.height) low = Math.max(low, r.bottom); }
+        if (low > -Infinity) b.style.paddingBottom = Math.max(0, 2 * sheet - (edge - low)) + 'px';
+      }
+    });
+  };
+  const papers = new ResizeObserver(evenPaper);
+  document.querySelectorAll('main .block').forEach((b) => papers.observe(b));
+  // the header's search (Astra, 2026-10-29: "it should just give a drop down of stuff, and then you can select one something
+  // and it'll take you right to where it is"): Ctrl+F (or Cmd+F) opens it; as you type, a list of the sections, Polaroids,
+  // games and pets that match; pick one and the page goes there. A pet that is still in the jar opens on Meet every pet,
+  // turned to it. The last choice finds the words anywhere on the page, every match lit (Astra, 2026-10-28)
   (() => {
-    const box = $('search'), lit = window.CSS && CSS.highlights && window.Highlight;
-    let hits = [], at = -1;
+    const box = $('search'), list = $('search-list'), lit = window.CSS && CSS.highlights && window.Highlight;
+    let hits = [], at = -1, options = [], pick = -1;
+    const near = (node) => {
+      if (!node) return; const r = node.getBoundingClientRect();
+      scrollTo({ top: scrollY + r.top - 90, behavior: reduced ? 'auto' : 'smooth' });
+      node.classList.add('found'); setTimeout(() => node.classList.remove('found'), 1800);
+    };
+    // a pet: on Meet every pet, flipped round to it
+    const showPet = (name) => {
+      const f = [...document.querySelectorAll('.polaroid')].find((p) => /meet every pet/i.test((p.querySelector('.title') || {}).textContent || ''));
+      if (!f) return;
+      const next = f.querySelector('.flip.next'), badge = () => (f.querySelector('.badge') || {}).textContent;
+      for (let i = 0; i < 120 && badge() !== name && next; i++) next.click();
+      near(f);
+    };
+    // the places on the page, made fresh each time (the walls are drawn from GitHub after the page loads)
+    const places = () => {
+      const out = [];
+      for (const b of document.querySelectorAll('main .block')) { const h = b.querySelector('h2'); if (h) out.push({ kind: 'section', name: h.textContent.trim(), go: () => near(b) }); }
+      for (const p of document.querySelectorAll('.polaroid')) {
+        const t = p.querySelector('.title'); if (t) out.push({ kind: 'polaroid', name: t.textContent.trim(), sub: (p.querySelector('.kind') || {}).textContent || '', go: () => near(p) });
+      }
+      for (const c of document.querySelectorAll('.cab h3')) out.push({ kind: 'game', name: c.textContent.trim(), go: () => near(c.closest('.cab')) });
+      for (const p of pets.filter(iconOf)) out.push({ kind: 'pet', name: p.pet, sub: p.program || '', go: () => showPet(p.pet) });
+      return out;
+    };
+    const close = () => { list.hidden = true; box.setAttribute('aria-expanded', 'false'); pick = -1; };
+    const choose = (i) => { const o = options[i]; if (!o) return; close(); o.go(); };
+    const mark = (i) => {
+      pick = i; [...list.children].forEach((li, k) => li.setAttribute('aria-selected', String(k === i)));
+      const li = list.children[i]; if (li) li.scrollIntoView({ block: 'nearest' });
+    };
+    const showList = (q) => {
+      const words = q.split(/\s+/).filter(Boolean);
+      const score = (o) => { const t = (o.name + ' ' + (o.sub || '')).toLowerCase(); return words.every((w) => t.includes(w)) ? (o.name.toLowerCase().startsWith(q) ? 0 : 1) : -1; };
+      const seen = new Set();
+      options = places().map((o) => [score(o), o]).filter(([s, o]) => s >= 0 && !seen.has(o.kind + o.name) && seen.add(o.kind + o.name))
+        .sort((a, b) => a[0] - b[0]).slice(0, 12).map(([, o]) => o);
+      options.push({ kind: 'text', name: 'find "' + q + '" on the page', go: () => findText(q) });
+      list.replaceChildren(...options.map((o, i) => {
+        const li = el('li'); li.setAttribute('role', 'option'); li.append(el('i', null, o.kind), el('span', null, o.name));
+        if (o.sub) li.append(el('small', null, o.sub));
+        li.onmousedown = (e) => { e.preventDefault(); choose(i); }; return li;
+      }));
+      const r = box.getBoundingClientRect(), w = Math.min(320, innerWidth - 16);
+      Object.assign(list.style, { left: Math.max(8, Math.min(r.left, innerWidth - w - 8)) + 'px', top: r.bottom + 6 + 'px', width: w + 'px' });
+      list.hidden = false; box.setAttribute('aria-expanded', 'true'); mark(0);
+    };
+    addEventListener('keydown', (e) => { if ((e.ctrlKey || e.metaKey) && !e.altKey && e.key.toLowerCase() === 'f') { e.preventDefault(); box.focus(); box.select(); } });
+    box.addEventListener('blur', () => setTimeout(close, 150));
     const seen = (n) => { const e = n.parentElement; return e && !e.closest('script, style, header') && e.getClientRects().length > 0; };
     const clear = () => { hits = []; at = -1; if (lit) { CSS.highlights.delete('page-find'); CSS.highlights.delete('page-find-now'); } };
     function go(d) {
@@ -1165,8 +1311,9 @@
       if (lit) CSS.highlights.set('page-find-now', new Highlight(hits[at]));
       scrollTo({ top: scrollY + hits[at].getBoundingClientRect().top - innerHeight / 3, behavior: 'smooth' });
     }
-    box.addEventListener('input', () => {
-      const q = box.value.trim().toLowerCase(); clear(); box.classList.remove('none'); if (!q) return;
+    box.addEventListener('input', () => { const q = box.value.trim().toLowerCase(); clear(); box.classList.remove('none'); if (q) showList(q); else close(); });
+    function findText(q) {
+      clear();
       const walk = document.createTreeWalker(document.body, NodeFilter.FILTER_SHOW_TEXT);
       for (let n; (n = walk.nextNode());) {
         const t = (n.nodeValue || '').toLowerCase(); if (!t.includes(q) || !seen(n)) continue;
@@ -1174,8 +1321,12 @@
       }
       if (lit) CSS.highlights.set('page-find', new Highlight(...hits));
       box.classList.toggle('none', !hits.length); go(1);
+    }
+    box.addEventListener('keydown', (e) => {
+      if (!list.hidden && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) { e.preventDefault(); mark((pick + (e.key === 'ArrowDown' ? 1 : -1) + options.length) % options.length); return; }
+      if (e.key === 'Escape') { close(); return; }
+      if (e.key === 'Enter') { e.preventDefault(); if (!list.hidden) choose(Math.max(0, pick)); else go(e.shiftKey ? -1 : 1); }
     });
-    box.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); go(e.shiftKey ? -1 : 1); } });
   })();
   const shots = Object.values(IMG).filter((r) => r.screenshot || (r.pages || []).length || r.images.length).length;
   const source = (live) => ($('project-source').textContent = `${live ? 'live from GitHub' : 'snapshot'} · ${repos.length} public repos · ${WORLDS.length} worlds · ${pets.filter(iconOf).length} pets · ${shots} with pictures so far`);
@@ -1187,7 +1338,7 @@
   useRepos(S.repos || [], false);
   fetch('https://api.github.com/users/findastra/repos?per_page=100&sort=pushed')
     .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-    .then((d) => useRepos(d.filter((r) => !r.fork && !r.private).map((r) => ({ name: r.name, description: r.description || '', language: r.language || '', pushed_at: r.pushed_at, homepage: r.homepage || (r.has_pages ? `https://findastra.github.io/${r.name}/` : '') })), true))
+    .then((d) => useRepos(d.filter((r) => !r.fork && !r.private).map((r) => ({ name: r.name, description: r.description || '', language: r.language || '', pushed_at: r.pushed_at, created_at: r.created_at, homepage: r.homepage || (r.has_pages ? `https://findastra.github.io/${r.name}/` : '') })), true))
     .catch(() => {});
   // the hub's live pet list, picture index, pets.json and pet program pages: new pets, new drawings and new pages show up
   // without changing this site
@@ -1195,7 +1346,7 @@
   Promise.allSettled([getJson(HUB + 'pet-programs.json'), getJson(LATEST + 'index.json'), getJson(HUB + 'pets.json'),
     getJson('https://api.github.com/repos/findastra/astras-pet-os/contents/apps/pet-programs')])
     .then(([programs, index, hubPets, pages]) => {
-      if (index.status === 'fulfilled') hosted = new Set(Object.keys(index.value.pictures || {}).map((k) => k.replace(/^art\/latest\//, '')));
+      if (index.status === 'fulfilled') { const pics = index.value.pictures || {}; hosted = new Set(); for (const [k, v] of Object.entries(pics)) { const t = k.replace(/^art\/latest\//, ''); hosted.add(t); hostedFrom[t] = v; } }
       if (hubPets.status === 'fulfilled') for (const p of hubPets.value.pets || []) {
         if (p.art) artByRepo[p.repo] = p.art;
         if (p.interface_live_url) liveSiteByRepo[p.repo] = p.interface_live_url;
@@ -1249,8 +1400,10 @@
       // spots, with a little chance so they spread over the whole picture
       const first = [...spots].sort((a, b) => (b.sat * .7 + b.light * .3 + b.w * .5) - (a.sat * .7 + a.light * .3 + a.w * .5)).slice(0, 70);
       for (const sp of first) if (!picked.includes(sp)) picked.push(sp);
-      // sizes vary; the ones that were big are now really tiny (Astra, 2026-10-29: "too big of sparkles on my face")
-      const size = (k) => (k % 9 === 0 ? 3 + ((k >>> 4) % 3) : 6 + (k % 13));
+      // sizes vary, but small (Astra, 2026-10-29: "too big of sparkles on my face", then "shrink a lot of the sparkles"):
+      // most 3 to 8px, one in four 8 to 12px; then smaller again (Astra, 2026-10-29: "a lot of those to be shrunk"): most 2 to
+      // 5px, one in six 6 to 9px
+      const size = (k) => (k % 6 === 0 ? 6 + (k % 4) : 2 + (k % 4));
       const one = (x, y, c, k) => {
         const s = el('i');
         s.style.cssText = `--x:${x.toFixed(1)}%;--y:${y.toFixed(1)}%;--s:${size(k)}px;--d:${((k >>> 8) % 40) / 10}s;--c:${c};--dh:${[-150, -100, -50, 0, 50, 100, 150][(k >>> 12) % 7]};--l:0`;
@@ -1262,7 +1415,8 @@
         const k = hash('c' + gx + ':' + gy), x = -6 + gx * 22.4 + (k % 100) / 100 * 16, y = -6 + gy * 22.4 + ((k >>> 7) % 100) / 100 * 16;
         cover.push(one(x, y, `hsl(${k % 360} 55% 80%)`, k));
       }
-      box.replaceChildren(...picked.map((sp) => one((sp.i % N + .5) / N * 100, (Math.floor(sp.i / N) + .5) / N * 100, sp.c, hash('p' + sp.i))), ...cover);
+      // a fifth fewer of them (Astra, 2026-10-29: "like 20% less sparkles on my face"): every fifth one left out
+      box.replaceChildren(...[...picked.map((sp) => one((sp.i % N + .5) / N * 100, (Math.floor(sp.i / N) + .5) / N * 100, sp.c, hash('p' + sp.i))), ...cover].filter((_, i) => i % 5 !== 4));
     };
     if (img.complete && img.naturalWidth) go(); else img.addEventListener('load', go, { once: true });
   })();
