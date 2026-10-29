@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&family=JetBrains+Mono:wght@400;700&family=VT323&family=Permanent+Marker&display=swap">
-<link rel="stylesheet" href="cyber.css?v=20261027y">
+<link rel="stylesheet" href="cyber.css?v=20261028h">
 </head>
 <body>
 <!-- the fat star every pet window is cut from (R 100, r 70; rounded by the stroke in cyber.css) -->
@@ -18,10 +18,9 @@
 </defs></svg>
 
 <header class="top">
-  <a class="brand" href="#top">find <span>/</span>astra</a>
-  <nav aria-label="Sections">
-    <a href="#vr">vr &amp; vrchat</a><a href="#discord">discord</a><a href="#web">web &amp; more</a><a href="#pets">astra's petos</a><a href="#arcade">arcade</a><a href="#contact">contact</a>
-  </nav>
+  <a class="brand" href="#top">find <span>/</span>astra <span>/</span></a>
+  <!-- finds any words on the page (Astra, 2026-10-28); the pole on the left is the section menu -->
+  <input id="search" type="search" placeholder="search this page" aria-label="Search this page" autocomplete="off">
 </header>
 
 <!-- the pole on the left, from Mommy's website (findastra/mommys-website, its "pole rail"): a floor label per section and a
@@ -42,7 +41,7 @@
 <main id="top">
   <!-- what changed lately, from public GitHub activity (live, else the snapshot in updates-data.js): a slim news strip at the
        very top (Astra, 2026-10-27: "move it at the top") -->
-  <section class="ticker strip" id="tick-updates" aria-label="Live updates">
+  <section class="ticker" id="tick-updates" aria-label="Live updates">
     <span class="tick-label">live updates</span>
     <div class="track"></div>
   </section>
@@ -63,38 +62,29 @@
     <div class="who">
       <!-- the portrait in color; each of its colors sparkles in that color (sampled from the picture in cyber.js) -->
       <figure class="portrait"><img src="art/avatar.jpg" alt="Astra's avatar portrait" width="320" height="320"><div class="sparkles glitter" id="portrait-glitter" aria-hidden="true"></div></figure>
-      <!-- Astra's hand lettering: pictures in art/lettering/, list and order in lettering-data.js (Portfolio Puffer's Handwritten Message Manager) -->
+      <!-- the hand lettering slider is out while Astra rewrites the pieces (2026-10-28); lettering.js, lettering-data.js and
+           art/lettering/ are kept, so putting back the figure and the two script tags from git history brings it back -->
       <h1 class="sr-only">I'm Audra, a.k.a. Astra</h1>
-      <figure class="lettering" id="lettering" role="region" aria-roledescription="carousel" aria-label="Astra's hand lettering" tabindex="0" hidden>
-        <div class="letter-track" id="letter-track"></div>
-        <figcaption class="letter-nav">
-          <button class="letter-btn" type="button" id="letter-prev" aria-label="Previous lettering">&lsaquo;</button>
-          <span class="letter-dots" id="letter-dots"></span>
-          <button class="letter-btn" type="button" id="letter-next" aria-label="Next lettering">&rsaquo;</button>
-          <span class="letter-count" id="letter-count" aria-live="polite"></span>
-        </figcaption>
-      </figure>
-      <!-- the words are in the lettering above; only the credit is written out (Astra, 2026-10-27) -->
-      <p class="quote">Audra J. Volk</p>
     </div>
   </section>
 
-  <!-- the projects worked on most recently -->
+  <!-- the projects worked on most recently: the same slim, straight strip as live updates, running the other way (Astra, 2026-10-28) -->
   <!-- the white rabbit hops along the top edge of the working on bar (Astra, 2026-10-27) -->
   <div class="rabbit-lane" id="rabbit-lane"></div>
   <section class="ticker flip" id="tick-now" aria-label="Working on now">
     <span class="tick-label">working on</span>
     <div class="track"></div>
   </section>
+  <!-- the checkered racing stripe, under the working on bar (Astra, 2026-10-28) -->
+  <div class="race-stripe" aria-hidden="true"></div>
 
   <!-- the projects, one section each, in the GitHub profile README's order (VR & VRChat, Discord, Web & More), then Astra's
        PetOS; each its own pattern, black between them, and a floor of its own on the pole (Astra, 2026-10-27) -->
   <section class="block light chapter" id="vr">
     <p class="kicker">// 01 · vr &amp; vrchat</p>
     <h2>VR &amp; VRChat</h2>
-    <p class="lede">VRChat worlds I build in Unity. Tap a photo for more pictures.</p>
+    <p class="lede">VRChat worlds I build in Unity.</p>
     <div class="filters">
-      <input id="search" type="search" placeholder="search worlds, projects, pets" aria-label="Search worlds, projects and pets">
       <p class="muted mono" id="project-source"></p>
     </div>
         <div class="polaroids" id="world-list"></div>
@@ -275,9 +265,7 @@
 <script src="pets-data.js?v=20261027c"></script>
 <script src="project-images.js?v=20261020a"></script>
 <script src="updates-data.js?v=20261018c"></script>
-<script src="lettering-data.js?v=20261019a"></script>
-<script src="lettering.js?v=20261027e"></script>
-<script src="cyber.js?v=20261027x"></script>
+<script src="cyber.js?v=20261028d"></script>
 <script src="games-20261027.js?v=20261027d"></script>
 </body>
 </html>

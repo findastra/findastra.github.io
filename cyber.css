@@ -25,7 +25,7 @@ body { margin: 0; background: #0b0b0b; color: var(--ink); font: 17px/1.65 Inter,
   transition: top .18s cubic-bezier(.4, 1.4, .5, 1); }
 .floors { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: space-around; align-items: center; padding: 12vh 0; }
 .floors a { pointer-events: auto; cursor: pointer; text-decoration: none; min-height: 44px; min-width: 28px; display: flex; align-items: center; justify-content: center;
-  font: 700 13px/1 var(--mono); letter-spacing: .12em; color: var(--c, #c9c9c9); writing-mode: vertical-rl; text-orientation: mixed; transform: rotate(180deg); background: #0b0b0b; padding: 6px 2px; opacity: .55;
+  font: 700 16px/1 var(--mono); letter-spacing: .1em; color: var(--c, #c9c9c9); writing-mode: vertical-rl; text-orientation: mixed; transform: rotate(180deg); background: #0b0b0b; padding: 6px 2px; opacity: .55;
   transition: opacity .25s, color .25s, text-shadow .25s; }
 /* each floor its own color (Astra, 2026-10-27: "I want each section to have a color") */
 .floors a:nth-child(1) { --c: #ff2bd6; } .floors a:nth-child(2) { --c: #ff2e4d; } .floors a:nth-child(3) { --c: #ff7a1a; } .floors a:nth-child(4) { --c: #fff01f; }
@@ -43,16 +43,20 @@ img { max-width: 100%; display: block; }
 .defs { position: absolute; width: 0; height: 0; overflow: hidden; }
 main { overflow-x: clip; }
 
-/* header: black bar on a checkerboard hem */
-.top { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 20px 16px;
+/* header: a black bar; its checkerboard hem moved under the working on bar as the racing stripe (Astra, 2026-10-28) */
+/* just "find /astra /" and the page search after it, top left (Astra, 2026-10-28) */
+.top { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 12px; padding: 12px 20px;
   background: #000; color: #f2f2f2; }
-.top::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 6px; background: repeating-conic-gradient(#5a5a5a 0 25%, #000 0 50%) 0 0 / 6px 6px; }
-.brand { font: 700 18px var(--mono); color: #f2f2f2; text-decoration: none; }
+.race-stripe { box-sizing: content-box; height: 6px; border-bottom: 4px solid #000; background: repeating-conic-gradient(#5a5a5a 0 25%, #000 0 50%) 0 0 / 6px 6px; }
+.brand { font: 700 18px var(--mono); color: #f2f2f2; text-decoration: none; white-space: nowrap; }
 .brand span { color: #777; }
 .brand:hover { background: none; color: #fff; }
-.top nav { display: flex; gap: 6px 14px; flex-wrap: wrap; }
-.top nav a { font: 13px var(--mono); color: #bdbdbd; text-decoration: none; padding: 0 4px; }
-.top nav a:hover { background: #f2f2f2; color: #000; }
+#search { flex: 0 1 300px; min-width: 0; font: 13px var(--mono); color: #e4e4e4; background: #0a0a0a; border: 2px solid #555; padding: 5px 10px; }
+#search:focus { outline: 2px dashed #8a8a8a; outline-offset: 3px; }
+#search.none { border-style: dashed; color: #8a8a8a; }
+/* every match on the page, and the one it is on */
+::highlight(page-find) { background: #5a5a5a; color: #fff; }
+::highlight(page-find-now) { background: #f2f2f2; color: #000; }
 
 /* buttons */
 .btn { display: inline-block; font: 13px var(--mono); color: var(--ink); background: transparent; border: 2px solid var(--ink); padding: 6px 14px; cursor: pointer; text-decoration: none; border-radius: 0; box-shadow: 4px 4px 0 var(--muted); transition: transform .12s, box-shadow .12s; }
@@ -61,7 +65,8 @@ main { overflow-x: clip; }
 .btn.hot:hover, .btn.hot:focus-visible { background: var(--bg); color: var(--ink); }
 
 /* sections */
-.block { position: relative; isolation: isolate; padding: 84px var(--wrap); background: var(--bg); color: var(--ink); }
+/* one grid row less above each title than below the section (Astra, 2026-10-28: "knock off like probably one of those") */
+.block { position: relative; isolation: isolate; padding: 56px var(--wrap) 84px; background: var(--bg); color: var(--ink); }
 .kicker { display: inline-block; font: 13px var(--mono); background: var(--ink); color: var(--bg); padding: 3px 10px; margin: 0 0 14px; transform: rotate(-2deg); }
 h2 { font: 900 clamp(2.8rem, 9vw, 6rem)/.92 Inter, sans-serif; text-transform: uppercase; letter-spacing: -.03em; margin: 0 0 32px; }
 h3 { display: inline-block; font: 700 12px var(--mono); text-transform: uppercase; letter-spacing: .14em; color: var(--ink); border-bottom: 3px solid var(--ink); margin: 20px 0 10px; padding-bottom: 2px; }
@@ -78,20 +83,17 @@ h3 { display: inline-block; font: 700 12px var(--mono); text-transform: uppercas
 .weave { background: repeating-linear-gradient(45deg, #1d1d1d 0 2px, transparent 2px 14px), repeating-linear-gradient(-45deg, #1d1d1d 0 2px, transparent 2px 14px), #121212; }
 #arcade h2 { text-shadow: 4px 4px 0 #555, 8px 8px 0 #000; }
 
-/* tickers between sections: what changed lately, and what is being worked on now */
-.ticker { position: relative; z-index: 2; margin: -16px -24px; padding: 13px 0 13px 0; overflow: hidden; white-space: nowrap; background: #050505; color: #d6d6d6;
-  border-block: 2px solid #3c3c3c; box-shadow: 0 7px 0 #000; transform: rotate(-1.4deg); font: 500 clamp(14px, 1.7vw, 17px)/1.2 var(--mono); }
-.ticker.flip { background: #1c1c1c; color: #cfcfcf; border-color: #000; box-shadow: 0 -7px 0 #000; transform: rotate(1.2deg); }
-.tick-label { position: absolute; z-index: 1; left: 0; top: 0; bottom: 0; display: grid; place-items: center; padding: 0 16px 0 34px; background: #8a8a8a; color: #000;
-  font: 700 12px var(--mono); text-transform: uppercase; letter-spacing: .14em; box-shadow: 8px 0 14px #000; }
-/* live updates: a slim, straight news strip right under the header */
-.ticker.strip { margin: 0; padding: 7px 0; transform: none; box-shadow: none; border-block: 1px solid #262626; background: #030303; font-size: 13px; }
-.ticker.strip .tick-label { padding: 0 12px; font-size: 10px; background: #2a2a2a; color: #d6d6d6; box-shadow: 6px 0 10px #000; }
-/* the white rabbit hops along the top edge of the working on bar, tilted like it, in the hero's bottom padding; the lane
-   clips him at its edges, so running off the side never widens the page, and his hops never cover the bar's words */
-.rabbit-lane { position: relative; z-index: 3; height: 64px; margin: -64px -24px 0; overflow: hidden; pointer-events: none; transform: rotate(1.2deg); }
+/* tickers: what changed lately, right under the header, and what is being worked on now, under the hero. Both are the same
+   slim, straight news strip; working on runs the other way (Astra, 2026-10-28: "make it straight", "the same size as the other one") */
+.ticker { position: relative; z-index: 2; padding: 7px 0; overflow: hidden; white-space: nowrap; background: #030303; color: #d6d6d6;
+  border-block: 1px solid #262626; font: 500 13px/1.2 var(--mono); }
+.tick-label { position: absolute; z-index: 1; left: 0; top: 0; bottom: 0; display: grid; place-items: center; padding: 0 12px; background: #2a2a2a; color: #d6d6d6;
+  font: 700 10px var(--mono); text-transform: uppercase; letter-spacing: .14em; box-shadow: 6px 0 10px #000; }
+/* the white rabbit hops along the top edge of the working on bar, in the hero's bottom padding; the lane clips him at its
+   edges, so running off the side never widens the page, and his hops never cover the bar's words */
+.rabbit-lane { position: relative; z-index: 3; height: 84px; margin-top: -84px; overflow: hidden; pointer-events: none; }
 .rabbit-lane .white-rabbit { pointer-events: auto; }
-.white-rabbit { position: absolute; z-index: 0; bottom: 20px; left: -60px; display: none; width: 38px; height: 32px; padding: 4px; border: 0; background: none; color: #fff;
+.white-rabbit { position: absolute; z-index: 0; bottom: 0; left: -60px; display: none; width: 38px; height: 32px; padding: 4px; border: 0; background: none; color: #fff;
   cursor: pointer; --glow: #fff; filter: drop-shadow(1.5px 0 0 #111) drop-shadow(-1.5px 0 0 #111) drop-shadow(0 1.5px 0 #111) drop-shadow(0 -1.5px 0 #111) drop-shadow(0 0 6px var(--glow)); }
 /* white with a dark outline (Astra, 2026-10-27); his glow is the color the rain turns when he is caught, every color before the rainbow */
 .white-rabbit.rainbow { animation: rabbit-rainbow 1.6s linear infinite; }
@@ -116,11 +118,12 @@ h3 { display: inline-block; font: 700 12px var(--mono); text-transform: uppercas
 @keyframes tick { to { transform: translateX(-50%); } }
 
 /* hero */
-/* the terminal on the left is the smaller side (Astra, 2026-10-27: "that chat to the left of it is too big") */
-.hero { position: relative; isolation: isolate; display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1fr); gap: 48px; align-items: center; padding: 64px var(--wrap) 80px;
+/* the terminal and the portrait: two squares the same size, straight, snug side by side (Astra, 2026-10-28) */
+.hero { --sq: min(340px, 100%); position: relative; isolation: isolate; display: grid; grid-template-columns: repeat(2, var(--sq)); justify-content: center; gap: 48px;
+  align-items: center; padding: 40px var(--wrap) 84px;
   background: radial-gradient(circle at 76% 42%, #3b3b3b 0, transparent 46%), radial-gradient(#272727 1px, transparent 1.6px) 0 0 / 18px 18px, #070707; color: var(--ink); }
 #rain { position: absolute; inset: 0; width: 100%; height: 100%; opacity: .55; z-index: -1; pointer-events: none; }
-.term { position: relative; display: flex; flex-direction: column; background: #000; border: 2px solid var(--ink); }
+.term { position: relative; display: flex; flex-direction: column; aspect-ratio: 1; box-sizing: border-box; background: #000; border: 2px solid var(--ink); }
 .term::before { content: ""; position: absolute; inset: 0; z-index: -1; transform: translate(14px, 14px); background: repeating-linear-gradient(45deg, var(--ink) 0 2px, transparent 2px 8px); }
 .term-bar { display: flex; align-items: center; gap: 6px; padding: 8px 12px; background: repeating-linear-gradient(#f2f2f2 0 2px, #9c9c9c 2px 3px); border-bottom: 2px solid #f2f2f2; font: 12px var(--mono); color: #000; }
 .term-bar i { width: 11px; height: 11px; border-radius: 50%; background: #f2f2f2; border: 2px solid #000; }
@@ -133,12 +136,12 @@ h3 { display: inline-block; font: 700 12px var(--mono); text-transform: uppercas
 .term-body .hot { display: table; background: #f2f2f2; color: #000; padding: 0 6px; }
 .term-input { display: flex; align-items: center; gap: 8px; margin: 0; padding: 4px 14px 8px; font: 12.5px var(--mono); color: #fff; }
 .term-input label { font-weight: 700; white-space: nowrap; }
-#term-in { flex: 1; min-width: 0; font: inherit; color: #e4e4e4; background: transparent; border: 0; border-bottom: 1px dashed #4a4a4a; padding: 2px 0; caret-color: #fff; }
+#term-in { flex: 1; width: 0; min-width: 0; font: inherit; color: #e4e4e4; background: transparent; border: 0; border-bottom: 1px dashed #4a4a4a; padding: 2px 0; caret-color: #fff; }
 #term-in:focus { outline: none; border-bottom-color: #f2f2f2; }
-.term-body { max-height: 360px; overflow-y: auto; }
+.term-body { min-height: 0; overflow-y: auto; }
 .term-actions { display: flex; gap: 10px; flex-wrap: wrap; padding: 10px 14px 14px; --ink: #f2f2f2; --bg: #000; --muted: #5c5c5c; }
 .who { display: flex; flex-direction: column; justify-content: center; text-align: center; }
-.portrait { margin: 0 auto 26px; width: min(300px, 70vw); aspect-ratio: 1; position: relative; transform: rotate(2.5deg); }
+.portrait { margin: 0; width: 100%; aspect-ratio: 1; position: relative; }
 .portrait img { width: 100%; height: 100%; object-fit: cover; border: 3px solid var(--ink); }
 /* the portrait's own colors twinkle on it (cyber.js samples them), ever so slightly rainbow: each one a little off its
    color, and all of them drifting slowly round the hues (Astra, 2026-10-27) */
@@ -147,20 +150,26 @@ h3 { display: inline-block; font: 700 12px var(--mono); text-transform: uppercas
 .portrait::before { content: ""; position: absolute; inset: 0; z-index: -1; transform: translate(-16px, 16px); background: repeating-linear-gradient(-45deg, #8c8c8c 0 3px, transparent 3px 8px); }
 /* Astra's hand lettering: transparent ink masks painted in --ink, so they follow the hero (white, then black when unmasked) */
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
-.lettering { margin: 0 auto 14px; max-width: 520px; outline: none; }
+.lettering { margin: 0 auto 14px; width: 100%; max-width: 416px; outline: none; }
 .lettering:focus-visible { outline: 2px dashed var(--ink); outline-offset: 6px; }
-.letter-track { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none; }
+/* as tall as the piece showing (lettering.js sets it), so a short one has no empty band above and below it
+   (Astra, 2026-10-28: "too much space between the hand text above and below"); contain keeps the slides side by side from
+   making the column wider than a phone's screen */
+.letter-track { display: flex; align-items: center; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none;
+  contain: inline-size; transition: height .3s ease; }
 .letter-track::-webkit-scrollbar { display: none; }
-/* small, about a third of what it was (Astra, 2026-10-27: "make my handwriting like a third of the size"; it was 84–118px tall) */
-.letter { flex: 0 0 100%; scroll-snap-align: center; display: grid; place-items: center; min-height: clamp(40px, 10vw, 50px); padding: 4px 8px; box-sizing: border-box; }
+/* small, about a third of what it was (Astra, 2026-10-27: "make my handwriting like a third of the size"; it was 84–118px tall),
+   then all of it 20% smaller, with the same words on each line (Astra, 2026-10-28: "shrink it by 20%") */
+.letter { flex: 0 0 100%; scroll-snap-align: center; display: grid; place-items: center; min-height: clamp(32px, 8vw, 40px); padding: 3px 6px; box-sizing: border-box; }
 /* each picture cut into its words, laid out large in rows; a line of writing is --line tall (Astra, 2026-10-27) */
-.letter-words { --line: clamp(30px, 6vw, 42px); display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 2px 12px; max-width: 100%; }
+.letter-words { --line: clamp(24px, 4.8vw, 33.6px); display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 1.6px 9.6px; max-width: 100%; }
 .letter-word { width: calc(var(--w) * var(--line)); height: calc(var(--h) * var(--line)); background: var(--ink); transition: background .4s;
   -webkit-mask: var(--src) center / 100% 100% no-repeat; mask: var(--src) center / 100% 100% no-repeat; }
 /* a picture shown whole, when its words could not be cut apart */
-.letter-ink { width: 100%; height: clamp(84px, 20vw, 118px); background: var(--ink);
+.letter-ink { width: 100%; height: clamp(67.2px, 16vw, 94.4px); background: var(--ink);
   -webkit-mask: var(--src) center / contain no-repeat; mask: var(--src) center / contain no-repeat; transition: background .4s; }
-.letter-nav { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 6px; }
+/* on a narrow phone the count moves under the dots instead of pushing the page wider than the screen */
+.letter-nav { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px; margin-top: 6px; }
 .letter-btn { font: 700 20px/1 var(--mono); width: 34px; height: 30px; color: var(--ink); background: transparent; border: 2px solid var(--ink); cursor: pointer; box-shadow: 3px 3px 0 var(--muted); }
 .letter-btn:hover, .letter-btn:focus-visible { background: var(--ink); color: var(--bg); outline: none; }
 .letter-dots { display: flex; gap: 2px; }
@@ -202,8 +211,6 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 2px #f2f2f2; text
 
 /* projects: VR & VRChat, Discord and Web & More as Polaroids, Astra's PetOS as the star jar */
 .filters { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-#search { font: 14px var(--mono); color: #e4e4e4; background: #0a0a0a; border: 2px solid #555; padding: 8px 12px; min-width: min(300px, 100%); box-shadow: 3px 3px 0 #000; }
-#search:focus { outline: 2px dashed #8a8a8a; outline-offset: 3px; }
 .tag { display: inline-block; font: 11px var(--mono); text-transform: uppercase; letter-spacing: .12em; background: #000; color: #cfcfcf; padding: 2px 8px; }
 
 /* sparkles: four-point twinkles around each shape, in hues near its own color */
@@ -462,17 +469,18 @@ a.title:hover, a.title:focus-visible { color: color-mix(in srgb, var(--c) 45%, #
 /* lightbox */
 .lightbox { border: 2px solid #f2f2f2; background: rgba(0, 0, 0, .96); color: #f2f2f2; padding: 0; max-width: min(1100px, 96vw); width: 96vw; border-radius: 0; box-shadow: 12px 12px 0 #555; }
 .lightbox::backdrop { background: rgba(0, 0, 0, .78); backdrop-filter: blur(3px) grayscale(1); }
-.lightbox figure { margin: 0; padding: 44px 56px 18px; }
+.lightbox figure { margin: 0; padding: 44px 16px 18px; }
 .lightbox img { margin: 0 auto; max-height: 76vh; object-fit: contain; }
 .lightbox.mono img { filter: grayscale(1) contrast(1.2); }
-.lightbox figcaption { text-align: center; font: 13px var(--mono); color: #9b9b9b; margin-top: 10px; }
+.lightbox figcaption { text-align: center; font: 13px var(--mono); color: #9b9b9b; margin: 10px 52px 0; min-height: 26px; }
 .lb-close { position: absolute; top: 8px; right: 10px; }
-.lb-nav { position: absolute; top: 50%; transform: translateY(-50%); font-size: 34px; width: 44px; height: 64px; }
+/* the arrows sit in the bottom corners, either side of the caption (Astra, 2026-10-28) */
+.lb-nav { position: absolute; bottom: 6px; font-size: 34px; width: 44px; height: 44px; line-height: 1; }
 .lb-nav.prev { left: 6px; } .lb-nav.next { right: 6px; }
 .lightbox button { background: transparent; color: #f2f2f2; border: 0; cursor: pointer; }
 .lightbox button:hover { background: #f2f2f2; color: #000; }
 
-.foot { position: relative; padding: 52px var(--wrap) 60px; background: #000; color: var(--ink); text-align: center; font-size: 14px; }
+.foot { position: relative; padding: 24px var(--wrap) 60px; background: #000; color: var(--ink); text-align: center; font-size: 14px; }
 .foot::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 10px; background: repeating-conic-gradient(#4a4a4a 0 25%, #000 0 50%) 0 0 / 10px 10px; }
 /* the unified footer, as on the pet program pages: centered, its groups after a pink ✦, no list */
 .astra-footer .footer-line { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px 18px; }
@@ -490,7 +498,7 @@ a.title:hover, a.title:focus-visible { color: color-mix(in srgb, var(--c) 45%, #
 .footer-star img { width: 48px; height: 48px; }
 
 @media (max-width: 900px) {
-  .hero { grid-template-columns: 1fr; padding-top: 36px; }
+  .hero { grid-template-columns: var(--sq); gap: 32px; padding-top: 32px; }
   .arcade, .contacts { grid-template-columns: 1fr; }
   .jar-stage { grid-template-columns: 1fr; min-height: 0; }
   .jar-out { min-height: 380px; }
@@ -498,12 +506,11 @@ a.title:hover, a.title:focus-visible { color: color-mix(in srgb, var(--c) 45%, #
 @media (max-width: 520px) {
   body { font-size: 16px; }
   :root { --rail: 36px; }
-  .floors a { font-size: 11px; letter-spacing: .08em; }
-  .block { padding-top: 64px; padding-bottom: 64px; }
+  .floors a { font-size: 13px; letter-spacing: .08em; }
+  .block { padding-top: 40px; padding-bottom: 64px; }
   .board { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .fz-digit input { font-size: 22px; }
   .lightbox figure { padding: 44px 12px 12px; }
-  .top nav { gap: 4px 10px; }
   .grid { grid-template-columns: 1fr; }
   .polaroids { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 34px 16px; }
   .polaroid .frame { padding: 8px 8px 0; }
@@ -514,6 +521,6 @@ a.title:hover, a.title:focus-visible { color: color-mix(in srgb, var(--c) 45%, #
   html { scroll-behavior: auto; }
   .letter-ink, .glitch, .ticker .track, .jar-out .card, .sparkles i, .portrait .glitter, .polaroid .photo img { animation: none; }
   .ticker { overflow-x: auto; }
-  .card, .card .s-shadow, .btn, .polaroid .frame, .polaroid .photo img, .tile button { transition: none; }
+  .card, .card .s-shadow, .btn, .polaroid .frame, .polaroid .photo img, .tile button, .letter-track { transition: none; }
   #rain { display: none; }
 }

@@ -13,7 +13,8 @@ Astra's portfolio, served at <https://findastra.github.io>. **Portfolio Puffer**
   (Astra removed "One person. Two names. Both real." and the tagline under it).
 - **Employer pages publish only what Astra has read word for word.** Puffer drafts from LinkedIn and GitHub and proposes
   changes to `profile-data.js`; Astra approves each one. No client names or project specifics unless she writes them.
-- **Hand lettering** (Astra, 2026-10-19): the hero slider shows Astra's Procreate lettering, one piece at a time, with
+- **Hand lettering** (Astra, 2026-10-19): **out of the page since 2026-10-28** while Astra rewrites the pieces; the
+  files stay, and the figure plus its two script tags come back from git history. When shown, the hero slider shows Astra's Procreate lettering, one piece at a time, with
   a clear background. The pictures live in `art/lettering/`; the list, order and words live in `lettering-data.js`.
   Manage them with Portfolio Puffer's **Handwritten Message Manager** (`handwritten-message-manager-20261019.html` in
   findastra/portfolio-puffer), which clears the background and exports both. Each picture is an ink mask painted in the
@@ -66,3 +67,9 @@ the blank About, the README's project groups and the unified footer by a Claude 
 The white rabbit on the live updates bar (Gone Ghost's sprite; catching it changes the rain's colors), the pole from Mommy's
 website, the Moodglass picture (a Discord window over Liminal Doors' floors), the Fuzzboi Factory boxes, the Hack terminal window,
 the pet memory moods board and the Avatar Lab fixes by a Claude Opus 5.5 session, 2026-10-27.
+The straight working on bar (the same slim strip as live updates) with the header's checkered racing stripe moved under it, the
+hero as two straight squares of the same size (terminal and portrait), the hand lettering taken out for Astra's rewrite (its
+slider now 20% smaller and as tall as the piece showing, for when it comes back), the hero fitting a phone's width, one grid
+row less above every section title and the footer, the photo viewer's arrows in its bottom corners, the header cut to "find /astra /" plus a
+search that finds any words on the page (the old project search and the header links are gone; the pole is the menu), and
+bigger pole labels by a Claude Opus 5.5 session, 2026-10-28.

@@ -105,7 +105,7 @@
     const img = new Image();
     img.onload = () => {
       const holder = el('div', 'letter-words'); holder.setAttribute('role', 'img'); holder.setAttribute('aria-label', String(it.words || 'Hand lettering by Astra'));
-      if (wordsOf(img, it, holder)) ink.replaceWith(holder);
+      if (wordsOf(img, it, holder)) { ink.replaceWith(holder); fit(); }
     };
     img.src = it.file;
     const d = el('button', 'letter-dot');
@@ -118,10 +118,14 @@
   box.hidden = false;
 
   let at = 0, target = null;
+  // the track is as tall as the piece showing, so a short piece has no empty band above and below it (Astra, 2026-10-28:
+  // "too much space between the hand text above and below")
+  const fit = () => { track.style.height = slides[at].offsetHeight + 'px'; };
   const show = (i) => {
     at = i;
     marks.forEach((d, j) => d.setAttribute('aria-current', j === i ? 'true' : 'false'));
     if (count) count.textContent = `${i + 1} / ${slides.length}`;
+    fit();
   };
   const go = (i) => {
     const n = (i + slides.length) % slides.length;
@@ -150,4 +154,6 @@
   const first = Math.floor(Math.random() * slides.length);
   requestAnimationFrame(() => { track.scrollLeft = slides[first].offsetLeft - track.offsetLeft; });
   show(first);
+  // a piece changes height once its words are cut, and with the window: the track follows
+  if (window.ResizeObserver) { const ro = new ResizeObserver(fit); slides.forEach((s) => ro.observe(s)); }
 })();

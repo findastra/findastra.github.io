@@ -600,8 +600,31 @@
     $('web-list').replaceChildren(...others.filter((r) => !DISCORD.has(r.name)).map(extraCard));
     for (const ch of document.querySelectorAll('.chapter')) ch.classList.toggle('empty', !!query && !ch.querySelector('.polaroid, .mini'));
   }
-  // a search tips the jar out, so every matching pet shows
-  $('search').addEventListener('input', (e) => { query = e.target.value.trim().toLowerCase(); if (query) petJar.setPour(true); render(); });
+  // the header's search finds any words on the page: every match is lit, typing goes to the first, Enter to the next and
+  // Shift+Enter back (Astra, 2026-10-28: "that search bar will search anything on the page")
+  (() => {
+    const box = $('search'), lit = window.CSS && CSS.highlights && window.Highlight;
+    let hits = [], at = -1;
+    const seen = (n) => { const e = n.parentElement; return e && !e.closest('script, style, header') && e.getClientRects().length > 0; };
+    const clear = () => { hits = []; at = -1; if (lit) { CSS.highlights.delete('page-find'); CSS.highlights.delete('page-find-now'); } };
+    function go(d) {
+      if (!hits.length) return;
+      at = (at + d + hits.length) % hits.length;
+      if (lit) CSS.highlights.set('page-find-now', new Highlight(hits[at]));
+      scrollTo({ top: scrollY + hits[at].getBoundingClientRect().top - innerHeight / 3, behavior: 'smooth' });
+    }
+    box.addEventListener('input', () => {
+      const q = box.value.trim().toLowerCase(); clear(); box.classList.remove('none'); if (!q) return;
+      const walk = document.createTreeWalker(document.body, NodeFilter.FILTER_SHOW_TEXT);
+      for (let n; (n = walk.nextNode());) {
+        const t = (n.nodeValue || '').toLowerCase(); if (!t.includes(q) || !seen(n)) continue;
+        for (let i = t.indexOf(q); i >= 0; i = t.indexOf(q, i + q.length)) { const r = new Range(); r.setStart(n, i); r.setEnd(n, i + q.length); hits.push(r); }
+      }
+      if (lit) CSS.highlights.set('page-find', new Highlight(...hits));
+      box.classList.toggle('none', !hits.length); go(1);
+    });
+    box.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); go(e.shiftKey ? -1 : 1); } });
+  })();
   const shots = Object.values(IMG).filter((r) => r.screenshot || (r.pages || []).length || r.images.length).length;
   const source = (live) => ($('project-source').textContent = `${live ? 'live from GitHub' : 'snapshot'} · ${repos.length} public repos · ${WORLDS.length} worlds · ${pets.filter(iconOf).length} pets · ${shots} with pictures so far`);
   let liveRepos = false;
