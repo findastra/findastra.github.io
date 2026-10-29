@@ -247,7 +247,9 @@
         // the first, the hummingbird's conservatory, a little closer in on the greenhouse and its glass roof (Astra, 2026-10-29)
         ...(i ? {} : { crop: [40, 0, 467, 427, 507, 508], cover: true }) })) },
     { name: "Mommy's World", kind: 'VRChat world · PC VR / desktop', text: "The VRChat home of Mommy's Rave House, Dance & Avatar Academy.", repo: 'mommys-world',
-      local: [{ src: 'art/worlds/phone-booth.jpg', label: 'concept art', cap: 'A pink phone booth above the clouds' }], extra: ['mommys', 'role-fairy'] },
+      // first, "baby girl, I'm a star", playing on a loop with its sound off until you turn it on (Astra, 2026-10-29)
+      local: [{ src: 'art/worlds/mommys-world-baby-girl-im-a-star-20261029.mp4', cap: "Mommy's World · baby girl, I'm a star", type: 'video', sound: true },
+        { src: 'art/worlds/phone-booth.jpg', label: 'concept art', cap: 'A pink phone booth above the clouds' }], extra: ['mommys', 'role-fairy'] },
     // first the still with its gray cut away, so it shines over the paper (Astra, 2026-10-29); the video and the crystals keep theirs
     { name: 'The Rainbow Maker', kind: 'VRChat world · PC VR / desktop', text: 'The mechanics of the Kikkerland Rainbow Maker: watch its tiny gear train turn and spin a crystal that refracts rainbows across the room.', repo: 'the-rainbow-maker', local: [
       { src: 'art/worlds/rainbow-maker-still-clear-20261029.png', cap: 'The Rainbow Maker', fit: 'contain', clear: true, nudge: '0 7%',
@@ -350,7 +352,15 @@
     const orbiting = pics.find((p) => p.orbits), field = orbiting ? orbitField(h, orbiting.orbits, orbiting.still) : null;
     if (shot) photo.append(shot);
     else if (!pics.length) photo.append(el('span', 'developing', 'still developing…'));
-    let flip = null, count = null, badge = null;
+    let flip = null, count = null, badge = null, sound = null;
+    // a video with sound (Mommy's World): it plays muted, and a small button on the white border turns its sound on and off
+    if (pics.some((p) => p.sound)) {
+      let on = false;
+      const b = el('button', 'sound', '🔇'); b.type = 'button';
+      const set = () => { b.textContent = on ? '🔊' : '🔇'; b.setAttribute('aria-label', on ? 'turn the sound off' : 'turn the sound on'); b.setAttribute('aria-pressed', String(on)); const v = photo.querySelector('video'); if (v) { v.muted = !on; if (on) v.play().catch(() => {}); } };
+      b.onclick = (e) => { e.stopPropagation(); on = !on; set(); };
+      sound = { b, show: (p) => { b.hidden = !p.sound; if (p.sound) requestAnimationFrame(set); } };
+    }
     if (!shot && pics.length) {
       let at = 0;
       // each picture can also be a video (plays by itself, muted, on a loop) or a live page you can move around in
@@ -408,7 +418,7 @@
       if (pics.length > 1) {
         // "1/3" (Astra, 2026-10-29)
         count = el('span', 'count', `1/${pics.length}`);
-        const go = (d) => { at = (at + d + pics.length) % pics.length; const next = media(pics[at]); shown.replaceWith(next); shown = next; photo.classList.toggle('clear', !!clear || clearOf(pics[at])); if (sticky) sticky(at, note2); badge.hidden = !pics[at].label; badge.textContent = pics[at].label || ''; count.textContent = `${at + 1}/${pics.length}`; };
+        const go = (d) => { at = (at + d + pics.length) % pics.length; const next = media(pics[at]); shown.replaceWith(next); shown = next; photo.classList.toggle('clear', !!clear || clearOf(pics[at])); if (sound) sound.show(pics[at]); if (sticky) sticky(at, note2); badge.hidden = !pics[at].label; badge.textContent = pics[at].label || ''; count.textContent = `${at + 1}/${pics.length}`; };
         flip = ['‹', '›'].map((t, i) => { const b = el('button', 'flip ' + (i ? 'next' : 'prev'), t); b.type = 'button'; b.setAttribute('aria-label', (i ? 'next' : 'previous') + ' picture of ' + name); b.onclick = () => go(i ? 1 : -1); return b; });
       }
     }
@@ -416,7 +426,8 @@
     // GitHub repo, then its code, then the date; no site tags
     const title = repo ? link(repo, 'title', name) : el('b', 'title', name);
     const note = el('div', 'note');
-    note.append(title, el('span', 'kind', [kind, date].filter(Boolean).join(' · ')), ...(badge ? [badge] : []));
+    note.append(title, el('span', 'kind', [kind, date].filter(Boolean).join(' · ')), ...(badge ? [badge] : []), ...(sound ? [sound.b] : []));
+    if (sound) sound.show(pics[0]);
     // "1 of 3" sits on the bottom edge between the arrows, level with them (Astra, 2026-10-29)
     const frame = el('div', flip ? 'frame flips' : 'frame'); frame.append(el('i', 'tape'), photo, note, ...(flip || []), ...(count ? [count] : []));
     const info = el('div', 'info');

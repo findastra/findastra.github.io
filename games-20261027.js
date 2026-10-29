@@ -150,8 +150,10 @@
     function resize() { const r = fit(cv); W = r.width; H = r.height; }
     new ResizeObserver(resize).observe(cv); resize();
     const R = () => Math.min(W, H) * .46;
-    // a Fuzzboi's size as a share of the sphere: big while the dome is nearly empty, smaller as it fills, so all 30 fit
-    const share = () => Math.max(.18, Math.min(.42, 1.1 / (2.4 + inside().length * .3)));
+    // one size for a Fuzzboi everywhere (Astra, 2026-10-29: "always be the same size ... when they were small, they looked
+    // pretty good"): FUZZ_PX across, in the dome (as a share of the sphere, so they look the same there) and out on the page
+    const FUZZ_PX = 52;
+    const share = () => FUZZ_PX / (R() * 2 * .85 || 1);
     const rand = () => Math.random() * 2 - 1;
     function spawn(code) {
       const p = F.decode(code).parts, sp = .008 + Math.random() * .005;
@@ -163,7 +165,8 @@
     // the fuller it gets, the wilder (Astra, 2026-10-29: "the whole thing's a scale"): rage runs from 0 to 1 with whichever meter
     // is further along, Fuzzbois or sparkles; they speed up, shove and spin more and more, and the dome glows through the rainbow
     // and shakes harder, until at 1 it breaks. The alarm sounds once as rage passes three quarters
-    const rage = () => Math.min(1, Math.max(inside().length / HOME_MAX, motes.length / SPARK_MAX, hits / HITS_MAX));
+    // nobody inside, nothing to rage about: an empty dome stays calm whatever the meters say
+    const rage = () => (inside().length ? Math.min(1, Math.max(inside().length / HOME_MAX, motes.length / SPARK_MAX, hits / HITS_MAX)) : 0);
     const crowded = () => rage() >= .6;
     let alarmed = false;
     let audio = null;
@@ -214,11 +217,12 @@
     // dome (scrolling as you hold it) and let go to put it back; let go anywhere else and it bounces off again.
     const layer = document.createElement('div'); layer.className = 'fuzz-loose'; layer.setAttribute('aria-hidden', 'true');
     const page = () => ({ w: document.documentElement.scrollWidth, h: document.documentElement.scrollHeight });
-    const bodySize = () => Math.max(56, Math.min(120, innerWidth * .12));
+    const bodySize = () => FUZZ_PX;
     let held = null, lastPt = null, roaming = 0, trailT = 0;
     const overDome = (cx0, cy0) => { const r = cv.getBoundingClientRect(); return cx0 > r.left && cx0 < r.right && cy0 > r.top && cy0 < r.bottom; };
     function goHome(f) {
-      f.out = false; f.node.remove(); f.node = null; f.born = performance.now(); f.x = rand() * .4; f.y = rand() * .4; f.z = rand() * .4;
+      if (!f.out) return; // already home (called home while it was still shrinking into the dome)
+      f.out = false; f.sinking = false; if (f.node) f.node.remove(); f.node = null; f.born = performance.now(); f.x = rand() * .4; f.y = rand() * .4; f.z = rand() * .4;
       if (!outside().length) { layer.remove(); cancelAnimationFrame(roaming); roaming = 0; const av = document.getElementById('labSvg'); if (av) av.classList.remove('happy'); }
       count(); if (inside().length >= HOME_MAX) explode();
     }
@@ -262,21 +266,29 @@
         .map((r) => ({ l: r.left + scrollX, t: r.top + scrollY, r: r.right + scrollX, b: r.bottom + scrollY }));
     };
     // a round body against a box: off the side it hits, the way a ball comes off a wall
+    // like platforms in a game: they jump up through things from below and land on their tops, springing off again, up and a
+    // little to one side, so they can climb the whole page (Astra, 2026-10-29: they were stuck under the arcade's cabinets)
     function bounceOff(f, rad) {
+      if (f.pvy < 0) return; // on the way up, nothing stops them
       for (const o of solids) {
-        const nx = Math.max(o.l, Math.min(f.px, o.r)), ny = Math.max(o.t, Math.min(f.py, o.b)), dx = f.px - nx, dy = f.py - ny, d = Math.hypot(dx, dy);
-        if (!d || d >= rad) continue; // clear of it, or already inside it (then it just passes through and out)
-        const ux = dx / d, uy = dy / d, dot = f.pvx * ux + f.pvy * uy;
-        if (dot < 0) { f.pvx -= 2 * dot * ux; f.pvy -= 2 * dot * uy; f.psq = 1; f.pspin = (Math.random() - .5) * .6; }
-        // landing on top of something, it springs off it, up and a little to one side: that is how they climb
-        if (uy < -.6) hop(f);
-        f.px = nx + ux * rad; f.py = ny + uy * rad;
+        if (f.px < o.l || f.px > o.r) continue;
+        const above = o.t - f.py;
+        if (above >= 0 && above < rad) { f.py = o.t - rad; hop(f); f.pspin = (Math.random() - .5) * .6; return; }
       }
     }
     // they want to get to the top (Astra, 2026-10-29: "climbing up to the top ... and they're jumping"): they fall, and
     // whatever they land on, they jump off again, higher than they fell
     const GRAVITY = .24;
-    const hop = (f) => { f.pvy = -(10 + Math.random() * 6); f.pvx = Math.max(-7, Math.min(7, f.pvx * .6 + (Math.random() - .5) * 7)); f.psq = 1; };
+    // each one is always headed somewhere on the page, anywhere from the top to the bottom (Astra, 2026-10-29: "going around
+    // the page"); every jump is as hard as it takes to get up there, and once it is close it picks somewhere new
+    const newGoal = (f) => { const { w, h } = page(); f.goal = { x: Math.random() * w, y: Math.random() * h }; };
+    const hop = (f) => {
+      if (!f.goal || Math.hypot(f.px - f.goal.x, f.py - f.goal.y) < 220) newGoal(f);
+      const up = f.py - f.goal.y, dx = f.goal.x - f.px;
+      f.pvy = -(up > 0 ? Math.min(34, Math.sqrt(2 * GRAVITY * Math.min(up, 1400)) + 2) : 4 + Math.random() * 3);
+      f.pvx = Math.max(-8, Math.min(8, Math.sign(dx) * Math.min(8, Math.abs(dx) / 60) + (Math.random() - .5) * 2));
+      f.psq = 1; f.lastHop = performance.now();
+    };
     function roam(t) {
       roaming = requestAnimationFrame(roam);
       const { w, h } = page(), s = bodySize(), half = s / 2;
@@ -294,18 +306,22 @@
             const o = f.orbit; o.a += o.w; near.push(f);
             f.px = her.x + Math.cos(o.a) * her.r; f.py = her.y + Math.sin(o.a) * her.r * .8;
             // done circling: off it goes the way it was going round, and not back for a while
-            if (t > o.until) { f.pvx = -Math.sin(o.a) * o.w * her.r * 1.4; f.pvy = Math.cos(o.a) * o.w * her.r * 1.1 - 6; f.orbit = null; f.nextOrbit = t + 15000 + Math.random() * 20000; }
+            if (t > o.until) { f.pvx = -Math.sin(o.a) * o.w * her.r * 1.4; f.pvy = Math.cos(o.a) * o.w * her.r * 1.1 - 6; f.orbit = null; f.nextOrbit = t + 30000 + Math.random() * 30000; newGoal(f); }
           } else {
             f.orbit = null;
             f.pvy += GRAVITY; f.pvx *= .997;
-            f.pvx = Math.max(-9, Math.min(9, f.pvx)); f.pvy = Math.max(-18, Math.min(18, f.pvy));
+            // still well below where it is headed and starting to fall: it jumps again in the air, climbing on up
+            if (!f.goal) newGoal(f);
+            if (f.pvy > 1 && t - (f.lastHop || 0) > 1400 && f.goal.y < f.py - 260) hop(f);
+            f.pvx = Math.max(-9, Math.min(9, f.pvx)); f.pvy = Math.max(-36, Math.min(18, f.pvy));
             f.px += f.pvx; f.py += f.pvy;
             bounceOff(f, half * .8);
             if (f.px < half && f.pvx < 0 || f.px > w - half && f.pvx > 0) { f.pvx = -f.pvx; f.psq = 1; f.pspin = (Math.random() - .5) * .6; }
             if (f.py < half && f.pvy < 0) { f.pvy = -f.pvy * .6; f.psq = 1; }
             if (f.py > h - half && f.pvy > 0) hop(f);
             f.px = Math.min(w - half, Math.max(half, f.px)); f.py = Math.min(h - half, Math.max(half, f.py));
-            if (her && t > (f.nextOrbit || 0) && Math.hypot(f.px - her.x, f.py - her.y) < her.r * 1.6) {
+            // only one at a time circles her, and only one passing close by
+            if (her && t > (f.nextOrbit || 0) && !near.length && !outside().some((q) => q.orbit) && Math.hypot(f.px - her.x, f.py - her.y) < her.r * 1.2) {
               f.orbit = { a: Math.atan2((f.py - her.y) / .8, f.px - her.x), w: (Math.random() < .5 ? -1 : 1) * (.03 + Math.random() * .02), until: t + 3500 + Math.random() * 2500 };
             }
           }
@@ -460,8 +476,18 @@
       cx.lineWidth = 1.4; cx.shadowBlur = 6;
       for (let k = -3; k <= 3; k++) { const lat = (k / 4) * (Math.PI / 2), rx = Math.cos(lat) * r; cx.strokeStyle = cx.shadowColor = led(k + 3, .55); cx.beginPath(); cx.ellipse(ox, oy + Math.sin(lat) * r * Math.cos(tilt), rx, rx * Math.sin(tilt), 0, 0, 7); cx.stroke(); }
       for (let k = 0; k < 8; k++) { const ph = turn + (k / 8) * Math.PI, rx = Math.abs(Math.sin(ph)) * r; cx.strokeStyle = cx.shadowColor = led(k + 8, .55); cx.beginPath(); cx.ellipse(ox, oy, rx, r, 0, 0, 7); cx.stroke(); }
-      // the outer ring stays plain white (Astra, 2026-10-29)
-      cx.lineWidth = 2.4; cx.strokeStyle = 'rgba(255, 255, 255, .92)'; cx.shadowColor = 'rgba(255, 255, 255, .6)'; cx.shadowBlur = 10; cx.beginPath(); cx.arc(ox, oy, r, 0, 7); cx.stroke();
+      // the wilder it is inside, the more the whole dome glows, through the rainbow: a tint filling the sphere and a halo round
+      // its rim, drawn here rather than as a filter on the canvas, which got slow with thousands of sparkles inside
+      const heat = broken ? 0 : rage(), glowHue = (hue * 3) % 360;
+      if (heat > .04) {
+        const tint = cx.createRadialGradient(ox, oy, r * .2, ox, oy, r);
+        tint.addColorStop(0, `hsl(${glowHue} 90% 60% / 0)`); tint.addColorStop(1, `hsl(${glowHue} 90% 60% / ${heat * .22})`);
+        cx.fillStyle = tint; cx.beginPath(); cx.arc(ox, oy, r, 0, 7); cx.fill();
+      }
+      // the outer ring stays plain white (Astra, 2026-10-29), its halo colored as it heats up
+      cx.lineWidth = 2.4 + heat * 2; cx.strokeStyle = 'rgba(255, 255, 255, .92)';
+      cx.shadowColor = heat > .04 ? `hsl(${glowHue} 90% 62% / ${Math.min(1, .4 + heat)})` : 'rgba(255, 255, 255, .6)'; cx.shadowBlur = 10 + heat * 26;
+      cx.beginPath(); cx.arc(ox, oy, r, 0, 7); cx.stroke();
       cx.shadowBlur = 0;
       // the page's pastel sparkles, bouncing round inside the dome
       for (const s of motes) {
@@ -484,8 +510,7 @@
       const r = R(), sh = share(), rr = sh / 2; // a Fuzzboi's radius inside the unit sphere
       const heat = rage(), angry = heat >= .6;
       if (heat >= .75 && !alarmed) { alarmed = true; alarm(); } else if (heat < .7) alarmed = false;
-      // the whole dome glows, not the Fuzzbois: brighter and further round the rainbow the wilder it gets, and it shakes harder
-      cv.style.filter = heat > .04 ? `drop-shadow(0 0 ${3 + heat * 20}px hsl(${(hue * 3) % 360} 90% 62% / ${Math.min(1, heat * 1.3)}))` : '';
+      // the whole dome glows (in globe), not the Fuzzbois, and it shakes harder the wilder it gets
       cv.style.translate = !reduced && heat > .2 ? `${(Math.random() - .5) * heat * 7}px ${(Math.random() - .5) * heat * 7}px` : '';
       const view = (x, y, z) => { const near = (z + 1) / 2, k = .82 + .18 * near; return { sx: W / 2 + x * r * k, sy: H / 2 + y * r * k, near }; };
       for (const f of folks) {
@@ -562,7 +587,7 @@
     }
     // the broken dome: its sphere drawn off screen, then each of the five pieces cut from it where it lies, turned as it is
     function brokenFrame() {
-      cv.style.filter = ''; cv.style.translate = '';
+      cv.style.translate = '';
       gcv.width = cv.width; gcv.height = cv.height; gx.setTransform(main.getTransform());
       cx = gx; globe(); cx = main;
       cx.clearRect(0, 0, W, H);

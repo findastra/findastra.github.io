@@ -481,6 +481,11 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 .polaroid .badge { position: absolute; left: calc(var(--edge-w) - 4px); top: -9px; z-index: 2; font: 12px/1 "Permanent Marker", cursive; color: #fff; background: #111;
   padding: 4px 8px; rotate: -5deg; pointer-events: none; box-shadow: 2px 2px 0 rgba(0, 0, 0, .35); max-width: 70%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .polaroid .badge[hidden] { display: none; }
+/* the sound button for a video, on the border at the top right, like the sticker on the left */
+.polaroid .sound { position: absolute; right: calc(var(--edge-w) - 4px); top: -11px; z-index: 2; width: 30px; height: 26px; padding: 0; border: 0; cursor: pointer;
+  background: #111; color: #fff; font: 14px/26px system-ui, sans-serif; rotate: 4deg; box-shadow: 2px 2px 0 rgba(0, 0, 0, .35); }
+.polaroid .sound:hover, .polaroid .sound:focus-visible { background: #000; outline: 2px solid var(--c); }
+.polaroid .sound[hidden] { display: none; }
 .polaroid .photo:hover img { transform: scale(1.06); }
 /* the galaxies only grow with the Polaroid, not a second time under the pointer (Astra, 2026-10-29) */
 .polaroid .photo:hover img[src$="galaxy.png"] { transform: none; }
