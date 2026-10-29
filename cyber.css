@@ -331,8 +331,18 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 2px #f2f2f2; text
 #project-source { max-width: none; }
 
 /* Polaroids: every project; what each one is, written in marker on the white border (Astra, 2026-10-27) */
-.polaroids { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 44px 30px; padding: 16px 0 20px; }
-.polaroid { position: relative; min-width: 0; text-align: center; }
+/* a short last row sits in the middle, not stacked to the left; each one pinned a little higher or lower than its neighbors,
+   close enough that tilted corners just touch the white border next door, never the writing (Astra, 2026-10-29) */
+.polaroids { display: flex; flex-wrap: wrap; justify-content: center; gap: 44px 14px; padding: 28px 0 32px; }
+.polaroid { position: relative; flex: 0 1 250px; min-width: 0; text-align: center; translate: 0 var(--lift, 0px); }
+.polaroid:nth-child(7n+1) { --lift: -8px; }
+.polaroid:nth-child(7n+2) { --lift: 6px; }
+.polaroid:nth-child(7n+3) { --lift: -2px; }
+.polaroid:nth-child(7n+4) { --lift: 10px; }
+.polaroid:nth-child(7n+5) { --lift: -12px; }
+.polaroid:nth-child(7n+6) { --lift: 3px; }
+.polaroid:nth-child(7n+7) { --lift: -5px; }
+.polaroid:hover, .polaroid:focus-within { z-index: 4; }
 .polaroid .sparkles { inset: -6% -4% 34%; }
 .polaroid .frame { position: relative; width: min(100%, 270px); margin: 0 auto; padding: 12px 12px 0; background: #f2f2f2; box-shadow: 8px 8px 0 #000;
   rotate: var(--tilt); transition: rotate .3s, transform .3s; }
@@ -576,7 +586,8 @@ a.title:hover, a.title:focus-visible { color: color-mix(in srgb, var(--c) 45%, #
   .fz-digit input { font-size: 22px; }
   .lightbox figure { padding: 44px 12px 12px; }
   .grid { grid-template-columns: 1fr; }
-  .polaroids { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 34px 16px; }
+  .polaroids { gap: 34px 10px; }
+  .polaroid { flex-basis: calc(50% - 5px); }
   .polaroid .frame { padding: 8px 8px 0; }
   .note .title { font-size: 1.05rem; }
   .note .kind { font-size: .75rem; }
