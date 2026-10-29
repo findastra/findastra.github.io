@@ -786,13 +786,19 @@
     // glints: the same color-matched sparkle as the portrait, twinkling on the stars in the jar
     const glints = el('span', 'sparkles jar-glints'); glints.setAttribute('aria-hidden', 'true'); inside.after(glints);
     // and round the outside of the glass (Astra, 2026-10-29: "full of sparkles ... and on the outside, too")
-    // ...held still round it, so they stay where they are when it tips over (Astra, 2026-10-29)
-    const ring = sparkles(hash(id + ':ring'), 22); ring.classList.add('ring');
-    // and some behind it too, seen through the glass and round its edges (Astra, 2026-10-29)
-    const ringBack = sparkles(hash(id + ':back'), 18); ringBack.classList.add('ring', 'back');
+    // ...held still, so they stay where they are when it tips over (Astra, 2026-10-29), and scattered over where the stars lie,
+    // in front of the glass and behind it ("they need to be on the other side of the jar too")
+    const scatter = (seed, n, cls) => {
+      const box = el('div', 'sparkles ' + cls); box.setAttribute('aria-hidden', 'true');
+      for (let i = 0; i < n; i++) { const k = hash(seed + ':' + i); box.append(sparkle(k, (4 + (k % 92)).toFixed(1), (4 + ((k >>> 8) % 92)).toFixed(1), 5 + (k >>> 12) % 11)); }
+      return box;
+    };
+    const ring = scatter(id + ':front', 24, 'ring'), ringBack = scatter(id + ':back', 20, 'ring back');
     const wrap = el('span', 'jar-wrap'); jar.before(wrap); wrap.append(ringBack, jar, ring);
-    // the "dink" of the glass jar landing on its side (Astra, 2026-10-29): a short bright ring that dies away
+    // the "dink" of the glass jar landing on its side (Astra, 2026-10-29): a short bright ring that dies away. The sound is
+    // woken by the click itself (wake), or the browser keeps it silent
     let audio = null;
+    const wake = () => { try { audio = audio || new (window.AudioContext || window.webkitAudioContext)(); if (audio.state === 'suspended') audio.resume(); } catch {} };
     const dink = () => { try {
       audio = audio || new (window.AudioContext || window.webkitAudioContext)();
       const t0 = audio.currentTime, g = audio.createGain(); g.connect(audio.destination);
@@ -866,6 +872,7 @@
     new ResizeObserver(() => fill(items)).observe(inside);
     async function shake() {
       if (shaking || !left().length) return;
+      wake();
       shaking = true; jar.classList.add('shaking');
       const minis = [...inside.children];
       // the color shown least so far (never the last one again, while another is left), then any star of that color at random,
@@ -1036,7 +1043,7 @@
     pourBtn.addEventListener('click', pour);
     // drag the jar side to side to shake it
     let drag = null;
-    jar.addEventListener('pointerdown', (e) => { drag = { x: e.clientX, dir: 0, flips: 0, t: performance.now() }; });
+    jar.addEventListener('pointerdown', (e) => { wake(); drag = { x: e.clientX, dir: 0, flips: 0, t: performance.now() }; });
     addEventListener('pointerup', () => (drag = null));
     jar.addEventListener('pointermove', (e) => {
       if (!drag) return;
@@ -1080,19 +1087,19 @@
     const mark = (cell) => { const m = /^\s*(✅|🟡)/u.exec(cell || ''); return m ? m[1] : '—'; };
     for (const row of md.split('\n')) {
       const cells = row.split('|'); if (cells.length < 10 || !/<img/.test(cells[1])) continue;
-      levels[cells[2].trim()] = [mark(cells[5]), mark(cells[6]), mark(cells[8])];
+      // and the other people's program it looks after, when it has one ("Made by others: **Voicemeeter**")
+      const others = /Made by others:\*\*\s*\*\*([^*]+)\*\*/.exec(cells[5] || '');
+      levels[cells[2].trim()] = Object.assign([mark(cells[5]), mark(cells[6]), mark(cells[8])], { others: others ? others[1].trim() : '' });
     }
     render();
   }).catch(() => {});
   const levelNote = (p) => (at, box) => {
+    // what each of the four levels is for this pet, by name (Astra, 2026-10-29: "specifically for each one, what they are"):
+    // L1 the program underneath (the other people's program it looks after, else its own code, its repo), L2 its pet program,
+    // L3 the pet itself, L4 the person it answers to, Astra
     const pet = p[at], lv = levels[pet.pet];
-    // how far this pet has grown through the hub's four intelligence levels (Astra, 2026-10-29: "that L1 through L4 thing
-    // should be on there"), as INTELLIGENCE-LEVELS.md counts them: L2 is its pet program and its runtime together, L3 its
-    // agentic harness. The table does not track L1 (the programs it runs) on its own, so L1 shows built once the pet has a
-    // program; L4 is the verified human every pet answers to, Astra, so it is always there
-    const l2 = !lv ? '—' : lv[0] === '✅' && lv[1] === '✅' ? '✅' : lv[0] !== '—' || lv[1] !== '—' ? '🟡' : '—';
-    // just the four levels, no title (Astra, 2026-10-29: "L1 dash something, L2 dash something")
-    box.replaceChildren(...(lv ? [`L1 – ${lv[0] === '—' ? '—' : '✅'}`, `L2 – ${l2}`, `L3 – ${lv[2]}`, 'L4 – ✅'] : ['not rated yet']).map((t) => el('div', null, t)));
+    box.classList.add('names');
+    box.replaceChildren(...[`L1 – ${(lv && lv.others) || pet.repo || '—'}`, `L2 – ${pet.program || '—'}`, `L3 – ${pet.pet}`, 'L4 – Astra'].map((t) => el('div', null, t)));
   };
   function petosCards() {
     const drawn = pets.filter(iconOf), hub = byName['astras-pet-os'], HUB_REPO = 'https://github.com/findastra/astras-pet-os';
@@ -1104,16 +1111,19 @@
         // (lift: drawn a little short of the photo's height, so the map's bottom bar, Spin and its 2D | 3D switch, sits up
         // where it can be seen)
         pics: [{ src: HUB_PAGES + 'system-map-20261012.html', cap: 'The System Map', type: 'frame', label: 'live', view: 2, lift: .93, open: HUB_PAGES + 'system-map-20261012.html' }], repo: HUB_REPO }),
-      // the pets on the bare paper, and the one you flip to a little smaller (Astra, 2026-10-29)
-      polaroid({ key: 'all-pets', name: 'The pets', kind, date, text: 'What they all look like. Each one is a small app with a face and a job.', pics: [], shot: petsShot(drawn), clear: true, repo: HUB_REPO,
-        // its own sticky note (Astra, 2026-10-29): how many are drawn, and how far along all of them are, by the hub's stages
-        // (registered is done; pipeline is on GitHub; seed has its name and no repo yet)
-        sticky: (at, box) => {
-          const n = (s) => pets.filter((p) => p.stage === s).length;
-          box.replaceChildren(...[`${drawn.length} drawn`, `${n('registered')} done`, `${n('pipeline')} pipeline`, `${n('seed')} seed`].map((t) => el('div', null, t)));
-        } }),
+      // the pets on the bare paper, and the one you flip to a little smaller (Astra, 2026-10-29); Meet every pet in the middle,
+      // the pets grid on the right
       polaroid({ key: 'meet-pets', name: 'Meet every pet', kind, date, repo: HUB_REPO, text: 'One at a time, no shaking needed.',
         pics: drawn.map((p) => ({ src: iconOf(p), cap: p.pet, label: p.pet, fit: 'contain', size: 0.78, clear: true, center: true })), sticky: levelNote(drawn) }),
+      polaroid({ key: 'all-pets', name: 'The pets', kind, date, text: 'What they all look like. Each one is a small app with a face and a job.', pics: [], shot: petsShot(drawn), clear: true, repo: HUB_REPO,
+        // its own sticky note (Astra, 2026-10-29): how far along all of them are, most done first, by the hub's stages
+        // (registered is done; pipeline is on GitHub; seed has its name and no repo yet; roadmap is still a plan), then how
+        // many are drawn
+        sticky: (at, box) => {
+          const n = (s) => pets.filter((p) => p.stage === s).length;
+          box.replaceChildren(...[[n('registered'), 'done'], [n('pipeline'), 'pipeline'], [n('seed'), 'seed'], [n('roadmap'), 'roadmap'], [drawn.length, 'drawn']]
+            .filter(([k, what]) => k || what === 'done').map(([k, what]) => el('div', null, `${k} ${what}`)));
+        } }),
     ];
   }
 

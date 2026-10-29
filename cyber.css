@@ -481,6 +481,8 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
   background: #fff36b; color: #151515; font: 12.5px/1.22 "Permanent Marker", cursive; text-align: center; rotate: 7deg; box-shadow: 3px 4px 0 rgba(0, 0, 0, .55);
   /* a black edge, so it shows where it lies over the white border (Astra, 2026-10-29) */
   outline: 2px solid #111; }
+/* a note naming things (the levels) gets a smaller hand, so long names fit inside the square */
+.polaroid .sticky.names { font-size: 10px; line-height: 1.1; gap: 3px; text-align: left; overflow-wrap: anywhere; }
 .polaroid .sticky::before { content: ""; position: absolute; left: 50%; top: -7px; width: 40px; height: 13px; translate: -50% 0; rotate: -4deg;
   background: color-mix(in srgb, var(--c) 72%, transparent); box-shadow: 0 0 8px var(--c); }
 .polaroid .sticky b { display: block; font: 700 9px var(--mono); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 3px; }
@@ -566,8 +568,9 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 .mini svg, .flyer svg { filter: drop-shadow(0 0 3px color-mix(in srgb, var(--c) 60%, #fff)) drop-shadow(0 0 7px var(--c)); }
 /* sparkles round the outside of the jar too */
 .jar-wrap { position: relative; display: block; }
-.jar-wrap > .sparkles.ring { inset: -6% -10% -2%; }
-.jar-wrap > .sparkles.ring.back { z-index: 0; inset: -2% -4% 2%; }
+/* over the pile of stars (the glass's inside, from a little above the stars to the bottom), spilling a little past its sides */
+.jar-wrap > .sparkles.ring { inset: 22% 2% 0; }
+.jar-wrap > .sparkles.ring.back { z-index: 0; inset: 18% -4% -2%; }
 .mini img, .flyer img { position: absolute; left: 50%; top: 53%; width: 58%; height: 58%; translate: -50% -50%; object-fit: contain; }
 .mini.gone { visibility: hidden; }
 .jar-count { margin: 0; color: #8a8a8a; }
@@ -696,6 +699,7 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
   clip-path: inset(0 calc((1 - var(--fill)) * 100%) 0 0); transition: clip-path .4s; }
 /* the sparkle meter fills in the page's pastels */
 .dome-meter .spark i { background: linear-gradient(90deg, hsl(320 55% 80%), hsl(200 55% 80%), hsl(140 55% 80%), hsl(50 55% 80%), hsl(0 55% 80%)); }
+.dome-score { margin: 0; font-size: 12px; color: #fff36b; text-shadow: 0 0 8px rgba(255, 243, 107, .4); }
 .dome-meter .row.hot b { color: #ff5a6e; text-shadow: 0 0 10px rgba(255, 40, 60, .7); }
 /* the dome's count sits right under its name */
 .cab-head { display: grid; gap: 6px; }

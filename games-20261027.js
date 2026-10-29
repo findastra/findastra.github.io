@@ -159,7 +159,10 @@
     function spawn(code) {
       const p = F.decode(code).parts, sp = .008 + Math.random() * .005;
       let v = [rand(), rand(), rand()], n = Math.hypot(...v) || 1; v = v.map((x) => (x / n) * sp);
-      return { code, look: layered(p, 160), flashAt: performance.now() + Math.random() * 6000, flashEvery: 8000 + Math.random() * 6000, x: rand() * .3, y: rand() * .3, z: .5, vx: v[0], vy: v[1], vz: v[2], squash: 0, spin: 0, born: performance.now() };
+      // shed: how many sparkles this one knocks off the walls, more or fewer than the next, so every dome fills differently
+      // (Astra, 2026-10-29); a rare one sheds more. tints: its body color and its background, the colors its sparkles come in
+      const fill = (F.FILL[p.style] || [])[p.color - 1] || '#' + code;
+      return { code, shed: (.4 + Math.random() * 1.6) * (p.rares && p.rares.length ? 1.6 : 1), tints: [fill.replace('#', ''), code], look: layered(p, 160), flashAt: performance.now() + Math.random() * 6000, flashEvery: 8000 + Math.random() * 6000, x: rand() * .3, y: rand() * .3, z: .5, vx: v[0], vy: v[1], vz: v[2], squash: 0, spin: 0, born: performance.now() };
     }
     function save() { store.set(HOME_KEY, folks.map((f) => f.code)); count(); }
     const inside = () => folks.filter((f) => !f.out), outside = () => folks.filter((f) => f.out);
@@ -225,7 +228,8 @@
       if (!f.out) return; // already home (called home while it was still shrinking into the dome)
       f.out = false; f.sinking = false; if (f.node) f.node.remove(); f.node = null; f.born = performance.now(); f.x = rand() * .4; f.y = rand() * .4; f.z = rand() * .4;
       if (!outside().length) { layer.remove(); cancelAnimationFrame(roaming); roaming = 0; const av = document.getElementById('labSvg'); if (av) av.classList.remove('happy'); }
-      count(); if (inside().length >= HOME_MAX) explode();
+      // putting them back never breaks it (Astra, 2026-10-29: "You can just put them back in"); only a new one sent in can
+      count();
     }
     // dropped on the dome, it stays its size until it is over the sphere, then shrinks down into it (Astra, 2026-10-29)
     function sinkHome(f) {
@@ -342,7 +346,13 @@
       }
       if (av) av.classList.toggle('happy', near.length > 0);
     }
-    function letOut() {
+    // the score (Astra, 2026-10-29: let them out before it breaks "and you're left with a sphere full of sparkles ... you can
+    // make a score for that"): the sparkles left in the dome when you let them out in time; the best is kept in this browser
+    const SCORE_KEY = 'findastra-dome-best';
+    let best = store.get(SCORE_KEY, 0) || 0;
+    const showScore = (got) => { const s = $('dome-score'); if (s) s.textContent = got == null ? (best ? `best: ${best} sparkles saved` : 'Let them out before it breaks to keep the sparkles.') : `${got} sparkles saved${got >= best && got ? ' · a new best!' : ''} · best ${best}`; };
+    function letOut(broke) {
+      if (!broke && motes.length) { const got = motes.length; if (got > best) { best = got; store.set(SCORE_KEY, best); } showScore(got); }
       const box = cv.getBoundingClientRect(), ox = box.left + box.width / 2 + scrollX, oy = box.top + box.height / 2 + scrollY;
       if (!layer.isConnected) document.body.append(layer);
       for (const f of inside()) {
@@ -533,9 +543,12 @@
             if (dot > 0) {
               f.vx -= 2 * dot * nx; f.vy -= 2 * dot * ny; f.vz -= 2 * dot * nz; f.squash = .6;
               // it hits the side and sparkles burst off it, in a pastel of its own color (Astra, 2026-10-29)
-              const v = view(nx * lim, ny * lim, nz * lim); burst(v.sx + nx * r * rr, v.sy + ny * r * rr, angry ? 7 : 5, paleOf(f.code), 2.5);
-              // and one stays, bouncing round the dome with the rest
-              keepMote(nx * .86, ny * .86, paleOf(f.code, [.3, .5, .7][Math.floor(Math.random() * 3)]));
+              // in its own colors, its body's or its background's, as many as it sheds
+              const tint = () => paleOf(f.tints[Math.random() < .5 ? 0 : 1], [.3, .5, .7][Math.floor(Math.random() * 3)]);
+              const v = view(nx * lim, ny * lim, nz * lim); burst(v.sx + nx * r * rr, v.sy + ny * r * rr, Math.round((angry ? 7 : 5) * f.shed), tint(), 2.5);
+              // and some stay, bouncing round the dome with the rest
+              const keep = Math.floor(f.shed) + (Math.random() < f.shed % 1 ? 1 : 0);
+              for (let n = 0; n < keep; n++) keepMote(nx * .86, ny * .86, tint());
               if (motes.length >= SPARK_MAX) explode();
             }
             f.x = nx * lim; f.y = ny * lim; f.z = nz * lim;
@@ -620,7 +633,7 @@
       if (!F) return;
       // the dome starts empty on every visit (Astra, 2026-10-29: "make sure it spawns with none in the Cyberdome")
       const saved = [];
-      count();
+      count(); showScore();
       const linked = /^#fuzzboi-([0-9]{6})$/.exec(location.hash);
       make(linked ? linked[1].toUpperCase() : '456900', !!linked && !(Array.isArray(saved) && saved.includes(linked[1].toUpperCase())));
       requestAnimationFrame(frame);
