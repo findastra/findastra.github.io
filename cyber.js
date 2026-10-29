@@ -730,7 +730,8 @@
   };
   // what kind of thing each one is, for the line under its title (Astra, 2026-10-29: "title, type of software, language, date")
   const TYPES = { 'ai-discord-presence': 'Discord app', 'openai-discord-presence': 'Discord app', 'anthropic-discord-presence': 'Discord app', moodglass: 'Discord plugin' };
-  const typeOf = (r) => TYPES[r.name] || (/^iris/i.test(r.name) ? 'Story' : 'Website');
+  // Iris is autofiction: half real, half made up, written as the person is being made (Astra, 2026-10-29)
+  const typeOf = (r) => TYPES[r.name] || (/^iris/i.test(r.name) ? 'Autofiction' : 'Website');
   // the two presence apps' code lives in ai-discord-presence now, so GitHub gives their own repos no language
   const LANGS = { 'openai-discord-presence': 'JavaScript', 'anthropic-discord-presence': 'JavaScript' };
   const extraCard = (r) => {
