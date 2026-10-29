@@ -1347,7 +1347,7 @@
     stat();
   }
   $('mem-new').onclick = deal;
-  $('mem-hard').onclick = () => { hard = !hard; $('mem-hard').setAttribute('aria-pressed', String(hard)); $('mem-hard').textContent = hard ? 'easy: 6 pets' : 'hard: moods'; deal(); };
+  $('mem-hard').onclick = () => { hard = !hard; $('mem-hard').setAttribute('aria-pressed', String(hard)); $('mem-hard').textContent = hard ? 'easy: 6 pets' : 'hard: 6 moods'; deal(); };
   deal();
 
   // ---------- links ----------
