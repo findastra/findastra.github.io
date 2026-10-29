@@ -28,12 +28,6 @@ main { padding-left: var(--rail); }
    along its bottom, where the pole ends */
 /* (Astra, 2026-10-29) one square all the way round the window, the same light gray line on all four sides */
 .bezel { position: fixed; inset: 0; z-index: 41; pointer-events: none; border: 2px solid var(--edge); }
-/* a disc at the top and the bottom of the pole */
-.pole-cap { position: absolute; left: 50%; z-index: 1; width: 18px; height: 7px; translate: -50% 0; border-radius: 50%; background: #9a9a9a;
-  box-shadow: inset 0 -2px 0 #5c5c5c, 0 0 6px rgba(255, 255, 255, .15); }
-.pole-cap.top { top: 2px; } .pole-cap.bottom { bottom: 2px; }
-/* the discs are off again (Astra, 2026-10-29) */
-.pole-cap { display: none; }
 /* a plain white pole with a soft glow (Astra, 2026-10-29: "I just want a white pole"; it was matte chrome) */
 /* a soft gray now, so the sparkle stands out on it (Astra, 2026-10-29) */
 /* square at both ends, no rounded caps (Astra, 2026-10-29) */
