@@ -321,9 +321,9 @@
     const title = repo || site ? link(repo || site, 'title', name) : el('b', 'title', name);
     const note = el('div', 'note'), tags = el('div', 'tags');
     if (site) tags.append(link(site, null, siteLabel || 'site ↗'));
-    if (count) tags.prepend(count);
     note.append(title, el('span', 'kind', [kind, date].filter(Boolean).join(' · ')), tags);
-    const frame = el('div', 'frame'); frame.append(el('i', 'tape'), photo, note, ...(flip || []));
+    // "1 of 3" sits on the bottom edge between the arrows, level with them (Astra, 2026-10-29)
+    const frame = el('div', flip ? 'frame flips' : 'frame'); frame.append(el('i', 'tape'), photo, note, ...(flip || []), ...(count ? [count] : []));
     const info = el('div', 'info');
     if (text && SHOW_DESCRIPTIONS) { const p = el('p', null, text); p.title = text; info.append(p); }
     let note2 = null;
@@ -670,14 +670,17 @@
       let px; try { cx.drawImage(img, 0, 0, N, N); px = cx.getImageData(0, 0, N, N).data; } catch { return; }
       const r = rand(4242), spots = [];
       for (let i = 0; i < N * N; i++) {
-        const R = px[i * 4], G = px[i * 4 + 1], B = px[i * 4 + 2], hi = Math.max(R, G, B), lo = Math.min(R, G, B);
-        spots.push({ i, sat: hi ? (hi - lo) / hi : 0, light: hi / 255, c: `rgb(${R}, ${G}, ${B})`, w: r() });
+        const R = px[i * 4], G = px[i * 4 + 1], B = px[i * 4 + 2], hi = Math.max(R, G, B), lo = Math.min(R, G, B), d = hi - lo;
+        // the spot's own hue, brighter than the photo's but still soft, between pastel and vivid (Astra, 2026-10-29: more
+        // rainbow, then "dulled down a little bit more towards pastel")
+        const hue = !d ? 0 : hi === R ? 60 * (((G - B) / d) % 6) : hi === G ? 60 * ((B - R) / d + 2) : 60 * ((R - G) / d + 4);
+        spots.push({ i, sat: hi ? d / hi : 0, light: hi / 255, c: `hsl(${Math.round(hue + 360) % 360} 55% 80%)`, w: r() });
       }
       // colorful and bright spots first, with a little chance so the twinkles spread over the whole picture
       spots.sort((a, b) => (b.sat * .7 + b.light * .3 + b.w * .5) - (a.sat * .7 + a.light * .3 + a.w * .5));
       box.replaceChildren(...spots.slice(0, 70).map((sp, n) => {
         const s = el('i'), k = hash('p' + sp.i);
-        s.style.cssText = `--x:${((sp.i % N + .5) / N * 100).toFixed(1)}%;--y:${((Math.floor(sp.i / N) + .5) / N * 100).toFixed(1)}%;--s:${8 + (k % 14)}px;--d:${((k >>> 8) % 40) / 10}s;--c:${sp.c};--dh:${[-36, -18, 0, 18, 36][(k >>> 12) % 5]};--l:22`;
+        s.style.cssText = `--x:${((sp.i % N + .5) / N * 100).toFixed(1)}%;--y:${((Math.floor(sp.i / N) + .5) / N * 100).toFixed(1)}%;--s:${8 + (k % 14)}px;--d:${((k >>> 8) % 40) / 10}s;--c:${sp.c};--dh:${[-150, -100, -50, 0, 50, 100, 150][(k >>> 12) % 7]};--l:0`;
         return s;
       }));
     };
@@ -781,15 +784,16 @@
     setTimeout(() => requestAnimationFrame(rain), 60);
   })();
 
-  // ---------- the pole on the left (from Mommy's website): the bead sits on the section you are on; click a floor to go there ----------
+  // ---------- the pole on the left (from Mommy's website): the section you are on lights up; click a floor to go there ----------
   (() => {
-    const marks = [...document.querySelectorAll('.floors a')], secs = marks.map((a) => $(a.dataset.f)), bead = $('bead');
+    const marks = [...document.querySelectorAll('.floors a')], secs = marks.map((a) => $(a.dataset.f));
     let asked = -1; // a floor clicked, until the visitor scrolls on their own
     function onScroll() {
       let at = asked;
       if (at < 0) { at = 0; secs.forEach((s, i) => { if (s && s.getBoundingClientRect().top <= Math.min(90, innerHeight * .15)) at = i; }); }
       marks.forEach((a, i) => { a.classList.toggle('on', i === at); if (i === at) a.setAttribute('aria-current', 'location'); else a.removeAttribute('aria-current'); });
-      const r = marks[at].getBoundingClientRect(); bead.style.top = r.top + r.height / 2 - bead.offsetHeight / 2 + 'px';
+      // both rails' sparkles take this floor's color (Astra, 2026-10-29); where they sit is the scroll bar's job, below
+      document.documentElement.style.setProperty('--now', getComputedStyle(marks[at]).getPropertyValue('--c').trim());
     }
     marks.forEach((a, i) => a.addEventListener('click', (e) => {
       if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
@@ -801,6 +805,53 @@
     addEventListener('keydown', (e) => { if (['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'Home', 'End', ' '].includes(e.key)) release(); });
     addEventListener('pointerdown', (e) => { if (!e.target.closest('#pole')) release(); }, { passive: true });
     addEventListener('scroll', onScroll, { passive: true }); addEventListener('resize', onScroll); onScroll();
+  })();
+
+  // ---------- the terminal's paired lights, as on the pet program pages (astras-pet-os pet-program-page-20261018.js): left
+  // ON/OFF, right checked and works or report issues. Each click moves a light to its next state and a bubble under it says
+  // what that state means, for four seconds; saved in this browser only (Astra, 2026-10-29) ----------
+  (() => {
+    const term = document.querySelector('.term'), on = term.querySelector('.light.onoff'), care = term.querySelector('.light.care');
+    const KEY = 'findastra-terminal-lights';
+    let s; try { s = JSON.parse(localStorage.getItem(KEY)) || {}; } catch { s = {}; }
+    const save = () => { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch {} };
+    const tip = el('div', 'light-bubble'); tip.setAttribute('role', 'status'); tip.hidden = true; document.body.append(tip);
+    let tipTimer = 0;
+    const say = (b, text) => {
+      tip.textContent = 'terminal: ' + text; tip.hidden = false;
+      const r = b.getBoundingClientRect(), w = document.documentElement.clientWidth;
+      tip.style.left = scrollX + Math.max(8, Math.min(r.left - 8, w - tip.offsetWidth - 8)) + 'px'; tip.style.top = scrollY + r.bottom + 8 + 'px';
+      clearTimeout(tipTimer); tipTimer = setTimeout(() => (tip.hidden = true), 4000);
+    };
+    const paint = () => {
+      const off = s.power === 'off', fix = s.health === 'fix';
+      on.classList.toggle('is-off', off); on.setAttribute('aria-pressed', String(!off)); on.setAttribute('aria-label', 'terminal: ' + (off ? 'off' : 'on'));
+      care.classList.toggle('is-fix', fix); care.setAttribute('aria-label', 'terminal: ' + (fix ? 'report issues' : 'checked, works'));
+      term.classList.toggle('is-off', off);
+    };
+    on.addEventListener('click', () => {
+      s.power = s.power === 'off' ? 'on' : 'off'; save(); paint();
+      say(on, s.power === 'off' ? 'off (the kill switch). Click again to turn it back on.' : 'on. Click again to switch it off.');
+    });
+    care.addEventListener('click', () => {
+      if (s.health === 'fix') delete s.health; else s.health = 'fix';
+      save(); paint();
+      say(care, s.health === 'fix' ? 'report issues: you reported one. Click again to take it back.' : 'checked, works.');
+    });
+    paint();
+  })();
+
+  // ---------- the scroll bar: the pole's sparkle rides it with the page; drag it to scroll (Astra, 2026-10-29) ----------
+  (() => {
+    const pole = $('pole'), bead = $('bead');
+    const max = () => document.documentElement.scrollHeight - innerHeight, room = () => pole.clientHeight - bead.offsetHeight;
+    const place = () => { bead.style.top = (max() > 0 ? (scrollY / max()) * room() : 0) + 'px'; };
+    let grab = 0; // where on the sparkle it was taken hold of, so it does not jump under the pointer
+    const to = (y) => scrollTo({ top: Math.min(1, Math.max(0, (y - grab) / room())) * max(), behavior: 'instant' });
+    bead.addEventListener('pointerdown', (e) => { grab = e.clientY - bead.getBoundingClientRect().top; bead.setPointerCapture(e.pointerId); bead.classList.add('held'); e.preventDefault(); });
+    bead.addEventListener('pointermove', (e) => { if (bead.classList.contains('held')) to(e.clientY); });
+    for (const t of ['pointerup', 'pointercancel']) bead.addEventListener(t, () => bead.classList.remove('held'));
+    addEventListener('scroll', place, { passive: true }); addEventListener('resize', place); new ResizeObserver(place).observe(document.body); place();
   })();
 
   // ---------- the white rabbit: hops across the live updates ticker now and then; catch it and the rain changes color ----------
@@ -846,14 +897,49 @@
         raf = requestAnimationFrame(tick);
       });
     }
+    // the burst when he is caught: the sparkle made in the arcade's Sparkle Creator (its points, sharpness, colors and spin),
+    // a white flash, two rings of them swirling outward, and glitter falling, over about two and a half seconds (Astra, 2026-10-29)
+    function sparkleBurst(sp, x0, y0) {
+      const S = 340, LIFE = 2500, d = Math.min(devicePixelRatio || 1, 2), cv = el('canvas', 'rabbit-burst-cv'); cv.setAttribute('aria-hidden', 'true');
+      cv.width = cv.height = S * d; cv.style.cssText = `left:${x0 - S / 2}px;top:${y0 - S / 2}px;width:${S}px;height:${S}px`;
+      document.body.append(cv);
+      const c = cv.getContext('2d'); c.setTransform(d, 0, 0, d, 0, 0);
+      const hs = sp.hues(), M = S / 2, parts = [];
+      for (let ring = 0; ring < 2; ring++) for (let i = 0; i < 10; i++) parts.push({ a: (i / 10) * Math.PI * 2 + ring * .31, dist: ring ? 72 : 128, r: ring ? 9 : 14, delay: ring * 260, hue: hs[(i + ring * 3) % hs.length] });
+      const glitter = Array.from({ length: 34 }, () => ({ a: Math.random() * Math.PI * 2, v: 1 + Math.random() * 2.4, hue: hs[(Math.random() * hs.length) | 0] }));
+      const t0 = performance.now();
+      (function frame(now) {
+        const t = now - t0; c.clearRect(0, 0, S, S); c.save(); c.globalCompositeOperation = 'lighter';
+        const flash = Math.max(0, 1 - t / 500);
+        if (flash) { const g = c.createRadialGradient(M, M, 0, M, M, 70); g.addColorStop(0, `rgba(255, 255, 255, ${.9 * flash})`); g.addColorStop(1, 'rgba(255, 255, 255, 0)'); c.fillStyle = g; c.fillRect(0, 0, S, S); }
+        for (const p of parts) {
+          const k = Math.min(1, (t - p.delay) / (LIFE - p.delay)); if (k <= 0) continue;
+          const out = 1 - (1 - k) ** 3, swirl = p.a + out * .9, a = k < .65 ? 1 : 1 - (k - .65) / .35;
+          // each one pops big, then twinkles smaller as it fades
+          const grow = .35 + Math.sin(Math.min(1, k * 1.6) * Math.PI) * .9 + Math.sin(t / 90 + p.a * 3) * .12;
+          sp.draw(c, M + Math.cos(swirl) * p.dist * out, M + Math.sin(swirl) * p.dist * out, p.r * grow, k * 2.4, p.hue, a);
+        }
+        for (const q of glitter) {
+          const k = t / LIFE, s = q.v * t / 16 * (1 - k * .5);
+          c.fillStyle = sp.tint(q.hue, 80, Math.max(0, 1 - k) * (.6 + .4 * Math.sin(t / 60 + q.a * 7)));
+          c.beginPath(); c.arc(M + Math.cos(q.a) * s, M + Math.sin(q.a) * s + (t / 1000) ** 2 * 40, 1.8, 0, 6.283); c.fill();
+        }
+        c.restore();
+        if (t < LIFE) requestAnimationFrame(frame); else cv.remove();
+      })(t0);
+    }
     // caught: a burst of sparkles where it was, the rain moves to its next colors, and the rabbit is gone until next time
     bun.addEventListener('click', () => {
       if (!running) return;
       palette = (palette + 1) % PALETTES.length;
-      const b = bun.getBoundingClientRect(), r = lane.getBoundingClientRect(), burst = el('span', 'sparkles rabbit-burst'); burst.setAttribute('aria-hidden', 'true');
-      burst.style.cssText = `left:${b.left - r.left + b.width / 2}px;top:${b.top - r.top + b.height / 2}px`;
-      for (let i = 0; i < 8; i++) { const s = el('i'), a = (i / 8) * Math.PI * 2; s.style.cssText = `--x:${50 + 40 * Math.cos(a)}%;--y:${50 + 40 * Math.sin(a)}%;--s:${10 + (i % 3) * 4}px;--d:0s;--c:hsl(${i * 45} 100% 65%);--dh:0;--l:0`; burst.append(s); }
-      lane.append(burst); setTimeout(() => burst.remove(), 1400);
+      const b = bun.getBoundingClientRect(), r = lane.getBoundingClientRect();
+      if (window.findastraSparkle && !reduced) sparkleBurst(window.findastraSparkle, b.left + b.width / 2, b.top + b.height / 2);
+      else {
+        const burst = el('span', 'sparkles rabbit-burst'); burst.setAttribute('aria-hidden', 'true');
+        burst.style.cssText = `left:${b.left - r.left + b.width / 2}px;top:${b.top - r.top + b.height / 2}px`;
+        for (let i = 0; i < 8; i++) { const s = el('i'), a = (i / 8) * Math.PI * 2; s.style.cssText = `--x:${50 + 40 * Math.cos(a)}%;--y:${50 + 40 * Math.sin(a)}%;--s:${10 + (i % 3) * 4}px;--d:0s;--c:hsl(${i * 45} 100% 65%);--dh:0;--l:0`; burst.append(s); }
+        lane.append(burst); setTimeout(() => burst.remove(), 1400);
+      }
       stop();
     });
     later(4000);

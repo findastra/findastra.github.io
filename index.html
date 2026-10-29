@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&family=JetBrains+Mono:wght@400;700&family=VT323&family=Permanent+Marker&display=swap">
-<link rel="stylesheet" href="cyber.css?v=20261028h">
+<link rel="stylesheet" href="cyber.css?v=20261029x">
 </head>
 <body>
 <!-- the fat star every pet window is cut from (R 100, r 70; rounded by the stroke in cyber.css) -->
@@ -24,9 +24,10 @@
 </header>
 
 <!-- the pole on the left, from Mommy's website (findastra/mommys-website, its "pole rail"): a floor label per section and a
-     glowing bead that slides to the one you are on; click one to go there (Astra, 2026-10-27) -->
+     sparkle in the color of the one you are on, which is also the scroll bar: it rides with the page, drag it to scroll; click a
+     floor to go there (Astra, 2026-10-27; sparkle 2026-10-29) -->
 <nav id="pole" aria-label="Section navigation">
-  <div id="bead"></div>
+  <div id="bead" class="rail-spark"></div>
   <div class="floors">
     <a href="#top" data-f="top">TERMINAL</a>
     <a href="#vr" data-f="vr">VR</a>
@@ -38,24 +39,29 @@
   </div>
 </nav>
 
+<!-- the code rain falls behind the whole page: through the hero and the gaps between the sections (Astra, 2026-10-29) -->
+<canvas id="rain" aria-hidden="true"></canvas>
+
 <main id="top">
   <!-- what changed lately, from public GitHub activity (live, else the snapshot in updates-data.js): a slim news strip at the
-       very top (Astra, 2026-10-27: "move it at the top") -->
+       very top (Astra, 2026-10-27: "move it at the top"), with the checkered racing stripe above and below it, like working on (Astra, 2026-10-29) -->
+  <div class="race-stripe" aria-hidden="true"></div>
   <section class="ticker" id="tick-updates" aria-label="Live updates">
     <span class="tick-label">live updates</span>
     <div class="track"></div>
   </section>
+  <div class="race-stripe" aria-hidden="true"></div>
   <!-- hero: a terminal that tells the plain version, then unmasks -->
   <section class="hero dark">
-    <canvas id="rain" aria-hidden="true"></canvas>
     <div class="term" aria-live="polite">
-      <div class="term-bar"><i></i><i></i><i></i><span id="term-title">audra@findastra: ~</span></div>
+      <!-- the paired lights from the pet program pages' tool panels (Astra, 2026-10-29): ON/OFF, and checked or report issues -->
+      <div class="term-bar"><span class="lights"><button type="button" class="light onoff" data-name="terminal" aria-label="terminal: on" aria-pressed="true"></button><button type="button" class="light care" data-name="terminal" aria-label="terminal: checked, works"></button></span><span id="term-title">audra@findastra: ~</span></div>
       <div class="term-body" id="term"></div>
       <!-- a line to type into (Astra, 2026-10-27: "there should be a spot where you can enter something in the terminal") -->
       <form class="term-input" id="term-form" autocomplete="off"><label for="term-in" id="term-prompt">audra@findastra:~$</label><input id="term-in" spellcheck="false" autocapitalize="off" placeholder="type help" aria-label="Type a command"></form>
       <div class="term-actions">
         <button class="btn hot" id="unmask">sudo unmask</button>
-        <a class="btn" href="#projects">ls projects</a>
+        <a class="btn" href="#vr">ls projects</a>
         <a class="btn" href="#arcade">play</a>
       </div>
     </div>
@@ -71,11 +77,12 @@
   <!-- the projects worked on most recently: the same slim, straight strip as live updates, running the other way (Astra, 2026-10-28) -->
   <!-- the white rabbit hops along the top edge of the working on bar (Astra, 2026-10-27) -->
   <div class="rabbit-lane" id="rabbit-lane"></div>
+  <div class="race-stripe" aria-hidden="true"></div>
   <section class="ticker flip" id="tick-now" aria-label="Working on now">
     <span class="tick-label">working on</span>
     <div class="track"></div>
   </section>
-  <!-- the checkered racing stripe, under the working on bar (Astra, 2026-10-28) -->
+  <!-- the checkered racing stripe, under the working on bar (Astra, 2026-10-28), and over it (Astra, 2026-10-29) -->
   <div class="race-stripe" aria-hidden="true"></div>
 
   <!-- the projects, one section each, in the GitHub profile README's order (VR & VRChat, Discord, Web & More), then Astra's
@@ -83,10 +90,8 @@
   <section class="block light chapter" id="vr">
     <p class="kicker">// 01 · vr &amp; vrchat</p>
     <h2>VR &amp; VRChat</h2>
-    <p class="lede">VRChat worlds I build in Unity.</p>
-    <div class="filters">
-      <p class="muted mono" id="project-source"></p>
-    </div>
+    <!-- the live from GitHub line in the blurb's place, right under the title (Astra, 2026-10-29) -->
+    <p class="lede mono" id="project-source"></p>
         <div class="polaroids" id="world-list"></div>
   </section>
   <section class="block dots chapter" id="discord">
@@ -265,7 +270,7 @@
 <script src="pets-data.js?v=20261027c"></script>
 <script src="project-images.js?v=20261020a"></script>
 <script src="updates-data.js?v=20261018c"></script>
-<script src="cyber.js?v=20261028d"></script>
-<script src="games-20261027.js?v=20261027d"></script>
+<script src="cyber.js?v=20261029h"></script>
+<script src="games-20261027.js?v=20261029a"></script>
 </body>
 </html>

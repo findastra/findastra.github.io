@@ -226,6 +226,8 @@
       for (let i = 0; i < n * 2; i++) { const rr = i % 2 ? r * inner : r, an = (i * Math.PI) / n + turn - Math.PI / 2; c.lineTo(x + Math.cos(an) * rr, y + Math.sin(an) * rr); }
       c.closePath(); c.fill(); c.shadowBlur = 0;
     }
+    // the white rabbit's burst throws this same sparkle (Astra, 2026-10-29)
+    window.findastraSparkle = { draw: drawSpark, hues, tint };
     let targets = [], pops = [], score = 0, combo = 0, best = store.get('findastra-beat-best', 0) || 0, miss = 0, on = false, spawnIn = 0;
     const bS = $('bScore'), bC = $('bCombo'), bB = $('bBest'); bB.textContent = best;
     let w = 0, h = 0;
