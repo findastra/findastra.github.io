@@ -248,7 +248,10 @@
         { src: 'art/worlds/infinite-pole-spawn.jpg', cap: "Astra's Infinite Pole · the spawn" }] },
     { name: 'Piranesi House', kind: 'VRChat world · PC VR / desktop', text: "Inspired by Susanna Clarke's Piranesi: an endless labyrinth of marble statues on an island, with a tide that rises and falls, a colossus you can sit in, and a very special developers' easter egg.", repo: 'piranesi-house',
       // its labyrinth key, the Cross of the Four Winds map from Piranesi Nessi's key page (Astra, 2026-10-29)
-      local: [{ src: 'art/worlds/piranesi-house-labyrinth-key-20261029.png', cap: 'Piranesi House · the Cross of the Four Winds', fit: 'contain', bg: '#142225', size: 0.97, fill: '#142225', label: 'maze layout' }] },
+      local: [{ src: 'art/worlds/piranesi-house-labyrinth-key-20261029.png', cap: 'Piranesi House · the Cross of the Four Winds', fit: 'contain', bg: '#142225', size: 0.97, fill: '#142225', label: 'maze layout' },
+        // then the real world (Astra, 2026-10-29): the hall of lilies under the round window, and the domes from above
+        { src: 'art/worlds/piranesi-house-lily-hall-20261029.webp', cap: 'Piranesi House · the hall of lilies' },
+        { src: 'art/worlds/piranesi-house-domes-from-above-20261029.webp', cap: 'Piranesi House · the domes from above' }] },
     // the pictures each world has so far (Astra, 2026-10-27); proper captures from the worlds come later
     { name: 'Liminal Doors', kind: 'VRChat world · PC VR / desktop', text: 'Doors that open onto quiet in-between places: an empty pool after closing, a laundrette with a sky turning in one washer, a platform between trains. Every door hides a unique crystal animal.', repo: 'liminal-doors', local: [ // all of its floors, the hummingbird's first (Astra, 2026-10-27)
       '09-hummingbird-upside-down-conservatory-20261015', '01-fox-pinkscape-20261020', '02-hare-faraway-field-20261015', '03-axolotl-pool-after-closing-20261015',
@@ -1249,8 +1252,9 @@
       // spots, with a little chance so they spread over the whole picture
       const first = [...spots].sort((a, b) => (b.sat * .7 + b.light * .3 + b.w * .5) - (a.sat * .7 + a.light * .3 + a.w * .5)).slice(0, 70);
       for (const sp of first) if (!picked.includes(sp)) picked.push(sp);
-      // sizes vary; the ones that were big are now really tiny (Astra, 2026-10-29: "too big of sparkles on my face")
-      const size = (k) => (k % 9 === 0 ? 3 + ((k >>> 4) % 3) : 6 + (k % 13));
+      // sizes vary, but small (Astra, 2026-10-29: "too big of sparkles on my face", then "shrink a lot of the sparkles"):
+      // most 3 to 8px, one in four 8 to 12px
+      const size = (k) => (k % 4 === 0 ? 8 + (k % 5) : 3 + (k % 6));
       const one = (x, y, c, k) => {
         const s = el('i');
         s.style.cssText = `--x:${x.toFixed(1)}%;--y:${y.toFixed(1)}%;--s:${size(k)}px;--d:${((k >>> 8) % 40) / 10}s;--c:${c};--dh:${[-150, -100, -50, 0, 50, 100, 150][(k >>> 12) % 7]};--l:0`;

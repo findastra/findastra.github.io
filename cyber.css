@@ -89,11 +89,9 @@ main { overflow-x: clip; }
   background: var(--frame); border-bottom: 2px solid var(--edge); color: #f2f2f2; }
 /* both banners have a stripe above and below (Astra, 2026-10-29), right against the hero, with no black edge, so the rain
    shows all the way to it */
-.race-stripe { height: 6px; background: repeating-conic-gradient(#5a5a5a 0 25%, #000 0 50%) 0 0 / 6px 6px; }
-/* each banner and its two stripes span the page from the pole scroll to the right edge, edged top and bottom in the frame's
-   gray (Astra, 2026-10-29) */
-.race-stripe:has(+ .ticker) { border-top: 2px solid var(--edge); }
-.ticker + .race-stripe { border-bottom: 2px solid var(--edge); }
+/* just two rows of checks, nothing else (Astra, 2026-10-29: "it's just supposed to be two squares stacked"): bigger squares so
+   they stay sharp on a phone, and no gray line along their outside edge, which read as a broken third row */
+.race-stripe { height: 8px; background: repeating-conic-gradient(#5a5a5a 0 25%, #000 0 50%) 0 0 / 8px 8px; }
 .brand { font: 700 18px var(--mono); color: #f2f2f2; text-decoration: none; white-space: nowrap; }
 .brand span { color: #777; }
 .brand:hover { background: none; color: #fff; }
@@ -182,7 +180,7 @@ h3 { display: inline-block; font: 700 12px var(--mono); text-transform: uppercas
    much room above them as below, one dot row less (Astra, 2026-10-29) */
 /* on a narrow window the squares stay well inside it, with the code rain showing all round them (Astra, 2026-10-29) */
 .hero { --sq: min(340px, 100% - 88px); position: relative; isolation: isolate; display: grid; grid-template-columns: repeat(2, var(--sq)); justify-content: center; gap: 48px;
-  align-items: center; padding: 48px var(--wrap) 84px; /* one dot row less on top again (Astra, 2026-10-29) */
+  align-items: center; padding: 48px var(--wrap) 66px; /* one dot row less on top, and one less below (Astra, 2026-10-29) */
   /* no glow behind the portrait: only its own square, the code rain clear around it (Astra, 2026-10-29) */
   background: none; color: var(--ink); }
 /* the rain and the dot grid sit behind the whole page; the hero is see-through, and the gaps between sections show it too */
