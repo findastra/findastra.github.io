@@ -668,10 +668,19 @@
     return box;
   };
   const SHOTS = { moodglass: moodglassShot, 'ai-discord-presence': realCardsShot };
+  // the two presence apps show two pictures each (Astra, 2026-10-29: "should only be two on each of those"): the app, then its
+  // website, or its galaxy when it has no website; the galaxy was too zoomed in beside the website
+  const TWO = new Set(['openai-discord-presence', 'anthropic-discord-presence']);
+  const picsOf = (name) => {
+    const all = [...(SITE_PICS[name] || []), ...picturesOf(name)];
+    if (!TWO.has(name)) return all;
+    const site = all.find((p) => / · live site$/.test(p.cap)), galaxy = all.find((p) => /galaxy(-card)?\.(png|gif)$/i.test(p.src));
+    return [all[0], site || galaxy].filter(Boolean);
+  };
   const extraCard = (r) => {
     const repoUrl = 'https://github.com/findastra/' + r.name, shot = SHOTS[r.name];
     return polaroid({ key: r.name, shot: shot ? shot() : null, clear: r.name === 'ai-discord-presence', name: nameOf(r.name), kind: r.language || '', date: when(lastReal(r)),
-      text: cleanText(r.description || 'No description yet.'), pics: [...(SITE_PICS[r.name] || []), ...picturesOf(r.name)], repo: repoUrl });
+      text: cleanText(r.description || 'No description yet.'), pics: picsOf(r.name), repo: repoUrl });
   };
 
   // ---------- stars: every pet, with its hosted icon, and its repo's pictures and links when the repo is public ----------
@@ -1164,7 +1173,8 @@
       .sort((a, b) => (b.pics.length > 0) - (a.pics.length > 0) || (b.r ? 1 : 0) - (a.r ? 1 : 0) || a.p.number - b.p.number));
     // Discord and Web & More, newest first
     const others = repos.filter(isOther).filter((r) => shown(`${r.name} ${r.description}`)).sort((a, b) => String(lastReal(b)).localeCompare(String(lastReal(a))));
-    $('discord-list').replaceChildren(...others.filter((r) => DISCORD.has(r.name)).map(extraCard));
+    // AI Discord Presence first, then the rest newest first (Astra, 2026-10-29)
+    $('discord-list').replaceChildren(...others.filter((r) => DISCORD.has(r.name)).sort((a, b) => (b.name === 'ai-discord-presence') - (a.name === 'ai-discord-presence')).map(extraCard));
     $('web-list').replaceChildren(...others.filter((r) => !DISCORD.has(r.name)).map(extraCard));
     for (const ch of document.querySelectorAll('.chapter')) ch.classList.toggle('empty', !!query && !ch.querySelector('.polaroid, .mini'));
   }
