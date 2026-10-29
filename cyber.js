@@ -294,6 +294,10 @@
   const isOther = (r) => !/^pet-program-\d+$/.test(r.name) && !WORLD_REPOS.has(r.name) && !PETOS_REPOS.has(r.name) && !petByRepo[r.name] && !HIDDEN.has(r.name);
   let repos = [], byName = {}, query = '';
   const when = (iso) => { const d = new Date(iso); return isNaN(d) ? '' : d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }); };
+  // the date a Polaroid shows: the repo's last real change, skipping README and docs passes (Astra, 2026-10-29), from
+  // real-dates-data-20261029.js; GitHub's last push when a repo is not in it yet
+  const REAL_DATES = window.REAL_DATES || {};
+  const lastReal = (r) => (r && (REAL_DATES[r.name] || r.pushed_at)) || '';
   // The Polaroids' tape, the stars and their sparkles are the only color on the page. Each keeps its color and tilt (hashed from its name).
   const COLORS = ['#ff3ea5', '#00e1ff', '#c6ff00', '#ff9500', '#c7a6ff', '#ffe500', '#ff5c5c', '#00f5a0', '#5ab0ff', '#ff8ef0'];
   const hash = (s) => { let h = 2166136261; for (const ch of s) h = Math.imul(h ^ ch.codePointAt(0), 16777619); return h >>> 0; };
@@ -592,7 +596,7 @@
   // a world: its repo (when public) gives the link, date and description; the README's words when it is private
   const worldCard = (w) => {
     const r = byName[w.repo];
-    return polaroid({ key: w.repo, name: w.name, kind: (r && r.language) || w.kind.replace(' · PC VR / desktop', ''), date: r ? when(r.pushed_at) : '', text: cleanText((r && r.description) || w.text), pics: worldPics(w),
+    return polaroid({ key: w.repo, name: w.name, kind: (r && r.language) || w.kind.replace(' · PC VR / desktop', ''), date: r ? when(lastReal(r)) : '', text: cleanText((r && r.description) || w.text), pics: worldPics(w),
       repo: r ? 'https://github.com/findastra/' + w.repo : null });
   };
   // Moodglass's picture (Astra, 2026-10-27): a staggered collage the way Moodglass lays photos behind a chat, edge to edge
@@ -652,7 +656,7 @@
   const SHOTS = { moodglass: moodglassShot, 'ai-discord-presence': realCardsShot };
   const extraCard = (r) => {
     const repoUrl = 'https://github.com/findastra/' + r.name, shot = SHOTS[r.name];
-    return polaroid({ key: r.name, shot: shot ? shot() : null, clear: r.name === 'ai-discord-presence', name: nameOf(r.name), kind: r.language || '', date: when(r.pushed_at),
+    return polaroid({ key: r.name, shot: shot ? shot() : null, clear: r.name === 'ai-discord-presence', name: nameOf(r.name), kind: r.language || '', date: when(lastReal(r)),
       text: cleanText(r.description || 'No description yet.'), pics: [...(SITE_PICS[r.name] || []), ...picturesOf(r.name)], repo: repoUrl });
   };
 
@@ -1100,7 +1104,7 @@
   function petosCards() {
     const drawn = pets.filter(iconOf), hub = byName['astras-pet-os'], HUB_REPO = 'https://github.com/findastra/astras-pet-os';
     // like the rest: the hub's code and the day it last changed
-    const kind = (hub && hub.language) || 'HTML', date = hub ? when(hub.pushed_at) : '';
+    const kind = (hub && hub.language) || 'HTML', date = hub ? when(lastReal(hub)) : '';
     return [
       polaroid({ key: 'system-map', name: 'The System Map', kind, date, text: 'Every pet, program and tool in Astra\'s PetOS, and how they work together. Drag it around.',
         // drawn at twice the photo's size, so its key in the top left is big enough to read (Astra, 2026-10-29)
@@ -1131,7 +1135,7 @@
     petJar.fill(pets.filter(iconOf).map(petEntry).filter(({ p, r }) => shown(`${p.pet} ${p.program} ${p.text} ${p.repo} ${(r && r.description) || ''}`))
       .sort((a, b) => (b.pics.length > 0) - (a.pics.length > 0) || (b.r ? 1 : 0) - (a.r ? 1 : 0) || a.p.number - b.p.number));
     // Discord and Web & More, newest first
-    const others = repos.filter(isOther).filter((r) => shown(`${r.name} ${r.description}`)).sort((a, b) => String(b.pushed_at).localeCompare(String(a.pushed_at)));
+    const others = repos.filter(isOther).filter((r) => shown(`${r.name} ${r.description}`)).sort((a, b) => String(lastReal(b)).localeCompare(String(lastReal(a))));
     $('discord-list').replaceChildren(...others.filter((r) => DISCORD.has(r.name)).map(extraCard));
     $('web-list').replaceChildren(...others.filter((r) => !DISCORD.has(r.name)).map(extraCard));
     for (const ch of document.querySelectorAll('.chapter')) ch.classList.toggle('empty', !!query && !ch.querySelector('.polaroid, .mini'));
