@@ -548,14 +548,6 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 /* the galaxies only grow with the Polaroid, not a second time under the pointer (Astra, 2026-10-29) */
 .polaroid .photo:hover img[src$="galaxy.png"] { transform: none; }
 .polaroid div.photo { cursor: default; }
-/* Moodglass's picture: a staggered collage, columns split at different heights, edge to edge with soft seams */
-.mg-shot { position: absolute; inset: 0; display: flex; overflow: hidden; background: #111; }
-.mg-col { flex: 1; display: flex; flex-direction: column; min-width: 0; }
-.mg-col:nth-child(2) { flex: 1.25; }
-.mg-col img { flex: 1 1 0; min-height: 0; width: 100%; object-fit: cover; margin: -2px 0; -webkit-mask: linear-gradient(transparent, #000 6%, #000 94%, transparent); mask: linear-gradient(transparent, #000 6%, #000 94%, transparent); }
-.mg-col img:first-child { -webkit-mask: linear-gradient(#000 94%, transparent); mask: linear-gradient(#000 94%, transparent); margin-top: 0; }
-.mg-col img:last-child { -webkit-mask: linear-gradient(transparent, #000 6%); mask: linear-gradient(transparent, #000 6%); margin-bottom: 0; }
-.mg-col img:only-child { -webkit-mask: none; mask: none; }
 .photo .developing { font: 1.3rem/1 "Permanent Marker", cursive; color: color-mix(in srgb, var(--c) 55%, #fff); text-shadow: 0 0 12px var(--c); rotate: -7deg; }
 /* the little arrows snug in the white border's bottom corners, as far from the side as from the bottom, and "1 of 3"
    between them on the same line (Astra, 2026-10-29) */

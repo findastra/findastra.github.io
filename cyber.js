@@ -643,26 +643,12 @@
     return polaroid({ key: w.repo, name: w.name, kind: 'VRChat world' + (r && r.language ? ' · ' + r.language : ''), date: r ? when(made(r)) : '', text: cleanText((r && r.description) || w.text), pics: worldPics(w),
       repo: r ? 'https://github.com/findastra/' + w.repo : null });
   };
-  // Moodglass's picture (Astra, 2026-10-27): a staggered collage the way Moodglass lays photos behind a chat, edge to edge
-  // with soft seams, of Liminal Doors' most planted floors; not the hummingbird's conservatory, which is Liminal Doors' own
-  // picture (Astra, 2026-10-29: "they're reusing one on there that's somewhere else")
-  const moodglassShot = () => {
-    const box = el('div', 'mg-shot');
-    box.setAttribute('role', 'img'); box.setAttribute('aria-label', 'Moodglass: a staggered collage of Liminal Doors pictures, the way it fills a Discord chat');
-    const cols = [['26-flamingo-red-sun-reservoir-20261015', '13-hedgehog-vending-machine-clearing-20261015'],
-      ['28-butterfly-glass-orchard-20261015', '02-hare-faraway-field-20261015'],
-      ['33-dolphin-aquaglass-concourse-20261015', '31-otter-steam-between-stars-20261015']];
-    const split = [[62, 38], [40, 60], [55, 45]];
-    cols.forEach((list, ci) => {
-      const col = el('div', 'mg-col');
-      list.forEach((f, k) => { const im = el('img'); im.src = LD + f + '.png'; im.alt = ''; im.loading = 'lazy'; im.style.flexBasis = split[ci][k] + '%'; col.append(im); });
-      box.append(col);
-    });
-    return box;
-  };
   // Discord and Web & More: the repo name, written out with spaces, and its language
   // what each website looks like (Astra, 2026-10-27): its own page, shown first on its Polaroid
   const SITE_PICS = {
+    // Moodglass: three collages of the garden pictures it posted in Astra's plants channel (Astra, 2026-10-29: "you can use
+    // the 'plants' chat", then "do all on there")
+    moodglass: ['a', 'b', 'c'].map((k) => ({ src: 'art/projects/moodglass-plants-collage-' + k + '-20261029.webp', cap: 'Moodglass: plant pictures from its Discord channel' })),
     // a little smaller, so its green banner sits clear of the tape (Astra, 2026-10-29)
     // and the border round it filled with its own blue, not see-through (Astra, 2026-10-29)
     'fuzzboi-factory': [{ src: 'art/projects/fuzzboi-factory-site-20261027.jpg', cap: 'The Fuzzboi Factory', fit: 'contain', bg: '#121a6b', size: 0.88, fill: '#121a6b' }],
@@ -697,7 +683,7 @@
     }
     return box;
   };
-  const SHOTS = { moodglass: moodglassShot, 'ai-discord-presence': realCardsShot };
+  const SHOTS = { 'ai-discord-presence': realCardsShot };
   // the two presence apps show two pictures each (Astra, 2026-10-29: "should only be two on each of those"): first the
   // turning galaxy, the "really fancy spiral", a little smaller so it is not zoomed in to the edges, then the app
   const TWO = new Set(['openai-discord-presence', 'anthropic-discord-presence']);
