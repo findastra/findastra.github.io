@@ -233,10 +233,10 @@
       local: [{ src: 'art/worlds/phone-booth.jpg', label: 'concept art', cap: 'A pink phone booth above the clouds' }], extra: ['mommys', 'role-fairy'] },
     // first the still with its gray cut away, so it shines over the paper (Astra, 2026-10-29); the video and the crystals keep theirs
     { name: 'The Rainbow Maker', kind: 'VRChat world · PC VR / desktop', text: 'The mechanics of the Kikkerland Rainbow Maker: watch its tiny gear train turn and spin a crystal that refracts rainbows across the room.', repo: 'the-rainbow-maker', local: [
-      { src: 'art/worlds/rainbow-maker-still-clear-20261029.png', cap: 'The Rainbow Maker', fit: 'contain', clear: true, glitter: true },
+      { src: 'art/worlds/rainbow-maker-still-clear-20261029.png', cap: 'The Rainbow Maker', fit: 'contain', clear: true, glitter: true, nudge: '0 7%' },
       { src: RM + 'rainbow-maker-preview-20261022.mp4', cap: 'The Rainbow Maker · turning', type: 'video', fit: 'contain', bg: '#45444a' },
       { src: RM + 'rainbow-maker-crystals-cycles-20261023.png', cap: 'The Rainbow Maker · the crystals', fit: 'contain', bg: '#47423f' }] },
-    { name: 'The Cooling Tower', siteLabel: 'see full mini model ↗', kind: 'VRChat world · PC VR / desktop', text: "A rave world inside a nuclear plant's cooling tower: break into the facility and power it up with music. The Stack, the Turbine Hall, then the Reactor Hall.", repo: 'the-cooling-tower', local: [{ src: 'https://findastra.github.io/the-cooling-tower/mini-model/the-cooling-tower-mini-model-20261024.html', cap: 'The Cooling Tower · Mini Model', type: 'frame', label: 'concept model', bare: true }] },
+    { name: 'The Cooling Tower', siteLabel: 'see full mini model ↗', kind: 'VRChat world · PC VR / desktop', text: "A rave world inside a nuclear plant's cooling tower: break into the facility and power it up with music. The Stack, the Turbine Hall, then the Reactor Hall.", repo: 'the-cooling-tower', local: [{ src: 'https://findastra.github.io/the-cooling-tower/mini-model/the-cooling-tower-mini-model-20261024.html', cap: 'The Cooling Tower · Mini Model', type: 'frame', label: 'concept model', bare: true, back: 3 }] },
   ];
   // vrchat-ai-astra was renamed the-astral-plane (2026-10-18); the pet list may still use the old name
   const RENAMED = { 'vrchat-ai-astra': 'the-astral-plane' };
@@ -312,7 +312,7 @@
     const field = pics.some((p) => p.glitter) ? sparkleField(h) : null;
     if (shot) photo.append(shot);
     else if (!pics.length) photo.append(el('span', 'developing', 'still developing…'));
-    let flip = null, count = null;
+    let flip = null, count = null, badge = null;
     if (!shot && pics.length) {
       let at = 0;
       // each picture can also be a video (plays by itself, muted, on a loop) or a live page you can move around in
@@ -323,32 +323,46 @@
         // shares this site's address, so its panel is hidden outright too
         if (p.type === 'frame') {
           const f = el('iframe', p.bare ? 'live bare' : 'live'); f.title = p.cap;
+          // view: the page drawn this many times the photo's size and shrunk to fit, so a page that keeps its panels a fixed
+          // size gives its picture more room (the System Map's sphere, Astra 2026-10-29)
+          if (p.view) f.style.setProperty('--view', p.view);
           if (p.bare) f.addEventListener('load', () => { try { const st = f.contentDocument.createElement('style'); st.textContent = '.panel{display:none!important}'; f.contentDocument.head.append(st); } catch {} });
+          // back: a few turns of the scroll wheel once it has drawn, to start a little zoomed out (the Cooling Tower's stack
+          // top, Astra 2026-10-29). It can only reach in where the page shares this site's address, so on the live site
+          if (p.back) f.addEventListener('load', () => setTimeout(() => { try {
+            const cvs = f.contentDocument.querySelector('canvas'); if (!cvs) return; const r = cvs.getBoundingClientRect();
+            for (let i = 0; i < p.back; i++) cvs.dispatchEvent(new (f.contentWindow.WheelEvent)('wheel', { deltaY: 100, deltaMode: 0, clientX: r.left + r.width / 2, clientY: r.top + r.height / 2, bubbles: true, cancelable: true }));
+          } catch {} }, 900));
           new IntersectionObserver((seen, io) => { if (seen.some((s) => s.isIntersecting)) { f.src = p.src; io.disconnect(); } }, { rootMargin: '400px' }).observe(photo); return f;
         }
         const im = el('img'); im.src = ownGalaxy(p.src) || p.src; im.alt = ''; im.loading = 'lazy'; if (p.fit) im.style.objectFit = p.fit; if (p.bg) im.style.background = p.bg;
         // size: a picture set in from the frame's edges, so the tape covers none of it
         if (p.size) im.style.scale = p.size;
+        // nudge: moved within its frame, as a share of the frame (the Rainbow Maker a little lower, clear of the tape)
+        if (p.nudge) im.style.translate = p.nudge;
         if (glows(p)) { im.classList.add('glow'); im.style.setProperty('--m', `url("${p.src}")`); }
         return im;
       };
-      // what a picture is, written at its top (Astra, 2026-10-27: "wherever it's concept art, it says concept art")
-      const badge = el('span', 'badge'); badge.hidden = !pics[0].label; badge.textContent = pics[0].label || '';
-      let shown = media(pics[0]); photo.append(shown, badge, ...(field ? [field] : []));
+      // what a picture is (Astra, 2026-10-27: "wherever it's concept art, it says concept art"), one black sticker on the white
+      // border by the title, so it covers none of the picture (Astra, 2026-10-29: it hid the System Map's key)
+      badge = el('span', 'badge'); badge.hidden = !pics[0].label; badge.textContent = pics[0].label || '';
+      let shown = media(pics[0]); photo.append(shown, ...(field ? [field] : []));
       const still = () => !pics[at].type;
       photo.setAttribute('aria-label', 'open pictures of ' + name);
       photo.onclick = (e) => { if (still()) openGallery(pics.filter((p) => !p.type), pics.filter((p) => !p.type).indexOf(pics[at])); };
       // more than one picture: two small arrows in the white border's bottom corners flip through them (Astra, 2026-10-27)
       if (pics.length > 1) {
-        count = el('span', 'count', `1 of ${pics.length}`);
-        const go = (d) => { at = (at + d + pics.length) % pics.length; const next = media(pics[at]); shown.replaceWith(next); shown = next; photo.classList.toggle('clear', !!clear || clearOf(pics[at])); if (sticky) sticky(at, note2); badge.hidden = !pics[at].label; badge.textContent = pics[at].label || ''; count.textContent = `${at + 1} of ${pics.length}`; };
+        // "1/3" (Astra, 2026-10-29)
+        count = el('span', 'count', `1/${pics.length}`);
+        const go = (d) => { at = (at + d + pics.length) % pics.length; const next = media(pics[at]); shown.replaceWith(next); shown = next; photo.classList.toggle('clear', !!clear || clearOf(pics[at])); if (sticky) sticky(at, note2); badge.hidden = !pics[at].label; badge.textContent = pics[at].label || ''; count.textContent = `${at + 1}/${pics.length}`; };
         flip = ['‹', '›'].map((t, i) => { const b = el('button', 'flip ' + (i ? 'next' : 'prev'), t); b.type = 'button'; b.setAttribute('aria-label', (i ? 'next' : 'previous') + ' picture of ' + name); b.onclick = () => go(i ? 1 : -1); return b; });
       }
     }
-    const title = repo || site ? link(repo || site, 'title', name) : el('b', 'title', name);
-    const note = el('div', 'note'), tags = el('div', 'tags');
-    if (site) tags.append(link(site, null, siteLabel || 'site ↗'));
-    note.append(title, el('span', 'kind', [kind, date].filter(Boolean).join(' · ')), tags);
+    // the writing on the border is always the same three things (Astra, 2026-10-29): the name, which always links to the
+    // GitHub repo, then its code, then the date; no site tags
+    const title = repo ? link(repo, 'title', name) : el('b', 'title', name);
+    const note = el('div', 'note');
+    note.append(title, el('span', 'kind', [kind, date].filter(Boolean).join(' · ')), ...(badge ? [badge] : []));
     // "1 of 3" sits on the bottom edge between the arrows, level with them (Astra, 2026-10-29)
     const frame = el('div', flip ? 'frame flips' : 'frame'); frame.append(el('i', 'tape'), photo, note, ...(flip || []), ...(count ? [count] : []));
     const info = el('div', 'info');
@@ -361,8 +375,8 @@
   // a world: its repo (when public) gives the link, date and description; the README's words when it is private
   const worldCard = (w) => {
     const r = byName[w.repo];
-    return polaroid({ key: w.repo, name: w.name, kind: w.kind.replace(' · PC VR / desktop', ''), date: r ? when(r.pushed_at) : '', text: cleanText((r && r.description) || w.text), pics: worldPics(w),
-      repo: r ? 'https://github.com/findastra/' + w.repo : null, site: r && r.homepage, siteLabel: w.siteLabel });
+    return polaroid({ key: w.repo, name: w.name, kind: (r && r.language) || w.kind.replace(' · PC VR / desktop', ''), date: r ? when(r.pushed_at) : '', text: cleanText((r && r.description) || w.text), pics: worldPics(w),
+      repo: r ? 'https://github.com/findastra/' + w.repo : null });
   };
   // Moodglass's picture (Astra, 2026-10-27): a staggered collage the way Moodglass lays photos behind a chat, edge to edge
   // with soft seams, of Liminal Doors' most planted floors, the hummingbird's conservatory biggest
@@ -395,25 +409,52 @@
   const NAMES = { 'astras-photostar': "Astra's Photostar" };
   // AI Discord Presence's picture (Astra, 2026-10-29): its two Discord cards, OpenAI over Anthropic, laid out like the
   // activity on a Discord profile (the "Playing" line, the galaxy, the app, what it is using), on the bare paper
+  // Each card is the activity the two presence apps (findastra-discord-presence) send to Discord, laid out the way Discord
+  // shows it: "Playing", the app's own galaxy card art, its name, "Using <model> on <effort>", "Working on <project>" and
+  // the green elapsed time. Live from Discord through Lanyard (api.lanyard.rest), which reads a Discord user's public
+  // activity once they have joined its server: set DISCORD_USER to Astra's Discord user ID to turn it on. Until then the
+  // cards show what the apps send when nothing more is known.
+  const DISCORD_USER = '';
+  const PRESENCE = [
+    { app: '1548931548986875954', who: 'OpenAI', art: 'openai', using: 'Using Codex' },
+    { app: '1555096326734094356', who: 'Anthropic', art: 'anthropic', using: 'Using Claude' },
+  ];
+  const padIcon = () => {
+    const pad = svgEl('svg', { viewBox: '0 0 24 24', 'aria-hidden': 'true' });
+    pad.append(svgEl('path', { d: 'M7 6h10a5 5 0 0 1 4.9 6l-.8 4a3 3 0 0 1-5.2 1.4L14 15h-4l-1.9 2.4A3 3 0 0 1 2.9 16l-.8-4A5 5 0 0 1 7 6zm0 3v2H5v2h2v2h2v-2h2v-2H9V9H7zm9.5 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm-2 3a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z' }));
+    return pad;
+  };
+  const elapsed = (ms) => { const s = Math.max(0, Math.floor(ms / 1000)), h = Math.floor(s / 3600), m = Math.floor(s / 60) % 60, pad2 = (n) => String(n).padStart(2, '0'); return (h ? h + ':' : '') + pad2(m) + ':' + pad2(s % 60); };
   const aiCardsShot = () => {
-    const box = el('div', 'ai-cards');
-    for (const [app, who, using] of [['openai', 'OpenAI', 'Using Codex'], ['anthropic', 'Anthropic', 'Using Claude']]) {
-      const card = link('https://github.com/findastra/ai-discord-presence/tree/main/' + app + '-discord-presence', 'ai-card');
-      const g = el('img'); g.src = GALAXY[app]; g.alt = ''; g.loading = 'lazy';
-      const words = el('span', 'ai-words'); words.append(el('b', null, who), el('span', null, using), el('span', null, 'Discord Presence'));
-      // the game controller Discord puts by "Playing"
-      const head = el('span', 'ai-head'), pad = svgEl('svg', { viewBox: '0 0 24 24', 'aria-hidden': 'true' });
-      pad.append(svgEl('path', { d: 'M7 6h10a5 5 0 0 1 4.9 6l-.8 4a3 3 0 0 1-5.2 1.4L14 15h-4l-1.9 2.4A3 3 0 0 1 2.9 16l-.8-4A5 5 0 0 1 7 6zm0 3v2H5v2h2v2h2v-2h2v-2H9V9H7zm9.5 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm-2 3a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z' }));
-      head.append(pad, 'Playing');
+    const box = el('div', 'ai-cards'), live = [];
+    for (const pr of PRESENCE) {
+      const card = link('https://github.com/findastra/findastra-discord-presence/tree/main/' + pr.art + '-discord-presence', 'ai-card');
+      const head = el('span', 'ai-head'); head.append(padIcon(), 'Playing');
+      const g = el('img', 'ai-art'); g.src = `https://raw.githubusercontent.com/findastra/findastra-discord-presence/main/${pr.art}-discord-presence/public/galaxy-card.gif`; g.alt = ''; g.loading = 'lazy';
+      const details = el('span', null, pr.using), state = el('span', null, 'Exploring ideas'), time = el('span', 'ai-time'); time.hidden = true;
+      const words = el('span', 'ai-words'); words.append(el('b', null, pr.who), details, state, time);
       card.append(head, g, words); box.append(card);
+      live.push({ pr, card, details, state, time, start: 0 });
+    }
+    if (DISCORD_USER) {
+      const pull = () => fetch('https://api.lanyard.rest/v1/users/' + DISCORD_USER).then((r) => r.json()).then(({ data }) => {
+        for (const l of live) {
+          const a = data && (data.activities || []).find((x) => x.application_id === l.pr.app);
+          l.card.classList.toggle('idle', !a);
+          l.details.textContent = (a && a.details) || l.pr.using; l.state.textContent = a ? a.state || '' : 'not on right now';
+          l.start = (a && a.timestamps && a.timestamps.start) || 0;
+        }
+      }).catch(() => {});
+      pull(); setInterval(pull, 30000);
+      setInterval(() => { for (const l of live) { l.time.hidden = !l.start; if (l.start) { l.time.replaceChildren(padIcon(), elapsed(Date.now() - l.start)); } } }, 1000);
     }
     return box;
   };
   const SHOTS = { moodglass: moodglassShot, 'ai-discord-presence': aiCardsShot };
   const extraCard = (r) => {
     const repoUrl = 'https://github.com/findastra/' + r.name, shot = SHOTS[r.name];
-    return polaroid({ key: r.name, shot: shot ? shot() : null, clear: r.name === 'ai-discord-presence', name: NAMES[r.name] || r.name.replace(/-/g, ' '), kind: r.language || 'project', date: when(r.pushed_at),
-      text: cleanText(r.description || 'No description yet.'), pics: [...(SITE_PICS[r.name] || []), ...picturesOf(r.name)], repo: repoUrl, site: r.homepage });
+    return polaroid({ key: r.name, shot: shot ? shot() : null, clear: r.name === 'ai-discord-presence', name: NAMES[r.name] || r.name.replace(/-/g, ' '), kind: r.language || '', date: when(r.pushed_at),
+      text: cleanText(r.description || 'No description yet.'), pics: [...(SITE_PICS[r.name] || []), ...picturesOf(r.name)], repo: repoUrl });
   };
 
   // ---------- stars: every pet, with its hosted icon, and its repo's pictures and links when the repo is public ----------
@@ -514,6 +555,8 @@
     }
     // glints: the same color-matched sparkle as the portrait, twinkling on the stars in the jar
     const glints = el('span', 'sparkles jar-glints'); glints.setAttribute('aria-hidden', 'true'); inside.after(glints);
+    // and round the outside of the glass (Astra, 2026-10-29: "full of sparkles ... and on the outside, too")
+    const ring = sparkles(hash(id + ':ring'), 22); ring.classList.add('ring'); jar.append(ring);
     // each star's color, once its pet's drawing has been read; the jar is filled color by color, in bands like sand art, and
     // each tip goes on to a color not shown yet (Astra, 2026-10-29: "go through the colors", "organize the color")
     const tints = new Map(), TINT_ORDER = NEON.map((n) => n[1]);
@@ -713,7 +756,7 @@
       if (force > 14 && Date.now() - lastShake > 1400) { lastShake = Date.now(); shake(); }
     });
   }
-  const petJar = makeJar('pet-jar', { key: (e) => 'pet-' + e.p.number, mini: miniStar, full: star, hasPics: (e) => e.pics.length > 0, tint: (e) => petNeon(iconOf(e.p)).then((c) => c || colorOf('pet-' + e.p.number)), maxMini: 84, glints: (h) => 1 + (h % 3 === 0), one: 'pet', many: 'pets' });
+  const petJar = makeJar('pet-jar', { key: (e) => 'pet-' + e.p.number, mini: miniStar, full: star, hasPics: (e) => e.pics.length > 0, tint: (e) => petNeon(iconOf(e.p)).then((c) => c || colorOf('pet-' + e.p.number)), maxMini: 84, glints: (h) => 2 + (h % 2), one: 'pet', many: 'pets' });
 
   // ---------- Astra's PetOS as Polaroids: the System Map (live), all the pets at once, and every pet to flip through ----------
   const HUB_PAGES = 'https://findastra.github.io/astras-pet-os/';
@@ -735,18 +778,24 @@
   }).catch(() => {});
   const levelNote = (p) => (at, box) => {
     const pet = p[at], lv = levels[pet.pet];
-    // what the note is for, on the note (Astra, 2026-10-29: "I don't know what they're supposed to be for"): how smart this
-    // pet is so far, one line per level
-    box.replaceChildren(el('b', null, 'how smart?'), ...(lv ? [`tools ${lv[0]}`, `runs itself ${lv[1]}`, `AI agent ${lv[2]}`] : ['not rated yet']).map((t) => el('div', null, t)));
+    // how far this pet has grown through the hub's four intelligence levels (Astra, 2026-10-29: "that L1 through L4 thing
+    // should be on there"), as INTELLIGENCE-LEVELS.md counts them: L2 is its pet program and its runtime together, L3 its
+    // agentic harness. The table does not track L1 (the programs it runs) on its own, so L1 shows built once the pet has a
+    // program; L4 is the verified human every pet answers to, Astra, so it is always there
+    const l2 = !lv ? '—' : lv[0] === '✅' && lv[1] === '✅' ? '✅' : lv[0] !== '—' || lv[1] !== '—' ? '🟡' : '—';
+    box.replaceChildren(el('b', null, 'intelligence'), ...(lv ? [`L1 programs ${lv[0] === '—' ? '—' : '✅'}`, `L2 runs itself ${l2}`, `L3 AI agent ${lv[2]}`, 'L4 Astra ✅'] : ['not rated yet']).map((t) => el('div', null, t)));
   };
   function petosCards() {
-    const drawn = pets.filter(iconOf);
+    const drawn = pets.filter(iconOf), hub = byName['astras-pet-os'], HUB_REPO = 'https://github.com/findastra/astras-pet-os';
+    // like the rest: the hub's code and the day it last changed
+    const kind = (hub && hub.language) || 'HTML', date = hub ? when(hub.pushed_at) : '';
     return [
-      polaroid({ key: 'system-map', name: 'The System Map', kind: 'how the pets connect', text: 'Every pet, program and tool in Astra\'s PetOS, and how they work together. Drag it around.',
-        pics: [{ src: HUB_PAGES + 'system-map-20261012.html', cap: 'The System Map', type: 'frame', label: 'live' }], repo: 'https://github.com/findastra/astras-pet-os', site: HUB_PAGES + 'system-map-20261012.html', siteLabel: 'open the System Map ↗' }),
+      // drawn larger than the photo and shrunk to fit, so the sphere has more room beside the map's own panels
+      polaroid({ key: 'system-map', name: 'The System Map', kind, date, text: 'Every pet, program and tool in Astra\'s PetOS, and how they work together. Drag it around.',
+        pics: [{ src: HUB_PAGES + 'system-map-20261012.html', cap: 'The System Map', type: 'frame', label: 'live', view: 3 }], repo: HUB_REPO }),
       // the pets on the bare paper, and the one you flip to a little smaller (Astra, 2026-10-29)
-      polaroid({ key: 'all-pets', name: 'The pets', kind: drawn.length + ' drawn so far', text: 'What they all look like. Each one is a small app with a face and a job.', pics: [], shot: petsShot(drawn), clear: true }),
-      polaroid({ key: 'meet-pets', name: 'Meet every pet', kind: 'flip with the arrows', text: 'One at a time, no shaking needed.',
+      polaroid({ key: 'all-pets', name: 'The pets', kind, date, text: 'What they all look like. Each one is a small app with a face and a job.', pics: [], shot: petsShot(drawn), clear: true, repo: HUB_REPO }),
+      polaroid({ key: 'meet-pets', name: 'Meet every pet', kind, date, repo: HUB_REPO, text: 'One at a time, no shaking needed.',
         pics: drawn.map((p) => ({ src: iconOf(p), cap: p.pet, label: p.pet, fit: 'contain', size: 0.78, clear: true })), sticky: levelNote(drawn) }),
     ];
   }

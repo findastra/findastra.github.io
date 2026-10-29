@@ -94,7 +94,9 @@
     // the dome is a sphere drawn as a white grid that slowly turns (Astra, 2026-10-27: "just a big sphere that's a grid"); each
     // Fuzzboi lives at x, y, z inside it (the sphere's radius is 1), smaller at the back, bigger at the front
     const cv = $('home'), cx = cv.getContext('2d');
-    let W = 0, H = 0, picked = null, turn = 0;
+    let W = 0, H = 0, picked = null, turn = 0, hue = 0;
+    const motes = Array.from({ length: 22 }, () => { const a = Math.random() * 7, d = Math.random() * .8, sp = .002 + Math.random() * .004, b = Math.random() * 7;
+      return { x: Math.cos(a) * d, y: Math.sin(a) * d, vx: Math.cos(b) * sp, vy: Math.sin(b) * sp, s: 4 + Math.random() * 6, h: Math.random() * 360, t: Math.random() * 7 }; });
     const folks = [], boings = [];
     function resize() { const r = fit(cv); W = r.width; H = r.height; }
     new ResizeObserver(resize).observe(cv); resize();
@@ -230,10 +232,22 @@
       const glow = cx.createRadialGradient(ox - r * .3, oy - r * .35, r * .1, ox, oy, r);
       glow.addColorStop(0, 'rgba(255, 255, 255, .07)'); glow.addColorStop(1, 'rgba(255, 255, 255, .01)');
       cx.fillStyle = glow; cx.beginPath(); cx.arc(ox, oy, r, 0, 7); cx.fill();
-      cx.lineWidth = 1; cx.strokeStyle = 'rgba(255, 255, 255, .2)';
-      for (let k = -3; k <= 3; k++) { const lat = (k / 4) * (Math.PI / 2), rx = Math.cos(lat) * r; cx.beginPath(); cx.ellipse(ox, oy + Math.sin(lat) * r * Math.cos(tilt), rx, rx * Math.sin(tilt), 0, 0, 7); cx.stroke(); }
-      for (let k = 0; k < 8; k++) { const ph = turn + (k / 8) * Math.PI, rx = Math.abs(Math.sin(ph)) * r; cx.beginPath(); cx.ellipse(ox, oy, rx, r, 0, 0, 7); cx.stroke(); }
-      cx.lineWidth = 2; cx.strokeStyle = 'rgba(255, 255, 255, .65)'; cx.beginPath(); cx.arc(ox, oy, r, 0, 7); cx.stroke();
+      // LED lines (Astra, 2026-10-29): every line glows and runs through the rainbow, each a little round the wheel from the next
+      const led = (k, a) => `hsl(${(hue + k * 24) % 360} 100% 70% / ${a})`;
+      cx.lineWidth = 1.4; cx.shadowBlur = 6;
+      for (let k = -3; k <= 3; k++) { const lat = (k / 4) * (Math.PI / 2), rx = Math.cos(lat) * r; cx.strokeStyle = cx.shadowColor = led(k + 3, .55); cx.beginPath(); cx.ellipse(ox, oy + Math.sin(lat) * r * Math.cos(tilt), rx, rx * Math.sin(tilt), 0, 0, 7); cx.stroke(); }
+      for (let k = 0; k < 8; k++) { const ph = turn + (k / 8) * Math.PI, rx = Math.abs(Math.sin(ph)) * r; cx.strokeStyle = cx.shadowColor = led(k + 8, .55); cx.beginPath(); cx.ellipse(ox, oy, rx, r, 0, 0, 7); cx.stroke(); }
+      cx.lineWidth = 2.4; cx.strokeStyle = cx.shadowColor = led(0, .9); cx.shadowBlur = 12; cx.beginPath(); cx.arc(ox, oy, r, 0, 7); cx.stroke();
+      cx.shadowBlur = 0;
+      // the page's pastel sparkles, bouncing round inside the dome
+      for (const s of motes) {
+        if (!reduced) { s.x += s.vx; s.y += s.vy; if (Math.hypot(s.x, s.y) > .9) { const d = Math.hypot(s.x, s.y), nx = s.x / d, ny = s.y / d, dot = s.vx * nx + s.vy * ny; s.vx -= 2 * dot * nx; s.vy -= 2 * dot * ny; s.x = nx * .9; s.y = ny * .9; } s.t += .05; }
+        const px = ox + s.x * r, py = oy + s.y * r, sz = s.s * (.6 + .4 * Math.sin(s.t)), q = sz * .22;
+        cx.fillStyle = `hsl(${(s.h + hue) % 360} 55% 80%)`; cx.globalAlpha = .55 + .45 * Math.sin(s.t + 1);
+        cx.beginPath(); cx.moveTo(px, py - sz); cx.lineTo(px + q, py - q); cx.lineTo(px + sz, py); cx.lineTo(px + q, py + q); cx.lineTo(px, py + sz); cx.lineTo(px - q, py + q); cx.lineTo(px - sz, py); cx.lineTo(px - q, py - q); cx.closePath(); cx.fill();
+      }
+      cx.globalAlpha = 1;
+      if (!reduced) hue = (hue + .6) % 360;
     }
     function frame(t) {
       requestAnimationFrame(frame);

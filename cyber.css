@@ -23,7 +23,14 @@ main { padding-left: var(--rail); }
 :root { --rail: 30px; --frame: #050505; --edge: #3d3d3d; --now: #ff2e4d; --float: 20px; }
 /* the pole on the left, from Mommy's website: the chrome pole and a floor label per section */
 /* black, with the frame's gray line on its right; no code rain behind the pole scroll (Astra, 2026-10-29) */
-#pole { position: fixed; left: 0; top: 0; bottom: 0; z-index: 40; width: var(--rail); pointer-events: none; background: var(--frame); border-right: 2px solid var(--edge); }
+#pole { position: fixed; left: 0; top: 0; bottom: 0; z-index: 40; width: var(--rail); pointer-events: none; background: var(--frame); border-right: 2px solid var(--edge); border-left: 2px solid var(--edge); }
+/* the frame all the way round (Astra, 2026-10-29): the pole's gray line on both its sides, down the window's right edge and
+   along its bottom, where the pole ends */
+.bezel { position: fixed; inset: 0; z-index: 39; pointer-events: none; border-right: 2px solid var(--edge); border-bottom: 2px solid var(--edge); }
+/* a disc at the top and the bottom of the pole */
+.pole-cap { position: absolute; left: 50%; z-index: 1; width: 18px; height: 7px; translate: -50% 0; border-radius: 50%; background: #9a9a9a;
+  box-shadow: inset 0 -2px 0 #5c5c5c, 0 0 6px rgba(255, 255, 255, .15); }
+.pole-cap.top { top: 2px; } .pole-cap.bottom { bottom: 2px; }
 /* a plain white pole with a soft glow (Astra, 2026-10-29: "I just want a white pole"; it was matte chrome) */
 /* a soft gray now, so the sparkle stands out on it (Astra, 2026-10-29) */
 #pole::before { content: ""; position: absolute; top: 0; bottom: 0; left: calc(50% - 3px); width: 6px; border-radius: 6px;
@@ -390,18 +397,22 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 2px #f2f2f2; text
 .polaroid .photo img.glow, .ai-card img.glow { -webkit-mask: var(--m) center / contain no-repeat; mask: var(--m) center / contain no-repeat; mask-mode: luminance; object-fit: contain;
   filter: brightness(1.9) saturate(1.2); }
 /* AI Discord Presence: its two cards, one over the other */
-/* laid out like a Discord profile's activity: "Playing" over the art, the app's name and what it is using beside it */
-/* solid Discord cards, a little smaller, with the game controller by "Playing" (Astra, 2026-10-29) */
-.ai-cards { position: absolute; inset: 0; display: grid; align-content: center; gap: 8px; padding: 11%; }
-.ai-card { display: grid; grid-template-columns: 40% 1fr; grid-template-rows: auto 1fr; align-items: center; column-gap: 8px; padding: 6px 8px 8px; text-align: left;
-  text-decoration: none; color: #f2f2f2; background: #232428; border-radius: 8px; box-shadow: 0 0 0 1px rgba(255, 255, 255, .08), 0 4px 10px rgba(0, 0, 0, .5); }
+/* a Discord profile's activity, slim like Discord draws it (Astra, 2026-10-29: "thinner and pancake-like"): "Playing" with
+   the controller, then the app's own card art (its galaxy GIF, turning by itself as on Discord) beside its name, what it is
+   using, what it is working on, and the elapsed time in green */
+.ai-cards { position: absolute; inset: 0; display: grid; align-content: center; gap: 8px; padding: 8% 7%; }
+.ai-card { display: grid; grid-template-columns: 30% 1fr; grid-template-rows: auto 1fr; align-items: center; column-gap: 8px; padding: 5px 8px 7px; text-align: left;
+  text-decoration: none; color: #f2f2f2; background: #232428; border-radius: 8px; box-shadow: 0 0 0 1px rgba(255, 255, 255, .08), 0 3px 8px rgba(0, 0, 0, .5); }
 .ai-card:hover, .ai-card:focus-visible { background: #2b2d31; color: #fff; outline: none; box-shadow: 0 0 0 2px var(--c); }
-.ai-head { grid-column: 1 / -1; display: flex; align-items: center; gap: 4px; font: 700 9px/1.6 Inter, sans-serif; letter-spacing: .04em; text-transform: uppercase; color: #b5bac1; }
-.ai-head svg { width: 12px; height: 12px; fill: currentColor; }
-.ai-card img { width: 100%; aspect-ratio: 1; animation: galaxy-turn 60s linear infinite; }
-.ai-words { display: grid; min-width: 0; font: 500 11px/1.3 Inter, sans-serif; color: #dbdee1; }
-.ai-words b { font: 700 13px/1.25 Inter, sans-serif; color: #fff; }
-.ai-words span:last-child { color: #949ba4; }
+.ai-card.idle { opacity: .6; }
+.ai-head { grid-column: 1 / -1; display: flex; align-items: center; gap: 4px; margin-bottom: 3px; font: 700 9px/1.4 Inter, sans-serif; letter-spacing: .02em; color: #b5bac1; }
+.ai-head svg, .ai-time svg { width: 11px; height: 11px; fill: currentColor; flex: none; }
+.ai-card .ai-art { width: 100%; aspect-ratio: 1; border-radius: 6px; object-fit: cover; background: #000; }
+.ai-words { display: grid; min-width: 0; font: 500 9.5px/1.3 Inter, sans-serif; color: #dbdee1; }
+.ai-words > span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ai-words b { font: 700 11.5px/1.25 Inter, sans-serif; color: #fff; }
+.ai-time { display: flex; align-items: center; gap: 3px; color: #23a55a !important; font-weight: 600; }
+.ai-time[hidden] { display: none; }
 .polaroid:hover .frame { rotate: 0deg; transform: scale(1.03); }
 /* a strip of neon tape holds each one up */
 #vr .polaroid { --c: var(--c-vr) !important; }
@@ -417,13 +428,16 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 2px #f2f2f2; text
 /* the presence cards' galaxies turn slowly, like their animated cards (Astra, 2026-10-27: "make sure those are moving") */
 /* small enough that every spiral arm stays inside the frame as it turns (Astra, 2026-10-29: they were cut off) */
 .polaroid .photo img[src$="galaxy.png"] { scale: .94; animation: galaxy-turn 60s linear infinite; }
+/* Anthropic's arms trail the other way, so it turns the other way, as it does on Discord (Astra, 2026-10-29) */
+.polaroid .photo img[src*="anthropic"][src$="galaxy.png"] { animation-direction: reverse; }
 @keyframes galaxy-turn { to { rotate: 360deg; } }
 .polaroid .photo img[src$=".svg"] { object-fit: contain; background: #0b0b0b; }
 /* a see-through one has no backing at all (the Photostar was sitting on this dark square) */
 .polaroid .photo.clear img[src$=".svg"] { background: none; }
 /* a live page (the Cooling Tower's Mini Model) drawn at twice the size and scaled down, so it fits the photo; it spins by itself
    and can be dragged around */
-.polaroid .photo iframe.live { position: absolute; left: 0; top: 0; width: 200%; height: 200%; border: 0; transform: scale(.5); transform-origin: 0 0; background: #000; }
+.polaroid .photo iframe.live { position: absolute; left: 0; top: 0; width: calc(var(--view, 2) * 100%); height: calc(var(--view, 2) * 100%); border: 0;
+  transform: scale(calc(1 / var(--view, 2))); transform-origin: 0 0; background: #000; }
 /* bare: the page's title strip cropped off the top, and the picture a little lower so the model sits in the middle */
 .polaroid .photo iframe.live.bare { top: -10%; height: 300%; }
 /* the PetOS Polaroids: every pet's drawing in a little grid; the pet you flip to on a light background */
@@ -432,13 +446,18 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 2px #f2f2f2; text
 #petos-list { margin-bottom: 34px; }
 /* a sticky note hanging off a Polaroid's corner (the pet's intelligence levels on "Meet every pet") */
 /* a perfectly square note, its tape the same color as the strip holding up the Polaroid (Astra, 2026-10-29) */
-.polaroid .sticky { position: absolute; right: -14px; bottom: 54px; z-index: 3; width: 96px; aspect-ratio: 1; display: grid; align-content: center; padding: 6px;
+/* up off the writing, so every pet's name on the border can be read (Astra, 2026-10-29) */
+.polaroid .sticky { position: absolute; right: -14px; bottom: 116px; z-index: 3; width: 96px; aspect-ratio: 1; display: grid; align-content: center; padding: 6px;
   background: #fff36b; color: #151515; font: 12px/1.25 "Permanent Marker", cursive; text-align: center; rotate: 7deg; box-shadow: 3px 4px 0 rgba(0, 0, 0, .55); }
 .polaroid .sticky::before { content: ""; position: absolute; left: 50%; top: -7px; width: 40px; height: 13px; translate: -50% 0; rotate: -4deg;
   background: color-mix(in srgb, var(--c) 72%, transparent); box-shadow: 0 0 8px var(--c); }
 .polaroid .sticky b { display: block; font: 700 9px var(--mono); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 3px; }
 /* "concept art" / "concept model", written at the top of the picture */
-.polaroid .badge { position: absolute; left: 6px; top: 6px; z-index: 2; transform: translateZ(0); font: 12px/1 "Permanent Marker", cursive; color: #fff; background: #151515; padding: 3px 7px; rotate: -3deg; pointer-events: none; }
+/* every one the same black sticker, on the white border at the top left by the title, a little crooked (Astra, 2026-10-29) */
+.polaroid .note { position: relative; }
+.polaroid .badge { position: absolute; left: calc(var(--edge-w) - 4px); top: -9px; z-index: 2; font: 12px/1 "Permanent Marker", cursive; color: #fff; background: #111;
+  padding: 4px 8px; rotate: -5deg; pointer-events: none; box-shadow: 2px 2px 0 rgba(0, 0, 0, .35); max-width: 70%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.polaroid .badge[hidden] { display: none; }
 .polaroid .photo:hover img { transform: scale(1.06); }
 .polaroid div.photo { cursor: default; }
 /* Moodglass's picture: a staggered collage, columns split at different heights, edge to edge with soft seams */
@@ -454,18 +473,20 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 2px #f2f2f2; text
    between them on the same line (Astra, 2026-10-29) */
 /* --lift-arrows: the marker arrow's ink sits low in its box, so the box rides higher to leave the same gap under the arrow as
    beside it (Astra, 2026-10-29) */
-.polaroid .frame { --corner: 5px; --flip: 20px; --lift-arrows: 7px; }
+.polaroid .frame { --corner: 5px; --flip: 28px; --lift-arrows: 6px; }
 .polaroid .frame.flips .note { padding-bottom: calc(var(--flip) + var(--corner) + var(--lift-arrows) + 2px); }
 .polaroid .count { position: absolute; left: 50%; bottom: calc(var(--corner) + var(--lift-arrows)); height: var(--flip); display: grid; place-items: center; translate: -50% 3px;
   font: 13px/1 "Permanent Marker", cursive; color: #6a6a6a; white-space: nowrap; rotate: -2deg; }
 .polaroid .flip { position: absolute; bottom: calc(var(--corner) + var(--lift-arrows)); width: var(--flip); height: var(--flip); display: grid; place-items: center; padding: 0; border: 0; background: none;
-  color: #151515; font: 24px/1 "Permanent Marker", cursive; cursor: pointer; }
+  color: #151515; font: 34px/1 "Permanent Marker", cursive; cursor: pointer; }
 .polaroid .flip.prev { left: var(--corner); } .polaroid .flip.next { right: var(--corner); }
 .polaroid .flip:hover, .polaroid .flip:focus-visible { color: #151515; text-shadow: 0 0 6px var(--c), 0 0 12px var(--c); outline: none; }
 /* the writing strip runs the frame's full width, under the side strips, so the sides are one white all the way down */
 .polaroid .note { display: grid; align-content: center; gap: 3px; min-height: 86px; margin: -1px calc(-1 * var(--edge-w)) 0; padding: 11px calc(6px + var(--edge-w)) 14px; color: #151515; background: #f2f2f2; }
 .note .title { font: 1.35rem/1.05 "Permanent Marker", cursive; color: #151515; text-decoration: none; overflow-wrap: anywhere; rotate: -1.5deg; }
-a.title:hover, a.title:focus-visible { color: color-mix(in srgb, var(--c) 45%, #000); outline: none; }
+/* the name links to GitHub: on hover it glows in the section's color, the tape's, with no box behind it (Astra, 2026-10-29) */
+.polaroid a.title:hover, .polaroid a.title:focus-visible { background: none; color: color-mix(in srgb, var(--c) 78%, #000); outline: none;
+  text-shadow: 0 0 6px var(--c), 0 0 14px var(--c), 0 0 24px color-mix(in srgb, var(--c) 60%, transparent); }
 .note .kind { font: .9rem/1.15 "Permanent Marker", cursive; color: #5a5a5a; rotate: 1deg; }
 .polaroid .info p { margin: 18px auto 6px; max-width: 32ch; font-size: 14.5px; color: #c8c8c8; }
 /* the repo and site tags, small stamps under the code and date */
@@ -501,7 +522,10 @@ a.title:hover, a.title:focus-visible { color: color-mix(in srgb, var(--c) 45%, #
 .jar-stars { position: absolute; left: 11.4%; top: 25.6%; width: 77.2%; height: 70.6%; border-radius: 6% 6% 11% 11% / 4% 4% 9% 9%; overflow: hidden; }
 .mini { position: absolute; width: var(--s); height: var(--s); transform: translate(-50%, -50%) rotate(var(--r)); }
 .mini svg, .flyer svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-.mini use, .flyer use { fill: var(--c); stroke: #000; stroke-width: 9; }
+/* white edges, so the stars in the jar look brighter (Astra, 2026-10-29) */
+.mini use, .flyer use { fill: var(--c); stroke: #fff; stroke-width: 9; }
+/* sparkles round the outside of the jar too */
+.jar .sparkles.ring { inset: -6% -10% -2%; }
 .mini img, .flyer img { position: absolute; left: 50%; top: 53%; width: 58%; height: 58%; translate: -50% -50%; object-fit: contain; }
 .mini.gone { visibility: hidden; }
 .jar-count { margin: 0; color: #8a8a8a; }
@@ -651,7 +675,8 @@ a.title:hover, a.title:focus-visible { color: color-mix(in srgb, var(--c) 45%, #
 .lightbox button:hover { background: #f2f2f2; color: #000; }
 
 /* as much room below the footer's line as above it (Astra, 2026-10-29) */
-.foot { position: relative; padding: 34px var(--wrap) 24px; background: #000; color: var(--ink); text-align: center; font-size: 14px; }
+/* slimmer, the bottom trimmed more than the top (Astra, 2026-10-29); the top's 10px is the checker strip */
+.foot { position: relative; padding: 24px var(--wrap) 12px; background: #000; color: var(--ink); text-align: center; font-size: 14px; }
 .foot::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 10px; background: repeating-conic-gradient(#4a4a4a 0 25%, #000 0 50%) 0 0 / 10px 10px; }
 /* the unified footer, as on the pet program pages: centered, its groups after a pink ✦, no list */
 .astra-footer .footer-line { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px 18px; }
