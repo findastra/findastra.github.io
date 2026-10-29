@@ -686,7 +686,16 @@
     $('sparkRand').onclick = () => { for (const k of Object.keys(SPARK)) spark[k] = Math.floor(Math.random() * SPARK[k].length); showSpark(); };
     showSpark();
     function start() { targets = []; score = 0; combo = 0; miss = 0; on = true; spawnIn = 0; bS.textContent = 0; bC.textContent = 0; $('beatBtn').textContent = 'playing…'; }
-    function end() { on = false; $('beatBtn').textContent = 'start set'; if (score > best) { best = score; bB.textContent = best; store.set('findastra-beat-best', best); } }
+    // the high scores (Astra, 2026-10-29): the five best sets in this browser, with the day each was played
+    const TOP_KEY = 'findastra-beat-top';
+    let top = store.get(TOP_KEY, null) || (best ? [{ s: best, d: '' }] : []);
+    const showTop = (fresh) => $('bTop').replaceChildren(...(top.length ? top.map((t, i) => { const li = el('li', t === fresh ? 'new' : null); li.append(el('b', null, t.s), el('span', null, t.d)); return li; })
+      : [el('li', 'none', 'no sets yet')]));
+    showTop();
+    function end() {
+      on = false; $('beatBtn').textContent = 'start set'; if (score > best) { best = score; bB.textContent = best; store.set('findastra-beat-best', best); }
+      if (score) { const t = { s: score, d: new Date().toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) }; top = [...top, t].sort((a, b) => b.s - a.s).slice(0, 5); store.set(TOP_KEY, top); showTop(t); }
+    }
     function loop() {
       requestAnimationFrame(loop);
       bx.fillStyle = '#060606'; bx.fillRect(0, 0, w, h);
@@ -921,7 +930,29 @@
    drawLab();
   });
   document.getElementById('labRand').onclick=()=>{avRandomHair();for(const [part,options] of Object.entries({head:AV_HEAD,body:AV_BODY,fit:AV_FITS,fx:AV_FX})){avState[part]=avNext(avState[part],options.length);avState[part+'Colors']=avPalette()}avState.seed=avPick(1e9);drawLab()};
-  document.getElementById('labSave').onclick=()=>{const first=['Glitter','Neon','Velvet','Moonlit','Silver','Cherry'],last=['Poppy','Seraph','Riot','Halo','Peach','Bunny'];document.getElementById('labName').textContent=first[avPick(first.length)]+' '+last[avPick(last.length)]+' — enrolled on 3F'};
+  // the avatar library (Astra, 2026-10-29): save a look you like, then open the library to see every saved one; tap one to
+  // wear it again, ✕ to let it go. Kept in this browser
+  const LIB_KEY='findastra-avatar-library',libBox=document.getElementById('labLib'),libBtn=document.getElementById('labLibBtn');
+  let lib=store.get(LIB_KEY,[]);if(!Array.isArray(lib))lib=[];
+  const showLib=()=>{
+   libBtn.textContent='library ('+lib.length+')';
+   libBox.replaceChildren(...(lib.length?lib.map((look,i)=>{
+    const card=el('div','lib-look'),wear=el('button','lib-wear');wear.type='button';wear.setAttribute('aria-label','wear '+look.name);
+    wear.innerHTML=`<svg viewBox="0 0 200 230" aria-hidden="true">${look.svg}</svg>`;wear.append(el('span',null,look.name));
+    wear.onclick=()=>{Object.assign(avState,JSON.parse(JSON.stringify(look.state)));drawLab();document.getElementById('labName').textContent=look.name};
+    const drop=el('button','lib-drop','✕');drop.type='button';drop.setAttribute('aria-label','remove '+look.name+' from the library');
+    drop.onclick=()=>{lib.splice(i,1);store.set(LIB_KEY,lib);showLib()};
+    card.append(wear,drop);return card;
+   }):[el('p','muted mono','Nothing saved yet. Find a look you like and save it.')]));
+  };
+  document.getElementById('labSave').onclick=()=>{
+   const first=['Glitter','Neon','Velvet','Moonlit','Silver','Cherry'],last=['Poppy','Seraph','Riot','Halo','Peach','Bunny'];
+   const name=first[avPick(first.length)]+' '+last[avPick(last.length)];
+   lib=[{name,state:JSON.parse(JSON.stringify(avState)),svg:labSvg.innerHTML},...lib].slice(0,40);store.set(LIB_KEY,lib);showLib();
+   document.getElementById('labName').textContent=name+' — saved to your library';
+  };
+  libBtn.onclick=()=>{libBox.hidden=!libBox.hidden;libBtn.setAttribute('aria-expanded',String(!libBox.hidden))};
+  showLib();
   drawLab();
   }
 })();
