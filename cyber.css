@@ -724,6 +724,23 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 .lab-group { display: flex; flex-direction: column; gap: 4px; font: 700 12px var(--mono); color: #f2f2f2; }
 .lab-group select { font: 12px var(--mono); color: #f2f2f2; background: #000; border: 2px solid #555; padding: 6px; }
 .lab-name { margin: 8px 0 0; font: 700 17px var(--mono); color: #f2f2f2; min-height: 1.4em; }
+/* the Sparkle catcher's five best sets (Astra, 2026-10-29) */
+.hiscores { margin: 0 0 12px; }
+.hiscores h4 { margin: 0 0 6px; font: 700 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: #8a8a8a; }
+.hiscores ol { margin: 0; padding: 0 0 0 22px; color: #8a8a8a; font-size: 13px; }
+.hiscores li { display: flex; justify-content: space-between; gap: 12px; padding: 2px 0; }
+.hiscores li b { color: #f2f2f2; }
+.hiscores li.new b { color: #ff2e7e; }
+.hiscores li.none { list-style: none; margin-left: -22px; }
+/* the avatar library: every saved look, small, in a grid; tap to wear it, ✕ to let it go */
+.lab-lib { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 10px; margin-top: 12px; }
+.lab-lib > p { grid-column: 1 / -1; margin: 0; }
+.lib-look { position: relative; }
+.lib-wear { display: grid; justify-items: center; gap: 4px; width: 100%; padding: 6px 4px 8px; border: 1px solid #3a3a3a; background: #0c0c0c; color: #f2f2f2; cursor: pointer; font: 11px/1.2 var(--mono); }
+.lib-wear:hover, .lib-wear:focus-visible { border-color: #ff2e7e; outline: none; }
+.lib-wear svg { width: 72px; height: 83px; }
+.lib-drop { position: absolute; top: 2px; right: 2px; width: 22px; height: 22px; padding: 0; border: 0; background: transparent; color: #8a8a8a; cursor: pointer; font-size: 12px; }
+.lib-drop:hover, .lib-drop:focus-visible { color: #ff2e7e; }
 #labSvg { stroke-linecap: round; stroke-linejoin: round; max-width: 100%; height: auto; }
 .avatar-sparkles { animation: lab-shimmer 4s ease-in-out infinite alternate; transform-box: fill-box; transform-origin: center; }
 @keyframes lab-shimmer { from { opacity: .55; } to { opacity: 1; } }
