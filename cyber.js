@@ -228,12 +228,16 @@
       '25-praying-mantis-frosted-office-20261015', '26-flamingo-red-sun-reservoir-20261015', '27-jellyfish-room-of-curtains-20261015', '28-butterfly-glass-orchard-20261015',
       '29-red-panda-midnight-food-court-20261015', '30-swan-door-at-sunrise-20261015', '31-otter-steam-between-stars-20261015', '32-sandpiper-sunset-sandbar-20261015',
       '33-dolphin-aquaglass-concourse-20261015', '36-kingfisher-blue-sky-terminal-20261015']
-      .map((f) => ({ src: LD + f + '.png', label: 'concept art', cap: 'Liminal Doors · ' + f.replace(/^\d+-/, '').replace(/-\d{8}$/, '').replace(/-/g, ' ') })) },
+      .map((f, i) => ({ src: LD + f + '.png', label: 'concept art', cap: 'Liminal Doors · ' + f.replace(/^\d+-/, '').replace(/-\d{8}$/, '').replace(/-/g, ' '),
+        // the first, the hummingbird's conservatory, a little closer in on the greenhouse and its glass roof (Astra, 2026-10-29)
+        ...(i ? {} : { crop: [40, 0, 467, 427, 507, 508], cover: true }) })) },
     { name: "Mommy's World", kind: 'VRChat world · PC VR / desktop', text: "The VRChat home of Mommy's Rave House, Dance & Avatar Academy.", repo: 'mommys-world',
       local: [{ src: 'art/worlds/phone-booth.jpg', label: 'concept art', cap: 'A pink phone booth above the clouds' }], extra: ['mommys', 'role-fairy'] },
     // first the still with its gray cut away, so it shines over the paper (Astra, 2026-10-29); the video and the crystals keep theirs
     { name: 'The Rainbow Maker', kind: 'VRChat world · PC VR / desktop', text: 'The mechanics of the Kikkerland Rainbow Maker: watch its tiny gear train turn and spin a crystal that refracts rainbows across the room.', repo: 'the-rainbow-maker', local: [
-      { src: 'art/worlds/rainbow-maker-still-clear-20261029.png', cap: 'The Rainbow Maker', fit: 'contain', clear: true, glitter: true, nudge: '0 7%' },
+      { src: 'art/worlds/rainbow-maker-still-clear-20261029.png', cap: 'The Rainbow Maker', fit: 'contain', clear: true, nudge: '0 7%',
+        // one wide ring round the whole machine, a small fast one round each crystal, and a few glints on the glass
+        orbits: [[50, 50, 32, 44, 9, 16], [40, 83, 10, 5, 3, 5], [57, 72, 9, 5, 3, 6]], still: [[46, 30], [56, 40], [42, 60], [60, 86]] },
       { src: RM + 'rainbow-maker-preview-20261022.mp4', cap: 'The Rainbow Maker · turning', type: 'video', fit: 'contain', bg: '#45444a' },
       { src: RM + 'rainbow-maker-crystals-cycles-20261023.png', cap: 'The Rainbow Maker · the crystals', fit: 'contain', bg: '#47423f' }] },
     { name: 'The Cooling Tower', siteLabel: 'see full mini model ↗', kind: 'VRChat world · PC VR / desktop', text: "A rave world inside a nuclear plant's cooling tower: break into the facility and power it up with music. The Stack, the Turbine Hall, then the Reactor Hall.", repo: 'the-cooling-tower', local: [{ src: 'https://findastra.github.io/the-cooling-tower/mini-model/the-cooling-tower-mini-model-20261024.html', cap: 'The Cooling Tower · Mini Model', type: 'frame', label: 'concept model', bare: true, back: 3 }] },
@@ -273,10 +277,28 @@
     }
     return box;
   };
-  // sparkles scattered all over a picture, not just round its edge (the Rainbow Maker's glass, Astra 2026-10-29)
-  const sparkleField = (h, n = 14) => {
+  // sparkles that circle a thing in its picture (Astra, 2026-10-29: round the Rainbow Maker, "like they would actually reflect
+  // off of those spinning crystals"): each orbit is a tilted ring [x, y, rx, ry, how many, seconds per turn] in the picture's
+  // percent; the ones going round the back are dimmer and smaller. A few more just twinkle where they are. They only move while
+  // the picture is on screen
+  const orbitField = (h, orbits, still = []) => {
     const box = el('div', 'sparkles field'); box.setAttribute('aria-hidden', 'true');
-    for (let i = 0; i < n; i++) { const k = hash(h + ':f' + i); box.append(sparkle(k, (6 + (k % 88)).toFixed(1), (6 + ((k >>> 8) % 88)).toFixed(1), 7 + (k >>> 12) % 12)); }
+    const movers = orbits.flatMap(([x, y, rx, ry, n, secs], o) => Array.from({ length: n }, (_, i) => {
+      const k = hash(h + ':o' + o + ':' + i), s = sparkle(k, x, y, 7 + (k >>> 12) % 10); box.append(s);
+      return { s, x, y, rx, ry, w: (Math.PI * 2) / (secs * 1000), a: (i / n) * Math.PI * 2 };
+    }));
+    for (const [x, y] of still) box.append(sparkle(hash(h + ':s' + x + y), x, y, 8));
+    let on = false, raf = 0;
+    const move = (t) => {
+      raf = on && !reduced ? requestAnimationFrame(move) : 0;
+      for (const m of movers) {
+        const a = m.a + t * m.w, front = Math.sin(a) > 0;
+        m.s.style.left = m.x + m.rx * Math.cos(a) + '%'; m.s.style.top = m.y + m.ry * Math.sin(a) + '%';
+        m.s.style.filter = front ? '' : 'brightness(.55)'; m.s.style.scale = front ? 1 : .6;
+      }
+    };
+    new IntersectionObserver((seen) => { on = seen.some((e) => e.isIntersecting); if (on && !raf) raf = requestAnimationFrame(move); }).observe(box);
+    requestAnimationFrame(() => move(0));
     return box;
   };
   const SVG = 'http://www.w3.org/2000/svg';
@@ -309,7 +331,8 @@
     const c = el('article', 'polaroid'); const h = paint(c, key);
     const photo = el(pics.length && !shot && !pics.some((p) => p.type === 'frame') ? 'button' : 'div', 'photo');
     photo.classList.toggle('clear', !!clear || clearOf(pics[0]));
-    const field = pics.some((p) => p.glitter) ? sparkleField(h) : null;
+    if (pics[0] && pics[0].crop && pics[0].bg) photo.style.background = pics[0].bg;
+    const orbiting = pics.find((p) => p.orbits), field = orbiting ? orbitField(h, orbiting.orbits, orbiting.still) : null;
     if (shot) photo.append(shot);
     else if (!pics.length) photo.append(el('span', 'developing', 'still developing…'));
     let flip = null, count = null, badge = null;
@@ -327,6 +350,13 @@
           // size gives its picture more room (the System Map's sphere, Astra 2026-10-29)
           if (p.view) f.style.setProperty('--view', p.view);
           if (p.bare) f.addEventListener('load', () => { try { const st = f.contentDocument.createElement('style'); st.textContent = '.panel{display:none!important}'; f.contentDocument.head.append(st); } catch {} });
+          // says: messages the page's own message box takes in turn, typed in the way a visitor would. Like back, below, it
+          // can only reach in on the live site, where the page shares this site's address
+          if (p.says) f.addEventListener('load', () => { try {
+            const box = f.contentDocument.getElementById('msg'); if (!box) return; let n = 0;
+            const say = () => { if (!f.isConnected) return; box.value = p.says[n++ % p.says.length]; box.dispatchEvent(new (f.contentWindow.Event)('input', { bubbles: true })); setTimeout(say, 9000); };
+            say();
+          } catch {} });
           // back: a few turns of the scroll wheel once it has drawn, to start a little zoomed out (the Cooling Tower's stack
           // top, Astra 2026-10-29). It can only reach in where the page shares this site's address, so on the live site
           if (p.back) f.addEventListener('load', () => setTimeout(() => { try {
@@ -340,6 +370,15 @@
         if (p.size) im.style.scale = p.size;
         // nudge: moved within its frame, as a share of the frame (the Rainbow Maker a little lower, clear of the tape)
         if (p.nudge) im.style.translate = p.nudge;
+        // crop: [left, top, right, bottom] of the picture's [width, height] that the frame shows, fitted whole (or filling the
+        // frame, with cover), so a page screenshot can show just its best part bigger (Astra, 2026-10-29: Mommy's stars and
+        // windows without the pole; more of the Liminal Doors greenhouse)
+        if (p.crop) {
+          // k: the frame's side per picture pixel
+          const [x0, y0, x1, y1, W0, H0] = p.crop, w = x1 - x0, h = y1 - y0, k = (p.cover ? Math.max : Math.min)(1 / w, 1 / h), pc = (v) => v * 100 + '%';
+          Object.assign(im.style, { inset: 'auto', width: pc(W0 * k), height: pc(H0 * k), objectFit: 'fill', background: 'none',
+            left: pc(-x0 * k + (1 - w * k) / 2), top: pc(-y0 * k + (1 - h * k) / 2) });
+        }
         if (glows(p)) { im.classList.add('glow'); im.style.setProperty('--m', `url("${p.src}")`); }
         return im;
       };
@@ -399,14 +438,19 @@
   const SITE_PICS = {
     // a little smaller, so its green banner sits clear of the tape (Astra, 2026-10-29)
     'fuzzboi-factory': [{ src: 'art/projects/fuzzboi-factory-site-20261027.jpg', cap: 'The Fuzzboi Factory', fit: 'contain', bg: '#121a6b', size: 0.88, clear: true }],
-    'mommys-website': [{ src: 'art/projects/mommys-website-site-20261027.jpg', cap: "Mommy's: the twins and the windows", fit: 'contain', bg: '#1a0612' }],
+    // just the two stars, the name and the three windows, bigger, without the pole down the left (Astra, 2026-10-29)
+    'mommys-website': [{ src: 'art/projects/mommys-website-site-20261027.jpg', cap: "Mommy's: the twins and the windows", crop: [140, 40, 1190, 880, 1280, 900], bg: '#1a0612' }],
     // the star alone on the paper, set in from the tape (Astra, 2026-10-29)
     'astras-photostar': [{ src: 'https://findastra.github.io/astras-star-window/star-window.svg', cap: "Astra's Photostar", fit: 'contain', size: 0.8, clear: true }],
     // the live sign, saying what it is (its ?message= link option is a Pocket Message Board change waiting for Astra's OK)
-    'pocket-message-board': [{ src: 'https://findastra.github.io/pocket-message-board/?message=' + encodeURIComponent('This is a Pocket Message Board. Check it out!') + '&size=1', cap: 'Pocket Message Board', type: 'frame' }],
+    // the sign takes turns saying these (Astra, 2026-10-29)
+    'pocket-message-board': [{ src: 'https://findastra.github.io/pocket-message-board/?message=' + encodeURIComponent('This is a Pocket Message Board. Check it out!') + '&size=1', cap: 'Pocket Message Board', type: 'frame',
+      says: ['Testing 1, 2, 3', 'Astra was here', 'I love Devilish', 'I love Dev 69'] }],
   };
   // Photostar is one word (Astra, 2026-10-29)
   const NAMES = { 'astras-photostar': "Astra's Photostar" };
+  // and "Iris: the origin story" (Astra, 2026-10-29), whatever its repo is called
+  const nameOf = (repo) => NAMES[repo] || (/^iris/i.test(repo) ? 'Iris: the origin story' : repo.replace(/-/g, ' '));
   // AI Discord Presence's picture (Astra, 2026-10-29): its two Discord cards, OpenAI over Anthropic, laid out like the
   // activity on a Discord profile (the "Playing" line, the galaxy, the app, what it is using), on the bare paper
   // Each card is the activity the two presence apps (findastra-discord-presence) send to Discord, laid out the way Discord
@@ -453,7 +497,7 @@
   const SHOTS = { moodglass: moodglassShot, 'ai-discord-presence': aiCardsShot };
   const extraCard = (r) => {
     const repoUrl = 'https://github.com/findastra/' + r.name, shot = SHOTS[r.name];
-    return polaroid({ key: r.name, shot: shot ? shot() : null, clear: r.name === 'ai-discord-presence', name: NAMES[r.name] || r.name.replace(/-/g, ' '), kind: r.language || '', date: when(r.pushed_at),
+    return polaroid({ key: r.name, shot: shot ? shot() : null, clear: r.name === 'ai-discord-presence', name: nameOf(r.name), kind: r.language || '', date: when(r.pushed_at),
       text: cleanText(r.description || 'No description yet.'), pics: [...(SITE_PICS[r.name] || []), ...picturesOf(r.name)], repo: repoUrl });
   };
 
@@ -670,13 +714,18 @@
         await new Promise((ok) => setTimeout(ok, T * .36));
         gone();
         const size = from ? from.getBoundingClientRect().width : 40;
-        await Promise.all([fly(mouth, O.y, size, pick, into), tip.finished.catch(() => {}), lidOff && lidOff.finished.catch(() => {})]);
+        await Promise.all([fly(mouth, O.y, size, pick, into, land), tip.finished.catch(() => {}), lidOff && lidOff.finished.catch(() => {})]);
         jar.style.transformOrigin = ''; jar.classList.remove('tipped');
       }
       jar.classList.remove('shaking');
-      caught.push(key);
-      const card = kind.full(pick); card.classList.add('landed'); into.before(card);
-      if (!left().length) into.remove();
+      if (reduced) land();
+      function land() {
+        caught.push(key);
+        const card = kind.full(pick); card.classList.add('landed'); into.before(card);
+        if (!left().length) into.remove();
+        return card;
+      }
+      const card = all.querySelector(`.card:nth-last-child(${left().length ? 2 : 1})`) || all.lastElementChild;
       hint.innerHTML = left().length ? 'Tip it again for another star.<br>Will you get every single pet?' : 'You got every single pet!';
       count();
       card.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'nearest' });
@@ -692,7 +741,7 @@
     }
     // the star slides out of the mouth and drops to the ground with a little bounce; sparkles shake off it there; then it
     // glides into its slot, growing to full size, the sparkles trailing behind it the whole way
-    async function fly(mouth, ground, size, it, to) {
+    async function fly(mouth, ground, size, it, to, land) {
       const st = box.getBoundingClientRect();
       const f = kind.mini(it); f.classList.add('flyer'); f.style.setProperty('--s', size + 'px');
       f.style.left = mouth.x - size / 2 - st.left + 'px'; f.style.top = mouth.y - size / 2 - st.top + 'px'; box.append(f);
@@ -705,7 +754,7 @@
       ], { duration: 1300, fill: 'forwards' }).finished;
       // it hits the ground: a ring of sparkles shakes off
       const c = f.getBoundingClientRect(), cx0 = c.left + c.width / 2, cy0 = c.top + c.height / 2;
-      for (let i = 0; i < 14; i++) { const a = (i / 14) * Math.PI * 2 - Math.PI / 2; puff(cx0, cy0, Math.cos(a) * size * 1.6, Math.sin(a) * size * 1.2 - size * .5, 1100); }
+      for (let i = 0; i < 14; i++) { const a = (i / 14) * Math.PI * 2 - Math.PI / 2; puff(cx0, cy0, Math.cos(a) * size * 1.6, Math.sin(a) * size * 1.2 - size * .5, 1700); }
       await new Promise((ok) => setTimeout(ok, 250));
       const b = to.getBoundingClientRect(), sx = gx + size * .4, sy = gy;
       const ex = b.left + b.width / 2 - mouth.x, ey = b.top + b.height / 2 - mouth.y, grow = b.width / size;
@@ -716,10 +765,16 @@
       let trailing = true;
       (function trail() {
         if (!trailing) return;
-        const q = f.getBoundingClientRect(); puff(q.left + q.width * (.3 + Math.random() * .4), q.top + q.height * (.3 + Math.random() * .4), (Math.random() - .5) * 30, 10 + Math.random() * 30, 1400);
+        const q = f.getBoundingClientRect(); puff(q.left + q.width * (.3 + Math.random() * .4), q.top + q.height * (.3 + Math.random() * .4), (Math.random() - .5) * 30, 10 + Math.random() * 30, 2000);
         setTimeout(trail, 70);
       })();
-      await glide.finished; trailing = false; f.remove();
+      await glide.finished; trailing = false;
+      // the full star fades in where the little one landed while the little one fades out, so it does not jump from one look
+      // to the other (Astra, 2026-10-29)
+      const card = land();
+      card.animate([{ opacity: 0, transform: 'scale(.97)' }, { opacity: 1, transform: 'none' }], { duration: 650, easing: 'ease-out' });
+      await f.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 650, easing: 'ease-in', fill: 'forwards' }).finished;
+      f.remove();
     }
     // empty the jar: every one left lands in the row at once; when none are left, they all go back in
     function pour() {
@@ -762,7 +817,13 @@
   const HUB_PAGES = 'https://findastra.github.io/astras-pet-os/';
   const petsShot = (list) => {
     const g = el('div', 'pet-grid'); g.setAttribute('role', 'img'); g.setAttribute('aria-label', 'All of Astra\'s pets');
-    for (const p of list) { const im = el('img'); im.src = iconOf(p); im.alt = ''; im.loading = 'lazy'; im.title = p.pet; g.append(im); }
+    const ims = list.map((p) => { const im = el('img'); im.src = iconOf(p); im.alt = ''; im.loading = 'lazy'; im.title = p.pet; return im; });
+    g.append(...ims);
+    // laid out as a rainbow, like the jar (Astra, 2026-10-29): once every pet's color is read, they go in by hue
+    Promise.all(list.map((p) => petNeon(iconOf(p)))).then((cs) => {
+      const rank = (c) => { const i = NEON.findIndex((n) => n[1] === c); return i < 0 ? NEON.length : i; };
+      g.append(...ims.map((im, i) => [im, rank(cs[i])]).sort((a, b) => a[1] - b[1]).map((x) => x[0]));
+    });
     return g;
   };
   // each pet's levels from the hub's INTELLIGENCE-LEVELS.md table: L1 programs, L2 pet program and runtime, L3 agentic harness;
@@ -794,7 +855,9 @@
       polaroid({ key: 'system-map', name: 'The System Map', kind, date, text: 'Every pet, program and tool in Astra\'s PetOS, and how they work together. Drag it around.',
         pics: [{ src: HUB_PAGES + 'system-map-20261012.html', cap: 'The System Map', type: 'frame', label: 'live', view: 3 }], repo: HUB_REPO }),
       // the pets on the bare paper, and the one you flip to a little smaller (Astra, 2026-10-29)
-      polaroid({ key: 'all-pets', name: 'The pets', kind, date, text: 'What they all look like. Each one is a small app with a face and a job.', pics: [], shot: petsShot(drawn), clear: true, repo: HUB_REPO }),
+      polaroid({ key: 'all-pets', name: 'The pets', kind, date, text: 'What they all look like. Each one is a small app with a face and a job.', pics: [], shot: petsShot(drawn), clear: true, repo: HUB_REPO,
+        // its own sticky note (Astra, 2026-10-29), saying what the grid is
+        sticky: (at, box) => box.replaceChildren(el('b', null, 'the pets'), el('div', null, drawn.length + ' drawn'), el('div', null, 'in rainbow order')) }),
       polaroid({ key: 'meet-pets', name: 'Meet every pet', kind, date, repo: HUB_REPO, text: 'One at a time, no shaking needed.',
         pics: drawn.map((p) => ({ src: iconOf(p), cap: p.pet, label: p.pet, fit: 'contain', size: 0.78, clear: true })), sticky: levelNote(drawn) }),
     ];
@@ -899,9 +962,21 @@
         const hue = !d ? 0 : hi === R ? 60 * (((G - B) / d) % 6) : hi === G ? 60 * ((B - R) / d + 2) : 60 * ((R - G) / d + 4);
         spots.push({ i, sat: hi ? d / hi : 0, light: hi / 255, c: `hsl(${Math.round(hue + 360) % 360} 55% 80%)`, w: r() });
       }
-      // colorful and bright spots first, with a little chance so the twinkles spread over the whole picture
-      spots.sort((a, b) => (b.sat * .7 + b.light * .3 + b.w * .5) - (a.sat * .7 + a.light * .3 + a.w * .5));
-      box.replaceChildren(...spots.slice(0, 70).map((sp, n) => {
+      // deliberate, round her (Astra, 2026-10-29: "around my face and body", "too random"): the spots where the picture changes
+      // most, the edges of her face, hair and shoulders, with a little of the color, no two close together
+      const lum = (i) => px[i * 4] * .3 + px[i * 4 + 1] * .59 + px[i * 4 + 2] * .11;
+      for (const sp of spots) {
+        const x = sp.i % N, y = Math.floor(sp.i / N);
+        sp.edge = x && y && x < N - 1 && y < N - 1 ? Math.min(1, Math.hypot(lum(sp.i + 1) - lum(sp.i - 1), lum(sp.i + N) - lum(sp.i - N)) / 90) : 0;
+      }
+      spots.sort((a, b) => (b.edge + b.sat * .25 + b.w * .1) - (a.edge + a.sat * .25 + a.w * .1));
+      const picked = [];
+      for (const sp of spots) {
+        if (picked.length >= 64) break;
+        const x = sp.i % N, y = Math.floor(sp.i / N);
+        if (picked.every((q) => Math.hypot(q.i % N - x, Math.floor(q.i / N) - y) >= 3)) picked.push(sp);
+      }
+      box.replaceChildren(...picked.map((sp, n) => {
         const s = el('i'), k = hash('p' + sp.i);
         s.style.cssText = `--x:${((sp.i % N + .5) / N * 100).toFixed(1)}%;--y:${((Math.floor(sp.i / N) + .5) / N * 100).toFixed(1)}%;--s:${8 + (k % 14)}px;--d:${((k >>> 8) % 40) / 10}s;--c:${sp.c};--dh:${[-150, -100, -50, 0, 50, 100, 150][(k >>> 12) % 7]};--l:0`;
         return s;

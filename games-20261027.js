@@ -64,6 +64,41 @@
     }
     return c;
   }
+  // a Fuzzboi in its layers, for the dome and the page (Astra, 2026-10-29): its base (body, outline, eyes) always there, and
+  // each accessory and rare part on its own layer, so they can flash in one after another and fade away again. Layers keep the
+  // art's own stacking order; base layers next to each other share one canvas
+  function layered(p, px) {
+    if (F.missing(p, layers).length) return { parts: [{ c: sprite(p, px), extra: false }], extras: 0 };
+    const want = new Set(['fill', 'outline', 'eyes', ...p.accs.map(F.accLayer), ...p.rares.map((r) => 'rare' + r)]), base = new Set(['fill', 'outline', 'eyes']), parts = [];
+    for (const slot of F.STACK) {
+      if (!want.has(slot)) continue;
+      const extra = !base.has(slot), last = parts[parts.length - 1];
+      let c = !extra && last && !last.extra ? last.c : null;
+      if (!c) { c = document.createElement('canvas'); c.width = c.height = px; parts.push({ c, extra }); }
+      c.getContext('2d').drawImage(layers.get(slot === 'fill' ? 'fill' + p.style + p.color : slot === 'outline' ? 'outline' + p.style : slot), 0, 0, px, px);
+    }
+    // an accessory drawn to the edge of its square (the cloud) would show the square's corner out in the open, so each one
+    // fades out softly toward the edges instead (Astra, 2026-10-29: "so it doesn't have the corner to it")
+    for (const q of parts) {
+      if (!q.extra) continue;
+      const x = q.c.getContext('2d'), g = x.createRadialGradient(px / 2, px / 2, px * .34, px / 2, px / 2, px * .5);
+      g.addColorStop(0, '#000'); g.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      x.globalCompositeOperation = 'destination-in'; x.fillStyle = g; x.fillRect(0, 0, px, px); x.globalCompositeOperation = 'source-over';
+    }
+    return { parts, extras: parts.filter((q) => q.extra).length };
+  }
+  // how strongly each extra shows at time t: in turn, a little apart, then all of them a moment, then fading together;
+  // then only the base for a while, each Fuzzboi on its own clock
+  const FLASH_STEP = 450, FLASH_HOLD = 1600, FLASH_FADE = 800;
+  function flashes(f, t) {
+    const n = f.look.extras, per = f.flashEvery, u = (((t - f.flashAt) % per) + per) % per, end = n * FLASH_STEP + FLASH_HOLD;
+    return Array.from({ length: n }, (_, i) => { const a0 = i * FLASH_STEP; return u < a0 ? 0 : u < a0 + 300 ? (u - a0) / 300 : u < end ? 1 : u < end + FLASH_FADE ? 1 - (u - end) / FLASH_FADE : 0; });
+  }
+  function drawFuzz(x, f, left, top, size, t) {
+    const a = reduced ? f.look.parts.map(() => 1) : flashes(f, t), was = x.globalAlpha; let k = 0;
+    for (const q of f.look.parts) { const al = q.extra ? a[k++] : 1; if (al > 0) { x.globalAlpha = was * al; x.drawImage(q.c, left, top, size, size); } }
+    x.globalAlpha = was;
+  }
   function make(code, moveIn = false) {
     if (!F) return;
     const d = F.decode(code);
@@ -107,16 +142,30 @@
     function spawn(code) {
       const p = F.decode(code).parts, sp = .008 + Math.random() * .005;
       let v = [rand(), rand(), rand()], n = Math.hypot(...v) || 1; v = v.map((x) => (x / n) * sp);
-      return { code, art: sprite(p, 192), x: rand() * .3, y: rand() * .3, z: .5, vx: v[0], vy: v[1], vz: v[2], squash: 0, spin: 0, born: performance.now() };
+      return { code, look: layered(p, 160), flashAt: performance.now() + Math.random() * 6000, flashEvery: 8000 + Math.random() * 6000, x: rand() * .3, y: rand() * .3, z: .5, vx: v[0], vy: v[1], vz: v[2], squash: 0, spin: 0, born: performance.now() };
     }
     function save() { store.set(HOME_KEY, folks.map((f) => f.code)); count(); }
     const inside = () => folks.filter((f) => !f.out), outside = () => folks.filter((f) => f.out);
+    // too many in the dome and they get angry (Astra, 2026-10-29): they race and spin and glow red, the dome shakes and flashes,
+    // and an alarm sounds once as it fills up to that point
+    const CROWD = 12, crowded = () => inside().length >= CROWD;
+    let audio = null;
+    function alarm() {
+      try {
+        audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+        const o = audio.createOscillator(), g = audio.createGain(), t0 = audio.currentTime;
+        o.type = 'sawtooth'; o.connect(g); g.connect(audio.destination);
+        for (let i = 0; i < 3; i++) { o.frequency.setValueAtTime(620, t0 + i * .4); o.frequency.linearRampToValueAtTime(940, t0 + i * .4 + .3); }
+        g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(.07, t0 + .03); g.gain.setValueAtTime(.07, t0 + 1.1); g.gain.linearRampToValueAtTime(0, t0 + 1.25);
+        o.start(t0); o.stop(t0 + 1.3);
+      } catch {}
+    }
     function count() {
       const n = outside().length;
       $('home-count').textContent = n ? `${inside().length} in the dome · ${n} loose on the page` : `${folks.length} of ${HOME_MAX} moved in`;
       $('home-out').disabled = !folks.length; $('home-out').textContent = n ? 'call them all home' : 'let them out';
       $('home-clear').disabled = !folks.length;
-      $('home-pick').textContent = n ? 'Catch one: grab it, drag it back over the dome and let go.' : picked ? `#${picked.code}` : folks.length ? 'Tap a Fuzzboi to see its code.' : 'Nobody lives here yet. Make a Fuzzboi above and send it in.';
+      $('home-pick').textContent = crowded() ? `Too crowded! ${inside().length} in there and they are furious. Let some out.` : n ? 'Catch one: grab it, drag it back over the dome and let go.' : picked ? `#${picked.code}` : folks.length ? 'Tap a Fuzzboi to see its code.' : 'Nobody lives here yet. Make a Fuzzboi above and send it in.';
     }
     // let them out (Astra, 2026-10-29): every Fuzzboi bursts out of the dome onto the whole page, not just the window, so
     // they bounce off up and down it and go off screen, leaving pastel sparkles behind them. Grab one, drag it back over the
@@ -128,11 +177,18 @@
     const overDome = (cx0, cy0) => { const r = cv.getBoundingClientRect(); return cx0 > r.left && cx0 < r.right && cy0 > r.top && cy0 < r.bottom; };
     function goHome(f) {
       f.out = false; f.node.remove(); f.node = null; f.born = performance.now(); f.x = rand() * .4; f.y = rand() * .4; f.z = rand() * .4;
-      if (!outside().length) { layer.remove(); cancelAnimationFrame(roaming); roaming = 0; }
+      if (!outside().length) { layer.remove(); cancelAnimationFrame(roaming); roaming = 0; const av = document.getElementById('labSvg'); if (av) av.classList.remove('happy'); }
       count();
     }
+    // dropped on the dome, it stays its size until it is over the sphere, then shrinks down into it (Astra, 2026-10-29)
+    function sinkHome(f) {
+      const r = cv.getBoundingClientRect(), tx = r.left + r.width / 2 + scrollX, ty = r.top + r.height / 2 + scrollY, s = bodySize(), node = f.node;
+      f.sinking = true;
+      node.animate([{ transform: node.style.transform }, { transform: `translate(${tx - s / 2}px, ${ty - s / 2}px) scale(.25)`, opacity: .4 }], { duration: reduced ? 1 : 520, easing: 'ease-in' })
+        .finished.then(() => { f.sinking = false; goHome(f); });
+    }
     function free(f, x, y, vx, vy) {
-      const c2 = document.createElement('canvas'); c2.width = c2.height = 192; c2.getContext('2d').drawImage(f.art, 0, 0, 192, 192); c2.className = 'fuzz';
+      const c2 = document.createElement('canvas'); c2.width = c2.height = 160; c2.className = 'fuzz';
       Object.assign(f, { out: true, node: c2, px: x, py: y, pvx: vx, pvy: vy, psq: 0, pspin: 0 });
       c2.addEventListener('pointerdown', (e) => { held = f; lastPt = { x: e.clientX, y: e.clientY, t: performance.now(), vx: 0, vy: 0 }; c2.setPointerCapture(e.pointerId); c2.classList.add('held'); e.preventDefault(); });
       c2.addEventListener('pointermove', (e) => {
@@ -144,7 +200,7 @@
       const drop = (e) => {
         if (held !== f) return;
         held = null; c2.classList.remove('held');
-        if (overDome(e.clientX, e.clientY)) goHome(f);
+        if (overDome(e.clientX, e.clientY)) sinkHome(f);
         else { f.pvx = Math.max(-14, Math.min(14, lastPt.vx || (Math.random() - .5) * 6)); f.pvy = Math.max(-14, Math.min(14, lastPt.vy || (Math.random() - .5) * 6)); }
       };
       c2.addEventListener('pointerup', drop); c2.addEventListener('pointercancel', drop);
@@ -177,8 +233,18 @@
       if (t - solidsAt > 300) { solidsAt = t; readSolids(); }
       if (layer.style.height !== h + 'px') layer.style.height = h + 'px';
       const trail = !reduced && t - trailT > 110; if (trail) trailT = t;
+      // a quirk (Astra, 2026-10-29): out of the dome, they like to hang out by the Avatar Lab's girl, either side of her, and
+      // she hops and blinks while they are near, happy they came
+      const av = document.getElementById('labSvg'), ar = av && av.getBoundingClientRect(), near = [];
+      const spots = ar && ar.width ? [{ x: ar.left + scrollX - s * .7, y: ar.top + scrollY + ar.height * .5 }, { x: ar.right + scrollX + s * .7, y: ar.top + scrollY + ar.height * .5 }] : [];
       for (const f of outside()) {
+        if (f.sinking) continue;
         if (f !== held && !reduced) {
+          if (spots.length) {
+            const g = spots[f.code.charCodeAt(0) % 2], dx = g.x - f.px, dy = g.y - f.py, d = Math.hypot(dx, dy) || 1;
+            f.pvx += (dx / d) * .045; f.pvy += (dy / d) * .045;
+            if (d < s * 2.2) near.push(f);
+          }
           f.px += f.pvx; f.py += f.pvy;
           // a thrown or burst one eases back to a steady bounce, no wandering
           const v = Math.hypot(f.pvx, f.pvy); if (v > 4) { f.pvx *= .99; f.pvy *= .99; } else if (v < 3) { f.pvx *= 1.02; f.pvy *= 1.02; }
@@ -191,13 +257,16 @@
         const sq = Math.sin(f.psq * Math.PI) * .2;
         f.node.style.width = f.node.style.height = s + 'px';
         f.node.style.transform = `translate(${f.px - half}px, ${f.py - half}px) rotate(${f.pspin}rad) scale(${1 + sq}, ${1 - sq})`;
-        // a pastel sparkle left behind where it has just been; it twinkles and fades where it fell
+        const nx = f.node.getContext('2d'); nx.clearRect(0, 0, 160, 160); drawFuzz(nx, f, 0, 0, 160, t);
+        // a sparkle left behind where it has just been, in a pastel of its own color, from bright to soft (Astra,
+        // 2026-10-29); it twinkles and fades where it fell
         if (trail && f !== held && layer.childElementCount < 260) {
           const sp = document.createElement('i'); sp.className = 'fuzz-trail';
-          sp.style.cssText = `left:${f.px - f.pvx * 6 + (Math.random() - .5) * half}px;top:${f.py - f.pvy * 6 + (Math.random() - .5) * half}px;--s:${8 + Math.random() * 12}px;--c:hsl(${Math.floor(Math.random() * 360)} 55% 80%)`;
-          layer.prepend(sp); setTimeout(() => sp.remove(), 2600);
+          sp.style.cssText = `left:${f.px - f.pvx * 6 + (Math.random() - .5) * half}px;top:${f.py - f.pvy * 6 + (Math.random() - .5) * half}px;--s:${8 + Math.random() * 12}px;--c:color-mix(in srgb, #${f.code} ${Math.round(35 + Math.random() * 50)}%, #fff)`;
+          layer.prepend(sp); setTimeout(() => sp.remove(), 3600);
         }
       }
+      if (av) av.classList.toggle('happy', near.length > 0);
     }
     function letOut() {
       const box = cv.getBoundingClientRect(), ox = box.left + box.width / 2 + scrollX, oy = box.top + box.height / 2 + scrollY;
@@ -213,6 +282,7 @@
     function add(code) {
       if (folks.length >= HOME_MAX) return `The Cyber Dome is full (${HOME_MAX}). Let one out to make room.`;
       folks.push(spawn(code)); save();
+      if (inside().length === CROWD) alarm();
       return `#${code} moved into the Cyber Dome (${folks.length} of ${HOME_MAX}).`;
     }
     cv.addEventListener('pointerdown', (e) => {
@@ -237,7 +307,8 @@
       cx.lineWidth = 1.4; cx.shadowBlur = 6;
       for (let k = -3; k <= 3; k++) { const lat = (k / 4) * (Math.PI / 2), rx = Math.cos(lat) * r; cx.strokeStyle = cx.shadowColor = led(k + 3, .55); cx.beginPath(); cx.ellipse(ox, oy + Math.sin(lat) * r * Math.cos(tilt), rx, rx * Math.sin(tilt), 0, 0, 7); cx.stroke(); }
       for (let k = 0; k < 8; k++) { const ph = turn + (k / 8) * Math.PI, rx = Math.abs(Math.sin(ph)) * r; cx.strokeStyle = cx.shadowColor = led(k + 8, .55); cx.beginPath(); cx.ellipse(ox, oy, rx, r, 0, 0, 7); cx.stroke(); }
-      cx.lineWidth = 2.4; cx.strokeStyle = cx.shadowColor = led(0, .9); cx.shadowBlur = 12; cx.beginPath(); cx.arc(ox, oy, r, 0, 7); cx.stroke();
+      // the outer ring stays plain white (Astra, 2026-10-29)
+      cx.lineWidth = 2.4; cx.strokeStyle = 'rgba(255, 255, 255, .92)'; cx.shadowColor = 'rgba(255, 255, 255, .6)'; cx.shadowBlur = 10; cx.beginPath(); cx.arc(ox, oy, r, 0, 7); cx.stroke();
       cx.shadowBlur = 0;
       // the page's pastel sparkles, bouncing round inside the dome
       for (const s of motes) {
@@ -256,9 +327,17 @@
       globe();
       const folks = inside(); // the ones loose on the page are drawn there, not here
       const r = R(), sh = share(), rr = sh / 2; // a Fuzzboi's radius inside the unit sphere
+      const angry = crowded();
+      cv.classList.toggle('alarm', angry);
       for (const f of folks) {
         if (!reduced) {
-          f.x += f.vx; f.y += f.vy; f.z += f.vz;
+          // crowded: twice as fast, shoving about every which way, spinning
+          const k = angry ? 2 : 1;
+          if (angry) {
+            f.vx += (Math.random() - .5) * .004; f.vy += (Math.random() - .5) * .004; f.vz += (Math.random() - .5) * .004; f.spin += (Math.random() - .5) * .25;
+            const v = Math.hypot(f.vx, f.vy, f.vz); if (v > .016) { f.vx *= .016 / v; f.vy *= .016 / v; f.vz *= .016 / v; }
+          }
+          f.x += f.vx * k; f.y += f.vy * k; f.z += f.vz * k;
           // off the inside of the sphere like a ball: reflect along the wall's normal
           const d = Math.hypot(f.x, f.y, f.z), lim = 1 - rr;
           if (d > lim) {
@@ -291,7 +370,8 @@
         if (f === picked) { cx.strokeStyle = '#' + f.code; cx.lineWidth = 3; cx.beginPath(); cx.arc(v.sx, v.sy, size * .5, 0, 7); cx.stroke(); }
         const sq = Math.sin(f.squash * Math.PI) * .22;
         cx.save(); cx.translate(v.sx, v.sy); cx.rotate(f.spin); cx.scale(1 + sq, 1 - sq);
-        cx.drawImage(f.art, -size / 2, -size / 2, size, size); cx.restore();
+        if (angry) { cx.shadowColor = 'rgba(255, 40, 60, .95)'; cx.shadowBlur = 16; }
+        drawFuzz(cx, f, -size / 2, -size / 2, size, t); cx.restore();
       }
       cx.globalAlpha = 1;
       cx.font = '700 13px JetBrains Mono, monospace'; cx.textAlign = 'center';

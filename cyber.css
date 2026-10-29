@@ -39,10 +39,10 @@ main { padding-left: var(--rail); }
    section you are in; drag it to scroll. The browser's own scroll bar is hidden */
 /* the page's own pastel sparkle (Astra, 2026-10-29: "the exact same pastel sparkle"): the same four points, a pastel of the
    section you are in, drifting round the hues like the rest */
-.rail-spark { --pale: color-mix(in srgb, var(--now) 45%, #fff); position: absolute; left: 50%; width: 30px; height: 30px; translate: -50% 0;
-  filter: drop-shadow(0 0 1px #000) drop-shadow(0 0 6px var(--pale)) drop-shadow(0 0 14px var(--pale)); transition: filter .4s; animation: rainbow-drift 14s linear infinite; }
+.rail-spark { --pale: color-mix(in srgb, var(--now) 65%, #fff); position: absolute; left: 50%; width: 30px; height: 30px; translate: -50% 0;
+  filter: drop-shadow(0 0 1px #000) drop-shadow(0 0 6px var(--pale)) drop-shadow(0 0 14px var(--pale)); transition: filter .4s; animation: rainbow-drift 28s linear infinite; }
 .rail-spark::before { content: ""; position: absolute; inset: 0; background: var(--pale); transition: background .4s;
-  clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%); animation: twinkle 2.6s ease-in-out infinite; }
+  clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%); animation: twinkle 4.8s ease-in-out infinite; }
 .rail-spark::after { content: none; }
 @keyframes sb-spin { from { rotate: 0deg; } to { rotate: 720deg; } }
 @media (prefers-reduced-motion: reduce) { .rail-spark, .rail-spark::before { animation: none; } }
@@ -69,7 +69,7 @@ html::-webkit-scrollbar { display: none; }
    neon with a black edge so it reads over the pole; the one you are on is white-hot in its color */
 /* then (Astra, 2026-10-29): all white, thick like the section titles, each glowing in a pastel of its section's color; the
    one you are on glows brighter */
-.floors a { --soft: color-mix(in srgb, var(--c) 50%, #fff); font-family: Inter, sans-serif; font-weight: 900; letter-spacing: .04em; color: #fff;
+.floors a { --soft: color-mix(in srgb, var(--c) 72%, #fff); font-family: Inter, sans-serif; font-weight: 900; letter-spacing: .04em; color: #fff;
   text-shadow: -1px 0 #000, 1px 0 #000, 0 -1px #000, 0 1px #000, 0 0 6px var(--soft), 0 0 12px color-mix(in srgb, var(--soft) 60%, transparent); }
 .floors a:hover, .floors a:focus-visible { background: none; color: #fff; text-shadow: -1px 0 #000, 1px 0 #000, 0 -1px #000, 0 1px #000, 0 0 8px var(--soft), 0 0 16px var(--soft); }
 .floors a.on { color: #fff; text-shadow: -1px 0 #000, 1px 0 #000, 0 -1px #000, 0 1px #000, 0 0 6px var(--soft), 0 0 14px var(--soft), 0 0 26px var(--soft); }
@@ -228,7 +228,7 @@ main { position: relative; z-index: 1; }
 .portrait img { width: 100%; height: 100%; object-fit: cover; border: 3px solid var(--ink); opacity: .6; }
 /* the portrait's own colors twinkle on it (cyber.js samples them), rainbow: each one a little off its color, and all of
    them drifting round the hues (Astra, 2026-10-27); much more saturated and further round the rainbow (Astra, 2026-10-29) */
-.portrait .glitter { inset: 3px; z-index: 1; animation: rainbow-drift 14s linear infinite; }
+.portrait .glitter { inset: 3px; z-index: 1; animation: rainbow-drift 28s linear infinite; }
 @keyframes rainbow-drift { 0%, 100% { filter: hue-rotate(-70deg); } 50% { filter: hue-rotate(70deg); } }
 /* one more veil over the picture (Astra, 2026-10-29): fine diagonal lines the other way from the stripes behind, and a
    halftone of dots, so she keeps her shape but hides a little more */
@@ -302,11 +302,11 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 2px #f2f2f2; text
 
 /* sparkles: one kind on the whole page, the portrait's (Astra, 2026-10-29): four-point twinkles in soft pastels, each a
    little round the wheel from the next, all drifting through the hues, in front of what they ring */
-.sparkles { position: absolute; inset: 0; pointer-events: none; z-index: 6; animation: rainbow-drift 14s linear infinite; }
+.sparkles { position: absolute; inset: 0; pointer-events: none; z-index: 6; animation: rainbow-drift 28s linear infinite; }
 .sparkles.field { inset: 0; z-index: 3; }
 .sparkles i { position: absolute; left: var(--x); top: var(--y); width: var(--s); aspect-ratio: 1; translate: -50% -50%; background: var(--c);
   clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%);
-  animation: twinkle 2.6s ease-in-out var(--d) infinite; }
+  animation: twinkle 4.8s ease-in-out var(--d) infinite; }
 @supports (color: hsl(from red h s l)) {
   .sparkles i { background: hsl(from var(--c) calc(h + var(--dh)) s min(calc(l + var(--l)), 92)); }
 }
@@ -339,10 +339,13 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 2px #f2f2f2; text
 .card .back-links a:hover, .card .turn-btn:hover, .card .back-links a:focus-visible, .card .turn-btn:focus-visible { background: #fff; color: #000; outline: none; }
 .card .body .turn-btn { margin-top: auto; background: #000; color: #fff; box-shadow: none; border-color: #000; }
 .card .shape { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
-.card .s-shadow { fill: #000; stroke: #000; stroke-width: 30; transform: translate(7px, 7px); transition: transform .3s; }
+/* thin strokes now, so the outline stays the Photostar's own rounded star, not puffed out by the stroke (Astra, 2026-10-29) */
+.card .s-shadow { fill: #000; stroke: #000; stroke-width: 12; transform: translate(7px, 7px); transition: transform .3s; }
 .card:hover .s-shadow { transform: translate(12px, 12px); }
-.card .s-line { fill: #000; stroke: #000; stroke-width: 30; }
-.card .s-fill { fill: var(--c); stroke: var(--c); stroke-width: 24; }
+/* a pale glowing edge in the star's own pastel, the same as the little stars in the jar, so one turns into the other
+   smoothly (Astra, 2026-10-29) */
+.card .s-line { fill: color-mix(in srgb, var(--c) 22%, #fff); stroke: color-mix(in srgb, var(--c) 22%, #fff); stroke-width: 12; }
+.card .s-fill { fill: var(--c); stroke: var(--c); stroke-width: 4; }
 .card .s-shine { fill: none; stroke: rgba(255, 255, 255, .45); stroke-width: 3; transform: scale(.86); }
 .card .sparkles { inset: 2% 0 0; }
 /* a small star in the top point */
@@ -459,6 +462,8 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 2px #f2f2f2; text
   padding: 4px 8px; rotate: -5deg; pointer-events: none; box-shadow: 2px 2px 0 rgba(0, 0, 0, .35); max-width: 70%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .polaroid .badge[hidden] { display: none; }
 .polaroid .photo:hover img { transform: scale(1.06); }
+/* the galaxies only grow with the Polaroid, not a second time under the pointer (Astra, 2026-10-29) */
+.polaroid .photo:hover img[src$="galaxy.png"] { transform: none; }
 .polaroid div.photo { cursor: default; }
 /* Moodglass's picture: a staggered collage, columns split at different heights, edge to edge with soft seams */
 .mg-shot { position: absolute; inset: 0; display: flex; overflow: hidden; background: #111; }
@@ -523,7 +528,8 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 2px #f2f2f2; text
 .mini { position: absolute; width: var(--s); height: var(--s); transform: translate(-50%, -50%) rotate(var(--r)); }
 .mini svg, .flyer svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 /* white edges, so the stars in the jar look brighter (Astra, 2026-10-29) */
-.mini use, .flyer use { fill: var(--c); stroke: #fff; stroke-width: 9; }
+.mini use, .flyer use { fill: var(--c); stroke: color-mix(in srgb, var(--c) 22%, #fff); stroke-width: 7; }
+.mini svg, .flyer svg { filter: drop-shadow(0 0 3px color-mix(in srgb, var(--c) 60%, #fff)) drop-shadow(0 0 7px var(--c)); }
 /* sparkles round the outside of the jar too */
 .jar .sparkles.ring { inset: -6% -10% -2%; }
 .mini img, .flyer img { position: absolute; left: 50%; top: 53%; width: 58%; height: 58%; translate: -50% -50%; object-fit: contain; }
@@ -552,7 +558,6 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 2px #f2f2f2; text
 @keyframes land { from { transform: scale(.9); } }
 /* the stars, more neon: each glows in its own color (Astra, 2026-10-29) */
 .card .shape { filter: drop-shadow(0 0 6px var(--c)) drop-shadow(0 0 16px color-mix(in srgb, var(--c) 60%, transparent)); }
-.mini svg { filter: drop-shadow(0 0 3px var(--c)); }
 
 /* everything else: the README's groups, each a wall of Polaroids */
 .ticker[hidden] { display: none; }
@@ -625,6 +630,12 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 2px #f2f2f2; text
 .fz-traits dd { margin: 0; color: #f2f2f2; display: flex; align-items: center; gap: 6px; }
 .fz-traits dd i { width: 14px; height: 14px; border: 2px solid #f2f2f2; }
 #fz-note, #home-pick, #home-count { min-height: 1.4em; font-size: 12px; }
+/* the traits sit as wide as the picture, lined up with it, a little apart from it and smaller; the long rarity note under
+   them is gone (Astra, 2026-10-29: "that big bulky paragraph ... just get rid of that") */
+.fz-out { gap: 20px; }
+.fz-traits { width: min(100%, 300px); font-size: 11.5px; gap: 3px 12px; }
+.fz-traits dt { font-size: 10px; }
+#fz-note { display: none; }
 .home { display: block; width: 100%; aspect-ratio: 1; cursor: pointer; touch-action: manipulation; }
 /* the Fuzzbois let out of the dome, loose over the whole screen; clicks go through to the page */
 .fuzz-loose { position: absolute; left: 0; top: 0; width: 100%; z-index: 55; pointer-events: none; overflow: hidden; }
@@ -632,8 +643,19 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 2px #f2f2f2; text
 .fuzz-loose .fuzz.held { cursor: grabbing; filter: drop-shadow(0 0 10px hsl(320 55% 80%)); }
 /* the pastel sparkles a loose Fuzzboi leaves behind: they twinkle once where they fell and fade */
 .fuzz-trail { position: absolute; width: var(--s); aspect-ratio: 1; translate: -50% -50%; background: var(--c); pointer-events: none;
-  clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%); animation: trail-fade 2.6s ease-out forwards; }
+  clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%); animation: trail-fade 3.6s ease-out forwards; }
 @keyframes trail-fade { 0% { transform: scale(.3) rotate(0); opacity: 0; } 15% { transform: scale(1.1) rotate(30deg); opacity: 1; } 100% { transform: scale(.4) rotate(120deg); opacity: 0; } }
+/* the Avatar Lab's girl, happy the loose Fuzzbois came to hang out with her: she hops and blinks (Astra, 2026-10-29) */
+#labSvg.happy { animation: lab-hop .8s ease-in-out infinite; }
+@keyframes lab-hop { 0%, 100% { translate: 0 0; } 35% { translate: 0 -14px; } 55% { translate: 0 0; } 72% { translate: 0 -5px; } }
+#labSvg.happy g[fill="#2a1330"], #labSvg.happy g[fill="#fff"] { transform-box: fill-box; transform-origin: center; animation: lab-blink 1.9s infinite; }
+@keyframes lab-blink { 0%, 84%, 100% { transform: scaleY(1); } 90% { transform: scaleY(.08); } }
+@media (prefers-reduced-motion: reduce) { #labSvg.happy, #labSvg.happy g { animation: none; } }
+/* too many in the dome: it shakes and flashes red (Astra, 2026-10-29) */
+.home.alarm { animation: dome-shake .35s linear infinite, dome-flash 1s ease-in-out infinite; }
+@keyframes dome-shake { 0%, 100% { translate: 0 0; } 25% { translate: -3px 1px; } 50% { translate: 2px -2px; } 75% { translate: -1px 2px; } }
+@keyframes dome-flash { 0%, 100% { filter: drop-shadow(0 0 0 transparent); } 50% { filter: drop-shadow(0 0 18px rgba(255, 40, 60, .85)); } }
+@media (prefers-reduced-motion: reduce) { .home.alarm { animation: dome-flash 1.6s ease-in-out infinite; } }
 /* the dome's count sits right under its name */
 .cab-head { display: grid; gap: 6px; }
 .cab-head h3 { margin: 0; justify-self: start; }
