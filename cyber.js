@@ -52,7 +52,11 @@
         list.push({ src: 'art/projects/' + pg.file, cap: repo + ' · ' + cap });
       }
     }
-    return list;
+    // one galaxy per deck (Astra, 2026-10-29: "check for extra photos"): a presence repo commits the same galaxy as a still,
+    // a GIF and a card GIF, in docs/ and public/; keep the public still (shown as the turning galaxy), else the first
+    const isGalaxy = (p) => /galaxy(-card)?\.(png|gif)$/i.test(p.src);
+    const keep = list.find((p) => /\/public\/galaxy\.png$/.test(p.src)) || list.find(isGalaxy);
+    return list.filter((p) => !isGalaxy(p) || p === keep);
   };
 
   // ---------- lightbox (pictures keep their color) ----------
@@ -169,8 +173,12 @@
     }
     const repoLink = (name, text, hidden) => { const a = link('https://github.com/findastra/' + name, 'repo', text); if (hidden) a.tabIndex = -1; return a; };
     // each item in its own color on the black and gray bars (Astra, 2026-10-27: "different colors for each item"), the same
-    // color every time for the same project
-    const tint = (s, name) => { let h = 7; for (const ch of String(name)) h = (h * 31 + ch.codePointAt(0)) % 360; s.style.setProperty('--c', `hsl(${h} 100% 66%)`); return s; };
+    // color every time for the same project, but calmer (Astra, 2026-10-29: "less colorful"): white most of all, then gray,
+    // then a pastel of the project's own color, and least often its neon
+    const tint = (s, name) => {
+      let h = 7, k = 3; for (const ch of String(name)) { h = (h * 31 + ch.codePointAt(0)) % 360; k = (k * 17 + ch.codePointAt(0)) % 20; }
+      s.style.setProperty('--c', k < 9 ? '#f2f2f2' : k < 15 ? '#9a9a9a' : k < 18 ? `hsl(${h} 70% 82%)` : `hsl(${h} 100% 62%)`); return s;
+    };
     function fill(id, makers) {
       const box = $(id), track = box.querySelector('.track');
       box.hidden = !makers.length;
@@ -1266,8 +1274,8 @@
       // spots, with a little chance so they spread over the whole picture
       const first = [...spots].sort((a, b) => (b.sat * .7 + b.light * .3 + b.w * .5) - (a.sat * .7 + a.light * .3 + a.w * .5)).slice(0, 70);
       for (const sp of first) if (!picked.includes(sp)) picked.push(sp);
-      // sizes vary, now and then a big one (Astra, 2026-10-29)
-      const size = (k) => (k % 9 === 0 ? 22 + ((k >>> 4) % 14) : 6 + (k % 13));
+      // sizes vary; the ones that were big are now really tiny (Astra, 2026-10-29: "too big of sparkles on my face")
+      const size = (k) => (k % 9 === 0 ? 3 + ((k >>> 4) % 3) : 6 + (k % 13));
       const one = (x, y, c, k) => {
         const s = el('i');
         s.style.cssText = `--x:${x.toFixed(1)}%;--y:${y.toFixed(1)}%;--s:${size(k)}px;--d:${((k >>> 8) % 40) / 10}s;--c:${c};--dh:${[-150, -100, -50, 0, 50, 100, 150][(k >>> 12) % 7]};--l:0`;
@@ -1423,23 +1431,23 @@
   // ---------- the terminal's paired lights, as on the pet program pages (astras-pet-os pet-program-page-20261018.js): left
   // ON/OFF, right checked and works or report issues. Each click moves a light to its next state and a bubble under it says
   // what that state means, for four seconds; saved in this browser only (Astra, 2026-10-29) ----------
-  (() => {
-    const term = document.querySelector('.term'), on = term.querySelector('.light.onoff'), care = term.querySelector('.light.care');
-    const KEY = 'findastra-terminal-lights';
+  // the arcade's Hack the terminal tool panel has the same pair on its bar (Astra, 2026-10-29), its own state, its own name
+  const lights = (term, KEY, name) => {
+    const on = term.querySelector('.light.onoff'), care = term.querySelector('.light.care');
     let s; try { s = JSON.parse(localStorage.getItem(KEY)) || {}; } catch { s = {}; }
     const save = () => { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch {} };
     const tip = el('div', 'light-bubble'); tip.setAttribute('role', 'status'); tip.hidden = true; document.body.append(tip);
     let tipTimer = 0;
     const say = (b, text) => {
-      tip.textContent = 'terminal: ' + text; tip.hidden = false;
+      tip.textContent = name + ': ' + text; tip.hidden = false;
       const r = b.getBoundingClientRect(), w = document.documentElement.clientWidth;
       tip.style.left = scrollX + Math.max(8, Math.min(r.left - 8, w - tip.offsetWidth - 8)) + 'px'; tip.style.top = scrollY + r.bottom + 8 + 'px';
       clearTimeout(tipTimer); tipTimer = setTimeout(() => (tip.hidden = true), 4000);
     };
     const paint = () => {
       const off = s.power === 'off', fix = s.health === 'fix';
-      on.classList.toggle('is-off', off); on.setAttribute('aria-pressed', String(!off)); on.setAttribute('aria-label', 'terminal: ' + (off ? 'off' : 'on'));
-      care.classList.toggle('is-fix', fix); care.setAttribute('aria-label', 'terminal: ' + (fix ? 'report issues' : 'checked, works'));
+      on.classList.toggle('is-off', off); on.setAttribute('aria-pressed', String(!off)); on.setAttribute('aria-label', name + ': ' + (off ? 'off' : 'on'));
+      care.classList.toggle('is-fix', fix); care.setAttribute('aria-label', name + ': ' + (fix ? 'report issues' : 'checked, works'));
       term.classList.toggle('is-off', off);
     };
     on.addEventListener('click', () => {
@@ -1452,7 +1460,9 @@
       say(care, s.health === 'fix' ? 'report issues: you reported one. Click again to take it back.' : 'checked, works.');
     });
     paint();
-  })();
+  };
+  lights(document.querySelector('.term'), 'findastra-terminal-lights', 'terminal');
+  lights(document.querySelector('.hack-term'), 'findastra-hack-lights', 'hack the terminal');
 
   // ---------- the scroll bar: the pole's sparkle rides it with the page; drag it to scroll (Astra, 2026-10-29) ----------
   (() => {

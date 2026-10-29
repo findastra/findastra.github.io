@@ -29,6 +29,9 @@ main { padding-left: var(--rail); }
    along its bottom, where the pole ends */
 /* (Astra, 2026-10-29) one square all the way round the window, the same light gray line on all four sides */
 .bezel { position: fixed; inset: 0; z-index: 41; pointer-events: none; border: 2px solid var(--edge); }
+/* but not along the very top and bottom (Astra, 2026-10-29): on a phone the browser bar slides in and out as you scroll and
+   the fixed line dragged behind it, like a box stuck on the page; off on the computer too, the same everywhere */
+.bezel { border-top: 0; border-bottom: 0; }
 /* the matte chrome pole back as it was on 2026-10-28 (Astra, 2026-10-29: "put this back on instead of the other one"):
    white and gray, rounded at its ends */
 #pole::before { content: ""; position: absolute; top: 0; bottom: 0; left: calc(50% - 4px); width: 8px; border-radius: 8px;
@@ -179,7 +182,7 @@ h3 { display: inline-block; font: 700 12px var(--mono); text-transform: uppercas
    much room above them as below, one dot row less (Astra, 2026-10-29) */
 /* on a narrow window the squares stay well inside it, with the code rain showing all round them (Astra, 2026-10-29) */
 .hero { --sq: min(340px, 100% - 88px); position: relative; isolation: isolate; display: grid; grid-template-columns: repeat(2, var(--sq)); justify-content: center; gap: 48px;
-  align-items: center; padding: 66px var(--wrap) 84px;
+  align-items: center; padding: 48px var(--wrap) 84px; /* one dot row less on top again (Astra, 2026-10-29) */
   /* no glow behind the portrait: only its own square, the code rain clear around it (Astra, 2026-10-29) */
   background: none; color: var(--ink); }
 /* the rain and the dot grid sit behind the whole page; the hero is see-through, and the gaps between sections show it too */
@@ -193,12 +196,12 @@ main { position: relative; z-index: 1; }
    left ON/OFF (green, red), right checked and works or report issues (blue, yellow). A click moves a light to its next state
    and a bubble says what it means; nothing on hover (Astra, 2026-10-29) */
 .term-bar .lights { display: inline-flex; gap: 7px; }
-.term .light { width: 11px; height: 11px; padding: 0; border-radius: 50%; border: 1px solid #111; cursor: pointer; flex: none;
+.term .light, .hack-term .light { width: 11px; height: 11px; padding: 0; border-radius: 50%; border: 1px solid #111; cursor: pointer; flex: none;
   box-shadow: inset 0 -2px 0 rgba(0, 0, 0, .3), inset 0 1px 0 rgba(255, 255, 255, .35); transition: transform .08s ease-out; }
-.term .light:hover { transform: scale(1.18); }
-.term .light:active { transform: scale(.9); box-shadow: inset 0 2px 2px rgba(0, 0, 0, .4); }
-.term .light.onoff { background: #4fb35a; } .term .light.onoff.is-off { background: #d9534f; }
-.term .light.care { background: #6cc7e8; } .term .light.care.is-fix { background: #e8c547; }
+.term .light:hover, .hack-term .light:hover { transform: scale(1.18); }
+.term .light:active, .hack-term .light:active { transform: scale(.9); box-shadow: inset 0 2px 2px rgba(0, 0, 0, .4); }
+.term .light.onoff, .hack-term .light.onoff { background: #4fb35a; } .term .light.onoff.is-off, .hack-term .light.onoff.is-off { background: #d9534f; }
+.term .light.care, .hack-term .light.care { background: #6cc7e8; } .term .light.care.is-fix, .hack-term .light.care.is-fix { background: #e8c547; }
 .light-bubble { position: absolute; z-index: 50; max-width: 280px; padding: 6px 12px; border: 1px solid #e3e9f3; border-radius: 14px;
   background: #0a0d13; color: #e3e9f3; font: 13px/1.4 var(--mono); box-shadow: 0 6px 18px rgba(0, 0, 0, .45); pointer-events: none; }
 .light-bubble[hidden] { display: none; }
@@ -624,10 +627,11 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 /* drawn like the tool panels on the pet program pages: a thin square border with the panel's name set into its top edge,
    three lights to the left of the name (Astra, 2026-10-27) */
 .hack-term { position: relative; flex: 1; display: flex; flex-direction: column; margin-top: 10px; border: 1px solid #5a5a5a; background: #050505; }
-.hack-term .panel-label { position: absolute; left: 12px; top: 0; translate: 0 -50%; display: inline-flex; align-items: center; gap: 5px; padding: 0 8px;
-  background: var(--bg); font: 12px var(--mono); color: #cfcfcf; }
-.hack-term .panel-label i { width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid #f2f2f2; }
-.hack-term .panel-label i:first-child { background: #f2f2f2; }
+/* its bar is the terminal's own (Astra, 2026-10-29: "if it's going to be a tool panel ... it needs to have the buttons"): the
+   striped bar with the paired lights left of its name, which stays on one line */
+.hack-term .term-bar { white-space: nowrap; overflow: hidden; }
+.hack-term .term-bar > span:not(.lights) { overflow: hidden; text-overflow: ellipsis; }
+.hack-term.is-off #hack { opacity: .08; pointer-events: none; transition: opacity .3s; }
 #hack { flex: 1; display: flex; flex-direction: column; justify-content: space-evenly; padding: 12px 16px; background: repeating-linear-gradient(transparent 0 2px, rgba(255, 255, 255, .035) 2px 3px); }
 #hack > p { margin: 4px 0; font: 13px var(--mono); }
 .words { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px 12px; margin: 14px 0; font: 15px var(--mono); }
@@ -801,7 +805,10 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
   .arcade, .contacts { grid-template-columns: 1fr; }
   .jar-stage { grid-template-columns: minmax(0, 1fr); min-height: 0; }
   .jar-out { display: none; }
-  .jar { width: min(340px, 100%); }
+  /* the holder takes the width and the jar fills it: a jar 100% of a holder that shrinks to the jar came out 0 wide, so the
+     jar was gone on phones (Astra, 2026-10-29) */
+  .jar-wrap { width: min(340px, 100%); }
+  .jar { width: 100%; }
   .jar-out { min-height: 380px; }
 }
 @media (max-width: 520px) {
@@ -816,6 +823,9 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
   .term-input { padding: 2px 10px 6px; font-size: 10.5px; }
   .term-actions { gap: 6px; padding: 6px 10px 10px; }
   .term-actions .btn { font-size: 10.5px; padding: 4px 8px; box-shadow: 3px 3px 0 var(--muted); }
+  /* the three buttons on one row, so more of the words above show (Astra, 2026-10-29) */
+  .term-actions { flex-wrap: nowrap; gap: 5px; padding: 6px 8px 10px; }
+  .term-actions .btn { flex: 0 1 auto; min-width: 0; white-space: nowrap; padding: 4px 5px; font-size: 9.5px; }
   .board { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .fz-digit input { font-size: 22px; }
   .lightbox figure { padding: 44px 12px 12px; }
