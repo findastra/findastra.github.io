@@ -69,9 +69,11 @@ html::-webkit-scrollbar { display: none; }
    block across the pole, dimmed; the one you are on lit up and glowing */
 .floors a:nth-child(1) { --c: #ff2bd6; } .floors a:nth-child(2) { --c: #ff2e4d; } .floors a:nth-child(3) { --c: #ff7a1a; } .floors a:nth-child(4) { --c: #fff01f; }
 .floors a:nth-child(5) { --c: #39ff14; } .floors a:nth-child(6) { --c: #1f8fff; } .floors a:nth-child(7) { --c: #b14bff; }
-.floors a { font-family: var(--mono); font-weight: 700; letter-spacing: .1em; color: var(--c); background: #0b0b0b; opacity: .55; min-width: 28px; }
-.floors a:hover, .floors a:focus-visible { opacity: 1; background: #0b0b0b; color: var(--c); }
-.floors a.on { opacity: 1; color: var(--c); text-shadow: 0 0 8px var(--c), 0 0 16px var(--c); }
+/* the pole's words, the tape and the title tags a fifth softer, pastel rather than neon (Astra, 2026-10-29) */
+.floors a { --c-soft: color-mix(in oklab, var(--c) 78%, #e2e2e2); }
+.floors a { font-family: var(--mono); font-weight: 700; letter-spacing: .1em; color: var(--c-soft); background: #0b0b0b; opacity: .55; min-width: 28px; }
+.floors a:hover, .floors a:focus-visible { opacity: 1; background: #0b0b0b; color: var(--c-soft); }
+.floors a.on { opacity: 1; color: var(--c-soft); text-shadow: 0 0 8px var(--c-soft), 0 0 14px color-mix(in srgb, var(--c-soft) 70%, transparent); }
 /* film grain over everything */
 body::after { content: ""; position: fixed; inset: 0; z-index: 60; pointer-events: none; opacity: .09;
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
@@ -138,7 +140,7 @@ h3 { display: inline-block; font: 700 12px var(--mono); text-transform: uppercas
 #vr { --tag: var(--c-vr); } #discord { --tag: var(--c-discord); } #web { --tag: var(--c-web); } #pets { --tag: var(--c-pets); }
 #arcade { --tag: var(--c-arcade); } #contact { --tag: var(--c-contact); }
 /* a little less saturated than the neon (Astra, 2026-10-29) */
-.block .kicker { background: color-mix(in oklab, var(--tag, var(--ink)) 68%, #8a8a8a); color: #000; font-weight: 700; box-shadow: 3px 3px 0 #000, 0 0 12px color-mix(in srgb, var(--tag, transparent) 45%, transparent); }
+.block .kicker { background: color-mix(in oklab, var(--tag, var(--ink)) 54%, #c4c4c4); color: #000; font-weight: 700; box-shadow: 3px 3px 0 #000, 0 0 10px color-mix(in srgb, var(--tag, transparent) 30%, transparent); }
 /* "Astra's PetOS" as written, so the capitals do not run together (Astra, 2026-10-29: in all capitals it read wrong) */
 
 /* tickers: what changed lately, right under the header, and what is being worked on now, under the hero. Both are the same
@@ -392,6 +394,9 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 .card .win { position: absolute; left: 20.96%; width: 55.02%; top: 24%; height: 64%; display: grid; grid-template-rows: 68fr 32fr; row-gap: .6cqw; }
 .card .pet-big { position: relative; display: grid; place-items: center; min-height: 0; font: 400 11cqw/1 VT323, var(--mono); }
 .card .pet-big img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; filter: drop-shadow(0 3px 0 rgba(0, 0, 0, .35)); }
+/* a drawing cut to its paint: whole, a little in from the window's sides and top, standing on the window's bottom, so every
+   pet sits the same way above its name */
+.card .pet-big img.inked { inset: 8% 8% 0; width: 84%; height: 92%; object-position: 50% 100%; }
 .card .body { display: flex; flex-direction: column; align-items: center; text-align: center; gap: .4cqw; min-height: 0; overflow: hidden; }
 /* big enough to read (Astra, 2026-10-29) */
 .card .name { font: 900 5.2cqw/1.1 Inter, sans-serif; letter-spacing: -.01em; color: #000; max-width: 100%;
@@ -473,7 +478,7 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 #pets .polaroid { --c: var(--c-pets) !important; }
 .polaroid .tape { position: absolute; z-index: 1; left: 50%; top: -13px; width: 90px; height: 26px; translate: -50% 0; rotate: calc(var(--tilt) * -2.5);
   /* a touch less saturated (Astra, 2026-10-29) */
-  background: color-mix(in srgb, color-mix(in oklab, var(--c) 80%, #9a9a9a) 72%, transparent); box-shadow: 0 0 12px color-mix(in oklab, var(--c) 80%, #9a9a9a); }
+  background: color-mix(in srgb, color-mix(in oklab, var(--c) 64%, #c8c8c8) 72%, transparent); box-shadow: 0 0 10px color-mix(in oklab, var(--c) 64%, #c8c8c8); }
 .polaroid .photo { position: relative; display: grid; place-items: center; width: 100%; aspect-ratio: 1; padding: 0; border: 0; overflow: hidden; cursor: zoom-in;
   background: radial-gradient(circle at 30% 25%, color-mix(in srgb, var(--c) 55%, #000), #0b0b0b 72%); }
 /* every picture fills the square exactly, so a tall or wide one never spills out and gets cut (Astra, 2026-10-27) */
@@ -867,6 +872,8 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
   /* the Avatar lab too: the hairstyle collection across the whole row so its choice isn't cut off, and randomize, save and
      library side by side */
   .lab-group { grid-column: 1 / -1; }
+  /* the jar's two lines stay two lines on a phone (Astra, 2026-10-29) */
+  .jar-hint { font-size: 12.5px; }
   /* the footer on a phone, never more than two rows (Astra, 2026-10-29): By Astra ✦ star ✦ Find Out More on the first, all
      the links on the second, and less room above the star */
   .foot { padding-top: 16px; }

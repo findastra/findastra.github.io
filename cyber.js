@@ -309,6 +309,9 @@
   // the date a Polaroid shows, and the order within a section: the day the repo was made (Astra, 2026-10-29: "go back to
   // like the date it was created and then organize them in that order"), from GitHub's list or repo-dates-data-20261029.js
   const REPO_CREATED = window.REPO_CREATED || {};
+  // the System Map in the PetOS Polaroid is named Astra's PetOS (Astra, 2026-10-29: "not AJ's PetOS"). The map keeps the
+  // name a visitor gave it in this browser, under the same address as this site, so a name saved here once comes back
+  try { if (localStorage.getItem('petos-system-name') !== "Astra's PetOS") localStorage.setItem('petos-system-name', "Astra's PetOS"); } catch {}
   const made = (r) => (r && (r.created_at || REPO_CREATED[r.name] || r.pushed_at)) || '';
   // The Polaroids' tape, the stars and their sparkles are the only color on the page. Each keeps its color and tilt (hashed from its name).
   const COLORS = ['#ff3ea5', '#00e1ff', '#c6ff00', '#ff9500', '#c7a6ff', '#ffe500', '#ff5c5c', '#00f5a0', '#5ab0ff', '#ff8ef0'];
@@ -338,6 +341,22 @@
   // moves a picture shown with object-fit: contain so its drawing, where its painted pixels are, sits in the middle of its box,
   // without changing its size (Astra, 2026-10-29: the pets centered in their stars and frames, "just moving them around").
   // scale: how much it is shrunk, so its offset shrinks with it
+  // a pet's drawing cut down to where it is painted (Astra, 2026-10-29: "none of it's getting cut off in the stars", the same
+  // room between every pet and its name): the cropped drawing is then fitted whole and set on the bottom of its window
+  const cropToInk = (im) => {
+    const probe = new Image(); probe.crossOrigin = 'anonymous';
+    probe.onload = () => { try {
+      const W = probe.naturalWidth, H = probe.naturalHeight, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+      const x = cv.getContext('2d', { willReadFrequently: true }); x.drawImage(probe, 0, 0); const d = x.getImageData(0, 0, W, H).data;
+      let l = W, r = -1, t = H, b = -1;
+      for (let y = 0; y < H; y++) for (let k = 0; k < W; k++) if (d[(y * W + k) * 4 + 3] > 24) { if (k < l) l = k; if (k > r) r = k; if (y < t) t = y; if (y > b) b = y; }
+      if (r < l) return;
+      const out = document.createElement('canvas'); out.width = r - l + 1; out.height = b - t + 1;
+      out.getContext('2d').drawImage(cv, l, t, out.width, out.height, 0, 0, out.width, out.height);
+      im.src = out.toDataURL(); im.classList.add('inked');
+    } catch {} };
+    probe.src = im.src;
+  };
   const centerByInk = (im, scale = 1) => {
     const probe = new Image(); probe.crossOrigin = 'anonymous';
     probe.onload = () => { try {
@@ -749,15 +768,18 @@
     const big = el('div', 'pet-big');
     // each pet's drawing centered in its window by where it is painted, all at the same scale (Astra, 2026-10-29)
     // all at one cutesy size, the same for every pet, so none comes near the star's pale edge (Astra, 2026-10-29)
-    if (icon) { const im = el('img'); im.src = icon; im.alt = p.pet; im.loading = 'lazy'; im.style.scale = PET_SCALE; big.append(im); centerByInk(im, PET_SCALE); } else big.textContent = '{ }';
+    if (icon) { const im = el('img'); im.src = icon; im.alt = p.pet; im.loading = 'lazy'; big.append(im); cropToInk(im); } else big.textContent = '{ }';
     // the star's top point is its button: the usual turn-over arrows in a circle (Astra, 2026-10-29); more buttons, when there
     // are more, go on its other points
     const turnBtn = el('button', 'tip turn-btn'); turnBtn.type = 'button'; turnBtn.setAttribute('aria-label', 'flip the star to see ' + p.pet + "'s program"); turnBtn.title = 'flip';
     turnBtn.append(flipIcon());
     const body = el('div', 'body');
-    body.append(el('b', 'name', p.pet), el('div', 'pet', [p.program, r ? r.name : null].filter(Boolean).join(' · ') || 'program not named yet'));
+    // the pet, and under it the pet program it runs (Astra, 2026-10-29)
+    body.append(el('b', 'name', p.pet), el('div', 'pet', p.program || 'program not named yet'));
     const win = el('div', 'win'); win.append(big, body);
-    const face = el('div', 'face'); face.append(shape('star', '-111 -116 229 220'), turnBtn, win);
+    // no flip for now (Astra, 2026-10-29: "we'll get it ready later"); when it comes back it turns over to another star, not
+    // a square
+    const face = el('div', 'face'); face.append(shape('star', '-111 -116 229 220'), win);
     // the back: the pet program, as one big square, with only its links and a way back
     const back = el('div', 'back'), sq = el(pics.length ? 'button' : 'div', 'square');
     if (pics.length) { const im = el('img'); im.src = pics[0].src; im.alt = ''; im.loading = 'lazy'; sq.append(im); sq.setAttribute('aria-label', 'open pictures of ' + p.pet); sq.onclick = () => openGallery(pics); }
