@@ -330,6 +330,24 @@
     } catch {} };
     probe.src = im.src;
   };
+  // an SVG picture drawn into the page itself rather than as a picture, so parts of it can move (Astra, 2026-10-29: the
+  // Photostar's neon edge "shuffling through RGB ... like if I was messing with it live"). Its ids get a prefix so they cannot
+  // clash with the page's own (it has its own "star"), and every stroke drawn in a gradient cycles round the hues
+  const inlineSvg = (p) => {
+    const box = el('div', 'inline-svg');
+    if (p.size) box.style.scale = p.size;
+    const fallback = () => { const im = el('img'); im.src = p.src; im.alt = ''; box.replaceChildren(im); };
+    fetch(p.src).then((r) => (r.ok ? r.text() : Promise.reject(r.status))).then((text) => {
+      const tag = 'in' + hash(p.src) + '-';
+      const fixed = text.replace(/\bid="([^"]+)"/g, `id="${tag}$1"`).replace(/url\(#([^)]+)\)/g, `url(#${tag}$1)`).replace(/(xlink:)?href="#([^"]+)"/g, `$1href="#${tag}$2"`);
+      const doc = new DOMParser().parseFromString(fixed, 'image/svg+xml'), svg = doc.documentElement;
+      if (svg.nodeName !== 'svg') return fallback();
+      svg.removeAttribute('width'); svg.removeAttribute('height'); svg.setAttribute('aria-hidden', 'true');
+      for (const s of svg.querySelectorAll('[stroke^="url("]')) s.classList.add('rgb-edge');
+      box.replaceChildren(document.importNode(svg, true));
+    }).catch(fallback);
+    return box;
+  };
   // a video drawn frame by frame on a canvas with one flat background color cut away, so it turns on the bare paper (Astra,
   // 2026-10-29: the Rainbow Maker's animation "even though it has a sheer background"). key is [r, g, b]; it only draws while on
   // screen. The video comes from the world's own repo, which allows this (it is fetched with CORS)
@@ -464,7 +482,7 @@
     const spraying = pics.find((p) => p.spray); if (spraying) rainbowSpray(photo, spraying.spray);
     if (shot) photo.append(shot);
     else if (!pics.length) photo.append(el('span', 'developing', 'still developing…'));
-    let flip = null, count = null, badge = null, sound = null;
+    let flip = null, count = null, badge = null, sound = null, look = null;
     // a video with sound (Mommy's World): it plays muted, and a small button on the white border turns its sound on and off
     if (pics.some((p) => p.sound)) {
       let on = false;
@@ -478,6 +496,7 @@
       // each picture can also be a video (plays by itself, muted, on a loop) or a live page you can move around in
       const media = (p) => {
         if (p.type === 'video' && p.key) return keyedVideo(p);
+        if (p.inline) return inlineSvg(p);
         if (p.type === 'video') { const v = el('video'); Object.assign(v, { src: p.src, muted: true, loop: true, autoplay: !reduced, playsInline: true, preload: 'metadata' }); if (p.fit) v.style.objectFit = p.fit; if (p.bg) v.style.background = p.bg; return v; }
         // a live page starts once the Polaroid scrolls near (the browser's own lazy loading never starts it inside the scaled frame)
         // a bare page is cropped to its picture (Astra, 2026-10-27: the Mini Model without its title and key); on the live site it
@@ -527,20 +546,20 @@
       // border by the title, so it covers none of the picture (Astra, 2026-10-29: it hid the System Map's key)
       badge = el('span', 'badge'); badge.hidden = !pics[0].label; badge.textContent = pics[0].label || '';
       let shown = media(pics[0]); photo.append(shown, ...(field ? [field] : []));
-      // a live page gets a "closer look": it opens big in the viewer, to turn, scroll and zoom (Astra, 2026-10-29)
+      // a live page gets a "closer look": it opens big in the viewer, to turn, scroll and zoom (Astra, 2026-10-29); its sticker
+      // goes on the white border with the rest, below
       if (pics.some((p) => p.type === 'frame')) {
-        const look = el('button', 'look', 'closer look ⤢'); look.type = 'button'; look.setAttribute('aria-label', 'take a closer look at ' + name);
+        look = el('button', 'look', 'closer look ⤢'); look.type = 'button'; look.setAttribute('aria-label', 'take a closer look at ' + name);
         look.onclick = (e) => { e.stopPropagation(); if (pics[at].type === 'frame') openGallery([pics[at]]); };
-        photo.append(look);
       }
       const still = () => !pics[at].type;
       photo.setAttribute('aria-label', 'open pictures of ' + name);
       photo.onclick = (e) => { if (still()) openGallery(pics.filter((p) => !p.type), pics.filter((p) => !p.type).indexOf(pics[at])); };
       // more than one picture: two small arrows in the white border's bottom corners flip through them (Astra, 2026-10-27)
       if (pics.length > 1) {
-        // "1/3" (Astra, 2026-10-29)
-        count = el('span', 'count', `1/${pics.length}`);
-        const go = (d) => { at = (at + d + pics.length) % pics.length; const next = media(pics[at]); shown.replaceWith(next); shown = next; photo.classList.toggle('clear', !!clear || clearOf(pics[at])); if (sound) sound.show(pics[at]); if (sticky) sticky(at, note2); badge.hidden = !pics[at].label; badge.textContent = pics[at].label || ''; count.textContent = `${at + 1}/${pics.length}`; };
+        // "1 of 3" (Astra, 2026-10-29)
+        count = el('span', 'count', `1 of ${pics.length}`);
+        const go = (d) => { at = (at + d + pics.length) % pics.length; const next = media(pics[at]); shown.replaceWith(next); shown = next; photo.classList.toggle('clear', !!clear || clearOf(pics[at])); if (sound) sound.show(pics[at]); if (sticky) sticky(at, note2); badge.hidden = !pics[at].label; badge.textContent = pics[at].label || ''; count.textContent = `${at + 1} of ${pics.length}`; };
         flip = ['‹', '›'].map((t, i) => { const b = el('button', 'flip ' + (i ? 'next' : 'prev'), t); b.type = 'button'; b.setAttribute('aria-label', (i ? 'next' : 'previous') + ' picture of ' + name); b.onclick = () => go(i ? 1 : -1); return b; });
       }
     }
@@ -548,7 +567,7 @@
     // GitHub repo, then its code, then the date; no site tags
     const title = repo ? link(repo, 'title', name) : el('b', 'title', name);
     const note = el('div', 'note');
-    note.append(title, el('span', 'kind', [kind, date].filter(Boolean).join(' · ')), ...(badge ? [badge] : []), ...(sound ? [sound.b] : []));
+    note.append(title, el('span', 'kind', [kind, date].filter(Boolean).join(' · ')), ...(badge ? [badge] : []), ...(sound ? [sound.b] : []), ...(look ? [look] : []));
     if (sound) sound.show(pics[0]);
     // "1 of 3" sits on the bottom edge between the arrows, level with them (Astra, 2026-10-29)
     const frame = el('div', flip ? 'frame flips' : 'frame'); frame.append(el('i', 'tape'), photo, note, ...(flip || []), ...(count ? [count] : []));
@@ -590,8 +609,8 @@
     // just the two stars, the name and the three windows, bigger, without the pole down the left (Astra, 2026-10-29)
     // ...with the three arched windows in the middle of the square (Astra, 2026-10-29)
     'mommys-website': [{ src: 'art/projects/mommys-website-site-20261027.jpg', cap: "Mommy's: the twins and the windows", crop: [140, 75, 1190, 1125, 1280, 900], bg: '#1a0612' }],
-    // the star alone on the paper, set in from the tape (Astra, 2026-10-29), a little bigger
-    'astras-photostar': [{ src: 'https://findastra.github.io/astras-star-window/star-window.svg', cap: "Astra's Photostar", fit: 'contain', size: 0.88, clear: true }],
+    // the star alone on the paper, almost to the frame's edges (Astra, 2026-10-29), its neon edge cycling through the colors
+    'astras-photostar': [{ src: 'https://findastra.github.io/astras-star-window/star-window.svg', cap: "Astra's Photostar", fit: 'contain', size: 0.94, clear: true, inline: true }],
     // the live sign, saying what it is (its ?message= link option is a Pocket Message Board change waiting for Astra's OK)
     // the sign takes turns saying these (Astra, 2026-10-29)
     'pocket-message-board': [{ src: 'https://findastra.github.io/pocket-message-board/?message=' + encodeURIComponent('This is a Pocket Message Board. Check it out!') + '&size=1', cap: 'Pocket Message Board', type: 'frame',
@@ -1078,7 +1097,8 @@
     // agentic harness. The table does not track L1 (the programs it runs) on its own, so L1 shows built once the pet has a
     // program; L4 is the verified human every pet answers to, Astra, so it is always there
     const l2 = !lv ? '—' : lv[0] === '✅' && lv[1] === '✅' ? '✅' : lv[0] !== '—' || lv[1] !== '—' ? '🟡' : '—';
-    box.replaceChildren(el('b', null, 'intelligence'), ...(lv ? [`L1 programs ${lv[0] === '—' ? '—' : '✅'}`, `L2 runs itself ${l2}`, `L3 AI agent ${lv[2]}`, 'L4 Astra ✅'] : ['not rated yet']).map((t) => el('div', null, t)));
+    // just the four levels, no title (Astra, 2026-10-29: "L1 dash something, L2 dash something")
+    box.replaceChildren(...(lv ? [`L1 – ${lv[0] === '—' ? '—' : '✅'}`, `L2 – ${l2}`, `L3 – ${lv[2]}`, 'L4 – ✅'] : ['not rated yet']).map((t) => el('div', null, t)));
   };
   function petosCards() {
     const drawn = pets.filter(iconOf), hub = byName['astras-pet-os'], HUB_REPO = 'https://github.com/findastra/astras-pet-os';
@@ -1090,8 +1110,12 @@
         pics: [{ src: HUB_PAGES + 'system-map-20261012.html', cap: 'The System Map', type: 'frame', label: 'live', view: 2 }], repo: HUB_REPO }),
       // the pets on the bare paper, and the one you flip to a little smaller (Astra, 2026-10-29)
       polaroid({ key: 'all-pets', name: 'The pets', kind, date, text: 'What they all look like. Each one is a small app with a face and a job.', pics: [], shot: petsShot(drawn), clear: true, repo: HUB_REPO,
-        // its own sticky note (Astra, 2026-10-29), saying what the grid is
-        sticky: (at, box) => box.replaceChildren(el('b', null, 'the pets'), el('div', null, drawn.length + ' drawn'), el('div', null, 'in rainbow order')) }),
+        // its own sticky note (Astra, 2026-10-29): how many are drawn, and how far along all of them are, by the hub's stages
+        // (registered is done; pipeline is on GitHub; seed has its name and no repo yet)
+        sticky: (at, box) => {
+          const n = (s) => pets.filter((p) => p.stage === s).length;
+          box.replaceChildren(...[`${drawn.length} drawn`, `${n('registered')} done`, `${n('pipeline')} pipeline`, `${n('seed')} seed`].map((t) => el('div', null, t)));
+        } }),
       polaroid({ key: 'meet-pets', name: 'Meet every pet', kind, date, repo: HUB_REPO, text: 'One at a time, no shaking needed.',
         pics: drawn.map((p) => ({ src: iconOf(p), cap: p.pet, label: p.pet, fit: 'contain', size: 0.78, clear: true, center: true })), sticky: levelNote(drawn) }),
     ];

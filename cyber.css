@@ -26,7 +26,8 @@ main { padding-left: var(--rail); }
 #pole { position: fixed; left: 0; top: 0; bottom: 0; z-index: 40; width: var(--rail); pointer-events: none; background: var(--frame); border-right: 2px solid var(--edge); border-left: 2px solid var(--edge); }
 /* the frame all the way round (Astra, 2026-10-29): the pole's gray line on both its sides, down the window's right edge and
    along its bottom, where the pole ends */
-.bezel { position: fixed; inset: 0; z-index: 39; pointer-events: none; border-right: 2px solid var(--edge); border-bottom: 2px solid var(--edge); }
+/* (Astra, 2026-10-29) one square all the way round the window, the same light gray line on all four sides */
+.bezel { position: fixed; inset: 0; z-index: 41; pointer-events: none; border: 2px solid var(--edge); }
 /* a disc at the top and the bottom of the pole */
 .pole-cap { position: absolute; left: 50%; z-index: 1; width: 18px; height: 7px; translate: -50% 0; border-radius: 50%; background: #9a9a9a;
   box-shadow: inset 0 -2px 0 #5c5c5c, 0 0 6px rgba(255, 255, 255, .15); }
@@ -35,7 +36,8 @@ main { padding-left: var(--rail); }
 .pole-cap { display: none; }
 /* a plain white pole with a soft glow (Astra, 2026-10-29: "I just want a white pole"; it was matte chrome) */
 /* a soft gray now, so the sparkle stands out on it (Astra, 2026-10-29) */
-#pole::before { content: ""; position: absolute; top: 0; bottom: 0; left: calc(50% - 3px); width: 6px; border-radius: 6px;
+/* square at both ends, no rounded caps (Astra, 2026-10-29) */
+#pole::before { content: ""; position: absolute; top: 0; bottom: 0; left: calc(50% - 3px); width: 6px; border-radius: 0;
   background: #7d7d7d; box-shadow: 0 0 6px rgba(255, 255, 255, .12); }
 /* the pole's sparkle is the scroll bar (Astra, 2026-10-29): it rides the pole with the page, glowing in the color of the
    section you are in; drag it to scroll. The browser's own scroll bar is hidden */
@@ -122,8 +124,8 @@ main { overflow-x: clip; }
 /* --sheet: the words sit as far in from the paper's left edge as from its top, on every section (Astra, 2026-10-29) */
 .block { --sheet: 38px; position: relative; isolation: isolate; padding: var(--sheet); margin-inline: var(--float); box-shadow: 8px 8px 0 #000; background: var(--bg); color: var(--ink); }
 .kicker { display: inline-block; font: 13px var(--mono); background: var(--ink); color: var(--bg); padding: 3px 10px; margin: 0 0 14px; transform: rotate(-2deg); }
-/* written as they are, "Discord", "Web & More" (Astra, 2026-10-29), and a tenth smaller than they were */
-h2 { font: 900 clamp(2.5rem, 8.1vw, 5.4rem)/.95 Inter, sans-serif; letter-spacing: -.03em; margin: 0 0 30px; }
+/* written as they are, "Discord", "Web & More" (Astra, 2026-10-29), and a fifth smaller than they first were */
+h2 { font: 900 clamp(2.25rem, 7.2vw, 4.8rem)/.95 Inter, sans-serif; letter-spacing: -.03em; margin: 0 0 28px; }
 h3 { display: inline-block; font: 700 12px var(--mono); text-transform: uppercase; letter-spacing: .14em; color: var(--ink); border-bottom: 3px solid var(--ink); margin: 20px 0 10px; padding-bottom: 2px; }
 .lead { max-width: 70ch; color: var(--muted); margin-top: -12px; }
 
@@ -359,7 +361,8 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 /* the flip button in the star's top point: the turn-over arrows in a circle (Astra, 2026-10-29) */
 /* just a small black icon, no circle behind it (Astra, 2026-10-29) */
 /* on the star's right-hand point, inside its pale edge (Astra, 2026-10-29) */
-.card .tip.turn-btn { left: 80%; top: 38%; padding: 0; width: 8.5%; border: 0; border-radius: 0; background: none; box-shadow: none; color: #000; cursor: pointer; z-index: 2; }
+/* in the middle of the right-hand point, inside the inner line (the shine) that runs round inside the star */
+.card .tip.turn-btn { left: 74%; top: 46%; padding: 0; width: 7%; border: 0; border-radius: 0; background: none; box-shadow: none; color: #000; cursor: pointer; z-index: 2; }
 .card .tip.turn-btn svg { width: 100%; height: 100%; }
 .card .back-links .turn-btn { display: grid; place-items: center; width: 8cqw; height: 8cqw; padding: 0; border-radius: 50%; }
 .card .back-links .turn-btn svg { width: 62%; height: 62%; }
@@ -479,8 +482,9 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 /* a perfectly square note, its tape the same color as the strip holding up the Polaroid (Astra, 2026-10-29) */
 /* up off the writing, so every pet's name on the border can be read (Astra, 2026-10-29) */
 /* always exactly square, whatever is written on it (Astra, 2026-10-29): a fixed size, the writing a size to fit */
-.polaroid .sticky { position: absolute; right: -14px; bottom: 116px; z-index: 3; width: 104px; height: 104px; overflow: hidden; display: grid; align-content: center; padding: 6px;
-  background: #fff36b; color: #151515; font: 11px/1.18 "Permanent Marker", cursive; text-align: center; rotate: 7deg; box-shadow: 3px 4px 0 rgba(0, 0, 0, .55);
+/* (not clipped, so its tape shows whole) */
+.polaroid .sticky { position: absolute; right: -14px; bottom: 116px; z-index: 3; width: 100px; height: 100px; display: grid; align-content: center; padding: 6px;
+  background: #fff36b; color: #151515; font: 14px/1.25 "Permanent Marker", cursive; text-align: center; rotate: 7deg; box-shadow: 3px 4px 0 rgba(0, 0, 0, .55);
   /* a black edge, so it shows where it lies over the white border (Astra, 2026-10-29) */
   outline: 2px solid #111; }
 .polaroid .sticky::before { content: ""; position: absolute; left: 50%; top: -7px; width: 40px; height: 13px; translate: -50% 0; rotate: -4deg;
@@ -735,13 +739,20 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 .lightbox .lb-frame { display: block; width: 100%; height: 76vh; border: 0; background: #000; }
 .lightbox .lb-frame[hidden], .lightbox img[hidden] { display: none; }
 /* the "closer look" button on a live page's Polaroid, in the photo's bottom right corner */
-.polaroid .look { position: absolute; right: 6px; bottom: 6px; z-index: 4; padding: 4px 8px; border: 0; cursor: zoom-in; background: #111; color: #fff;
-  font: 11px/1 "Permanent Marker", cursive; rotate: -3deg; box-shadow: 2px 2px 0 rgba(0, 0, 0, .4); }
+/* down on the white border at the top right, tipped the other way, like the sound sticker (Astra, 2026-10-29) */
+.polaroid .look { position: absolute; right: calc(var(--edge-w) - 4px); top: -10px; z-index: 4; padding: 5px 8px; border: 0; cursor: zoom-in; background: #111; color: #fff;
+  font: 11px/1 "Permanent Marker", cursive; rotate: 4deg; box-shadow: 2px 2px 0 rgba(0, 0, 0, .35); }
 .polaroid .look:hover, .polaroid .look:focus-visible { outline: 2px solid var(--c); }
 /* the Rainbow Maker's turning video with its gray cut away, drawn frame by frame on a canvas */
 .polaroid .photo .keyed { position: absolute; inset: 0; }
 .polaroid .photo .keyed video { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
 .polaroid .photo .keyed canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+/* an SVG drawn into the page (the Photostar): it fills the photo; its neon edge runs round the colors */
+.polaroid .photo .inline-svg { position: absolute; inset: 0; display: grid; place-items: center; }
+.polaroid .photo .inline-svg svg, .polaroid .photo .inline-svg img { width: 100%; height: 100%; }
+.rgb-edge { animation: rgb-edge 5s linear infinite; }
+@keyframes rgb-edge { to { filter: hue-rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .rgb-edge { animation: none; } }
 /* the sparkles the Rainbow Maker throws out over the whole page */
 .rainbow-spray { position: fixed; inset: 0; z-index: 54; width: 100vw; height: 100vh; pointer-events: none; }
 .lightbox figcaption { text-align: center; font: 13px var(--mono); color: #9b9b9b; margin: 10px 52px 0; min-height: 26px; }

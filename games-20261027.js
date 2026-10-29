@@ -355,7 +355,9 @@
     const loose = { home() { for (const f of outside()) goHome(f); } };
     function add(code) {
       if (broken) return 'The Cyber Dome is broken. Put it back together first.';
-      // as many of the same one as you like; the dome itself breaks at 67 inside, and the page holds up to 200 in all
+      // each Fuzzboi only once (Astra, 2026-10-29: "shouldn't be able to send the same fuzzboy into the dome"); the dome
+      // breaks at 67 inside, and the page holds up to 200 in all
+      if (folks.some((f) => f.code === code)) { const no = `#${code} already lives here. Make a different one.`; $('home-pick').textContent = no; return no; }
       if (folks.length >= 200) return 'That is 200 Fuzzbois. Catch some first.';
       folks.push(spawn(code)); save();
       if (inside().length >= HOME_MAX) explode();
