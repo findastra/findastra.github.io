@@ -356,11 +356,12 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
   text-decoration: none; cursor: pointer; box-shadow: 0 0 10px var(--c); }
 .card .back-links a:hover, .card .turn-btn:hover, .card .back-links a:focus-visible, .card .turn-btn:focus-visible { background: #fff; color: #000; outline: none; }
 /* the flip button in the star's top point: the turn-over arrows in a circle (Astra, 2026-10-29) */
-.card .tip.turn-btn { padding: 0; width: 14%; border-radius: 50%; background: #fff; color: #000; border: 2px solid #000; cursor: pointer; z-index: 2;
-  box-shadow: 0 0 10px var(--c); }
-.card .tip.turn-btn svg, .card .back-links .turn-btn svg { width: 62%; height: 62%; }
+/* just a small black icon, no circle behind it (Astra, 2026-10-29) */
+.card .tip.turn-btn { padding: 0; width: 9%; border: 0; border-radius: 0; background: none; box-shadow: none; color: #000; cursor: pointer; z-index: 2; }
+.card .tip.turn-btn svg { width: 100%; height: 100%; }
 .card .back-links .turn-btn { display: grid; place-items: center; width: 8cqw; height: 8cqw; padding: 0; border-radius: 50%; }
-.card .tip.turn-btn:hover, .card .tip.turn-btn:focus-visible { background: var(--c); outline: none; }
+.card .back-links .turn-btn svg { width: 62%; height: 62%; }
+.card .tip.turn-btn:hover, .card .tip.turn-btn:focus-visible { background: none; color: #fff; outline: none; }
 .card .shape { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
 /* thin strokes now, so the outline stays the Photostar's own rounded star, not puffed out by the stroke (Astra, 2026-10-29) */
 .card .s-shadow { fill: #000; stroke: #000; stroke-width: 12; transform: translate(7px, 7px); transition: transform .3s; }

@@ -264,10 +264,10 @@
     { name: 'The Rainbow Maker', kind: 'VRChat world · PC VR / desktop', text: 'The mechanics of the Kikkerland Rainbow Maker: watch its tiny gear train turn and spin a crystal that refracts rainbows across the room.', repo: 'the-rainbow-maker', local: [
       { src: RM + 'rainbow-maker-preview-20261022.mp4', cap: 'The Rainbow Maker · turning', type: 'video', key: [69, 69, 74], clear: true,
         // one wide ring round the whole machine, a small fast one round each crystal, and a few glints on the glass
-        // (the small rings round the crystals sit wide of them, so the crystals themselves can be seen turning)
-        orbits: [[50, 50, 32, 44, 9, 16], [40, 80, 15, 8, 3, 5], [57, 70, 14, 8, 3, 6]], still: [[46, 30], [56, 40], [30, 62], [72, 88]],
-        // the ring the spray pours from: center x, y and radii, in the picture's percent, just outside the machine
-        spray: [50, 50, 34, 47] },
+        // sparkles circling each of the two crystals, just wide of them so the crystals can be seen turning (Astra, 2026-10-29:
+        // "go around the actual crystals"), and the spray thrown off those same rings: center x, y and radii, in percent
+        orbits: [[44, 79, 12, 9, 5, 5], [54, 68, 11, 8, 5, 6]], still: [[46, 30], [56, 40]],
+        spray: [[44, 79, 12, 9], [54, 68, 11, 8]] },
       { src: 'art/worlds/rainbow-maker-still-clear-20261029.png', cap: 'The Rainbow Maker', fit: 'contain', clear: true, nudge: '0 7%' },
       { src: RM + 'rainbow-maker-crystals-cycles-20261023.png', cap: 'The Rainbow Maker · the crystals', fit: 'contain', bg: '#47423f' }] },
     { name: 'The Cooling Tower', siteLabel: 'see full mini model ↗', kind: 'VRChat world · PC VR / desktop', text: "A rave world inside a nuclear plant's cooling tower: break into the facility and power it up with music. The Stack, the Turbine Hall, then the Reactor Hall.", repo: 'the-cooling-tower', local: [{ src: 'https://findastra.github.io/the-cooling-tower/mini-model/the-cooling-tower-mini-model-20261024.html', cap: 'The Cooling Tower · Mini Model', type: 'frame', label: 'concept model', bare: true, back: 7 }] },
@@ -384,9 +384,12 @@
           if (!r.width || r.bottom < 0 || r.top > innerHeight) continue;
           // from a ring round the machine, outside it, so the crystals turning inside stay clear (Astra, 2026-10-29: "the way
           // it is shedding sparkles ... from like a ring around where the rainbow maker is"), flying outward from it
-          const [cxp, cyp, rxp, ryp] = s.from;
-          for (let n = 0; n < 9; n++) {
-            const a = Math.random() * Math.PI * 2, sp = .6 + Math.random() * 2.8, ring = 1 + Math.random() * .12;
+          // a few at a time, every other frame or so (Astra, 2026-10-29: "a little bit less sparkles too, and less often"), each
+          // from one of the rings given
+          if (Math.random() < .45) continue;
+          for (let n = 0; n < 3; n++) {
+            const [cxp, cyp, rxp, ryp] = s.from[(Math.random() * s.from.length) | 0];
+            const a = Math.random() * Math.PI * 2, sp = .6 + Math.random() * 2.4, ring = 1 + Math.random() * .15;
             dots.push({ x: r.left + r.width * (cxp + Math.cos(a) * rxp * ring) / 100, y: r.top + r.height * (cyp + Math.sin(a) * ryp * ring) / 100, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - .2,
               life: 1, s: 3 + Math.random() * 7 + (Math.random() < .08 ? 9 : 0), hue: (Math.random() * 12 | 0) * 30, t: Math.random() * 7 });
           }
@@ -923,30 +926,44 @@
       const f = kind.mini(it); f.classList.add('flyer'); f.style.setProperty('--s', size + 'px');
       f.style.left = mouth.x - size / 2 - st.left + 'px'; f.style.top = mouth.y - size / 2 - st.top + 'px'; box.append(f);
       const at = (x, y, sc, rot) => `translate(${x}px, ${y}px) scale(${sc}) rotate(${rot}deg)`;
-      // it slips out and drops to the ground, rolls along it like a marble to the right edge of the paper, knocks against it,
-      // rolls back to the left, and then drops down, turning slowly, into its slot (Astra, 2026-10-29)
-      const gx = size * 1.4, gy = ground - size * .5 - mouth.y, deg = (d) => (d / (Math.PI * size)) * 360;
-      const wall = Math.max(gx + size, st.right - size * .7 - mouth.x), back = Math.max(size * .5, gx - size * .6);
-      const r1 = 60 + deg(wall - gx), r2 = r1 - deg(wall - back);
-      // the moment it hits the ground: sparkles kick up from where it landed, mostly forward the way it is going, and then
-      // fall away down the page past the ground, not a neat ring
-      setTimeout(() => { for (let i = 0; i < 18; i++) fall(mouth.x + gx + (Math.random() - .5) * size * .6, ground, (Math.random() - .25) * size * 4, size * (.4 + Math.random() * 1.4), 120 + Math.random() * 220, 1600 + Math.random() * 900); }, 700);
-      const rollMs = Math.min(1600, 500 + (wall - gx) * 2.2), backMs = Math.min(1700, 600 + (wall - back) * 2.4);
-      await f.animate([
-        { transform: at(0, 0, .9, 0) }, { transform: at(size * .8, -size * .05, 1, 30), offset: .45, easing: 'ease-in' },
-        { transform: at(gx, gy, 1, 60) },
-      ], { duration: 700, fill: 'forwards' }).finished;
-      await f.animate([{ transform: at(gx, gy, 1, 60) }, { transform: at(wall, gy, 1, r1) }], { duration: rollMs, easing: 'cubic-bezier(.3, .2, .6, 1)', fill: 'forwards' }).finished;
-      // a little knock against the edge, and back it rolls
-      for (let i = 0; i < 6; i++) puff(st.right - size * .2, mouth.y + gy, -10 - Math.random() * 20, (Math.random() - .5) * 30, 1200);
-      await f.animate([{ transform: at(wall, gy, 1, r1) }, { transform: at(back, gy, 1, r2) }], { duration: backMs, easing: 'cubic-bezier(.25, .1, .4, 1)', fill: 'forwards' }).finished;
+      // it falls out like a real thing (Astra, 2026-10-29: "look natural, like something actually falling out of a jar"):
+      // pushed out of the mouth, it drops under its own weight, lands with a small bump, rolls like a marble (turning as far
+      // as it rolls) all the way to the right edge of the paper, knocks off it, and rolls back until it nearly stops
+      const paper = (box.closest('.block') || box).getBoundingClientRect();
+      const groundY = ground - size * .5 - mouth.y, wallX = paper.right - size * .55 - mouth.x, rad = size / 2;
+      let x = 0, y = 0, vx = 5.6, vy = -1.2, rot = 0, landed = false, knocked = false, prev = performance.now(), t0 = prev;
+      await new Promise((done) => {
+        (function step(now) {
+          const k = Math.min(3, (now - prev) / 16.7); prev = now;
+          vy += .38 * k; x += vx * k; y += vy * k;
+          if (y >= groundY) {
+            y = groundY;
+            if (!landed) {
+              landed = true;
+              // sparkles kick up from where it landed and fall away down the page
+              for (let i = 0; i < 18; i++) fall(mouth.x + x + (Math.random() - .5) * size * .6, ground, (Math.random() - .2) * size * 4, size * (.4 + Math.random() * 1.4), 120 + Math.random() * 220, 1600 + Math.random() * 900);
+            }
+            vy = Math.abs(vy) > 2.4 ? -vy * .22 : 0; // a small bump the first time, then it rolls
+            vx *= Math.pow(.995, k); // rolling slows it a little
+          }
+          if (x >= wallX && vx > 0) {
+            x = wallX; vx = -vx * .5; knocked = true;
+            for (let i = 0; i < 6; i++) puff(mouth.x + x + rad, mouth.y + y, -10 - Math.random() * 20, (Math.random() - .5) * 30, 1200);
+          }
+          rot += (vx * k / rad) * (180 / Math.PI);
+          f.style.transform = at(x, y, 1, rot);
+          if ((knocked && landed && Math.abs(vx) < .7) || now - t0 > 9000) return done();
+          requestAnimationFrame(step);
+        })(prev);
+      });
       // its full star is put in the slot now, unseen, so the falling one can land exactly on it: same place, size and tilt
       const card = land(); card.style.opacity = 0;
       const b = card.getBoundingClientRect(), tilt = parseFloat(getComputedStyle(card).getPropertyValue('--tilt')) || 0;
       const ex = b.left + b.width / 2 - mouth.x, ey = b.top + b.height / 2 - mouth.y, grow = b.width / size;
-      const endRot = Math.ceil((r2 + 200) / 360) * 360 + tilt;
+      // then it tips off, still rolling a little the way it was going, and drops slowly, turning, onto its star
+      const endRot = Math.round((rot + 180) / 360) * 360 + tilt;
       const glide = f.animate([
-        { transform: at(back, gy, 1, r2) }, { transform: at(back - size * .3, gy + size * .6, 1.05, r2 - 20), offset: .12, easing: 'ease-in' },
+        { transform: at(x, y, 1, rot) }, { transform: at(x - size * .5, y + size * .5, 1.05, rot - 25), offset: .14, easing: 'ease-in' },
         { transform: at(ex, ey, grow, endRot) },
       ], { duration: 2600, easing: 'cubic-bezier(.4, .1, .3, 1)', fill: 'forwards' });
       let trailing = true;
