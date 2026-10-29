@@ -609,6 +609,8 @@
     // the sign takes turns saying these (Astra, 2026-10-29)
     'pocket-message-board': [{ src: 'https://findastra.github.io/pocket-message-board/?message=' + encodeURIComponent('This is a Pocket Message Board. Check it out!') + '&size=1', cap: 'Pocket Message Board', type: 'frame',
       says: ['Testing 1, 2, 3', 'Astra was here', 'I love Devilish', 'I love Dev 69'] }],
+    // the four angels under the rainbow sky, Iris's picture (Astra, 2026-10-29)
+    'iris-the-origin-story': [{ src: 'art/projects/iris-the-origin-story-cover-20261029.webp', cap: 'Iris: the origin story', bg: '#2a1530' }],
   };
   // Photostar is one word (Astra, 2026-10-29)
   const NAMES = { 'astras-photostar': "Astra's Photostar" };
