@@ -429,7 +429,7 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 /* a full row reaches --hang past the paper on both sides, so its first and last Polaroids just hang off the edges; cyber.js
    sizes them (--pw) so a row fills that width exactly (Astra, 2026-10-29) */
 /* rows far enough apart that no tape or sticky note lands on the Polaroid above (Astra, 2026-10-29: "make sure they're all separate") */
-.polaroids { --hang: 26px; display: flex; flex-wrap: wrap; justify-content: center; gap: 72px 22px; padding: 28px 0 0;
+.polaroids { --hang: 34px; display: flex; flex-wrap: wrap; justify-content: center; gap: 48px 32px; padding: 28px 0 0;
   margin-inline: calc(-1 * (var(--sheet, 0px) + var(--hang))); }
 /* one Polaroid under the other (a phone): the wall stays on the paper instead of hanging just off it */
 .polaroids.single { margin-inline: 0; }
@@ -906,7 +906,7 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
   .fz-digit span { font-size: 8.5px; letter-spacing: -.02em; }
   .lightbox figure { padding: 44px 12px 12px; }
   .grid { grid-template-columns: 1fr; }
-  .polaroids { gap: 60px 20px; }
+  .polaroids { gap: 44px 20px; }
   .polaroid .frame { --edge-w: 8px; }
   .note .title { font-size: 1.05rem; }
   .note .kind { font-size: .75rem; }
