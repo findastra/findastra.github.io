@@ -773,22 +773,24 @@
       const f = kind.mini(it); f.classList.add('flyer'); f.style.setProperty('--s', size + 'px');
       f.style.left = mouth.x - size / 2 - st.left + 'px'; f.style.top = mouth.y - size / 2 - st.top + 'px'; box.append(f);
       const at = (x, y, sc, rot) => `translate(${x}px, ${y}px) scale(${sc}) rotate(${rot}deg)`;
-      const gx = size * 2.2, gy = ground - size * .6 - mouth.y;
+      // it slips out and drops to the ground, then rolls along it like a marble, turning as it goes, no bouncing (Astra,
+      // 2026-10-29)
+      const gx = size * 1.4, gy = ground - size * .5 - mouth.y, roll = size * 3.2, turns = (roll / (Math.PI * size)) * 360;
+      // the moment it hits the ground: sparkles kick up from where it landed, mostly forward the way it is going, and then
+      // fall away down the page past the ground, not a neat ring
+      setTimeout(() => { for (let i = 0; i < 18; i++) fall(mouth.x + gx + (Math.random() - .5) * size * .6, ground, (Math.random() - .25) * size * 4, size * (.4 + Math.random() * 1.4), 120 + Math.random() * 220, 1600 + Math.random() * 900); }, 1700 * .45);
       await f.animate([
-        { transform: at(0, 0, .9, 0) }, { transform: at(size * 1.1, -size * .15, 1, 40), offset: .3, easing: 'ease-in' },
-        { transform: at(gx, gy, 1, 120), offset: .75, easing: 'ease-out' }, { transform: at(gx + size * .25, gy - size * .5, 1.05, 150), offset: .87, easing: 'ease-in' },
-        { transform: at(gx + size * .4, gy, 1, 170) },
-      ], { duration: 1300, fill: 'forwards' }).finished;
-      // it hits the ground: sparkles kick up from where it landed, mostly forward the way it was going, and then fall away down
-      // the page past the ground, not a neat ring
-      const c = f.getBoundingClientRect(), cx0 = c.left + c.width / 2, foot = c.bottom;
-      for (let i = 0; i < 18; i++) fall(cx0 + (Math.random() - .5) * size * .6, foot, (Math.random() - .25) * size * 4, size * (.4 + Math.random() * 1.4), 120 + Math.random() * 220, 1600 + Math.random() * 900);
-      await new Promise((ok) => setTimeout(ok, 250));
-      const b = to.getBoundingClientRect(), sx = gx + size * .4, sy = gy;
+        { transform: at(0, 0, .9, 0) }, { transform: at(size * .8, -size * .05, 1, 30), offset: .25, easing: 'ease-in' },
+        { transform: at(gx, gy, 1, 60), offset: .45, easing: 'ease-out' },
+        { transform: at(gx + roll, gy, 1, 60 + turns) },
+      ], { duration: 1700, fill: 'forwards' }).finished;
+      await new Promise((ok) => setTimeout(ok, 150));
+      // then it rolls off and falls down into its slot, growing as it comes
+      const b = to.getBoundingClientRect(), sx = gx + roll, sy = gy, r0 = 60 + turns;
       const ex = b.left + b.width / 2 - mouth.x, ey = b.top + b.height / 2 - mouth.y, grow = b.width / size;
       const glide = f.animate([
-        { transform: at(sx, sy, 1, 170) }, { transform: at(sx + (ex - sx) * .5, Math.min(sy, ey) - size * 1.5, grow * .4, 260), offset: .45 },
-        { transform: at(ex, ey, grow, 360) },
+        { transform: at(sx, sy, 1, r0) }, { transform: at(sx + (ex - sx) * .25, sy + (ey - sy) * .2, grow * .3, r0 + 60), offset: .3, easing: 'ease-in' },
+        { transform: at(ex, ey, grow, Math.ceil((r0 + 120) / 360) * 360) },
       ], { duration: 2200, easing: 'cubic-bezier(.45, .05, .3, 1)', fill: 'forwards' });
       let trailing = true;
       (function trail() {
@@ -1269,48 +1271,18 @@
         raf = requestAnimationFrame(tick);
       });
     }
-    // the burst when he is caught: the sparkle made in the arcade's Sparkle Creator (its points, sharpness, colors and spin),
-    // a white flash, two rings of them swirling outward, and glitter falling, over about two and a half seconds (Astra, 2026-10-29)
-    function sparkleBurst(sp, x0, y0) {
-      const S = 340, LIFE = 2500, d = Math.min(devicePixelRatio || 1, 2), cv = el('canvas', 'rabbit-burst-cv'); cv.setAttribute('aria-hidden', 'true');
-      cv.width = cv.height = S * d; cv.style.cssText = `left:${x0 - S / 2}px;top:${y0 - S / 2}px;width:${S}px;height:${S}px`;
-      document.body.append(cv);
-      const c = cv.getContext('2d'); c.setTransform(d, 0, 0, d, 0, 0);
-      const hs = sp.hues(), M = S / 2, parts = [];
-      for (let ring = 0; ring < 2; ring++) for (let i = 0; i < 10; i++) parts.push({ a: (i / 10) * Math.PI * 2 + ring * .31, dist: ring ? 72 : 128, r: ring ? 9 : 14, delay: ring * 260, hue: hs[(i + ring * 3) % hs.length] });
-      const glitter = Array.from({ length: 34 }, () => ({ a: Math.random() * Math.PI * 2, v: 1 + Math.random() * 2.4, hue: hs[(Math.random() * hs.length) | 0] }));
-      const t0 = performance.now();
-      (function frame(now) {
-        const t = now - t0; c.clearRect(0, 0, S, S); c.save(); c.globalCompositeOperation = 'lighter';
-        const flash = Math.max(0, 1 - t / 500);
-        if (flash) { const g = c.createRadialGradient(M, M, 0, M, M, 70); g.addColorStop(0, `rgba(255, 255, 255, ${.9 * flash})`); g.addColorStop(1, 'rgba(255, 255, 255, 0)'); c.fillStyle = g; c.fillRect(0, 0, S, S); }
-        for (const p of parts) {
-          const k = Math.min(1, (t - p.delay) / (LIFE - p.delay)); if (k <= 0) continue;
-          const out = 1 - (1 - k) ** 3, swirl = p.a + out * .9, a = k < .65 ? 1 : 1 - (k - .65) / .35;
-          // each one pops big, then twinkles smaller as it fades
-          const grow = .35 + Math.sin(Math.min(1, k * 1.6) * Math.PI) * .9 + Math.sin(t / 90 + p.a * 3) * .12;
-          sp.draw(c, M + Math.cos(swirl) * p.dist * out, M + Math.sin(swirl) * p.dist * out, p.r * grow, k * 2.4, p.hue, a);
-        }
-        for (const q of glitter) {
-          const k = t / LIFE, s = q.v * t / 16 * (1 - k * .5);
-          c.fillStyle = sp.tint(q.hue, 80, Math.max(0, 1 - k) * (.6 + .4 * Math.sin(t / 60 + q.a * 7)));
-          c.beginPath(); c.arc(M + Math.cos(q.a) * s, M + Math.sin(q.a) * s + (t / 1000) ** 2 * 40, 1.8, 0, 6.283); c.fill();
-        }
-        c.restore();
-        if (t < LIFE) requestAnimationFrame(frame); else cv.remove();
-      })(t0);
-    }
     // caught: a burst of sparkles where it was, the rain moves to its next colors, and the rabbit is gone until next time
     bun.addEventListener('click', () => {
       if (!running) return;
       palette = (palette + 1) % PALETTES.length;
       const b = bun.getBoundingClientRect(), r = lane.getBoundingClientRect();
-      if (window.findastraSparkle && !reduced) sparkleBurst(window.findastraSparkle, b.left + b.width / 2, b.top + b.height / 2);
-      else {
+      // just a small ring of the page's own pastel sparkles, about a seventh the size it was (Astra, 2026-10-29: the big burst
+      // was "obnoxious and way too big")
+      {
         const burst = el('span', 'sparkles rabbit-burst'); burst.setAttribute('aria-hidden', 'true');
         burst.style.cssText = `left:${b.left - r.left + b.width / 2}px;top:${b.top - r.top + b.height / 2}px`;
-        for (let i = 0; i < 8; i++) { const s = el('i'), a = (i / 8) * Math.PI * 2; s.style.cssText = `--x:${50 + 40 * Math.cos(a)}%;--y:${50 + 40 * Math.sin(a)}%;--s:${10 + (i % 3) * 4}px;--d:0s;--c:hsl(${i * 45} 100% 65%);--dh:0;--l:0`; burst.append(s); }
-        lane.append(burst); setTimeout(() => burst.remove(), 1400);
+        for (let i = 0; i < 8; i++) { const k = hash('bun' + i + Date.now()), a = (i / 8) * Math.PI * 2; burst.append(sparkle(k, (50 + 42 * Math.cos(a)).toFixed(1), (50 + 42 * Math.sin(a)).toFixed(1), 5 + (k % 5))); }
+        lane.append(burst); setTimeout(() => burst.remove(), 2400);
       }
       stop();
     });

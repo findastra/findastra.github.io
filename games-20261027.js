@@ -70,6 +70,7 @@
   // art's own stacking order; base layers next to each other share one canvas
   function layered(p, px) {
     if (F.missing(p, layers).length) return { parts: [{ c: sprite(p, px), extra: false }], extras: 0 };
+    // every accessory and rare part comes and goes (Astra, 2026-10-29: "I like the way their accessories turn on and off")
     const want = new Set(['fill', 'outline', 'eyes', ...p.accs.map(F.accLayer), ...p.rares.map((r) => 'rare' + r)]), base = new Set(['fill', 'outline', 'eyes']), parts = [];
     for (const slot of F.STACK) {
       if (!want.has(slot)) continue;
@@ -78,13 +79,17 @@
       if (!c) { c = document.createElement('canvas'); c.width = c.height = px; parts.push({ c, extra }); }
       c.getContext('2d').drawImage(layers.get(slot === 'fill' ? 'fill' + p.style + p.color : slot === 'outline' ? 'outline' + p.style : slot), 0, 0, px, px);
     }
-    // an accessory drawn to the edge of its square (the cloud) would show the square's corner out in the open, so each one
-    // fades out softly toward the edges instead (Astra, 2026-10-29: "so it doesn't have the corner to it")
+    // the smoke cloud is drawn right to the edge of its square, so where the square cuts it off it would show a straight
+    // edge; only that last strip at the border fades away, so the cloud keeps its black outline everywhere else (Astra,
+    // 2026-10-29: "I want to see the black outline of the smoke")
     for (const q of parts) {
       if (!q.extra) continue;
-      const x = q.c.getContext('2d'), g = x.createRadialGradient(px / 2, px / 2, px * .34, px / 2, px / 2, px * .5);
-      g.addColorStop(0, '#000'); g.addColorStop(1, 'rgba(0, 0, 0, 0)');
-      x.globalCompositeOperation = 'destination-in'; x.fillStyle = g; x.fillRect(0, 0, px, px); x.globalCompositeOperation = 'source-over';
+      const x = q.c.getContext('2d'), e = px * .07;
+      x.globalCompositeOperation = 'destination-out';
+      for (const [x0, y0, x1, y1, rx, ry, rw, rh] of [[0, 0, e, 0, 0, 0, e, px], [px, 0, px - e, 0, px - e, 0, e, px], [0, 0, 0, e, 0, 0, px, e], [0, px, 0, px - e, 0, px - e, px, e]]) {
+        const g = x.createLinearGradient(x0, y0, x1, y1); g.addColorStop(0, '#000'); g.addColorStop(1, 'rgba(0, 0, 0, 0)'); x.fillStyle = g; x.fillRect(rx, ry, rw, rh);
+      }
+      x.globalCompositeOperation = 'source-over';
     }
     return { parts, extras: parts.filter((q) => q.extra).length };
   }
@@ -155,9 +160,12 @@
     }
     function save() { store.set(HOME_KEY, folks.map((f) => f.code)); count(); }
     const inside = () => folks.filter((f) => !f.out), outside = () => folks.filter((f) => f.out);
-    // too many in the dome and they get angry (Astra, 2026-10-29): they race and spin and glow red, the dome shakes and flashes,
-    // and an alarm sounds once as it fills up to that point
-    const CROWD = 12, crowded = () => inside().length >= CROWD;
+    // the fuller it gets, the wilder (Astra, 2026-10-29: "the whole thing's a scale"): rage runs from 0 to 1 with whichever meter
+    // is further along, Fuzzbois or sparkles; they speed up, shove and spin more and more, and the dome glows through the rainbow
+    // and shakes harder, until at 1 it breaks. The alarm sounds once as rage passes three quarters
+    const rage = () => Math.min(1, Math.max(inside().length / HOME_MAX, motes.length / SPARK_MAX, hits / HITS_MAX));
+    const crowded = () => rage() >= .6;
+    let alarmed = false;
     let audio = null;
     function alarm() {
       try {
@@ -187,14 +195,19 @@
     }
     // the sparkle meter: every sparkle they knock off the walls stays in the dome, up to SPARK_MAX, and that many breaks it too
     // (Astra, 2026-10-29: "a sparkle counter, and then ... a fuzzboy counter. And if either one of them meets the threshold")
-    const SPARK_MAX = 6767;
-    let shownSparks = -1;
+    // three meters (Astra, 2026-10-29: "sparkles generated, fuzz boys, and collisions"): any one full breaks it
+    const SPARK_MAX = 6667, HITS_MAX = 1667;
+    let hits = 0, shownSparks = -1, shownHits = -1;
     function meterSparks() {
-      const row = $('dome-meter') && $('dome-meter').querySelector('.spark'), m = broken ? 0 : motes.length;
-      if (!row || m === shownSparks) return; shownSparks = m;
-      row.querySelector('b').textContent = broken ? '✦' : m;
-      row.querySelector('span').textContent = broken ? 'they all burst out' : `/ ${SPARK_MAX} sparkles`;
-      row.style.setProperty('--fill', broken ? 1 : m / SPARK_MAX); row.classList.toggle('hot', !broken && m > SPARK_MAX * .8);
+      const meter = $('dome-meter'); if (!meter) return;
+      const fill = (row, n, max, what) => {
+        row.querySelector('b').textContent = broken ? '✦' : n;
+        row.querySelector('span').textContent = broken ? 'they all burst out' : `/ ${max} ${what}`;
+        row.style.setProperty('--fill', broken ? 1 : n / max); row.classList.toggle('hot', !broken && n > max * .6);
+      };
+      const m = broken ? 0 : motes.length, h = broken ? 0 : hits;
+      if (m !== shownSparks) { shownSparks = m; fill(meter.querySelector('.spark'), m, SPARK_MAX, 'sparkles'); }
+      if (h !== shownHits) { shownHits = h; fill(meter.querySelector('.hits'), h, HITS_MAX, 'collisions'); }
     }
     // let them out (Astra, 2026-10-29): every Fuzzboi bursts out of the dome onto the whole page, not just the window, so
     // they bounce off up and down it and go off screen, leaving pastel sparkles behind them. Grab one, drag it back over the
@@ -325,9 +338,9 @@
     const loose = { home() { for (const f of outside()) goHome(f); } };
     function add(code) {
       if (broken) return 'The Cyber Dome is broken. Put it back together first.';
-      if (folks.length >= HOME_MAX) return `Every one of the ${HOME_MAX} is already made. Let some go first.`;
+      // as many of the same one as you like; the dome itself breaks at 67 inside, and the page holds up to 200 in all
+      if (folks.length >= 200) return 'That is 200 Fuzzbois. Catch some first.';
       folks.push(spawn(code)); save();
-      if (inside().length === CROWD) alarm();
       if (inside().length >= HOME_MAX) explode();
       return `#${code} moved into the Cyber Dome (${inside().length} of ${HOME_MAX}).`;
     }
@@ -359,7 +372,7 @@
       }) };
       // all the sparkles that were kept in the dome burst out with it, and plenty more
       for (const m of motes) bits.push({ x: ox + m.x * r, y: oy + m.y * r, vx: m.x * (5 + Math.random() * 6), vy: m.y * (5 + Math.random() * 6), life: 1, s: m.s, c: m.c });
-      motes.length = 0;
+      motes.length = 0; hits = 0;
       for (let i = 0; i < 6; i++) burst(ox + (Math.random() - .5) * r, oy + (Math.random() - .5) * r, 40, null, 7);
       letOut(true); count();
     }
@@ -469,17 +482,18 @@
       globe();
       const folks = inside(); // the ones loose on the page are drawn there, not here
       const r = R(), sh = share(), rr = sh / 2; // a Fuzzboi's radius inside the unit sphere
-      const angry = crowded();
-      cv.classList.toggle('alarm', angry);
+      const heat = rage(), angry = heat >= .6;
+      if (heat >= .75 && !alarmed) { alarmed = true; alarm(); } else if (heat < .7) alarmed = false;
+      // the whole dome glows, not the Fuzzbois: brighter and further round the rainbow the wilder it gets, and it shakes harder
+      cv.style.filter = heat > .04 ? `drop-shadow(0 0 ${3 + heat * 20}px hsl(${(hue * 3) % 360} 90% 62% / ${Math.min(1, heat * 1.3)}))` : '';
+      cv.style.translate = !reduced && heat > .2 ? `${(Math.random() - .5) * heat * 7}px ${(Math.random() - .5) * heat * 7}px` : '';
       const view = (x, y, z) => { const near = (z + 1) / 2, k = .82 + .18 * near; return { sx: W / 2 + x * r * k, sy: H / 2 + y * r * k, near }; };
       for (const f of folks) {
         if (!reduced) {
-          // crowded: twice as fast, shoving about every which way, spinning
-          const k = angry ? 2 : 1;
-          if (angry) {
-            f.vx += (Math.random() - .5) * .004; f.vy += (Math.random() - .5) * .004; f.vz += (Math.random() - .5) * .004; f.spin += (Math.random() - .5) * .25;
-            const v = Math.hypot(f.vx, f.vy, f.vz); if (v > .016) { f.vx *= .016 / v; f.vy *= .016 / v; f.vz *= .016 / v; }
-          }
+          // up to two and a half times as fast, shoving about every which way and spinning, more the wilder it is
+          const k = 1 + 1.5 * heat * heat;
+          f.vx += (Math.random() - .5) * .004 * heat; f.vy += (Math.random() - .5) * .004 * heat; f.vz += (Math.random() - .5) * .004 * heat; f.spin += (Math.random() - .5) * .3 * heat;
+          const v = Math.hypot(f.vx, f.vy, f.vz), cap = .013 + .006 * heat; if (v > cap) { f.vx *= cap / v; f.vy *= cap / v; f.vz *= cap / v; }
           f.x += f.vx * k; f.y += f.vy * k; f.z += f.vz * k;
           // off the inside of the sphere like a ball: reflect along the wall's normal
           const d = Math.hypot(f.x, f.y, f.z), lim = 1 - rr;
@@ -506,6 +520,7 @@
         if (rel > 0) {
           p.vx -= rel * nx; p.vy -= rel * ny; p.vz -= rel * nz; q.vx += rel * nx; q.vy += rel * ny; q.vz += rel * nz;
           p.squash = q.squash = 1; p.spin = (Math.random() - .5) * .9; q.spin = (Math.random() - .5) * .9;
+          if (++hits >= HITS_MAX) explode();
           boings.push({ x: (p.x + q.x) / 2, y: (p.y + q.y) / 2, z: Math.max(p.z, q.z), t: 1, word: ['boing!', 'boop', 'bonk!', 'sproing'][Math.floor(Math.random() * 4)] });
         }
         const push = (min - d) / 2; p.x -= nx * push; p.y -= ny * push; p.z -= nz * push; q.x += nx * push; q.y += ny * push; q.z += nz * push;
@@ -519,8 +534,6 @@
         if (f === picked) { cx.strokeStyle = '#' + f.code; cx.lineWidth = 3; cx.beginPath(); cx.arc(v.sx, v.sy, size * .5, 0, 7); cx.stroke(); }
         const sq = Math.sin(f.squash * Math.PI) * .22;
         cx.save(); cx.translate(v.sx, v.sy); cx.rotate(f.spin); cx.scale(1 + sq, 1 - sq);
-        // furious: each glows in its own background color (the dome is what goes red)
-        if (angry) { cx.shadowColor = '#' + f.code; cx.shadowBlur = 16; }
         drawFuzz(cx, f, -size / 2, -size / 2, size, t); cx.restore();
       }
       cx.globalAlpha = 1;
@@ -549,7 +562,7 @@
     }
     // the broken dome: its sphere drawn off screen, then each of the five pieces cut from it where it lies, turned as it is
     function brokenFrame() {
-      cv.classList.remove('alarm');
+      cv.style.filter = ''; cv.style.translate = '';
       gcv.width = cv.width; gcv.height = cv.height; gx.setTransform(main.getTransform());
       cx = gx; globe(); cx = main;
       cx.clearRect(0, 0, W, H);
