@@ -663,11 +663,12 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 .fz-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px; margin: 12px 0; }
 .fz-buttons { justify-content: center; }
 /* the Fuzzboi Factory's six big code boxes, each with what it decides under it */
-.fz-code { display: flex; align-items: center; gap: 8px; }
-.fz-hash { font: 700 40px/1 var(--mono); color: #8a8a8a; }
+.fz-code { --fzh: 56px; display: flex; align-items: flex-start; gap: 8px; }
+/* the # as tall as the number boxes and centered on them, not on the boxes and their labels together (Astra, 2026-10-29) */
+.fz-hash { display: flex; align-items: center; height: var(--fzh); font: 700 40px/1 var(--mono); color: #8a8a8a; }
 .fz-digits { flex: 1; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; min-width: 0; }
 .fz-digit { display: grid; gap: 4px; justify-items: center; }
-.fz-digit input { width: 100%; min-width: 0; font: 700 30px var(--mono); text-align: center; text-transform: uppercase; padding: 8px 0; color: #f2f2f2; background: #000;
+.fz-digit input { width: 100%; height: var(--fzh); min-width: 0; font: 700 30px var(--mono); text-align: center; text-transform: uppercase; padding: 8px 0; color: #f2f2f2; background: #000;
   border: 2px solid #5c5c5c; caret-color: #f2f2f2; }
 .fz-digit input:focus { outline: none; border-color: #f2f2f2; }
 .fz-digit span { font: 11px var(--mono); color: #8a8a8a; white-space: nowrap; }
@@ -855,6 +856,11 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
   #labRand { order: 0; }
   .cab .fz-row:has(#labSave) { flex-wrap: nowrap; gap: 8px; }
   .fz-digit input { font-size: 22px; }
+  /* on a phone a smaller #, and the words under the numbers small enough to fit under each one (Astra, 2026-10-29) */
+  .fz-code { --fzh: 44px; gap: 6px; }
+  .fz-hash { font-size: 28px; }
+  .fz-digits { gap: 4px; }
+  .fz-digit span { font-size: 8.5px; letter-spacing: -.02em; }
   .lightbox figure { padding: 44px 12px 12px; }
   .grid { grid-template-columns: 1fr; }
   .polaroids { gap: 60px 20px; }
