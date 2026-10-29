@@ -230,7 +230,14 @@
   const RM = 'https://raw.githubusercontent.com/findastra/the-rainbow-maker/main/Art/rainbow-maker/';
   const WORLDS = [
     { name: "Astra's Infinite Pole", ownPicsOnly: true, kind: 'VRChat world · PC VR / desktop', text: 'An infinite pole, a spiral staircase, phone booths that can talk to each other no matter how far down you fall, and tons of glitter too.', repo: 'astras-infinite-pole',
-      local: [{ src: 'art/worlds/infinite-pole-spawn.jpg', cap: "Astra's Infinite Pole · the spawn" }] },
+      // looking down past her feet first, her hand on the pole, the pole and its stairs from far off, the duck, the squishy
+      // heart, and the pink spawn with the movie screen last (Astra, 2026-10-29); no other pictures
+      local: [{ src: 'art/worlds/infinite-pole-01-feet-looking-down-20261029.webp', cap: "Astra's Infinite Pole · looking down" },
+        { src: 'art/worlds/infinite-pole-02-hand-on-the-pole-20261029.webp', cap: "Astra's Infinite Pole · holding on" },
+        { src: 'art/worlds/infinite-pole-03-pole-and-stairs-20261029.webp', cap: "Astra's Infinite Pole · the pole and its stairs" },
+        { src: 'art/worlds/infinite-pole-04-duck-20261029.webp', cap: "Astra's Infinite Pole · the duck" },
+        { src: 'art/worlds/infinite-pole-05-squishy-heart-20261029.webp', cap: "Astra's Infinite Pole · your heart is squishy" },
+        { src: 'art/worlds/infinite-pole-spawn.jpg', cap: "Astra's Infinite Pole · the spawn" }] },
     { name: 'Piranesi House', kind: 'VRChat world · PC VR / desktop', text: "Inspired by Susanna Clarke's Piranesi: an endless labyrinth of marble statues on an island, with a tide that rises and falls, a colossus you can sit in, and a very special developers' easter egg.", repo: 'piranesi-house',
       // its labyrinth key, the Cross of the Four Winds map from Piranesi Nessi's key page (Astra, 2026-10-29)
       local: [{ src: 'art/worlds/piranesi-house-labyrinth-key-20261029.png', cap: 'Piranesi House · the Cross of the Four Winds', fit: 'contain', bg: '#142225', label: 'concept model' }] },
