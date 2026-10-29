@@ -832,6 +832,18 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
   .term-actions { flex-wrap: nowrap; gap: 5px; padding: 6px 8px 10px; }
   .term-actions .btn { flex: 0 1 auto; min-width: 0; white-space: nowrap; padding: 4px 5px; font-size: 9.5px; }
   .board { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  /* the Sparkle creator on a phone: the sparkle on top, its four squares in a full-width two by two below, so the words fit
+     (Astra, 2026-10-29: "those squares look a little weird here on the phone") */
+  .spark-row { grid-template-columns: 1fr; justify-items: center; }
+  .spark-row .labrow { width: 100%; }
+  .lab-b { min-width: 0; overflow-wrap: anywhere; }
+  /* the Avatar lab too: the hairstyle collection across the whole row so its choice isn't cut off, and randomize, save and
+     library side by side */
+  .lab-group { grid-column: 1 / -1; }
+  .lab-group select { width: 100%; }
+  #labRand, #labSave, #labLibBtn { padding: 6px 8px; font-size: 11px; }
+  #labRand { order: 0; }
+  .cab .fz-row:has(#labSave) { flex-wrap: nowrap; gap: 8px; }
   .fz-digit input { font-size: 22px; }
   .lightbox figure { padding: 44px 12px 12px; }
   .grid { grid-template-columns: 1fr; }
