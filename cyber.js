@@ -976,6 +976,10 @@
         const x = sp.i % N, y = Math.floor(sp.i / N);
         if (picked.every((q) => Math.hypot(q.i % N - x, Math.floor(q.i / N) - y) >= 3)) picked.push(sp);
       }
+      // and the first ones back too (Astra, 2026-10-29: keep these and "put those back on"): her most colorful, brightest
+      // spots, with a little chance so they spread over the whole picture
+      const first = [...spots].sort((a, b) => (b.sat * .7 + b.light * .3 + b.w * .5) - (a.sat * .7 + a.light * .3 + a.w * .5)).slice(0, 70);
+      for (const sp of first) if (!picked.includes(sp)) picked.push(sp);
       box.replaceChildren(...picked.map((sp, n) => {
         const s = el('i'), k = hash('p' + sp.i);
         s.style.cssText = `--x:${((sp.i % N + .5) / N * 100).toFixed(1)}%;--y:${((Math.floor(sp.i / N) + .5) / N * 100).toFixed(1)}%;--s:${8 + (k % 14)}px;--d:${((k >>> 8) % 40) / 10}s;--c:${sp.c};--dh:${[-150, -100, -50, 0, 50, 100, 150][(k >>> 12) % 7]};--l:0`;

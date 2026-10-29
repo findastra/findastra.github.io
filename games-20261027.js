@@ -16,7 +16,8 @@
   // ---------- Fuzzboi Factory: type a six-digit code, get that exact Fuzzboi; each one moves into the Cyber Dome ----------
   const RULES = 'https://findastra.github.io/fuzzboi-factory/site/fuzzboi.js';
   const LAYERS = 'https://raw.githubusercontent.com/findastra/astras-pet-os/main/desktop-art/fuzzboi-friend/layers/';
-  const HOME_MAX = 30, HOME_KEY = 'findastra-fuzzboi-home-v1';
+  // the dome holds up to 67; the 67th breaks it (Astra, 2026-10-29: "Let's do 67. We'll break it.")
+  const HOME_MAX = 67, HOME_KEY = 'findastra-fuzzboi-home-v1';
   const layers = new Map();
   let F = null, layersIn = 0;
   const factoryCv = $('fz-cv'), note = $('fz-note');
@@ -128,7 +129,8 @@
   const home = (() => {
     // the dome is a sphere drawn as a white grid that slowly turns (Astra, 2026-10-27: "just a big sphere that's a grid"); each
     // Fuzzboi lives at x, y, z inside it (the sphere's radius is 1), smaller at the back, bigger at the front
-    const cv = $('home'), cx = cv.getContext('2d');
+    const cv = $('home'), main = cv.getContext('2d'), gcv = document.createElement('canvas'), gx = gcv.getContext('2d');
+    let cx = main; // the broken dome draws its sphere off screen first (gx), then cuts the pieces from it
     let W = 0, H = 0, picked = null, turn = 0, hue = 0;
     const motes = Array.from({ length: 22 }, () => { const a = Math.random() * 7, d = Math.random() * .8, sp = .002 + Math.random() * .004, b = Math.random() * 7;
       return { x: Math.cos(a) * d, y: Math.sin(a) * d, vx: Math.cos(b) * sp, vy: Math.sin(b) * sp, s: 4 + Math.random() * 6, h: Math.random() * 360, t: Math.random() * 7 }; });
@@ -161,11 +163,18 @@
       } catch {}
     }
     function count() {
-      const n = outside().length;
-      $('home-count').textContent = n ? `${inside().length} in the dome · ${n} loose on the page` : `${folks.length} of ${HOME_MAX} moved in`;
-      $('home-out').disabled = !folks.length; $('home-out').textContent = n ? 'call them all home' : 'let them out';
+      const n = outside().length, k = inside().length;
+      $('home-count').textContent = broken ? `the dome is broken · ${n} loose on the page` : n ? `${k} in the dome · ${n} loose on the page` : `${k} moved in`;
+      $('home-out').disabled = !folks.length || !!broken; $('home-out').textContent = n ? 'call them all home' : 'let them out';
       $('home-clear').disabled = !folks.length;
-      $('home-pick').textContent = crowded() ? `Too crowded! ${inside().length} in there and they are furious. Let some out.` : n ? 'Catch one: grab it, drag it back over the dome and let go.' : picked ? `#${picked.code}` : folks.length ? 'Tap a Fuzzboi to see its code.' : 'Nobody lives here yet. Make a Fuzzboi above and send it in.';
+      $('home-pick').textContent = broken ? 'It broke! Drag each piece back where it goes. Tap a piece to turn it.' : crowded() ? `Too crowded! ${k} in there and they are furious. Let some out.` : n ? 'Catch one: grab it, drag it back over the dome and let go.' : picked ? `#${picked.code}` : folks.length ? 'Tap a Fuzzboi to see its code.' : 'Nobody lives here yet. Make a Fuzzboi above and send it in.';
+      // the counter: how many are in, how many more until it breaks (Astra, 2026-10-29)
+      const meter = $('dome-meter');
+      if (meter) {
+        meter.querySelector('b').textContent = broken ? '✦' : k;
+        meter.querySelector('span').textContent = broken ? 'put the dome back together' : `of ${HOME_MAX} · ${HOME_MAX - k} more and it breaks`;
+        meter.style.setProperty('--fill', broken ? 1 : k / HOME_MAX); meter.classList.toggle('hot', !broken && crowded());
+      }
     }
     // let them out (Astra, 2026-10-29): every Fuzzboi bursts out of the dome onto the whole page, not just the window, so
     // they bounce off up and down it and go off screen, leaving pastel sparkles behind them. Grab one, drag it back over the
@@ -178,7 +187,7 @@
     function goHome(f) {
       f.out = false; f.node.remove(); f.node = null; f.born = performance.now(); f.x = rand() * .4; f.y = rand() * .4; f.z = rand() * .4;
       if (!outside().length) { layer.remove(); cancelAnimationFrame(roaming); roaming = 0; const av = document.getElementById('labSvg'); if (av) av.classList.remove('happy'); }
-      count();
+      count(); if (inside().length >= HOME_MAX) explode();
     }
     // dropped on the dome, it stays its size until it is over the sphere, then shrinks down into it (Astra, 2026-10-29)
     function sinkHome(f) {
@@ -200,7 +209,7 @@
       const drop = (e) => {
         if (held !== f) return;
         held = null; c2.classList.remove('held');
-        if (overDome(e.clientX, e.clientY)) sinkHome(f);
+        if (overDome(e.clientX, e.clientY) && !broken) sinkHome(f);
         else { f.pvx = Math.max(-14, Math.min(14, lastPt.vx || (Math.random() - .5) * 6)); f.pvy = Math.max(-14, Math.min(14, lastPt.vy || (Math.random() - .5) * 6)); }
       };
       c2.addEventListener('pointerup', drop); c2.addEventListener('pointercancel', drop);
@@ -280,13 +289,83 @@
     }
     const loose = { home() { for (const f of outside()) goHome(f); } };
     function add(code) {
-      if (folks.length >= HOME_MAX) return `The Cyber Dome is full (${HOME_MAX}). Let one out to make room.`;
+      if (broken) return 'The Cyber Dome is broken. Put it back together first.';
+      if (folks.length >= HOME_MAX) return `Every one of the ${HOME_MAX} is already made. Let some go first.`;
       folks.push(spawn(code)); save();
       if (inside().length === CROWD) alarm();
-      return `#${code} moved into the Cyber Dome (${folks.length} of ${HOME_MAX}).`;
+      if (inside().length >= HOME_MAX) explode();
+      return `#${code} moved into the Cyber Dome (${inside().length} of ${HOME_MAX}).`;
     }
+
+    // ---------- it breaks (Astra, 2026-10-29): at 67 the dome bursts. Every Fuzzboi flies out onto the page, the sphere
+    // shatters into five pieces that tumble away and land turned every which way, and sparkles burst everywhere. It is a
+    // puzzle: drag each piece back where it goes, tapping one to turn it an eighth at a time, until all five click in; then it
+    // seals, and they can be put back in again ----------
+    let broken = null, drag = null;
+    const bits = []; // loose sparkles on the dome: from walls that get hit, the burst, the seal
+    // a Fuzzboi's background color, softened toward white
+    const paleOf = (code, w = .45) => { const n = parseInt(code, 16), c = [n >> 16, (n >> 8) & 255, n & 255].map((v) => Math.round(v + (255 - v) * w)); return `rgb(${c})`; };
+    function burst(x, y, n, color, speed = 4) {
+      for (let i = 0; i < n; i++) {
+        const a = Math.random() * Math.PI * 2, v = speed * (.3 + Math.random());
+        bits.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, life: 1, s: 3 + Math.random() * 6, c: color || `hsl(${Math.floor(Math.random() * 360)} 55% 80%)` });
+      }
+    }
+    function explode() {
+      if (broken) return;
+      alarm();
+      const r = R(), n = 5, ox = W / 2, oy = H / 2;
+      broken = { pieces: Array.from({ length: n }, (_, i) => {
+        const a0 = (i / n) * Math.PI * 2 - Math.PI / 2, a1 = a0 + (Math.PI * 2) / n, mid = (a0 + a1) / 2, sp = 7 + Math.random() * 5;
+        // where it comes to rest, and turned some eighths of a turn (never the right way up)
+        const turnTo = (1 + Math.floor(Math.random() * 7)) * (Math.PI / 4);
+        return { a0, a1, x: ox, y: oy, vx: Math.cos(mid) * sp, vy: Math.sin(mid) * sp, rot: 0, vr: (Math.random() - .5) * .5, rotTo: turnTo, placed: false, settle: 0 };
+      }) };
+      for (let i = 0; i < 6; i++) burst(ox + (Math.random() - .5) * r, oy + (Math.random() - .5) * r, 40, null, 7);
+      letOut(true); count();
+    }
+    // the point (x, y) on the canvas, inside which piece (topmost first)
+    function pieceAt(x, y) {
+      const r = R();
+      for (let i = broken.pieces.length - 1; i >= 0; i--) {
+        const p = broken.pieces[i]; if (p.placed) continue;
+        const dx = x - p.x, dy = y - p.y, c = Math.cos(-p.rot), s = Math.sin(-p.rot), lx = dx * c - dy * s, ly = dx * s + dy * c;
+        let a = Math.atan2(ly, lx); while (a < p.a0) a += Math.PI * 2;
+        if (Math.hypot(lx, ly) < r && a <= p.a1) return p;
+      }
+      return null;
+    }
+    const norm = (a) => { a %= Math.PI * 2; if (a > Math.PI) a -= Math.PI * 2; if (a < -Math.PI) a += Math.PI * 2; return a; };
+    function seal() {
+      burst(W / 2, H / 2, 120, null, 5);
+      broken = null; count();
+    }
+    cv.addEventListener('pointermove', (e) => {
+      if (!drag) return;
+      const r = cv.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
+      if (Math.hypot(x - drag.sx, y - drag.sy) > 6) drag.moved = true;
+      drag.p.x = x - drag.dx; drag.p.y = y - drag.dy;
+    });
+    const dropPiece = () => {
+      if (!drag) return;
+      const p = drag.p, moved = drag.moved; drag = null;
+      if (!moved) { p.rotTo = p.rot + Math.PI / 4; return; }
+      // close enough to its place and the right way up: it clicks in
+      if (Math.hypot(p.x - W / 2, p.y - H / 2) < R() * .22 && Math.abs(norm(p.rotTo)) < .2) {
+        p.placed = true; p.x = W / 2; p.y = H / 2; p.rot = p.rotTo = 0;
+        const mid = (p.a0 + p.a1) / 2; burst(W / 2 + Math.cos(mid) * R() * .6, H / 2 + Math.sin(mid) * R() * .6, 24, null, 3);
+        if (broken.pieces.every((q) => q.placed)) seal();
+      }
+    };
+    cv.addEventListener('pointerup', dropPiece); cv.addEventListener('pointercancel', dropPiece);
     cv.addEventListener('pointerdown', (e) => {
       const r = cv.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
+      if (broken) {
+        const p = pieceAt(x, y); if (!p) return;
+        broken.pieces.splice(broken.pieces.indexOf(p), 1); broken.pieces.push(p); // to the top
+        drag = { p, dx: x - p.x, dy: y - p.y, sx: x, sy: y, moved: false }; cv.setPointerCapture(e.pointerId); e.preventDefault();
+        return;
+      }
       const hit = inside().filter((f) => f.ss).sort((p, q) => q.z - p.z).find((f) => Math.hypot(f.sx - x, f.sy - y) < f.ss * .45);
       picked = hit === picked ? null : hit || null;
       if (picked) { picked.squash = 1; codeIn.value = picked.code; make(picked.code, false); }
@@ -324,11 +403,13 @@
       requestAnimationFrame(frame);
       if (!W) return;
       if (!reduced) turn += .003;
+      if (broken) { brokenFrame(); sparks(); return; }
       globe();
       const folks = inside(); // the ones loose on the page are drawn there, not here
       const r = R(), sh = share(), rr = sh / 2; // a Fuzzboi's radius inside the unit sphere
       const angry = crowded();
       cv.classList.toggle('alarm', angry);
+      const view = (x, y, z) => { const near = (z + 1) / 2, k = .82 + .18 * near; return { sx: W / 2 + x * r * k, sy: H / 2 + y * r * k, near }; };
       for (const f of folks) {
         if (!reduced) {
           // crowded: twice as fast, shoving about every which way, spinning
@@ -342,7 +423,11 @@
           const d = Math.hypot(f.x, f.y, f.z), lim = 1 - rr;
           if (d > lim) {
             const nx = f.x / d, ny = f.y / d, nz = f.z / d, dot = f.vx * nx + f.vy * ny + f.vz * nz;
-            if (dot > 0) { f.vx -= 2 * dot * nx; f.vy -= 2 * dot * ny; f.vz -= 2 * dot * nz; f.squash = .6; }
+            if (dot > 0) {
+              f.vx -= 2 * dot * nx; f.vy -= 2 * dot * ny; f.vz -= 2 * dot * nz; f.squash = .6;
+              // it hits the side and sparkles burst off it, in a pastel of its own color (Astra, 2026-10-29)
+              const v = view(nx * lim, ny * lim, nz * lim); burst(v.sx + nx * r * rr, v.sy + ny * r * rr, angry ? 7 : 5, paleOf(f.code), 2.5);
+            }
             f.x = nx * lim; f.y = ny * lim; f.z = nz * lim;
           }
         }
@@ -361,7 +446,6 @@
         const push = (min - d) / 2; p.x -= nx * push; p.y -= ny * push; p.z -= nz * push; q.x += nx * push; q.y += ny * push; q.z += nz * push;
       }
       // back to front; nearer is bigger and a little lower in the view
-      const view = (x, y, z) => { const near = (z + 1) / 2, k = .82 + .18 * near; return { sx: W / 2 + x * r * k, sy: H / 2 + y * r * k, near }; };
       for (const f of [...folks].sort((p, q) => p.z - q.z)) {
         const v = view(f.x, f.y, f.z), grow = Math.min(1, (t - f.born) / 450);
         const size = sh * r * 2 * (.55 + .6 * v.near) * (grow < 0 ? 1 : grow);
@@ -370,7 +454,8 @@
         if (f === picked) { cx.strokeStyle = '#' + f.code; cx.lineWidth = 3; cx.beginPath(); cx.arc(v.sx, v.sy, size * .5, 0, 7); cx.stroke(); }
         const sq = Math.sin(f.squash * Math.PI) * .22;
         cx.save(); cx.translate(v.sx, v.sy); cx.rotate(f.spin); cx.scale(1 + sq, 1 - sq);
-        if (angry) { cx.shadowColor = 'rgba(255, 40, 60, .95)'; cx.shadowBlur = 16; }
+        // furious: each glows in its own background color (the dome is what goes red)
+        if (angry) { cx.shadowColor = '#' + f.code; cx.shadowBlur = 16; }
         drawFuzz(cx, f, -size / 2, -size / 2, size, t); cx.restore();
       }
       cx.globalAlpha = 1;
@@ -378,12 +463,47 @@
       for (const b of boings) { const v = view(b.x, b.y, b.z); cx.fillStyle = `rgba(255, 255, 255, ${b.t})`; cx.fillText(b.word, v.sx, v.sy - r * sh - (1 - b.t) * 18); b.t -= .025; }
       cx.textAlign = 'start';
       for (let i = boings.length - 1; i >= 0; i--) if (boings[i].t <= 0) boings.splice(i, 1);
+      sparks();
+    }
+    // the loose sparkles: drift out, slow down, twinkle and fade
+    function sparks() {
+      for (let i = bits.length - 1; i >= 0; i--) {
+        const b = bits[i]; b.x += b.vx; b.y += b.vy; b.vx *= .96; b.vy = b.vy * .96 + .03; b.life -= .014;
+        if (b.life <= 0) { bits.splice(i, 1); continue; }
+        const sz = b.s * (.5 + b.life * .7), q = sz * .22;
+        cx.globalAlpha = Math.min(1, b.life * 1.4); cx.fillStyle = b.c;
+        cx.beginPath(); cx.moveTo(b.x, b.y - sz); cx.lineTo(b.x + q, b.y - q); cx.lineTo(b.x + sz, b.y); cx.lineTo(b.x + q, b.y + q); cx.lineTo(b.x, b.y + sz); cx.lineTo(b.x - q, b.y + q); cx.lineTo(b.x - sz, b.y); cx.lineTo(b.x - q, b.y - q); cx.closePath(); cx.fill();
+      }
+      cx.globalAlpha = 1;
+      if (bits.length > 600) bits.splice(0, bits.length - 600);
+    }
+    // the broken dome: its sphere drawn off screen, then each of the five pieces cut from it where it lies, turned as it is
+    function brokenFrame() {
+      cv.classList.remove('alarm');
+      gcv.width = cv.width; gcv.height = cv.height; gx.setTransform(main.getTransform());
+      cx = gx; globe(); cx = main;
+      cx.clearRect(0, 0, W, H);
+      const r = R(), pieces = [...broken.pieces].sort((a, b) => b.placed - a.placed);
+      for (const p of pieces) {
+        if (!p.placed && (!drag || drag.p !== p)) {
+          p.x += p.vx; p.y += p.vy; p.vx *= .9; p.vy *= .9; p.rot += p.vr; p.vr *= .92;
+          if (Math.hypot(p.vx, p.vy) < .5) p.rot += (p.rotTo - p.rot) * .1;
+          p.x = Math.min(W - r * .3, Math.max(r * .3, p.x)); p.y = Math.min(H - r * .3, Math.max(r * .3, p.y));
+        } else if (drag && drag.p === p) p.rot += (p.rotTo - p.rot) * .2;
+        cx.save(); cx.translate(p.x, p.y); cx.rotate(p.rot);
+        cx.beginPath(); cx.moveTo(0, 0); cx.arc(0, 0, r + 4, p.a0, p.a1); cx.closePath();
+        cx.save(); cx.clip(); cx.drawImage(gcv, 0, 0, gcv.width, gcv.height, -W / 2, -H / 2, W, H); cx.restore();
+        // the cracked edges
+        cx.strokeStyle = p.placed ? 'rgba(255, 255, 255, .25)' : 'rgba(255, 255, 255, .85)'; cx.lineWidth = 1.5; cx.stroke();
+        cx.restore();
+      }
+      // where the pieces go: a faint ring
+      cx.setLineDash([6, 8]); cx.strokeStyle = 'rgba(255, 255, 255, .25)'; cx.lineWidth = 1.5; cx.beginPath(); cx.arc(W / 2, H / 2, r, 0, 7); cx.stroke(); cx.setLineDash([]);
     }
     ready.then(() => {
       if (!F) return;
-      // the same Fuzzbois move back in on the next visit (kept in this browser only)
-      const saved = store.get(HOME_KEY, []);
-      if (Array.isArray(saved)) for (const code of saved.slice(0, HOME_MAX)) if (/^[0-9A-F]{6}$/.test(code)) { const f = spawn(code); f.born = -1e9; f.x = rand() * .5; f.y = rand() * .5; f.z = rand() * .5; folks.push(f); }
+      // the dome starts empty on every visit (Astra, 2026-10-29: "make sure it spawns with none in the Cyberdome")
+      const saved = [];
       count();
       const linked = /^#fuzzboi-([0-9A-F]{6})$/i.exec(location.hash);
       make(linked ? linked[1].toUpperCase() : '456900', !!linked && !(Array.isArray(saved) && saved.includes(linked[1].toUpperCase())));

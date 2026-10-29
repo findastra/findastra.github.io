@@ -656,6 +656,12 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 2px #f2f2f2; text
 @keyframes dome-shake { 0%, 100% { translate: 0 0; } 25% { translate: -3px 1px; } 50% { translate: 2px -2px; } 75% { translate: -1px 2px; } }
 @keyframes dome-flash { 0%, 100% { filter: drop-shadow(0 0 0 transparent); } 50% { filter: drop-shadow(0 0 18px rgba(255, 40, 60, .85)); } }
 @media (prefers-reduced-motion: reduce) { .home.alarm { animation: dome-flash 1.6s ease-in-out infinite; } }
+/* the counter under the dome: how many are in, how many more until it breaks, and a bar filling toward 67 */
+.dome-meter { --fill: 0; display: grid; grid-template-columns: auto 1fr; align-items: baseline; gap: 4px 10px; font: 12px/1.3 var(--mono); color: #9a9a9a; }
+.dome-meter b { font: 900 2rem/1 Inter, sans-serif; color: #f2f2f2; }
+.dome-meter i { grid-column: 1 / -1; height: 8px; border: 1px solid #555; background: linear-gradient(90deg, #39ff14, #fff01f 50%, #ff2e4d) 0 0 / 100% 100%;
+  clip-path: inset(0 calc((1 - var(--fill)) * 100%) 0 0); transition: clip-path .4s; }
+.dome-meter.hot b { color: #ff5a6e; text-shadow: 0 0 10px rgba(255, 40, 60, .7); }
 /* the dome's count sits right under its name */
 .cab-head { display: grid; gap: 6px; }
 .cab-head h3 { margin: 0; justify-self: start; }
