@@ -223,9 +223,9 @@ main { position: relative; z-index: 1; }
 .term-body::-webkit-scrollbar-track { background: #000; }
 .term-body::-webkit-scrollbar-thumb { background: #5a5a5a; }
 .term-body::-webkit-scrollbar-button { display: none; }
-.term-actions { display: flex; gap: 10px; flex-wrap: wrap; padding: 10px 14px 14px; --ink: #f2f2f2; --bg: #000; --muted: #5c5c5c; }
+.term-actions { display: flex; gap: 8px; flex-wrap: nowrap; padding: 10px 14px 14px; /* one row, on every screen (Astra, 2026-10-29) */ --ink: #f2f2f2; --bg: #000; --muted: #5c5c5c; }
 /* the buttons' edges a shade darker; the title on the striped bar sits on its own solid strip so it reads (Astra, 2026-10-29) */
-.term-actions .btn { border-color: #9a9a9a; }
+.term-actions .btn { border-color: #9a9a9a; flex: 0 1 auto; min-width: 0; white-space: nowrap; }
 .term-actions .btn.hot { border-color: #6a6a6a; }
 .term-bar #term-title, .term-bar > span:not(.lights) { background: #f2f2f2; color: #000; font-weight: 700; padding: 0 6px; }
 .who { display: flex; flex-direction: column; justify-content: center; text-align: center; }
@@ -401,7 +401,8 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
    close enough that tilted corners just touch the white border next door, never the writing (Astra, 2026-10-29) */
 /* a full row reaches --hang past the paper on both sides, so its first and last Polaroids just hang off the edges; cyber.js
    sizes them (--pw) so a row fills that width exactly (Astra, 2026-10-29) */
-.polaroids { --hang: 6px; display: flex; flex-wrap: wrap; justify-content: center; gap: 44px 14px; padding: 28px 0 32px;
+/* rows far enough apart that no tape or sticky note lands on the Polaroid above (Astra, 2026-10-29: "make sure they're all separate") */
+.polaroids { --hang: 6px; display: flex; flex-wrap: wrap; justify-content: center; gap: 72px 32px; padding: 28px 0 32px;
   margin-inline: calc(-1 * (var(--sheet, 0px) + var(--hang))); }
 /* one Polaroid under the other (a phone): the wall stays on the paper instead of hanging just off it */
 .polaroids.single { margin-inline: 0; }
@@ -431,6 +432,10 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 /* a Discord profile's activity, slim like Discord draws it (Astra, 2026-10-29: "thinner and pancake-like"): "Playing" with
    the controller, then the app's own card art (its galaxy GIF, turning by itself as on Discord) beside its name, what it is
    using, what it is working on, and the elapsed time in green */
+/* the real Discord cards, one over the other on the bare paper */
+.ai-real { position: absolute; inset: 0; display: grid; align-content: center; gap: 10px; padding: 6%; }
+.ai-real-card { display: block; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 0 rgba(0, 0, 0, .35); }
+.ai-real-card img { display: block; width: 100%; height: auto; }
 .ai-cards { position: absolute; inset: 0; display: grid; align-content: center; gap: 8px; padding: 8% 7%; }
 .ai-card { display: grid; grid-template-columns: 30% 1fr; grid-template-rows: auto 1fr; align-items: center; column-gap: 8px; padding: 5px 8px 7px; text-align: left;
   text-decoration: none; color: #f2f2f2; background: #232428; border-radius: 8px; box-shadow: 0 0 0 1px rgba(255, 255, 255, .08), 0 3px 8px rgba(0, 0, 0, .5); }
@@ -830,7 +835,7 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
   .fz-digit input { font-size: 22px; }
   .lightbox figure { padding: 44px 12px 12px; }
   .grid { grid-template-columns: 1fr; }
-  .polaroids { gap: 34px 10px; }
+  .polaroids { gap: 60px 20px; }
   .polaroid .frame { --edge-w: 8px; }
   .note .title { font-size: 1.05rem; }
   .note .kind { font-size: .75rem; }
