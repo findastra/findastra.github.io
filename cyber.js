@@ -648,13 +648,17 @@
   const SITE_PICS = {
     // Moodglass: three collages of the garden pictures it posted in Astra's plants channel (Astra, 2026-10-29: "you can use
     // the 'plants' chat", then "do all on there")
-    moodglass: ['a', 'b', 'c'].map((k) => ({ src: 'art/projects/moodglass-plants-collage-' + k + '-20261029.webp', cap: 'Moodglass: plant pictures from its Discord channel' })),
+    // then one panel the way Moodglass lays it out, in rows with crisp borders, of Liminal Doors' doorspaces as built, none of
+    // the concept art the Liminal Doors Polaroid shows (Astra, 2026-10-29: "just do one panel", "non-blurred borders",
+    // "put doors on there that you don't see in the other one")
+    moodglass: [{ src: 'art/projects/moodglass-liminal-doors-rows-20261029.webp', cap: 'Moodglass: Liminal Doors doorspaces behind a chat' }],
     // a little smaller, so its green banner sits clear of the tape (Astra, 2026-10-29)
     // and the border round it filled with its own blue, not see-through (Astra, 2026-10-29)
     'fuzzboi-factory': [{ src: 'art/projects/fuzzboi-factory-site-20261027.jpg', cap: 'The Fuzzboi Factory', fit: 'contain', bg: '#121a6b', size: 0.88, fill: '#121a6b' }],
     // just the two stars, the name and the three windows, bigger, without the pole down the left (Astra, 2026-10-29)
     // ...with the three arched windows in the middle of the square (Astra, 2026-10-29)
-    'mommys-website': [{ src: 'art/projects/mommys-website-site-20261027.jpg', cap: "Mommy's: the twins and the windows", crop: [105, -103, 1225, 1017, 1280, 900], bg: '#1a0612' }],
+    // the page's own dark background carried on above and below, so no black bar shows at the top (Astra, 2026-10-29)
+    'mommys-website': [{ src: 'art/projects/mommys-website-site-extended-20261029.jpg', cap: "Mommy's: the twins and the windows", crop: [105, 7, 1225, 1127, 1280, 1130], bg: '#1a0612' }],
     // the star alone on the paper, almost to the frame's edges (Astra, 2026-10-29), its neon edge cycling through the colors
     'astras-photostar': [{ src: 'https://findastra.github.io/astras-star-window/star-window.svg', cap: "Astra's Photostar", fit: 'contain', size: 0.94, clear: true, inline: true }],
     // the live sign, saying what it is (its ?message= link option is a Pocket Message Board change waiting for Astra's OK)
@@ -804,24 +808,23 @@
     if (icon) { const im = el('img'); im.src = icon; im.alt = p.pet; im.loading = 'lazy'; big.append(im); cropToInk(im); } else big.textContent = '{ }';
     // the star's top point is its button: the usual turn-over arrows in a circle (Astra, 2026-10-29); more buttons, when there
     // are more, go on its other points
-    const turnBtn = el('button', 'tip turn-btn'); turnBtn.type = 'button'; turnBtn.setAttribute('aria-label', 'flip the star to see ' + p.pet + "'s program"); turnBtn.title = 'flip';
+    const turnBtn = el('button', 'tip turn-btn'); turnBtn.type = 'button'; turnBtn.setAttribute('aria-label', 'flip ' + p.pet + "'s star"); turnBtn.title = 'flip';
     turnBtn.append(flipIcon());
     const body = el('div', 'body');
-    // the pet, and under it the pet program it runs (Astra, 2026-10-29)
-    body.append(el('b', 'name', p.pet), el('div', 'pet', p.program || 'program not named yet'));
+    // the pet, and under it the pet program it runs (Astra, 2026-10-29), both links (Astra, 2026-10-29: "both of those words
+    // actually need to be a link"): the pet to its repo, the program to its pet program page; whichever one is missing (a
+    // private repo, a page not made yet) uses the other, so no link leads to a page a visitor cannot open
+    const petLink = repoUrl || site, programLink = site || repoUrl;
+    const nameEl = petLink ? link(petLink, 'name', p.pet) : el('b', 'name', p.pet);
+    const progEl = programLink && p.program ? link(programLink, 'pet', p.program) : el('div', 'pet', p.program || 'program not named yet');
+    body.append(nameEl, progEl);
     const win = el('div', 'win'); win.append(big, body);
-    // no flip for now (Astra, 2026-10-29: "we'll get it ready later"); when it comes back it turns over to another star, not
-    // a square
-    const face = el('div', 'face'); face.append(shape('star', '-111 -116 229 220'), win);
-    // the back: the pet program, as one big square, with only its links and a way back
-    const back = el('div', 'back'), sq = el(pics.length ? 'button' : 'div', 'square');
-    if (pics.length) { const im = el('img'); im.src = pics[0].src; im.alt = ''; im.loading = 'lazy'; sq.append(im); sq.setAttribute('aria-label', 'open pictures of ' + p.pet); sq.onclick = () => openGallery(pics); }
-    else { const im = el('img', 'pix'); if (icon) { im.src = icon; im.alt = ''; im.loading = 'lazy'; sq.append(im); } sq.append(el('span', 'soon', 'program pictures coming')); }
-    const links = el('div', 'back-links');
-    if (site) links.append(link(site, null, 'open ' + (p.program || 'it') + ' ↗'));
-    if (repoUrl) links.append(link(repoUrl, null, 'repo ↗'));
-    const backBtn = el('button', 'turn-btn'); backBtn.type = 'button'; backBtn.setAttribute('aria-label', 'flip back to ' + p.pet); backBtn.title = 'flip back'; backBtn.append(flipIcon()); links.append(backBtn);
-    back.append(sq, links);
+    // the flip is back, and it turns over to another star with nothing on it yet (Astra, 2026-10-29: "I want the flipping
+    // feature still, but I just don't want anything on the backside of the star yet")
+    const face = el('div', 'face'); face.append(shape('star', '-111 -116 229 220'), win, turnBtn);
+    const back = el('div', 'back star-back');
+    const backBtn = el('button', 'tip turn-btn'); backBtn.type = 'button'; backBtn.setAttribute('aria-label', 'flip back to ' + p.pet); backBtn.title = 'flip back'; backBtn.append(flipIcon());
+    back.append(shape('star', '-111 -116 229 220'), backBtn);
     const turn = el('div', 'turn'); turn.append(face, back);
     const flip = (on) => { c.classList.toggle('flipped', on); back.inert = !on; face.inert = on; };
     turnBtn.onclick = () => flip(true); backBtn.onclick = () => flip(false); back.inert = true;
@@ -942,12 +945,15 @@
       box.querySelector('.jar-count').textContent = `${n} ${n === 1 ? kind.one : kind.many} in the jar`;
       pourBtn.textContent = n ? `empty the jar (${n})` : 'put them back in the jar';
       shakeBtn.disabled = !n;
+      box.dataset.left = String(n);
     }
+    // the Fuzzbois tip it too, when five or more are loose on the page (games-20261027.js)
+    box.addEventListener('fuzz-tip', () => { shake(); });
     new ResizeObserver(() => fill(items)).observe(inside);
     async function shake() {
       if (shaking || !left().length) return;
       wake();
-      shaking = true; jar.classList.add('shaking');
+      shaking = true; jar.classList.add('shaking'); box.dataset.tippedAt = String(Date.now());
       const minis = [...inside.children];
       // the color shown least so far (never the last one again, while another is left), then any star of that color at random,
       // one with pictures a little more often
@@ -1057,7 +1063,10 @@
       const paper = (box.closest('.block') || box).getBoundingClientRect();
       const groundY = ground - size * .5 - mouth.y, wallX = paper.right - size * .55 - mouth.x, rad = size / 2;
       let x = start ? start.x - mouth.x : 0, y = Math.min(groundY, start ? start.y - mouth.y : 0), vx = 9, vy = -.8, rot = 0;
-      let landed = false, knocked = false, prev = performance.now();
+      let landed = false, knocked = false, prev = performance.now(), speed = 3;
+      // how long the drop takes, and so how far ahead of the slot it leaves the ledge: its sideways speed off the ledge, eased
+      // to nothing over the drop, carries it exactly over the slot
+      const dropMs = Math.max(650, Math.min(1200, Math.abs(slotY - groundY) * 1.7)), lead = (v) => v / 16.7 * dropMs / 2;
       const t0 = prev;
       await new Promise((done) => {
         (function step(now) {
@@ -1078,11 +1087,11 @@
               for (let i = 0; i < 6; i++) puff(mouth.x + x + rad, mouth.y + y, -10 - Math.random() * 20, (Math.random() - .5) * 30, 1100);
             }
           } else {
-            // back toward its slot, easing to a stop right over it
-            const left = x - slotX;
-            vx = -Math.max(.6, Math.min(Math.abs(vx), left * .09));
+            // back toward its slot at an easy roll, never stopping (Astra, 2026-10-29: "not come to a stop and then start spinning
+            // again"): a little before it is over its slot it rolls off the ledge, still rolling, into the drop below
+            vx = -Math.max(2.4, Math.min(Math.abs(vx), 4));
             x += vx * k; y = groundY;
-            if (x <= slotX + .5) { x = slotX; rot -= (Math.abs(vx) * k / rad) * (180 / Math.PI); f.style.transform = at(x, y, 1, rot); return done(); }
+            if (x <= slotX + lead(Math.abs(vx))) { rot -= (Math.abs(vx) * k / rad) * (180 / Math.PI); f.style.transform = at(x, y, 1, rot); speed = Math.abs(vx); return done(); }
           }
           // always turning the same way, counterclockwise, whichever way it rolls (Astra, 2026-10-29)
           rot -= (Math.abs(vx) * k / rad) * (180 / Math.PI);
@@ -1104,8 +1113,17 @@
         const q = card.getBoundingClientRect(); puff(q.left + q.width * (.3 + Math.random() * .4), q.top + q.height * (.3 + Math.random() * .4), (Math.random() - .5) * 30, 10 + Math.random() * 30, 1600);
         setTimeout(trail, 80);
       })();
-      const drop = Math.max(500, Math.min(1100, Math.abs(slotY - y) * 1.6));
-      await card.animate([{ transform: from(y - slotY, s0, r0) }, { transform: 'none' }], { duration: drop, easing: 'cubic-bezier(.45, 0, .25, 1)' }).finished;
+      // off the cliff (Astra, 2026-10-29: "like it fell off a cliff, it slow rolls down and then spins to be bigger, and then it
+      // gets to the spot smoothly"): sideways it keeps the speed it left the ledge with, slowing to nothing right over the slot;
+      // down it starts slow and gathers, then eases in; it keeps turning the same way, growing to its size
+      const dx0 = x - slotX, dy0 = y - slotY, t1 = performance.now();
+      await new Promise((done) => {
+        (function fallStep(now) {
+          const u = Math.min(1, (now - t1) / dropMs), side = 1 - (1 - u) * (1 - u), down = u * u * (3 - 2 * u);
+          card.style.transform = `translate(${dx0 * (1 - side)}px, ${dy0 * (1 - down)}px) scale(${s0 + (1 - s0) * down}) rotate(${r0 * (1 - side)}deg)`;
+          if (u < 1) requestAnimationFrame(fallStep); else done();
+        })(t1);
+      });
       card.style.transform = ''; trailing = false;
     }
 
@@ -1171,13 +1189,101 @@
     }
     render();
   }).catch(() => {});
+  // L1, the third-party app each pet works on top of, the most used one (Astra, 2026-10-29: "just pick the most commonly
+  // used third-party app at the top for it"; the Farmer's is "third-party apps", since he looks after all of them)
+  const L1 = {
+    "Friendly Farmer": "third-party apps",
+    "GitHub Goldfish": "GitHub",
+    "Data Chip": "Hugging Face",
+    "API Fairy": "GitHub & API sites",
+    "Unity Unicorn": "Unity",
+    "Python Panther": "Python",
+    "Astra Wisp": "VRChat",
+    "Health Hummy": "Apple Health",
+    "Finance Finch": "bank apps",
+    "Mommy's Mommies": "Google Calendar",
+    "Paper Patty": "arXiv",
+    "File Master": "Windows File Explorer",
+    "Discord Damsel": "Discord",
+    "Portfolio Puffer": "GitHub Pages",
+    "Drum Dog": "Ableton Live",
+    "VSCode Angel": "VS Code",
+    "Gone Ghost": "Ghost Protocol",
+    "Project Parrot": "OneNote",
+    "Voicemeeter Bug": "Voicemeeter",
+    "Spoonfed Sugarcube": "Google Maps",
+    "Claude Bot": "Claude",
+    "RGBee": "OpenRGB",
+    "Mine Mole": "NiceHash",
+    "Mail Snail": "Gmail",
+    "Patch Cat": "Windows Update",
+    "Meme Fiend": "Discord",
+    "Gif Giraffe": "FFmpeg",
+    "Backup Beaver": "OneDrive",
+    "Rift Rabbit": "SteamVR",
+    "Fuzzboi Friend": "GitHub Pages",
+    "Wifi Butterfly": "Windows Wi-Fi",
+    "Deck Duck": "Stream Deck",
+    "Mesh Moth": "Meshtastic",
+    "Raspberry Pi Berry": "Raspberry Pi OS",
+    "Chat Rat": "ChatGPT",
+    "Platform Platypus": "Chrome DevTools",
+    "Dubstep Gunsmith": "Unity",
+    "Pole Puff": "Unity",
+    "Procreate Panda": "Procreate",
+    "Skill Scout": "Claude Code & Codex",
+    "OSC Sealion": "VRChat OSC",
+    "Piranesi Nessi": "Unity",
+    "Photo Dodo": "Google Photos",
+    "Video Vulture": "Google Photos",
+    "Closet Cat": "online shops",
+    "Gatekeeper Goddess": "YubiKey",
+    "Queue Quokka": "GitHub Actions",
+    "Log Lynx": "Windows Event Viewer",
+    "Server Salamander": "Uptime Kuma",
+    "Docker Dragon": "Docker",
+    "Test Tortoise": "Node test runner",
+    "Token Toucan": "OpenAI & Anthropic",
+    "Packet Piranha": "Wireshark",
+    "Calendar Crow": "Google Calendar",
+    "Browser Bat": "Chrome",
+    "Data Dragonfly": "PostgreSQL",
+    "Update Urchin": "Dependabot",
+    "Linux Penguin": "Linux",
+    "Stock Fox": "stock market apps",
+    "Passport Pelican": "government travel sites",
+    "Journal Jellyfish": "Google Maps",
+    "Shell Squid": "Bash",
+    "Kernel Koala": "Task Manager",
+    "Proxy Axolotl": "Caddy",
+    "Cluster Crab": "Kubernetes",
+    "Storage Stoat": "TrueNAS",
+    "White Hat Weasel": "Kali Linux",
+    "Port Spider": "Nmap",
+    "Cipher Owl": "OpenSSL",
+    "Forensic Ferret": "Windows Event Viewer",
+    "Llama Librarian": "Ollama",
+    "Inference Iguana": "NVIDIA drivers",
+    "Agent Ant": "Claude & ChatGPT",
+    "Roaming Raven": "Tailscale",
+    "Cache Coyote": "the browser cache",
+    "Sync Mink": "OneDrive",
+    "Triage Tapir": "GitHub Issues",
+    "Pet Police Officer": "GitHub",
+    "AI Dashund": "research papers",
+    "Rescue Retriever": "GitHub Releases",
+    "Intel Owl": "CVE databases",
+    "Door Dormouse": "Unity",
+    "Role Fairy": "Discord",
+    "Workflow Whale": "iPad",
+  };
   const levelNote = (p) => (at, box) => {
     // what each of the four levels is for this pet, by name (Astra, 2026-10-29: "specifically for each one, what they are"):
     // L1 the program underneath (the other people's program it looks after, else its own code, its repo), L2 its pet program,
     // L3 the pet itself, L4 the person it answers to, Astra
     const pet = p[at], lv = levels[pet.pet];
     box.classList.add('names');
-    box.replaceChildren(...[`L1 – ${(lv && lv.others) || pet.repo || '—'}`, `L2 – ${pet.program || '—'}`, `L3 – ${pet.pet}`, 'L4 – Astra'].map((t) => el('div', null, t)));
+    box.replaceChildren(...[`L1 – ${L1[pet.pet] || (lv && lv.others) || 'third-party apps'}`, `L2 – ${pet.program || '—'}`, `L3 – ${pet.pet}`, 'L4 – Astra'].map((t) => el('div', null, t)));
     fitLines(box);
   };
   // each line of a note on one line (Astra, 2026-10-29: "I don't want to see them go a line lower"): a line wider than the

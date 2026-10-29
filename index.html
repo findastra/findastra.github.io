@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&family=JetBrains+Mono:wght@400;700&family=VT323&family=Permanent+Marker&display=swap">
-<link rel="stylesheet" href="cyber.css?v=20261031zq">
+<link rel="stylesheet" href="cyber.css?v=20261031zv">
 </head>
 <body>
 <!-- every star on the page is the Photostar's own outline (astras-star-window star-window.svg), scaled to this box (Astra, 2026-10-29) -->
@@ -112,8 +112,14 @@
   <section class="block weave chapter" id="pets">
     <p class="kicker">// 04 · astra's petos</p>
     <h2>Astra's PetOS</h2>
-    <!-- shorter, and plain about the levels (Astra, 2026-10-29) -->
-    <p class="lede">Every project gets a pet. L1 is the program, L2 its pet program, L3 the pet, L4 me. Together they are <a href="https://github.com/findastra/astras-pet-os">Astra's PetOS</a>.</p>
+    <!-- the levels as a list, not a sentence, then the name in italics (Astra, 2026-10-29: "super easy to understand") -->
+    <ul class="lede levels">
+      <li><b>L1</b> third-party programs</li>
+      <li><b>L2</b> your pet program</li>
+      <li><b>L3</b> your pet</li>
+      <li><b>L4</b> you</li>
+      <li class="all"><em>All together: <a href="https://github.com/findastra/astras-pet-os">Astra's PetOS</a></em></li>
+    </ul>
         <!-- Polaroids first (Astra, 2026-10-27): the System Map, what the pets look like, and every pet to flip through -->
         <div class="polaroids" id="petos-list"></div>
         <!-- the pet jar, filled to the top: shake it and a pet comes out; tip it out to see all of them -->
@@ -184,7 +190,8 @@
         <div class="dome-meter" id="dome-meter" aria-live="polite"><div class="row fuzz"><b>0</b><span></span><i></i></div><div class="row spark"><b>0</b><span></span><i></i></div><div class="row hits"><b>0</b><span></span><i></i></div></div>
         <p class="dome-score mono" id="dome-score" aria-live="polite"></p>
         <p class="muted mono" id="home-pick" aria-live="polite"></p>
-        <div class="fz-row"><button class="btn" id="home-out" disabled>let them out</button><button class="btn" id="home-clear" disabled>empty the dome</button></div>
+        <!-- the warning one moves five random Fuzzbois in at once; five out on the page go for the pet jar (Astra, 2026-10-29) -->
+        <div class="fz-row"><button class="btn" id="home-five">⚠ add 5 random Fuzzbois to the Cyber Dome</button><button class="btn" id="home-out" disabled>let them out</button><button class="btn" id="home-clear" disabled>empty the dome</button></div>
       </div>
       <!-- the two games from Mommy's website (findastra/mommys-website) -->
       <div class="cab">
@@ -216,6 +223,8 @@
           <label class="lab-group" for="labHairGroup">Hairstyle collection<select id="labHairGroup"><option value="all">All 40 styles</option><option value="girls">Girls · 20 styles</option><option value="boys">Boys · 20 styles</option></select></label>
           <button class="lab-b" data-avatar-part="hair">Hairstyle<small id="lb-hair">—</small></button>
           <button class="lab-b" data-avatar-part="bangs">Bangs<small id="lb-bangs">—</small></button>
+          <!-- its own block (Astra, 2026-10-29: "missing one block in the avatar lab for hair color"): a new pair of hair colors -->
+          <button class="lab-b" data-avatar-part="hairColors">Hair colors<small id="lb-hairColors">—</small></button>
           <button class="lab-b" data-avatar-part="head">Accessory 1 · Head<small id="lb-head">—</small></button>
           <button class="lab-b" data-avatar-part="body">Accessory 2 · Body<small id="lb-body">—</small></button>
           <button class="lab-b" data-avatar-part="fit">Outfit<small id="lb-fit">—</small></button>
@@ -280,7 +289,7 @@
 <script src="project-images.js?v=20261020a"></script>
 <script src="updates-data.js?v=20261018c"></script>
 <script src="repo-dates-data-20261029.js?v=20261029a"></script>
-<script src="cyber.js?v=20261031zn"></script>
-<script src="games-20261027.js?v=20261031j"></script>
+<script src="cyber.js?v=20261031zs"></script>
+<script src="games-20261027.js?v=20261031l"></script>
 </body>
 </html>
