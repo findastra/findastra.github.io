@@ -600,6 +600,15 @@
     $('web-list').replaceChildren(...others.filter((r) => !DISCORD.has(r.name)).map(extraCard));
     for (const ch of document.querySelectorAll('.chapter')) ch.classList.toggle('empty', !!query && !ch.querySelector('.polaroid, .mini'));
   }
+  // each wall of Polaroids gets as many per row as fit near 250px wide (two at least), sized so a full row spans the wall
+  // exactly: its first and last hang just off the paper, and a short last row sits in the middle (Astra, 2026-10-29)
+  const sizeWall = (wall) => {
+    const w = wall.getBoundingClientRect().width - 1, gap = parseFloat(getComputedStyle(wall).columnGap) || 0;
+    const n = Math.max(2, Math.round((w + gap) / (250 + gap)));
+    wall.style.setProperty('--pw', Math.floor((w - (n - 1) * gap) / n * 10) / 10 + 'px');
+  };
+  const walls = new ResizeObserver((seen) => seen.forEach((s) => sizeWall(s.target)));
+  document.querySelectorAll('.polaroids').forEach((wall) => walls.observe(wall));
   // the header's search finds any words on the page: every match is lit, typing goes to the first, Enter to the next and
   // Shift+Enter back (Astra, 2026-10-28: "that search bar will search anything on the page")
   (() => {
