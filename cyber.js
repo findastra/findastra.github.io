@@ -1146,12 +1146,13 @@
   // each wall of Polaroids gets as many per row as fit near 250px wide, sized so a full row spans the wall exactly: its
   // first and last hang just off the paper, and a short last row sits in the middle (Astra, 2026-10-29). On a phone, or a
   // window as narrow as one, it is one Polaroid under the other, never side by side (Astra, 2026-10-29), and each sits well
-  // inside the paper, its tilt and sticky note too, not hanging off it (Astra, 2026-10-29: "they look too big right now")
+  // inside the paper, its tilt and sticky note too, not hanging off it (Astra, 2026-10-29: "they look too big right now",
+  // then "just slightly bigger")
   const sizeWall = (wall) => {
     const w = wall.getBoundingClientRect().width - 1, gap = parseFloat(getComputedStyle(wall).columnGap) || 0;
     const n = w < 560 ? 1 : Math.max(2, Math.round((w + gap) / (250 + gap)));
     wall.classList.toggle('single', n === 1);
-    wall.style.setProperty('--pw', (n === 1 ? Math.min(270, Math.floor(w * .8)) : Math.floor((w - (n - 1) * gap) / n * 10) / 10) + 'px');
+    wall.style.setProperty('--pw', (n === 1 ? Math.min(290, Math.floor(w * .86)) : Math.floor((w - (n - 1) * gap) / n * 10) / 10) + 'px');
   };
   const walls = new ResizeObserver((seen) => seen.forEach((s) => sizeWall(s.target)));
   document.querySelectorAll('.polaroids').forEach((wall) => walls.observe(wall));
