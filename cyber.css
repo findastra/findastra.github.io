@@ -355,7 +355,12 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 .card .back-links a, .card .turn-btn { font: 700 3.2cqw/1 var(--mono); color: #000; background: var(--c); border: 2px solid #000; padding: .5em .8em; border-radius: 99px;
   text-decoration: none; cursor: pointer; box-shadow: 0 0 10px var(--c); }
 .card .back-links a:hover, .card .turn-btn:hover, .card .back-links a:focus-visible, .card .turn-btn:focus-visible { background: #fff; color: #000; outline: none; }
-.card .body .turn-btn { margin-top: auto; background: #000; color: #fff; box-shadow: none; border-color: #000; }
+/* the flip button in the star's top point: the turn-over arrows in a circle (Astra, 2026-10-29) */
+.card .tip.turn-btn { padding: 0; width: 14%; border-radius: 50%; background: #fff; color: #000; border: 2px solid #000; cursor: pointer; z-index: 2;
+  box-shadow: 0 0 10px var(--c); }
+.card .tip.turn-btn svg, .card .back-links .turn-btn svg { width: 62%; height: 62%; }
+.card .back-links .turn-btn { display: grid; place-items: center; width: 8cqw; height: 8cqw; padding: 0; border-radius: 50%; }
+.card .tip.turn-btn:hover, .card .tip.turn-btn:focus-visible { background: var(--c); outline: none; }
 .card .shape { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
 /* thin strokes now, so the outline stays the Photostar's own rounded star, not puffed out by the stroke (Astra, 2026-10-29) */
 .card .s-shadow { fill: #000; stroke: #000; stroke-width: 12; transform: translate(7px, 7px); transition: transform .3s; }
@@ -369,7 +374,8 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 /* a small star in the top point */
 .card .tip { position: absolute; left: 48.47%; top: 19.09%; width: 13.1%; aspect-ratio: 1; transform: translate(-50%, -50%); display: grid; place-items: center; font: 400 9cqw/1 VT323, monospace; }
 /* the window: the pet, big, where the picture box was, then its name and the flip button */
-.card .win { position: absolute; left: 20.96%; width: 55.02%; top: 27%; height: 60%; display: grid; grid-template-rows: 64fr 36fr; row-gap: .8cqw; }
+/* the pet a little bigger and lower now the flip button is up in the point, still well inside the star's pale edge */
+.card .win { position: absolute; left: 20.96%; width: 55.02%; top: 28%; height: 62%; display: grid; grid-template-rows: 72fr 28fr; row-gap: .6cqw; }
 .card .pet-big { position: relative; display: grid; place-items: center; min-height: 0; font: 400 11cqw/1 VT323, var(--mono); }
 .card .pet-big img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; filter: drop-shadow(0 3px 0 rgba(0, 0, 0, .35)); }
 .card .body { display: flex; flex-direction: column; align-items: center; text-align: center; gap: .4cqw; min-height: 0; overflow: hidden; }
@@ -557,7 +563,8 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 .mini use, .flyer use { fill: var(--c); stroke: color-mix(in srgb, var(--c) 22%, #fff); stroke-width: 7; }
 .mini svg, .flyer svg { filter: drop-shadow(0 0 3px color-mix(in srgb, var(--c) 60%, #fff)) drop-shadow(0 0 7px var(--c)); }
 /* sparkles round the outside of the jar too */
-.jar .sparkles.ring { inset: -6% -10% -2%; }
+.jar-wrap { position: relative; display: block; }
+.jar-wrap > .sparkles.ring { inset: -6% -10% -2%; }
 .mini img, .flyer img { position: absolute; left: 50%; top: 53%; width: 58%; height: 58%; translate: -50% -50%; object-fit: contain; }
 .mini.gone { visibility: hidden; }
 .jar-count { margin: 0; color: #8a8a8a; }
@@ -720,6 +727,18 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 .lightbox figure { margin: 0; padding: 44px 16px 18px; }
 .lightbox img { margin: 0 auto; max-height: 76vh; object-fit: contain; }
 .lightbox.mono img { filter: grayscale(1) contrast(1.2); }
+.lightbox .lb-frame { display: block; width: 100%; height: 76vh; border: 0; background: #000; }
+.lightbox .lb-frame[hidden], .lightbox img[hidden] { display: none; }
+/* the "closer look" button on a live page's Polaroid, in the photo's bottom right corner */
+.polaroid .look { position: absolute; right: 6px; bottom: 6px; z-index: 4; padding: 4px 8px; border: 0; cursor: zoom-in; background: #111; color: #fff;
+  font: 11px/1 "Permanent Marker", cursive; rotate: -3deg; box-shadow: 2px 2px 0 rgba(0, 0, 0, .4); }
+.polaroid .look:hover, .polaroid .look:focus-visible { outline: 2px solid var(--c); }
+/* the Rainbow Maker's turning video with its gray cut away, drawn frame by frame on a canvas */
+.polaroid .photo .keyed { position: absolute; inset: 0; }
+.polaroid .photo .keyed video { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.polaroid .photo .keyed canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+/* the sparkles the Rainbow Maker throws out over the whole page */
+.rainbow-spray { position: fixed; inset: 0; z-index: 54; width: 100vw; height: 100vh; pointer-events: none; }
 .lightbox figcaption { text-align: center; font: 13px var(--mono); color: #9b9b9b; margin: 10px 52px 0; min-height: 26px; }
 .lb-close { position: absolute; top: 8px; right: 10px; }
 /* the arrows sit in the bottom corners, either side of the caption (Astra, 2026-10-28) */

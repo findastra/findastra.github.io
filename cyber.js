@@ -57,7 +57,15 @@
 
   // ---------- lightbox (pictures keep their color) ----------
   const lb = $('lightbox'); let lbList = [], lbAt = 0;
-  const lbShow = () => { const it = lbList[lbAt]; $('lb-img').src = it.src; $('lb-img').alt = it.cap; $('lb-cap').textContent = `${it.cap}   ${lbAt + 1} / ${lbList.length}`; };
+  // a live page (the Cooling Tower's model, the System Map) opens here too, big, to turn and zoom in (Astra, 2026-10-29:
+  // "a closer look tool on it, just the same way there is for the rainbow maker")
+  const lbFrame = document.createElement('iframe'); lbFrame.className = 'lb-frame'; lbFrame.hidden = true; $('lb-img').after(lbFrame);
+  const lbShow = () => {
+    const it = lbList[lbAt], live = it.type === 'frame';
+    $('lb-img').hidden = live; lbFrame.hidden = !live;
+    if (live) { if (lbFrame.src !== it.src) lbFrame.src = it.src; lbFrame.title = it.cap; } else { $('lb-img').src = it.src; $('lb-img').alt = it.cap; }
+    $('lb-cap').textContent = `${it.cap}   ${lbAt + 1} / ${lbList.length}`;
+  };
   const openGallery = (list, at = 0, mono = false) => { if (!list.length) return; lbList = list; lbAt = at; lb.classList.toggle('mono', mono); lbShow(); lb.showModal(); };
   $('lb-close').onclick = () => lb.close();
   $('lb-prev').onclick = () => { lbAt = (lbAt - 1 + lbList.length) % lbList.length; lbShow(); };
@@ -248,16 +256,21 @@
         ...(i ? {} : { crop: [40, 0, 467, 427, 507, 508], cover: true }) })) },
     { name: "Mommy's World", kind: 'VRChat world · PC VR / desktop', text: "The VRChat home of Mommy's Rave House, Dance & Avatar Academy.", repo: 'mommys-world',
       // first, "baby girl, I'm a star", playing on a loop with its sound off until you turn it on (Astra, 2026-10-29)
-      local: [{ src: 'art/worlds/mommys-world-baby-girl-im-a-star-20261029.mp4', cap: "Mommy's World · baby girl, I'm a star", type: 'video', sound: true },
+      local: [{ src: 'art/worlds/mommys-world-baby-girl-im-a-star-20261029.mp4', cap: "Mommy's World · baby girl, I'm a star", type: 'video', sound: true, label: 'world coming soon' },
         { src: 'art/worlds/phone-booth.jpg', label: 'concept art', cap: 'A pink phone booth above the clouds' }], extra: ['mommys', 'role-fairy'] },
     // first the still with its gray cut away, so it shines over the paper (Astra, 2026-10-29); the video and the crystals keep theirs
+    // first its turning video with the gray cut away, so it turns on the bare paper (Astra, 2026-10-29), sparkles circling it and
+    // pouring out of its crystals across the page; then the still, then the crystals
     { name: 'The Rainbow Maker', kind: 'VRChat world · PC VR / desktop', text: 'The mechanics of the Kikkerland Rainbow Maker: watch its tiny gear train turn and spin a crystal that refracts rainbows across the room.', repo: 'the-rainbow-maker', local: [
-      { src: 'art/worlds/rainbow-maker-still-clear-20261029.png', cap: 'The Rainbow Maker', fit: 'contain', clear: true, nudge: '0 7%',
+      { src: RM + 'rainbow-maker-preview-20261022.mp4', cap: 'The Rainbow Maker · turning', type: 'video', key: [69, 69, 74], clear: true,
         // one wide ring round the whole machine, a small fast one round each crystal, and a few glints on the glass
-        orbits: [[50, 50, 32, 44, 9, 16], [40, 83, 10, 5, 3, 5], [57, 72, 9, 5, 3, 6]], still: [[46, 30], [56, 40], [42, 60], [60, 86]] },
-      { src: RM + 'rainbow-maker-preview-20261022.mp4', cap: 'The Rainbow Maker · turning', type: 'video', fit: 'contain', bg: '#45444a' },
+        // (the small rings round the crystals sit wide of them, so the crystals themselves can be seen turning)
+        orbits: [[50, 50, 32, 44, 9, 16], [40, 80, 15, 8, 3, 5], [57, 70, 14, 8, 3, 6]], still: [[46, 30], [56, 40], [30, 62], [72, 88]],
+        // the ring the spray pours from: center x, y and radii, in the picture's percent, just outside the machine
+        spray: [50, 50, 34, 47] },
+      { src: 'art/worlds/rainbow-maker-still-clear-20261029.png', cap: 'The Rainbow Maker', fit: 'contain', clear: true, nudge: '0 7%' },
       { src: RM + 'rainbow-maker-crystals-cycles-20261023.png', cap: 'The Rainbow Maker · the crystals', fit: 'contain', bg: '#47423f' }] },
-    { name: 'The Cooling Tower', siteLabel: 'see full mini model ↗', kind: 'VRChat world · PC VR / desktop', text: "A rave world inside a nuclear plant's cooling tower: break into the facility and power it up with music. The Stack, the Turbine Hall, then the Reactor Hall.", repo: 'the-cooling-tower', local: [{ src: 'https://findastra.github.io/the-cooling-tower/mini-model/the-cooling-tower-mini-model-20261024.html', cap: 'The Cooling Tower · Mini Model', type: 'frame', label: 'concept model', bare: true, back: 3 }] },
+    { name: 'The Cooling Tower', siteLabel: 'see full mini model ↗', kind: 'VRChat world · PC VR / desktop', text: "A rave world inside a nuclear plant's cooling tower: break into the facility and power it up with music. The Stack, the Turbine Hall, then the Reactor Hall.", repo: 'the-cooling-tower', local: [{ src: 'https://findastra.github.io/the-cooling-tower/mini-model/the-cooling-tower-mini-model-20261024.html', cap: 'The Cooling Tower · Mini Model', type: 'frame', label: 'concept model', bare: true, back: 7 }] },
   ];
   // vrchat-ai-astra was renamed the-astral-plane (2026-10-18); the pet list may still use the old name
   const RENAMED = { 'vrchat-ai-astra': 'the-astral-plane' };
@@ -298,6 +311,100 @@
   // off of those spinning crystals"): each orbit is a tilted ring [x, y, rx, ry, how many, seconds per turn] in the picture's
   // percent; the ones going round the back are dimmer and smaller. A few more just twinkle where they are. They only move while
   // the picture is on screen
+  // moves a picture shown with object-fit: contain so its drawing, where its painted pixels are, sits in the middle of its box,
+  // without changing its size (Astra, 2026-10-29: the pets centered in their stars and frames, "just moving them around").
+  // scale: how much it is shrunk, so its offset shrinks with it
+  const centerByInk = (im, scale = 1) => {
+    const probe = new Image(); probe.crossOrigin = 'anonymous';
+    probe.onload = () => { try {
+      const n = 64, cv = document.createElement('canvas'); cv.width = cv.height = n; const x = cv.getContext('2d', { willReadFrequently: true });
+      const k = Math.min(n / probe.naturalWidth, n / probe.naturalHeight), w = probe.naturalWidth * k, h = probe.naturalHeight * k;
+      x.drawImage(probe, (n - w) / 2, (n - h) / 2, w, h); const d = x.getImageData(0, 0, n, n).data;
+      let l = n, r = 0, t = n, b = 0;
+      for (let i = 0; i < n * n; i++) if (d[i * 4 + 3] > 40) { const px = i % n, py = (i / n) | 0; l = Math.min(l, px); r = Math.max(r, px); t = Math.min(t, py); b = Math.max(b, py); }
+      if (r < l) return;
+      const dx = ((n - 1) / 2 - (l + r) / 2) / n, dy = ((n - 1) / 2 - (t + b) / 2) / n;
+      // in a box that is not square the drawing fills its shorter side, so the offset is a share of that
+      const place = () => { const bw = im.clientWidth, bh = im.clientHeight, m = Math.min(bw, bh); im.style.translate = bw && bh && bw !== bh ? `${dx * m * scale}px ${dy * m * scale}px` : `${dx * 100 * scale}% ${dy * 100 * scale}%`; };
+      place(); new ResizeObserver(place).observe(im);
+    } catch {} };
+    probe.src = im.src;
+  };
+  // a video drawn frame by frame on a canvas with one flat background color cut away, so it turns on the bare paper (Astra,
+  // 2026-10-29: the Rainbow Maker's animation "even though it has a sheer background"). key is [r, g, b]; it only draws while on
+  // screen. The video comes from the world's own repo, which allows this (it is fetched with CORS)
+  const keyedVideo = (p) => {
+    const box = el('div', 'keyed'), v = el('video'), cv = el('canvas'), x = cv.getContext('2d', { willReadFrequently: true });
+    Object.assign(v, { muted: true, loop: true, autoplay: !reduced, playsInline: true, preload: 'auto', crossOrigin: 'anonymous', src: p.src });
+    box.append(v, cv);
+    const [kr, kg, kb] = p.key, near = 12, far = 26;
+    let on = false, raf = 0;
+    const draw = () => {
+      raf = on ? requestAnimationFrame(draw) : 0;
+      if (v.readyState < 2) return;
+      const w = 270, hgt = Math.round(w * (v.videoHeight / v.videoWidth || 1.78));
+      if (cv.width !== w) { cv.width = w; cv.height = hgt; }
+      x.drawImage(v, 0, 0, w, hgt);
+      let img; try { img = x.getImageData(0, 0, w, hgt); } catch { return; }
+      const d = img.data;
+      for (let i = 0; i < d.length; i += 4) {
+        const dist = Math.abs(d[i] - kr) + Math.abs(d[i + 1] - kg) + Math.abs(d[i + 2] - kb);
+        if (dist < near) d[i + 3] = 0; else if (dist < far) d[i + 3] = ((dist - near) / (far - near)) * 255;
+      }
+      x.putImageData(img, 0, 0);
+    };
+    new IntersectionObserver((seen) => { on = seen.some((e) => e.isIntersecting); if (on) { v.play().catch(() => {}); if (!raf) raf = requestAnimationFrame(draw); } else v.pause(); }).observe(box);
+    return box;
+  };
+  // sparkles that a picture throws out over the whole page while it is on screen (Astra, 2026-10-29: the Rainbow Maker
+  // "creating rainbows", many more, out over everything, carried along as you scroll): they fly out from the spots given (in the
+  // picture's percent), drift, twinkle and fade, on one canvas over the window
+  let spray = null;
+  const rainbowSpray = (photo, from) => {
+    if (!spray) {
+      const cv = el('canvas', 'rainbow-spray'); cv.setAttribute('aria-hidden', 'true'); document.body.append(cv);
+      const x = cv.getContext('2d'), dots = [], sources = new Set(), stamps = new Map();
+      const stamp = (hue) => {
+        if (stamps.has(hue)) return stamps.get(hue);
+        const k = el('canvas'); k.width = k.height = 32; const g = k.getContext('2d'), q = 3.5;
+        g.fillStyle = `hsl(${hue} 55% 80%)`; g.beginPath(); g.moveTo(16, 0); g.lineTo(16 + q, 16 - q); g.lineTo(32, 16); g.lineTo(16 + q, 16 + q); g.lineTo(16, 32); g.lineTo(16 - q, 16 + q); g.lineTo(0, 16); g.lineTo(16 - q, 16 - q); g.closePath(); g.fill();
+        stamps.set(hue, k); return k;
+      };
+      const fit = () => { const d = Math.min(devicePixelRatio || 1, 2); cv.width = innerWidth * d; cv.height = innerHeight * d; x.setTransform(d, 0, 0, d, 0, 0); };
+      fit(); addEventListener('resize', fit);
+      let last = 0;
+      (function tick(t) {
+        requestAnimationFrame(tick);
+        const dt = Math.min(50, t - last || 16); last = t;
+        x.clearRect(0, 0, innerWidth, innerHeight);
+        if (!reduced) for (const s of sources) {
+          // a picture redrawn away (the section was drawn again) stops; while it was left in, it sprayed from the corner
+          if (!s.photo.isConnected) { sources.delete(s); continue; }
+          const r = s.photo.getBoundingClientRect();
+          if (!r.width || r.bottom < 0 || r.top > innerHeight) continue;
+          // from a ring round the machine, outside it, so the crystals turning inside stay clear (Astra, 2026-10-29: "the way
+          // it is shedding sparkles ... from like a ring around where the rainbow maker is"), flying outward from it
+          const [cxp, cyp, rxp, ryp] = s.from;
+          for (let n = 0; n < 9; n++) {
+            const a = Math.random() * Math.PI * 2, sp = .6 + Math.random() * 2.8, ring = 1 + Math.random() * .12;
+            dots.push({ x: r.left + r.width * (cxp + Math.cos(a) * rxp * ring) / 100, y: r.top + r.height * (cyp + Math.sin(a) * ryp * ring) / 100, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - .2,
+              life: 1, s: 3 + Math.random() * 7 + (Math.random() < .08 ? 9 : 0), hue: (Math.random() * 12 | 0) * 30, t: Math.random() * 7 });
+          }
+        }
+        if (dots.length > 1400) dots.splice(0, dots.length - 1400);
+        for (let i = dots.length - 1; i >= 0; i--) {
+          const p = dots[i]; p.x += p.vx; p.y += p.vy; p.vx *= .995; p.vy = p.vy * .995 + .006; p.life -= dt / 4200; p.t += .08;
+          if (p.life <= 0 || p.x < -20 || p.x > innerWidth + 20 || p.y < -20 || p.y > innerHeight + 20) { dots.splice(i, 1); continue; }
+          const sz = p.s * (.55 + .45 * Math.sin(p.t)) * Math.min(1, p.life * 2);
+          x.globalAlpha = Math.min(1, p.life * 1.6) * (.6 + .4 * Math.sin(p.t + 1));
+          x.drawImage(stamp(p.hue), p.x - sz, p.y - sz, sz * 2, sz * 2);
+        }
+        x.globalAlpha = 1;
+      })(0);
+      spray = { add: (photo, from) => sources.add({ photo, from }) };
+    }
+    spray.add(photo, from);
+  };
   const orbitField = (h, orbits, still = []) => {
     const box = el('div', 'sparkles field'); box.setAttribute('aria-hidden', 'true');
     const movers = orbits.flatMap(([x, y, rx, ry, n, secs], o) => Array.from({ length: n }, (_, i) => {
@@ -349,7 +456,9 @@
     const photo = el(pics.length && !shot && !pics.some((p) => p.type === 'frame') ? 'button' : 'div', 'photo');
     photo.classList.toggle('clear', !!clear || clearOf(pics[0]));
     if (pics[0] && pics[0].crop && pics[0].bg) photo.style.background = pics[0].bg;
+    if (pics[0] && pics[0].fill) photo.style.background = pics[0].fill;
     const orbiting = pics.find((p) => p.orbits), field = orbiting ? orbitField(h, orbiting.orbits, orbiting.still) : null;
+    const spraying = pics.find((p) => p.spray); if (spraying) rainbowSpray(photo, spraying.spray);
     if (shot) photo.append(shot);
     else if (!pics.length) photo.append(el('span', 'developing', 'still developing…'));
     let flip = null, count = null, badge = null, sound = null;
@@ -365,6 +474,7 @@
       let at = 0;
       // each picture can also be a video (plays by itself, muted, on a loop) or a live page you can move around in
       const media = (p) => {
+        if (p.type === 'video' && p.key) return keyedVideo(p);
         if (p.type === 'video') { const v = el('video'); Object.assign(v, { src: p.src, muted: true, loop: true, autoplay: !reduced, playsInline: true, preload: 'metadata' }); if (p.fit) v.style.objectFit = p.fit; if (p.bg) v.style.background = p.bg; return v; }
         // a live page starts once the Polaroid scrolls near (the browser's own lazy loading never starts it inside the scaled frame)
         // a bare page is cropped to its picture (Astra, 2026-10-27: the Mini Model without its title and key); on the live site it
@@ -397,20 +507,7 @@
         if (p.nudge) im.style.translate = p.nudge;
         // center: the drawing itself centered in the frame, not just its square (Astra, 2026-10-29: the Farmer sat to one
         // side), from where its painted pixels actually are
-        if (p.center) {
-          const probe = new Image(); probe.crossOrigin = 'anonymous';
-          probe.onload = () => { try {
-            const n = 64, cv = document.createElement('canvas'); cv.width = cv.height = n; const x = cv.getContext('2d', { willReadFrequently: true });
-            const k = Math.min(n / probe.naturalWidth, n / probe.naturalHeight), w = probe.naturalWidth * k, h = probe.naturalHeight * k;
-            x.drawImage(probe, (n - w) / 2, (n - h) / 2, w, h); const d = x.getImageData(0, 0, n, n).data;
-            let l = n, r = 0, t = n, b = 0;
-            for (let i = 0; i < n * n; i++) if (d[i * 4 + 3] > 40) { const px = i % n, py = (i / n) | 0; l = Math.min(l, px); r = Math.max(r, px); t = Math.min(t, py); b = Math.max(b, py); }
-            // shrunk by size, so its off-center shrinks by that much too
-            const s = p.size || 1;
-            if (r >= l) im.style.translate = `${((n - 1) / 2 - (l + r) / 2) / n * 100 * s}% ${((n - 1) / 2 - (t + b) / 2) / n * 100 * s}%`;
-          } catch {} };
-          probe.src = im.src;
-        }
+        if (p.center) centerByInk(im, p.size || 1);
         // crop: [left, top, right, bottom] of the picture's [width, height] that the frame shows, fitted whole (or filling the
         // frame, with cover), so a page screenshot can show just its best part bigger (Astra, 2026-10-29: Mommy's stars and
         // windows without the pole; more of the Liminal Doors greenhouse)
@@ -427,6 +524,12 @@
       // border by the title, so it covers none of the picture (Astra, 2026-10-29: it hid the System Map's key)
       badge = el('span', 'badge'); badge.hidden = !pics[0].label; badge.textContent = pics[0].label || '';
       let shown = media(pics[0]); photo.append(shown, ...(field ? [field] : []));
+      // a live page gets a "closer look": it opens big in the viewer, to turn, scroll and zoom (Astra, 2026-10-29)
+      if (pics.some((p) => p.type === 'frame')) {
+        const look = el('button', 'look', 'closer look ⤢'); look.type = 'button'; look.setAttribute('aria-label', 'take a closer look at ' + name);
+        look.onclick = (e) => { e.stopPropagation(); if (pics[at].type === 'frame') openGallery([pics[at]]); };
+        photo.append(look);
+      }
       const still = () => !pics[at].type;
       photo.setAttribute('aria-label', 'open pictures of ' + name);
       photo.onclick = (e) => { if (still()) openGallery(pics.filter((p) => !p.type), pics.filter((p) => !p.type).indexOf(pics[at])); };
@@ -479,11 +582,13 @@
   // what each website looks like (Astra, 2026-10-27): its own page, shown first on its Polaroid
   const SITE_PICS = {
     // a little smaller, so its green banner sits clear of the tape (Astra, 2026-10-29)
-    'fuzzboi-factory': [{ src: 'art/projects/fuzzboi-factory-site-20261027.jpg', cap: 'The Fuzzboi Factory', fit: 'contain', bg: '#121a6b', size: 0.88, clear: true }],
+    // and the border round it filled with its own blue, not see-through (Astra, 2026-10-29)
+    'fuzzboi-factory': [{ src: 'art/projects/fuzzboi-factory-site-20261027.jpg', cap: 'The Fuzzboi Factory', fit: 'contain', bg: '#121a6b', size: 0.88, fill: '#121a6b' }],
     // just the two stars, the name and the three windows, bigger, without the pole down the left (Astra, 2026-10-29)
-    'mommys-website': [{ src: 'art/projects/mommys-website-site-20261027.jpg', cap: "Mommy's: the twins and the windows", crop: [140, 40, 1190, 880, 1280, 900], bg: '#1a0612' }],
-    // the star alone on the paper, set in from the tape (Astra, 2026-10-29)
-    'astras-photostar': [{ src: 'https://findastra.github.io/astras-star-window/star-window.svg', cap: "Astra's Photostar", fit: 'contain', size: 0.8, clear: true }],
+    // ...with the three arched windows in the middle of the square (Astra, 2026-10-29)
+    'mommys-website': [{ src: 'art/projects/mommys-website-site-20261027.jpg', cap: "Mommy's: the twins and the windows", crop: [140, 75, 1190, 1125, 1280, 900], bg: '#1a0612' }],
+    // the star alone on the paper, set in from the tape (Astra, 2026-10-29), a little bigger
+    'astras-photostar': [{ src: 'https://findastra.github.io/astras-star-window/star-window.svg', cap: "Astra's Photostar", fit: 'contain', size: 0.88, clear: true }],
     // the live sign, saying what it is (its ?message= link option is a Pocket Message Board change waiting for Astra's OK)
     // the sign takes turns saying these (Astra, 2026-10-29)
     'pocket-message-board': [{ src: 'https://findastra.github.io/pocket-message-board/?message=' + encodeURIComponent('This is a Pocket Message Board. Check it out!') + '&size=1', cap: 'Pocket Message Board', type: 'frame',
@@ -582,19 +687,27 @@
     return neonOf.get(src);
   };
   const neonStar = (node, p) => petNeon(iconOf(p)).then((c) => { if (c) node.style.setProperty('--c', c); });
+  // two arrows chasing each other round a circle, one turning down on the right and one up on the left: the usual "flip"
+  const flipIcon = () => {
+    const s = svgEl('svg', { viewBox: '0 0 24 24', 'aria-hidden': 'true', fill: 'none', stroke: 'currentColor', 'stroke-width': '2.4', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' });
+    for (const d of ['M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8', 'M21 3v5h-5', 'M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16', 'M8 16H3v5']) s.append(svgEl('path', { d }));
+    return s;
+  };
   function star({ p, r, pics }) {
     const c = el('article', 'card'); const h = paint(c, r ? r.name : p.pet); neonStar(c, p);
     const repoUrl = r ? 'https://github.com/findastra/' + r.name : null, icon = iconOf(p), site = siteOf(p, r);
     // the front (Astra, 2026-10-29): just the pet, big, filling the window, with its name; no picture box, no side tags
     const big = el('div', 'pet-big');
-    if (icon) { const im = el('img'); im.src = icon; im.alt = p.pet; im.loading = 'lazy'; big.append(im); } else big.textContent = '{ }';
-    const tip = el('div', 'tip', '✦');
+    // each pet's drawing centered in its window by where it is painted, all at the same scale (Astra, 2026-10-29)
+    if (icon) { const im = el('img'); im.src = icon; im.alt = p.pet; im.loading = 'lazy'; big.append(im); centerByInk(im); } else big.textContent = '{ }';
+    // the star's top point is its button: the usual turn-over arrows in a circle (Astra, 2026-10-29); more buttons, when there
+    // are more, go on its other points
+    const turnBtn = el('button', 'tip turn-btn'); turnBtn.type = 'button'; turnBtn.setAttribute('aria-label', 'flip the star to see ' + p.pet + "'s program"); turnBtn.title = 'flip';
+    turnBtn.append(flipIcon());
     const body = el('div', 'body');
     body.append(el('b', 'name', p.pet), el('div', 'pet', [p.program, r ? r.name : null].filter(Boolean).join(' · ') || 'program not named yet'));
-    const turnBtn = el('button', 'turn-btn', 'flip the star ↻'); turnBtn.type = 'button'; turnBtn.setAttribute('aria-label', 'flip the star to see ' + p.pet + "'s program");
-    body.append(turnBtn);
     const win = el('div', 'win'); win.append(big, body);
-    const face = el('div', 'face'); face.append(shape('star', '-111 -116 229 220'), tip, win);
+    const face = el('div', 'face'); face.append(shape('star', '-111 -116 229 220'), turnBtn, win);
     // the back: the pet program, as one big square, with only its links and a way back
     const back = el('div', 'back'), sq = el(pics.length ? 'button' : 'div', 'square');
     if (pics.length) { const im = el('img'); im.src = pics[0].src; im.alt = ''; im.loading = 'lazy'; sq.append(im); sq.setAttribute('aria-label', 'open pictures of ' + p.pet); sq.onclick = () => openGallery(pics); }
@@ -602,7 +715,7 @@
     const links = el('div', 'back-links');
     if (site) links.append(link(site, null, 'open ' + (p.program || 'it') + ' ↗'));
     if (repoUrl) links.append(link(repoUrl, null, 'repo ↗'));
-    const backBtn = el('button', 'turn-btn', '↻'); backBtn.type = 'button'; backBtn.setAttribute('aria-label', 'flip back to ' + p.pet); links.append(backBtn);
+    const backBtn = el('button', 'turn-btn'); backBtn.type = 'button'; backBtn.setAttribute('aria-label', 'flip back to ' + p.pet); backBtn.title = 'flip back'; backBtn.append(flipIcon()); links.append(backBtn);
     back.append(sq, links);
     const turn = el('div', 'turn'); turn.append(face, back);
     const flip = (on) => { c.classList.toggle('flipped', on); back.inert = !on; face.inert = on; };
@@ -642,7 +755,17 @@
     // glints: the same color-matched sparkle as the portrait, twinkling on the stars in the jar
     const glints = el('span', 'sparkles jar-glints'); glints.setAttribute('aria-hidden', 'true'); inside.after(glints);
     // and round the outside of the glass (Astra, 2026-10-29: "full of sparkles ... and on the outside, too")
-    const ring = sparkles(hash(id + ':ring'), 22); ring.classList.add('ring'); jar.append(ring);
+    // ...held still round it, so they stay where they are when it tips over (Astra, 2026-10-29)
+    const ring = sparkles(hash(id + ':ring'), 22); ring.classList.add('ring');
+    const wrap = el('span', 'jar-wrap'); jar.before(wrap); wrap.append(jar, ring);
+    // the "dink" of the glass jar landing on its side (Astra, 2026-10-29): a short bright ring that dies away
+    let audio = null;
+    const dink = () => { try {
+      audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+      const t0 = audio.currentTime, g = audio.createGain(); g.connect(audio.destination);
+      g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(.12, t0 + .005); g.gain.exponentialRampToValueAtTime(.0005, t0 + .9);
+      for (const [f, a] of [[1568, 1], [2349, .5], [3520, .25]]) { const o = audio.createOscillator(), og = audio.createGain(); o.type = 'sine'; o.frequency.value = f; og.gain.value = a; o.connect(og); og.connect(g); o.start(t0); o.stop(t0 + 1); }
+    } catch {} };
     // each star's color, once its pet's drawing has been read; the jar is filled color by color, in bands like sand art, and
     // each tip goes on to a color not shown yet (Astra, 2026-10-29: "go through the colors", "organize the color")
     const tints = new Map(), TINT_ORDER = NEON.map((n) => n[1]);
@@ -745,7 +868,7 @@
           { transform: 'translate(112px, -96px) rotate(88deg)', opacity: 1, offset: .72 }, { transform: 'translate(112px, -96px) rotate(88deg)', opacity: 0, offset: .78 },
           { transform: 'none', opacity: 0, offset: .9 }, { transform: 'none', opacity: 1, offset: 1 },
         ], { duration: T });
-        jar.classList.add('tipped');
+        jar.classList.add('tipped'); setTimeout(dink, T * .26);
         for (const m of minis) {
           const base = `translate(-50%, -50%) rotate(${m.style.getPropertyValue('--r')})`, j = () => `translate(calc(-50% + ${Math.random() * 14 - 7}px), calc(-50% + ${Math.random() * -14}px)) rotate(${Math.random() * 60 - 30}deg)`;
           m.animate([{ transform: base }, { transform: j(), offset: .28 }, { transform: j(), offset: .4 }, { transform: base, offset: .8 }, { transform: base }], { duration: T, easing: 'ease-in-out' });
@@ -800,25 +923,32 @@
       const f = kind.mini(it); f.classList.add('flyer'); f.style.setProperty('--s', size + 'px');
       f.style.left = mouth.x - size / 2 - st.left + 'px'; f.style.top = mouth.y - size / 2 - st.top + 'px'; box.append(f);
       const at = (x, y, sc, rot) => `translate(${x}px, ${y}px) scale(${sc}) rotate(${rot}deg)`;
-      // it slips out and drops to the ground, then rolls along it like a marble, turning as it goes, no bouncing (Astra,
-      // 2026-10-29)
-      const gx = size * 1.4, gy = ground - size * .5 - mouth.y, roll = size * 3.2, turns = (roll / (Math.PI * size)) * 360;
+      // it slips out and drops to the ground, rolls along it like a marble to the right edge of the paper, knocks against it,
+      // rolls back to the left, and then drops down, turning slowly, into its slot (Astra, 2026-10-29)
+      const gx = size * 1.4, gy = ground - size * .5 - mouth.y, deg = (d) => (d / (Math.PI * size)) * 360;
+      const wall = Math.max(gx + size, st.right - size * .7 - mouth.x), back = Math.max(size * .5, gx - size * .6);
+      const r1 = 60 + deg(wall - gx), r2 = r1 - deg(wall - back);
       // the moment it hits the ground: sparkles kick up from where it landed, mostly forward the way it is going, and then
       // fall away down the page past the ground, not a neat ring
-      setTimeout(() => { for (let i = 0; i < 18; i++) fall(mouth.x + gx + (Math.random() - .5) * size * .6, ground, (Math.random() - .25) * size * 4, size * (.4 + Math.random() * 1.4), 120 + Math.random() * 220, 1600 + Math.random() * 900); }, 1700 * .45);
+      setTimeout(() => { for (let i = 0; i < 18; i++) fall(mouth.x + gx + (Math.random() - .5) * size * .6, ground, (Math.random() - .25) * size * 4, size * (.4 + Math.random() * 1.4), 120 + Math.random() * 220, 1600 + Math.random() * 900); }, 700);
+      const rollMs = Math.min(1600, 500 + (wall - gx) * 2.2), backMs = Math.min(1700, 600 + (wall - back) * 2.4);
       await f.animate([
-        { transform: at(0, 0, .9, 0) }, { transform: at(size * .8, -size * .05, 1, 30), offset: .25, easing: 'ease-in' },
-        { transform: at(gx, gy, 1, 60), offset: .45, easing: 'ease-out' },
-        { transform: at(gx + roll, gy, 1, 60 + turns) },
-      ], { duration: 1700, fill: 'forwards' }).finished;
-      await new Promise((ok) => setTimeout(ok, 150));
-      // then it rolls off and falls down into its slot, growing as it comes
-      const b = to.getBoundingClientRect(), sx = gx + roll, sy = gy, r0 = 60 + turns;
+        { transform: at(0, 0, .9, 0) }, { transform: at(size * .8, -size * .05, 1, 30), offset: .45, easing: 'ease-in' },
+        { transform: at(gx, gy, 1, 60) },
+      ], { duration: 700, fill: 'forwards' }).finished;
+      await f.animate([{ transform: at(gx, gy, 1, 60) }, { transform: at(wall, gy, 1, r1) }], { duration: rollMs, easing: 'cubic-bezier(.3, .2, .6, 1)', fill: 'forwards' }).finished;
+      // a little knock against the edge, and back it rolls
+      for (let i = 0; i < 6; i++) puff(st.right - size * .2, mouth.y + gy, -10 - Math.random() * 20, (Math.random() - .5) * 30, 1200);
+      await f.animate([{ transform: at(wall, gy, 1, r1) }, { transform: at(back, gy, 1, r2) }], { duration: backMs, easing: 'cubic-bezier(.25, .1, .4, 1)', fill: 'forwards' }).finished;
+      // its full star is put in the slot now, unseen, so the falling one can land exactly on it: same place, size and tilt
+      const card = land(); card.style.opacity = 0;
+      const b = card.getBoundingClientRect(), tilt = parseFloat(getComputedStyle(card).getPropertyValue('--tilt')) || 0;
       const ex = b.left + b.width / 2 - mouth.x, ey = b.top + b.height / 2 - mouth.y, grow = b.width / size;
+      const endRot = Math.ceil((r2 + 200) / 360) * 360 + tilt;
       const glide = f.animate([
-        { transform: at(sx, sy, 1, r0) }, { transform: at(sx + (ex - sx) * .25, sy + (ey - sy) * .2, grow * .3, r0 + 60), offset: .3, easing: 'ease-in' },
-        { transform: at(ex, ey, grow, Math.ceil((r0 + 120) / 360) * 360) },
-      ], { duration: 2200, easing: 'cubic-bezier(.45, .05, .3, 1)', fill: 'forwards' });
+        { transform: at(back, gy, 1, r2) }, { transform: at(back - size * .3, gy + size * .6, 1.05, r2 - 20), offset: .12, easing: 'ease-in' },
+        { transform: at(ex, ey, grow, endRot) },
+      ], { duration: 2600, easing: 'cubic-bezier(.4, .1, .3, 1)', fill: 'forwards' });
       let trailing = true;
       (function trail() {
         if (!trailing) return;
@@ -826,11 +956,11 @@
         setTimeout(trail, 70);
       })();
       await glide.finished; trailing = false;
-      // the full star fades in where the little one landed while the little one fades out, so it does not jump from one look
-      // to the other (Astra, 2026-10-29)
-      const card = land();
-      card.animate([{ opacity: 0, transform: 'scale(.97)' }, { opacity: 1, transform: 'none' }], { duration: 650, easing: 'ease-out' });
-      await f.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 650, easing: 'ease-in', fill: 'forwards' }).finished;
+      // the full star fades in right where the little one lies while the little one fades out, so it does not jump from one
+      // look to the other (Astra, 2026-10-29)
+      card.classList.remove('landed'); card.style.opacity = '';
+      card.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 700, easing: 'ease-in-out' });
+      await f.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 700, easing: 'ease-in-out', fill: 'forwards' }).finished;
       f.remove();
     }
     // empty the jar: every one left lands in the row at once; when none are left, they all go back in
