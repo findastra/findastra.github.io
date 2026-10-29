@@ -535,6 +535,11 @@
       for (let i = bits.length - 1; i >= 0; i--) {
         const b = bits[i]; b.x += b.vx; b.y += b.vy; b.vx *= .96; b.vy = b.vy * .96 + .03; b.life -= .014;
         if (b.life <= 0) { bits.splice(i, 1); continue; }
+        // while the dome is whole they stay in it, bouncing off the inside of its outer ring (Astra, 2026-10-29)
+        if (!broken) {
+          const r = R(), dx = b.x - W / 2, dy = b.y - H / 2, d = Math.hypot(dx, dy);
+          if (d > r - 2) { const nx = dx / d, ny = dy / d, dot = b.vx * nx + b.vy * ny; if (dot > 0) { b.vx -= 2 * dot * nx; b.vy -= 2 * dot * ny; } b.x = W / 2 + nx * (r - 2); b.y = H / 2 + ny * (r - 2); }
+        }
         const sz = b.s * (.5 + b.life * .7), q = sz * .22;
         cx.globalAlpha = Math.min(1, b.life * 1.4); cx.fillStyle = b.c;
         cx.beginPath(); cx.moveTo(b.x, b.y - sz); cx.lineTo(b.x + q, b.y - q); cx.lineTo(b.x + sz, b.y); cx.lineTo(b.x + q, b.y + q); cx.lineTo(b.x, b.y + sz); cx.lineTo(b.x - q, b.y + q); cx.lineTo(b.x - sz, b.y); cx.lineTo(b.x - q, b.y - q); cx.closePath(); cx.fill();

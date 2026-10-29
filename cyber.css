@@ -243,6 +243,9 @@ main { position: relative; z-index: 1; }
 /* unmasked, she turns to her own negative: every color inverted, the hues turned back round so the tints still read
    (Astra, 2026-10-29) */
 body.unmasked .portrait img { filter: invert(1) hue-rotate(180deg) saturate(1.3); }
+/* unmasked, every sparkle turns dark: a black star inside its pastel, which stays round it as a glowing edge (Astra, 2026-10-29) */
+body.unmasked .sparkles i::after, body.unmasked .jar-spark::after, body.unmasked .fuzz-trail::after { content: ""; position: absolute; inset: 24%; background: #0b0b0b;
+  clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%); }
 .portrait::after { content: ""; position: absolute; inset: 3px; z-index: 0; pointer-events: none;
   background: repeating-linear-gradient(45deg, rgba(5, 5, 5, .28) 0 1.5px, transparent 1.5px 6px), radial-gradient(rgba(5, 5, 5, .22) 1px, transparent 1.6px) 0 0 / 5px 5px; }
 .portrait::before { content: ""; position: absolute; inset: 0; z-index: -1; transform: translate(-16px, 16px); background: repeating-linear-gradient(-45deg, #8c8c8c 0 3px, transparent 3px 8px); }
@@ -669,9 +672,11 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 @keyframes lab-blink { 0%, 84%, 100% { transform: scaleY(1); } 90% { transform: scaleY(.08); } }
 @media (prefers-reduced-motion: reduce) { #labSvg.happy, #labSvg.happy g { animation: none; } }
 /* too many in the dome: it shakes and flashes red (Astra, 2026-10-29) */
-.home.alarm { animation: dome-shake .35s linear infinite, dome-flash 1s ease-in-out infinite; }
+.home.alarm { animation: dome-shake .35s linear infinite, dome-flash 1.8s linear infinite; }
 @keyframes dome-shake { 0%, 100% { translate: 0 0; } 25% { translate: -3px 1px; } 50% { translate: 2px -2px; } 75% { translate: -1px 2px; } }
-@keyframes dome-flash { 0%, 100% { filter: drop-shadow(0 0 0 transparent); } 50% { filter: drop-shadow(0 0 18px rgba(255, 40, 60, .85)); } }
+/* it shines through the rainbow, not only red (Astra, 2026-10-29) */
+@keyframes dome-flash { 0%, 100% { filter: drop-shadow(0 0 16px #ff2e4d); } 17% { filter: drop-shadow(0 0 16px #ff7a1a); } 33% { filter: drop-shadow(0 0 16px #fff01f); }
+  50% { filter: drop-shadow(0 0 16px #39ff14); } 67% { filter: drop-shadow(0 0 16px #1fa4ff); } 83% { filter: drop-shadow(0 0 16px #b14bff); } }
 @media (prefers-reduced-motion: reduce) { .home.alarm { animation: dome-flash 1.6s ease-in-out infinite; } }
 /* the counter under the dome: how many are in, how many more until it breaks, and a bar filling toward 67 */
 .dome-meter { display: grid; gap: 10px; }

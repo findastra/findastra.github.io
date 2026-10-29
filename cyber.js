@@ -726,6 +726,8 @@
         // where the mouth is while the jar lies on its side: the top middle, turned a quarter round the bottom right corner
         const M = { x: r.left + r.width * .5, y: r.top + r.height * .08 };
         const mouth = { x: O.x - (M.y - O.y), y: O.y + (M.x - O.x) };
+        // while it lies there, sparkles spill out of its mouth and fall down the page
+        for (let i = 0; i < 12; i++) setTimeout(() => fall(mouth.x + Math.random() * 12, mouth.y + (Math.random() - .5) * r.width * .4, 20 + Math.random() * 60, 6 + Math.random() * 18, 140 + Math.random() * 200, 1800 + Math.random() * 800), T * .27 + i * 120);
         await new Promise((ok) => setTimeout(ok, T * .36));
         gone();
         const size = from ? from.getBoundingClientRect().width : 40;
@@ -754,6 +756,16 @@
       s.animate([{ transform: 'translate(-50%, -50%) scale(.3) rotate(0)', opacity: 0 }, { transform: `translate(calc(-50% + ${dx * .4}px), calc(-50% + ${dy * .4}px)) scale(1.1) rotate(60deg)`, opacity: 1, offset: .25 },
         { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(.4) rotate(160deg)`, opacity: 0 }], { duration: ms, easing: 'ease-out' }).finished.then(() => s.remove());
     }
+    // a sparkle knocked loose: up and out a little, then falling down the page under its own weight, fading as it goes
+    // (Astra, 2026-10-29: "they fall down the page")
+    function fall(x, y, dx, up, down, ms) {
+      const st = box.getBoundingClientRect(), k = (Math.random() * 1e9) >>> 0, s = el('i', 'jar-spark');
+      s.style.cssText = `left:${x - st.left}px;top:${y - st.top}px;--s:${7 + (k % 12)}px;--c:${pastel(k)}`;
+      box.append(s);
+      s.animate([{ transform: 'translate(-50%, -50%) scale(.4) rotate(0)', opacity: 0 },
+        { transform: `translate(calc(-50% + ${dx * .45}px), calc(-50% - ${up}px)) scale(1.1) rotate(90deg)`, opacity: 1, offset: .28, easing: 'ease-in' },
+        { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${down}px)) scale(.6) rotate(260deg)`, opacity: 0 }], { duration: ms }).finished.then(() => s.remove());
+    }
     // the star slides out of the mouth and drops to the ground with a little bounce; sparkles shake off it there; then it
     // glides into its slot, growing to full size, the sparkles trailing behind it the whole way
     async function fly(mouth, ground, size, it, to, land) {
@@ -767,9 +779,10 @@
         { transform: at(gx, gy, 1, 120), offset: .75, easing: 'ease-out' }, { transform: at(gx + size * .25, gy - size * .5, 1.05, 150), offset: .87, easing: 'ease-in' },
         { transform: at(gx + size * .4, gy, 1, 170) },
       ], { duration: 1300, fill: 'forwards' }).finished;
-      // it hits the ground: a ring of sparkles shakes off
-      const c = f.getBoundingClientRect(), cx0 = c.left + c.width / 2, cy0 = c.top + c.height / 2;
-      for (let i = 0; i < 14; i++) { const a = (i / 14) * Math.PI * 2 - Math.PI / 2; puff(cx0, cy0, Math.cos(a) * size * 1.6, Math.sin(a) * size * 1.2 - size * .5, 1700); }
+      // it hits the ground: sparkles kick up from where it landed, mostly forward the way it was going, and then fall away down
+      // the page past the ground, not a neat ring
+      const c = f.getBoundingClientRect(), cx0 = c.left + c.width / 2, foot = c.bottom;
+      for (let i = 0; i < 18; i++) fall(cx0 + (Math.random() - .5) * size * .6, foot, (Math.random() - .25) * size * 4, size * (.4 + Math.random() * 1.4), 120 + Math.random() * 220, 1600 + Math.random() * 900);
       await new Promise((ok) => setTimeout(ok, 250));
       const b = to.getBoundingClientRect(), sx = gx + size * .4, sy = gy;
       const ex = b.left + b.width / 2 - mouth.x, ey = b.top + b.height / 2 - mouth.y, grow = b.width / size;
