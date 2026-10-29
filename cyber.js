@@ -659,13 +659,14 @@
     const own = r ? r.name : [p.repo, name].find((n) => n && IMG[n] && IMG[n].private);
     return { p, r, pics: own ? picturesOf(own) : [] };
   };
-  // each pet's star is the page's neon nearest its own colors (Astra, 2026-10-29): the hue its drawing leans to, from its
-  // colorful pixels, snapped to the section colors plus cyan; a pet with hardly any color keeps its hashed one
-  const NEON = [[350, '#ff2e4d'], [26, '#ff7a1a'], [56, '#fff01f'], [107, '#39ff14'], [186, '#00f0ff'], [210, '#1fa4ff'], [258, '#8c6bff'], [312, '#ff2bd6']];
-  const neonOf = new Map();
-  const petNeon = (src) => {
+  // Every pet its own color (Astra, 2026-10-29: "there's no one that's exactly the same color", the whole rainbow, "some white
+  // stars too"). Each pet's drawing is read for the hue it leans to and how colorful it is; the colorful ones are lined up by
+  // that hue and spread evenly round the whole wheel, so each stays near its own color but no two match, and the ones with
+  // hardly any color get soft whites, each a little different. rank is its place in that rainbow, for the jar and the grid
+  const inkOf = new Map();
+  const petInk = (src) => {
     if (!src) return Promise.resolve(null);
-    if (!neonOf.has(src)) neonOf.set(src, new Promise((ok) => {
+    if (!inkOf.has(src)) inkOf.set(src, new Promise((ok) => {
       const im = new Image(); im.crossOrigin = 'anonymous';
       im.onerror = () => ok(null);
       im.onload = () => {
@@ -680,29 +681,43 @@
             const hue = mx === r ? ((g - b) / (mx - mn)) % 6 : mx === g ? (b - r) / (mx - mn) + 2 : (r - g) / (mx - mn) + 4;
             const a = hue * Math.PI / 3, w = s * mx; sx += Math.cos(a) * w; sy += Math.sin(a) * w; wt += w;
           }
-          if (wt < 6) return ok(null);
-          const hue = ((Math.atan2(sy, sx) * 180 / Math.PI) + 360) % 360, gap = (n) => Math.min(Math.abs(n - hue), 360 - Math.abs(n - hue));
-          ok(NEON.reduce((best, n) => (gap(n[0]) < gap(best[0]) ? n : best))[1]);
+          ok({ hue: ((Math.atan2(sy, sx) * 180 / Math.PI) + 360) % 360, wt });
         } catch { ok(null); }
       };
       im.src = src;
     }));
-    return neonOf.get(src);
+    return inkOf.get(src);
   };
-  const neonStar = (node, p) => petNeon(iconOf(p)).then((c) => { if (c) node.style.setProperty('--c', c); });
+  let plan = null, planFor = null;
+  const colorPlan = () => {
+    if (planFor === pets && plan) return plan;
+    planFor = pets;
+    const list = pets.filter(iconOf);
+    return (plan = Promise.all(list.map((p) => petInk(iconOf(p)).then((ink) => ({ p, ink })))).then((all) => {
+      const colored = all.filter((e) => e.ink && e.ink.wt >= 6).sort((a, b) => a.ink.hue - b.ink.hue), whites = all.filter((e) => !(e.ink && e.ink.wt >= 6));
+      const m = new Map(), n = colored.length || 1, from = colored.length ? colored[0].ink.hue : 0;
+      colored.forEach((e, i) => m.set(e.p.number, { c: `hsl(${Math.round((from + (i * 360) / n) % 360)} 95% 58%)`, rank: i }));
+      whites.forEach((e, i) => m.set(e.p.number, { c: `hsl(${(i * 47) % 360} 40% ${86 + (i % 4) * 3}%)`, rank: n + i }));
+      return m;
+    }));
+  };
+  const colorFor = (p) => colorPlan().then((m) => m.get(p.number) || { c: colorOf('pet-' + p.number), rank: 999 });
+  const neonStar = (node, p) => colorFor(p).then((x) => node.style.setProperty('--c', x.c));
   // two arrows chasing each other round a circle, one turning down on the right and one up on the left: the usual "flip"
   const flipIcon = () => {
     const s = svgEl('svg', { viewBox: '0 0 24 24', 'aria-hidden': 'true', fill: 'none', stroke: 'currentColor', 'stroke-width': '2.4', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' });
     for (const d of ['M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8', 'M21 3v5h-5', 'M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16', 'M8 16H3v5']) s.append(svgEl('path', { d }));
     return s;
   };
+  const PET_SCALE = .8;
   function star({ p, r, pics }) {
     const c = el('article', 'card'); const h = paint(c, r ? r.name : p.pet); neonStar(c, p);
     const repoUrl = r ? 'https://github.com/findastra/' + r.name : null, icon = iconOf(p), site = siteOf(p, r);
     // the front (Astra, 2026-10-29): just the pet, big, filling the window, with its name; no picture box, no side tags
     const big = el('div', 'pet-big');
     // each pet's drawing centered in its window by where it is painted, all at the same scale (Astra, 2026-10-29)
-    if (icon) { const im = el('img'); im.src = icon; im.alt = p.pet; im.loading = 'lazy'; big.append(im); centerByInk(im); } else big.textContent = '{ }';
+    // all at one cutesy size, the same for every pet, so none comes near the star's pale edge (Astra, 2026-10-29)
+    if (icon) { const im = el('img'); im.src = icon; im.alt = p.pet; im.loading = 'lazy'; im.style.scale = PET_SCALE; big.append(im); centerByInk(im, PET_SCALE); } else big.textContent = '{ }';
     // the star's top point is its button: the usual turn-over arrows in a circle (Astra, 2026-10-29); more buttons, when there
     // are more, go on its other points
     const turnBtn = el('button', 'tip turn-btn'); turnBtn.type = 'button'; turnBtn.setAttribute('aria-label', 'flip the star to see ' + p.pet + "'s program"); turnBtn.title = 'flip';
@@ -760,7 +775,9 @@
     // and round the outside of the glass (Astra, 2026-10-29: "full of sparkles ... and on the outside, too")
     // ...held still round it, so they stay where they are when it tips over (Astra, 2026-10-29)
     const ring = sparkles(hash(id + ':ring'), 22); ring.classList.add('ring');
-    const wrap = el('span', 'jar-wrap'); jar.before(wrap); wrap.append(jar, ring);
+    // and some behind it too, seen through the glass and round its edges (Astra, 2026-10-29)
+    const ringBack = sparkles(hash(id + ':back'), 18); ringBack.classList.add('ring', 'back');
+    const wrap = el('span', 'jar-wrap'); jar.before(wrap); wrap.append(ringBack, jar, ring);
     // the "dink" of the glass jar landing on its side (Astra, 2026-10-29): a short bright ring that dies away
     let audio = null;
     const dink = () => { try {
@@ -771,8 +788,9 @@
     } catch {} };
     // each star's color, once its pet's drawing has been read; the jar is filled color by color, in bands like sand art, and
     // each tip goes on to a color not shown yet (Astra, 2026-10-29: "go through the colors", "organize the color")
-    const tints = new Map(), TINT_ORDER = NEON.map((n) => n[1]);
-    const tintRank = (it) => { const c = tints.get(keyOf(it)); const i = c ? TINT_ORDER.indexOf(c) : -1; return i < 0 ? TINT_ORDER.length : i; };
+    // (tints: each key's { c, rank }, its own color and its place in the rainbow)
+    const tints = new Map();
+    const tintRank = (it) => { const t = tints.get(keyOf(it)); return t ? t.rank : 1e4; };
     let tintsFor = null;
     function readTints(list) {
       if (tintsFor === list) return; tintsFor = list;
@@ -839,11 +857,10 @@
       const minis = [...inside.children];
       // the color shown least so far (never the last one again, while another is left), then any star of that color at random,
       // one with pictures a little more often
-      const shownTimes = (c) => caught.filter((k) => tints.get(k) === c).length, last = tints.get(caught[caught.length - 1]);
-      const byTint = new Map(); for (const it of left()) { const c = tints.get(keyOf(it)) || '?'; if (!byTint.has(c)) byTint.set(c, []); byTint.get(c).push(it); }
-      const tintsLeft = [...byTint.keys()], fresh = tintsLeft.filter((c) => c !== last), pickFrom = fresh.length ? fresh : tintsLeft;
-      const least = Math.min(...pickFrom.map(shownTimes)), next = pickFrom.filter((c) => shownTimes(c) === least);
-      const choices = byTint.get(next[Math.floor(Math.random() * next.length)]), withPics = choices.filter(kind.hasPics);
+      // every star is its own color now, so the next is one well round the rainbow from the last, if any is left
+      const lastT = tints.get(caught[caught.length - 1]), rest = left(), span = rest.length + caught.length;
+      const far = lastT ? rest.filter((it) => { const t = tints.get(keyOf(it)); return t && Math.abs(t.rank - lastT.rank) > span / 5; }) : [];
+      const choices = far.length ? far : rest, withPics = choices.filter(kind.hasPics);
       const pool = withPics.length && Math.random() < .65 ? withPics : choices;
       const pick = pool[Math.floor(Math.random() * pool.length)], key = keyOf(pick);
       const from = minis.find((m) => m.dataset.key === key);
@@ -855,7 +872,7 @@
         // slow and smooth (Astra, 2026-10-29): the jar tips over to the right and settles on its side, its lid pops off and
         // drops, the star slides out of the mouth and lands on the ground, sparkles shake off it, and it glides down into its
         // slot with them trailing; then the lid is back and the jar stands up again
-        const r = jar.getBoundingClientRect(), O = { x: r.left + r.width * .88, y: r.top + r.height * .96 }, T = 5200;
+        const r = jar.getBoundingClientRect(), boxAt = box.getBoundingClientRect(), O = { x: r.left + r.width * .88, y: r.top + r.height * .96 }, T = 5200;
         jar.style.transformOrigin = '88% 96%';
         const lay = (d) => `rotate(${d}deg)`;
         const tip = jar.animate([
@@ -872,9 +889,13 @@
           { transform: 'none', opacity: 0, offset: .9 }, { transform: 'none', opacity: 1, offset: 1 },
         ], { duration: T });
         jar.classList.add('tipped'); setTimeout(dink, T * .26);
+        // the stars inside fall with it (Astra, 2026-10-29): as it goes over they slide down to what is now the bottom, its
+        // right-hand side, tumbling a little, and settle back when it stands up again
+        const IW = inside.clientWidth || 240;
         for (const m of minis) {
-          const base = `translate(-50%, -50%) rotate(${m.style.getPropertyValue('--r')})`, j = () => `translate(calc(-50% + ${Math.random() * 14 - 7}px), calc(-50% + ${Math.random() * -14}px)) rotate(${Math.random() * 60 - 30}deg)`;
-          m.animate([{ transform: base }, { transform: j(), offset: .28 }, { transform: j(), offset: .4 }, { transform: base, offset: .8 }, { transform: base }], { duration: T, easing: 'ease-in-out' });
+          const r0 = m.style.getPropertyValue('--r'), base = `translate(-50%, -50%) rotate(${r0})`, room = (1 - parseFloat(m.style.left) / 100) * IW * (.45 + Math.random() * .25);
+          const lying = `translate(calc(-50% + ${room}px), calc(-50% + ${Math.random() * 10 - 5}px)) rotate(calc(${r0} - ${40 + Math.random() * 80}deg))`;
+          m.animate([{ transform: base }, { transform: base, offset: .12 }, { transform: lying, offset: .3, easing: 'ease-out' }, { transform: lying, offset: .76 }, { transform: base, offset: .95, easing: 'ease-in-out' }, { transform: base }], { duration: T });
         }
         // where the mouth is while the jar lies on its side: the top middle, turned a quarter round the bottom right corner
         const M = { x: r.left + r.width * .5, y: r.top + r.height * .08 };
@@ -882,9 +903,13 @@
         // while it lies there, sparkles spill out of its mouth and fall down the page
         for (let i = 0; i < 12; i++) setTimeout(() => fall(mouth.x + Math.random() * 12, mouth.y + (Math.random() - .5) * r.width * .4, 20 + Math.random() * 60, 6 + Math.random() * 18, 140 + Math.random() * 200, 1800 + Math.random() * 800), T * .27 + i * 120);
         await new Promise((ok) => setTimeout(ok, T * .36));
+        // it starts where it lay in the jar and rolls out of the mouth (Astra, 2026-10-29: "the star actually rolls out of the jar").
+        // The mouth and the ground were found as the jar began to tip; if the page has scrolled since, they move with it, so the
+        // star always comes out of the mouth and lands in the same place (Astra, 2026-10-29: it was falling from high up)
+        const moved = box.getBoundingClientRect(), dy = moved.top - boxAt.top, dx = moved.left - boxAt.left;
+        const fr = from && from.getBoundingClientRect(), size = fr ? fr.width : 40, start = fr ? { x: fr.left + fr.width / 2, y: fr.top + fr.height / 2 } : null;
         gone();
-        const size = from ? from.getBoundingClientRect().width : 40;
-        await Promise.all([fly(mouth, O.y, size, pick, into, land), tip.finished.catch(() => {}), lidOff && lidOff.finished.catch(() => {})]);
+        await Promise.all([fly(start, { x: mouth.x + dx, y: mouth.y + dy }, O.y + dy, size, pick, land), tip.finished.catch(() => {}), lidOff && lidOff.finished.catch(() => {})]);
         jar.style.transformOrigin = ''; jar.classList.remove('tipped');
       }
       jar.classList.remove('shaking');
@@ -919,67 +944,73 @@
         { transform: `translate(calc(-50% + ${dx * .45}px), calc(-50% - ${up}px)) scale(1.1) rotate(90deg)`, opacity: 1, offset: .28, easing: 'ease-in' },
         { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${down}px)) scale(.6) rotate(260deg)`, opacity: 0 }], { duration: ms }).finished.then(() => s.remove());
     }
-    // the star slides out of the mouth and drops to the ground with a little bounce; sparkles shake off it there; then it
-    // glides into its slot, growing to full size, the sparkles trailing behind it the whole way
-    async function fly(mouth, ground, size, it, to, land) {
+    // the star's way out (Astra, 2026-10-29), one way for every star, only as long as its slot needs: it rolls out of the jar's
+    // mouth and drops to the ground, kicking up sparkles; rolls like a marble (turning as far as it rolls) to the right edge of
+    // the paper and knocks off it; rolls back until it is right over its own slot, slowing to a stop there; and drops straight
+    // down into it. As it drops it is already the full star, small, growing to its size, so there is no change of look at the end
+    async function fly(start, mouth, ground, size, it, land) {
       const st = box.getBoundingClientRect();
       const f = kind.mini(it); f.classList.add('flyer'); f.style.setProperty('--s', size + 'px');
       f.style.left = mouth.x - size / 2 - st.left + 'px'; f.style.top = mouth.y - size / 2 - st.top + 'px'; box.append(f);
       const at = (x, y, sc, rot) => `translate(${x}px, ${y}px) scale(${sc}) rotate(${rot}deg)`;
-      // it falls out like a real thing (Astra, 2026-10-29: "look natural, like something actually falling out of a jar"):
-      // pushed out of the mouth, it drops under its own weight, lands with a small bump, rolls like a marble (turning as far
-      // as it rolls) all the way to the right edge of the paper, knocks off it, and rolls back until it nearly stops
+      // its full star goes in the slot now, unseen, so it knows where it is headed
+      const card = land(); card.classList.remove('landed'); card.style.opacity = 0;
+      const b = card.getBoundingClientRect(), slotX = b.left + b.width / 2 - mouth.x, slotY = b.top + b.height / 2 - mouth.y;
       const paper = (box.closest('.block') || box).getBoundingClientRect();
       const groundY = ground - size * .5 - mouth.y, wallX = paper.right - size * .55 - mouth.x, rad = size / 2;
-      let x = 0, y = 0, vx = 5.6, vy = -1.2, rot = 0, landed = false, knocked = false, prev = performance.now(), t0 = prev;
+      let x = start ? start.x - mouth.x : 0, y = Math.min(groundY, start ? start.y - mouth.y : 0), vx = 9, vy = -.8, rot = 0;
+      let landed = false, knocked = false, prev = performance.now();
+      const t0 = prev;
       await new Promise((done) => {
         (function step(now) {
           const k = Math.min(3, (now - prev) / 16.7); prev = now;
-          vy += .38 * k; x += vx * k; y += vy * k;
-          if (y >= groundY) {
-            y = groundY;
-            if (!landed) {
-              landed = true;
-              // sparkles kick up from where it landed and fall away down the page
-              for (let i = 0; i < 18; i++) fall(mouth.x + x + (Math.random() - .5) * size * .6, ground, (Math.random() - .2) * size * 4, size * (.4 + Math.random() * 1.4), 120 + Math.random() * 220, 1600 + Math.random() * 900);
+          if (!knocked) {
+            vy += .5 * k; x += vx * k; y += vy * k;
+            if (y >= groundY) {
+              y = groundY;
+              if (!landed && x > 0) {
+                landed = true;
+                for (let i = 0; i < 18; i++) fall(mouth.x + x + (Math.random() - .5) * size * .6, ground, (Math.random() - .2) * size * 4, size * (.4 + Math.random() * 1.4), 120 + Math.random() * 220, 1500 + Math.random() * 800);
+              }
+              vy = landed && Math.abs(vy) > 2.4 ? -vy * .2 : 0;
+              vx = Math.max(3.2, vx * Math.pow(.997, k));
             }
-            vy = Math.abs(vy) > 2.4 ? -vy * .22 : 0; // a small bump the first time, then it rolls
-            vx *= Math.pow(.995, k); // rolling slows it a little
+            if (x >= wallX) {
+              x = wallX; knocked = true; vx = -Math.min(7, vx * .6);
+              for (let i = 0; i < 6; i++) puff(mouth.x + x + rad, mouth.y + y, -10 - Math.random() * 20, (Math.random() - .5) * 30, 1100);
+            }
+          } else {
+            // back toward its slot, easing to a stop right over it
+            const left = x - slotX;
+            vx = -Math.max(.6, Math.min(Math.abs(vx), left * .09));
+            x += vx * k; y = groundY;
+            if (x <= slotX + .5) { x = slotX; rot -= (Math.abs(vx) * k / rad) * (180 / Math.PI); f.style.transform = at(x, y, 1, rot); return done(); }
           }
-          if (x >= wallX && vx > 0) {
-            x = wallX; vx = -vx * .5; knocked = true;
-            for (let i = 0; i < 6; i++) puff(mouth.x + x + rad, mouth.y + y, -10 - Math.random() * 20, (Math.random() - .5) * 30, 1200);
-          }
-          rot += (vx * k / rad) * (180 / Math.PI);
+          // always turning the same way, counterclockwise, whichever way it rolls (Astra, 2026-10-29)
+          rot -= (Math.abs(vx) * k / rad) * (180 / Math.PI);
           f.style.transform = at(x, y, 1, rot);
-          if ((knocked && landed && Math.abs(vx) < .7) || now - t0 > 9000) return done();
+          if (now - t0 > 7000) return done();
           requestAnimationFrame(step);
         })(prev);
       });
-      // its full star is put in the slot now, unseen, so the falling one can land exactly on it: same place, size and tilt
-      const card = land(); card.style.opacity = 0;
-      const b = card.getBoundingClientRect(), tilt = parseFloat(getComputedStyle(card).getPropertyValue('--tilt')) || 0;
-      const ex = b.left + b.width / 2 - mouth.x, ey = b.top + b.height / 2 - mouth.y, grow = b.width / size;
-      // then it tips off, still rolling a little the way it was going, and drops slowly, turning, onto its star
-      const endRot = Math.round((rot + 180) / 360) * 360 + tilt;
-      const glide = f.animate([
-        { transform: at(x, y, 1, rot) }, { transform: at(x - size * .5, y + size * .5, 1.05, rot - 25), offset: .14, easing: 'ease-in' },
-        { transform: at(ex, ey, grow, endRot) },
-      ], { duration: 2600, easing: 'cubic-bezier(.4, .1, .3, 1)', fill: 'forwards' });
+      // the drop: the full star takes the little one's place, its size and turn, and falls straight down into its slot, growing
+      // as it comes and turning slowly upright
+      // still counterclockwise as it comes upright: from its turn (between 0 and a full turn) down to none
+      const s0 = size / b.width, r0 = ((rot % 360) + 360) % 360 || 360;
+      const from = (ty, sc, r) => `translate(${x - slotX}px, ${ty}px) scale(${sc}) rotate(${r}deg)`;
+      card.style.transform = from(y - slotY, s0, r0); card.style.opacity = 1;
+      f.remove();
       let trailing = true;
       (function trail() {
         if (!trailing) return;
-        const q = f.getBoundingClientRect(); puff(q.left + q.width * (.3 + Math.random() * .4), q.top + q.height * (.3 + Math.random() * .4), (Math.random() - .5) * 30, 10 + Math.random() * 30, 2000);
-        setTimeout(trail, 70);
+        const q = card.getBoundingClientRect(); puff(q.left + q.width * (.3 + Math.random() * .4), q.top + q.height * (.3 + Math.random() * .4), (Math.random() - .5) * 30, 10 + Math.random() * 30, 1600);
+        setTimeout(trail, 80);
       })();
-      await glide.finished; trailing = false;
-      // the full star fades in right where the little one lies while the little one fades out, so it does not jump from one
-      // look to the other (Astra, 2026-10-29)
-      card.classList.remove('landed'); card.style.opacity = '';
-      card.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 700, easing: 'ease-in-out' });
-      await f.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 700, easing: 'ease-in-out', fill: 'forwards' }).finished;
-      f.remove();
+      const drop = Math.max(500, Math.min(1100, Math.abs(slotY - y) * 1.6));
+      await card.animate([{ transform: from(y - slotY, s0, r0) }, { transform: 'none' }], { duration: drop, easing: 'cubic-bezier(.45, 0, .25, 1)' }).finished;
+      card.style.transform = ''; trailing = false;
     }
+
     // empty the jar: every one left lands in the row at once; when none are left, they all go back in
     function pour() {
       if (shaking) return;
@@ -1015,7 +1046,7 @@
       if (force > 14 && Date.now() - lastShake > 1400) { lastShake = Date.now(); shake(); }
     });
   }
-  const petJar = makeJar('pet-jar', { key: (e) => 'pet-' + e.p.number, mini: miniStar, full: star, hasPics: (e) => e.pics.length > 0, tint: (e) => petNeon(iconOf(e.p)).then((c) => c || colorOf('pet-' + e.p.number)), maxMini: 84, glints: (h) => 2 + (h % 2), one: 'pet', many: 'pets' });
+  const petJar = makeJar('pet-jar', { key: (e) => 'pet-' + e.p.number, mini: miniStar, full: star, hasPics: (e) => e.pics.length > 0, tint: (e) => colorFor(e.p), maxMini: 84, glints: (h) => 2 + (h % 2), one: 'pet', many: 'pets' });
 
   // ---------- Astra's PetOS as Polaroids: the System Map (live), all the pets at once, and every pet to flip through ----------
   const HUB_PAGES = 'https://findastra.github.io/astras-pet-os/';
@@ -1024,9 +1055,8 @@
     const ims = list.map((p) => { const im = el('img'); im.src = iconOf(p); im.alt = ''; im.loading = 'lazy'; im.title = p.pet; return im; });
     g.append(...ims);
     // laid out as a rainbow, like the jar (Astra, 2026-10-29): once every pet's color is read, they go in by hue
-    Promise.all(list.map((p) => petNeon(iconOf(p)))).then((cs) => {
-      const rank = (c) => { const i = NEON.findIndex((n) => n[1] === c); return i < 0 ? NEON.length : i; };
-      g.append(...ims.map((im, i) => [im, rank(cs[i])]).sort((a, b) => a[1] - b[1]).map((x) => x[0]));
+    Promise.all(list.map(colorFor)).then((cs) => {
+      g.append(...ims.map((im, i) => [im, cs[i].rank]).sort((a, b) => a[1] - b[1]).map((x) => x[0]));
     });
     return g;
   };
@@ -1148,6 +1178,9 @@
         if (live.length) { pets = live; for (const p of pets) if (p.repo && !petByRepo[p.repo]) petByRepo[p.repo] = p; }
       }
       if ([index, programs, hubPets, pages].some((x) => x.status === 'fulfilled')) { source(liveRepos); render(); }
+      // the memory board was dealt before the hub said where every picture is; deal it again now, unless a game has begun
+      // (Astra, 2026-10-29: its pictures were missing)
+      if (index.status === 'fulfilled' && !memBegun) deal();
     });
 
   // ---------- the portrait, in color: each of its colors sparkles in that color ----------
@@ -1227,7 +1260,7 @@
   // ---------- arcade: pet memory ----------
   // Easy: six pets, in their own colors. Hard (Astra, 2026-10-27): one pet, and the pairs are six of its moods, so the cards
   // all look alike; the moods come from the hub's art/latest/moods/<pet>/ (blink is left out, it is too close to idle).
-  let hard = false;
+  let hard = false, memBegun = false;
   const MOODS = ['alarmed', 'curious', 'happy', 'idle', 'sad', 'sick', 'sleep', 'worried'];
   const moodPets = () => {
     if (!hosted) return [];
@@ -1236,6 +1269,7 @@
     return Object.entries(by).filter(([, list]) => list.length >= 6);
   };
   function deal() {
+    memBegun = false;
     const shuffle = (a) => [...a].sort(() => Math.random() - .5);
     let pick, who = '';
     const hardOnes = hard ? moodPets() : [];
@@ -1254,7 +1288,7 @@
       b.append(el('span', 'f f1', '✦'), f2); t.append(b);
       b.onclick = () => {
         if (lock || t.classList.contains('open') || t.classList.contains('done')) return;
-        t.classList.add('open'); open.push([t, p]);
+        memBegun = true; t.classList.add('open'); open.push([t, p]);
         if (open.length < 2) return;
         moves++; const [[ta, pa], [tb, pb]] = open; open = [];
         if (pa.key === pb.key) { ta.classList.add('done'); tb.classList.add('done'); found++; if (found === 6) { $('mem-stat').textContent = `all pairs · ${moves} moves · ${Math.round((Date.now() - t0) / 1000)}s ✦`; return; } }
