@@ -150,15 +150,37 @@
     }
     // holding one while scrolling keeps it under the pointer
     addEventListener('scroll', () => { if (held && lastPt) { held.px = lastPt.x + scrollX; held.py = lastPt.y + scrollY; } }, { passive: true });
+    // what they bounce off (Astra, 2026-10-29: "bounce off of objects that are inside of this UI"): the Polaroids, the stars,
+    // the jar, the terminal and portrait, the section titles and their tags, the contact cards. Where each one is on the page
+    // is read again a few times a second, so they follow the page as it changes
+    const SOLID = '.polaroid .frame, #pet-jar .jar, .jar-all .card, .term, .portrait, .block h2, .block .kicker, .contact';
+    let solids = [], solidsAt = 0;
+    const readSolids = () => {
+      solids = [...document.querySelectorAll(SOLID)].map((n) => n.getBoundingClientRect()).filter((r) => r.width && r.height)
+        .map((r) => ({ l: r.left + scrollX, t: r.top + scrollY, r: r.right + scrollX, b: r.bottom + scrollY }));
+    };
+    // a round body against a box: off the side it hits, the way a ball comes off a wall
+    function bounceOff(f, rad) {
+      for (const o of solids) {
+        const nx = Math.max(o.l, Math.min(f.px, o.r)), ny = Math.max(o.t, Math.min(f.py, o.b)), dx = f.px - nx, dy = f.py - ny, d = Math.hypot(dx, dy);
+        if (!d || d >= rad) continue; // clear of it, or already inside it (then it just passes through and out)
+        const ux = dx / d, uy = dy / d, dot = f.pvx * ux + f.pvy * uy;
+        if (dot < 0) { f.pvx -= 2 * dot * ux; f.pvy -= 2 * dot * uy; f.psq = 1; f.pspin = (Math.random() - .5) * .6; }
+        f.px = nx + ux * rad; f.py = ny + uy * rad;
+      }
+    }
     function roam(t) {
       roaming = requestAnimationFrame(roam);
       const { w, h } = page(), s = bodySize(), half = s / 2;
+      if (t - solidsAt > 300) { solidsAt = t; readSolids(); }
       if (layer.style.height !== h + 'px') layer.style.height = h + 'px';
       const trail = !reduced && t - trailT > 110; if (trail) trailT = t;
       for (const f of outside()) {
         if (f !== held && !reduced) {
           f.px += f.pvx; f.py += f.pvy;
-          const v = Math.hypot(f.pvx, f.pvy); if (v > 3.2) { f.pvx *= .99; f.pvy *= .99; } else if (v < 1.5) { f.pvx *= 1.05; f.pvy *= 1.05; }
+          // a thrown or burst one eases back to a steady bounce, no wandering
+          const v = Math.hypot(f.pvx, f.pvy); if (v > 4) { f.pvx *= .99; f.pvy *= .99; } else if (v < 3) { f.pvx *= 1.02; f.pvy *= 1.02; }
+          bounceOff(f, half * .8);
           if (f.px < half && f.pvx < 0 || f.px > w - half && f.pvx > 0) { f.pvx = -f.pvx; f.psq = 1; f.pspin = (Math.random() - .5) * .6; }
           if (f.py < half && f.pvy < 0 || f.py > h - half && f.pvy > 0) { f.pvy = -f.pvy; f.psq = 1; f.pspin = (Math.random() - .5) * .6; }
           f.px = Math.min(w - half, Math.max(half, f.px)); f.py = Math.min(h - half, Math.max(half, f.py));

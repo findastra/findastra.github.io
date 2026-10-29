@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&family=JetBrains+Mono:wght@400;700&family=VT323&family=Permanent+Marker&display=swap">
-<link rel="stylesheet" href="cyber.css?v=20261030d">
+<link rel="stylesheet" href="cyber.css?v=20261030f">
 </head>
 <body>
 <!-- the fat star every pet window is cut from (R 100, r 70; rounded by the stroke in cyber.css) -->
@@ -118,13 +118,15 @@
             <p class="jar-hint">Tip the jar to collect a star.<br>Will you get every single pet?</p>
             <button class="jar" aria-label="Tip the pets jar over. One pet falls out.">
               <svg class="jar-glass" viewBox="0 0 300 380" aria-hidden="true">
-                <rect class="jar-lid" x="66" y="6" width="168" height="40" rx="8"/>
-                <path class="jar-lid-lines" d="M80 16H220M80 26H220M80 36H220"/>
+                <defs><linearGradient id="jar-tint" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity=".1"/><stop offset=".5" stop-color="#fff" stop-opacity=".02"/><stop offset="1" stop-color="#fff" stop-opacity=".08"/></linearGradient></defs>
                 <path class="jar-body" d="M92 46h116v22c0 10 8 16 22 22 26 11 40 30 40 58v186c0 22-14 36-36 36H66c-22 0-36-14-36-36V148c0-28 14-47 40-58 14-6 22-12 22-22z"/>
+                <path class="jar-rim" d="M90 52h120"/>
               </svg>
               <span class="jar-stars"></span>
+              <!-- the glass's shine, then the lid on top of the glass; the lid comes off when the jar tips over -->
               <svg class="jar-shine" viewBox="0 0 300 380" aria-hidden="true">
-                <path d="M58 160c-4 40-4 120 2 170" /><path d="M74 140c-2 8-3 16-3 24" />
+                <path d="M58 160c-4 40-4 120 2 170" /><path d="M74 140c-2 8-3 16-3 24" /><path class="dot" d="M246 300v12" />
+                <g class="jar-lid-g"><rect class="jar-lid" x="80" y="8" width="140" height="44" rx="10"/><path class="jar-lid-lines" d="M92 20H208M92 30H208M92 40H208"/></g>
               </svg>
               <span class="jar-label">pets</span>
             </button>
@@ -270,7 +272,7 @@
 <script src="pets-data.js?v=20261027c"></script>
 <script src="project-images.js?v=20261020a"></script>
 <script src="updates-data.js?v=20261018c"></script>
-<script src="cyber.js?v=20261030c"></script>
-<script src="games-20261027.js?v=20261030b"></script>
+<script src="cyber.js?v=20261030e"></script>
+<script src="games-20261027.js?v=20261030e"></script>
 </body>
 </html>

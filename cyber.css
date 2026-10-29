@@ -127,6 +127,12 @@ h3 { display: inline-block; font: 700 12px var(--mono); text-transform: uppercas
 .block + .block, .ticker + .block, .race-stripe + .block { margin-top: 28px; }
 .weave { background: repeating-linear-gradient(45deg, #1d1d1d 0 2px, transparent 2px 14px), repeating-linear-gradient(-45deg, #1d1d1d 0 2px, transparent 2px 14px), #121212; }
 #arcade h2 { text-shadow: 4px 4px 0 #555, 8px 8px 0 #000; }
+/* each section's little tag above its title, in that section's color, black writing on it so it reads (Astra, 2026-10-29) */
+#vr { --tag: var(--c-vr); } #discord { --tag: var(--c-discord); } #web { --tag: var(--c-web); } #pets { --tag: var(--c-pets); }
+#arcade { --tag: var(--c-arcade); } #contact { --tag: var(--c-contact); }
+.block .kicker { background: var(--tag, var(--ink)); color: #000; font-weight: 700; box-shadow: 3px 3px 0 #000, 0 0 12px color-mix(in srgb, var(--tag, transparent) 45%, transparent); }
+/* "Astra's PetOS" as written, so the capitals do not run together (Astra, 2026-10-29: in all capitals it read wrong) */
+#pets h2 { text-transform: none; letter-spacing: -.035em; }
 
 /* tickers: what changed lately, right under the header, and what is being worked on now, under the hero. Both are the same
    slim, straight news strip; working on runs the other way (Astra, 2026-10-28: "make it straight", "the same size as the other one") */
@@ -475,16 +481,20 @@ a.title:hover, a.title:focus-visible { color: color-mix(in srgb, var(--c) 45%, #
 .jar-side { display: grid; justify-items: center; gap: 12px; }
 .jar-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
 /* the jar's name, on its lid */
-.jar-label { position: absolute; left: 50%; top: 6.8%; translate: -50% -50%; z-index: 1; font: 700 13px var(--mono); text-transform: uppercase; letter-spacing: .16em;
+.jar-label { position: absolute; left: 50%; top: 7.9%; translate: -50% -50%; z-index: 1; font: 700 13px var(--mono); text-transform: uppercase; letter-spacing: .16em;
   background: #d8d8d8; color: #000; border: 2px solid #000; padding: 1px 12px; rotate: -3deg; pointer-events: none; }
 .jar { position: relative; width: min(340px, 78vw); aspect-ratio: 300 / 380; padding: 0; border: 0; background: none; cursor: grab; touch-action: pan-y; transform-origin: 50% 92%; }
 .jar:active { cursor: grabbing; }
 .jar:focus-visible { outline: 2px dashed #8a8a8a; outline-offset: 8px; }
 .jar > svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
-.jar-lid { fill: #2e2e2e; stroke: #000; stroke-width: 4; }
-.jar-lid-lines { stroke: #4c4c4c; stroke-width: 3; fill: none; }
-.jar-body { fill: rgba(150, 150, 150, .07); stroke: #a8a8a8; stroke-width: 5; }
-.jar-shine path { fill: none; stroke: rgba(255, 255, 255, .28); stroke-width: 7; stroke-linecap: round; }
+/* a prettier jar (Astra, 2026-10-29): tinted glass with a soft rim, and a screw lid sitting over the glass, not under it */
+.jar-lid { fill: #3a3a3a; stroke: #0a0a0a; stroke-width: 4; }
+.jar-lid-lines { stroke: #5c5c5c; stroke-width: 3; fill: none; }
+.jar-lid-g { transform-box: fill-box; transform-origin: center; }
+.jar-body { fill: url(#jar-tint); stroke: #cfcfcf; stroke-width: 4; stroke-opacity: .8; }
+.jar-rim { stroke: rgba(255, 255, 255, .35); stroke-width: 6; stroke-linecap: round; fill: none; }
+.jar-shine path { fill: none; stroke: rgba(255, 255, 255, .3); stroke-width: 7; stroke-linecap: round; }
+.jar-shine path.dot { stroke: rgba(255, 255, 255, .22); stroke-width: 6; }
 /* the inside of the glass, where the stars pile up (matches the body path in index.html) */
 .jar .jar-glints { inset: auto; left: 11.4%; top: 25.6%; width: 77.2%; height: 70.6%; transition: opacity .2s; }
 .jar.shaking .jar-glints { opacity: 0; }
@@ -503,6 +513,12 @@ a.title:hover, a.title:focus-visible { color: color-mix(in srgb, var(--c) 45%, #
 .jar { z-index: 2; }
 .flyer { position: absolute; z-index: 30; pointer-events: none; width: var(--s); height: var(--s); }
 .flyer .sparkles { inset: -30%; }
+/* the sparkles that shake off the falling star and trail it: the page's one pastel sparkle */
+.jar-spark { position: absolute; z-index: 31; width: var(--s); aspect-ratio: 1; background: var(--c); pointer-events: none;
+  clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%); }
+/* the lid's name label comes off with it, out of sight, while the jar lies on its side */
+.jar-label { transition: opacity .3s; }
+.jar.tipped .jar-label { opacity: 0; }
 .jar-all[hidden] { display: none; }
 /* the row of star slots under the jar: each shake fills the dashed one and a new one waits after it (Astra, 2026-10-29) */
 .jar-all .slot { position: relative; width: 100%; max-width: 420px; aspect-ratio: 229 / 220; justify-self: center; margin-bottom: -5%; }
@@ -597,9 +613,6 @@ a.title:hover, a.title:focus-visible { color: color-mix(in srgb, var(--c) 45%, #
 /* the dome's count sits right under its name */
 .cab-head { display: grid; gap: 6px; }
 .cab-head h3 { margin: 0; justify-self: start; }
-/* each game's name in the Arcade's yellow, like the rest of its color (Astra, 2026-10-29) */
-.cab h3 { color: var(--c-arcade); border-bottom-color: var(--c-arcade); font-size: 14px; text-shadow: 0 0 8px color-mix(in srgb, var(--c-arcade) 70%, transparent);
-  box-shadow: 0 6px 10px -8px var(--c-arcade); }
 .screen { position: relative; aspect-ratio: 4 / 3; border: 2px solid #000; box-shadow: 6px 6px 0 #3a3a3a; background: #060606; touch-action: manipulation; }
 .screen canvas { display: block; width: 100%; height: 100%; }
 .hud { display: flex; justify-content: space-between; margin: 12px 0; color: #8a8a8a; }
@@ -658,7 +671,9 @@ a.title:hover, a.title:focus-visible { color: color-mix(in srgb, var(--c) 45%, #
 @media (max-width: 900px) {
   .hero { grid-template-columns: var(--sq); gap: 32px; }
   .arcade, .contacts { grid-template-columns: 1fr; }
-  .jar-stage { grid-template-columns: 1fr; min-height: 0; }
+  .jar-stage { grid-template-columns: minmax(0, 1fr); min-height: 0; }
+  .jar-out { display: none; }
+  .jar { width: min(340px, 100%); }
   .jar-out { min-height: 380px; }
 }
 @media (max-width: 520px) {
@@ -666,6 +681,13 @@ a.title:hover, a.title:focus-visible { color: color-mix(in srgb, var(--c) 45%, #
   :root { --rail: 27px; }
   .floors a { font-size: clamp(8px, calc((100vh - 230px) / 28), 13px); letter-spacing: .08em; }
   .block { --sheet: 28px; }
+  /* the terminal on a phone: everything in it a size smaller, so it still shows its words above the buttons, like on a
+     computer (Astra, 2026-10-29: "everything should look pretty much the same") */
+  .term-bar { padding: 5px 8px; font-size: 10px; }
+  .term-body { padding: 8px 10px; font-size: 10.5px; line-height: 1.45; }
+  .term-input { padding: 2px 10px 6px; font-size: 10.5px; }
+  .term-actions { gap: 6px; padding: 6px 10px 10px; }
+  .term-actions .btn { font-size: 10.5px; padding: 4px 8px; box-shadow: 3px 3px 0 var(--muted); }
   .board { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .fz-digit input { font-size: 22px; }
   .lightbox figure { padding: 44px 12px 12px; }

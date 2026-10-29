@@ -514,8 +514,18 @@
     }
     // glints: the same color-matched sparkle as the portrait, twinkling on the stars in the jar
     const glints = el('span', 'sparkles jar-glints'); glints.setAttribute('aria-hidden', 'true'); inside.after(glints);
+    // each star's color, once its pet's drawing has been read; the jar is filled color by color, in bands like sand art, and
+    // each tip goes on to a color not shown yet (Astra, 2026-10-29: "go through the colors", "organize the color")
+    const tints = new Map(), TINT_ORDER = NEON.map((n) => n[1]);
+    const tintRank = (it) => { const c = tints.get(keyOf(it)); const i = c ? TINT_ORDER.indexOf(c) : -1; return i < 0 ? TINT_ORDER.length : i; };
+    let tintsFor = null;
+    function readTints(list) {
+      if (tintsFor === list) return; tintsFor = list;
+      Promise.all(list.map((it) => kind.tint(it).then((c) => tints.set(keyOf(it), c)))).then(() => { if (items === list) fill(list); });
+    }
     function fill(list) {
-      items = list;
+      items = list; readTints(list);
+      const placed = [...list].sort((a, b) => tintRank(a) - tintRank(b));
       const r = rand(list.length * 7919 + 17), n = list.length || 1;
       // Astra (2026-10-18): the jar is full, every one visible, and they lie in a natural pile, not a grid. Each one is
       // dropped from a random spot and stops on the first one it hits (or the floor); the lowest of a few tries wins.
@@ -540,7 +550,7 @@
       while (!(spots = pile(rad)) && rad > 4) rad *= .94;
       spots = spots || list.map(() => ({ x: W / 2, y: H / 2 }));
       inside.style.setProperty('--s', rad * 2 + 'px');
-      inside.replaceChildren(...list.map((it, i) => {
+      inside.replaceChildren(...placed.map((it, i) => {
         const m = kind.mini(it); m.classList.add('mini');
         m.style.left = (spots[i].x / W) * 100 + '%';
         m.style.top = (spots[i].y / H) * 100 + '%';
@@ -549,7 +559,7 @@
         if (caught.includes(m.dataset.key)) m.classList.add('gone');
         return m;
       }));
-      glints.replaceChildren(...list.flatMap((it, i) => {
+      glints.replaceChildren(...placed.flatMap((it, i) => {
         const key = kind.key(it), h = hash(key);
         return Array.from({ length: kind.glints(h) }, (_, g) => {
           const k = hash(h + ':g' + g), a = (k % 628) / 100, d = rad * (.15 + ((k >>> 10) % 50) / 100);
@@ -572,8 +582,13 @@
       if (shaking || !left().length) return;
       shaking = true; jar.classList.add('shaking');
       const minis = [...inside.children];
-      // any one still in the jar, at random; one with pictures a little more often
-      const choices = left(), withPics = choices.filter(kind.hasPics);
+      // the color shown least so far (never the last one again, while another is left), then any star of that color at random,
+      // one with pictures a little more often
+      const shownTimes = (c) => caught.filter((k) => tints.get(k) === c).length, last = tints.get(caught[caught.length - 1]);
+      const byTint = new Map(); for (const it of left()) { const c = tints.get(keyOf(it)) || '?'; if (!byTint.has(c)) byTint.set(c, []); byTint.get(c).push(it); }
+      const tintsLeft = [...byTint.keys()], fresh = tintsLeft.filter((c) => c !== last), pickFrom = fresh.length ? fresh : tintsLeft;
+      const least = Math.min(...pickFrom.map(shownTimes)), next = pickFrom.filter((c) => shownTimes(c) === least);
+      const choices = byTint.get(next[Math.floor(Math.random() * next.length)]), withPics = choices.filter(kind.hasPics);
       const pool = withPics.length && Math.random() < .65 ? withPics : choices;
       const pick = pool[Math.floor(Math.random() * pool.length)], key = keyOf(pick);
       const from = minis.find((m) => m.dataset.key === key);
@@ -582,28 +597,38 @@
       const gone = () => { if (from) from.classList.add('gone'); for (const g of glints.children) if (g.dataset.key === key) g.hidden = true; };
       if (reduced) gone();
       else {
-        // the jar falls over to the right, rocks and shakes where it lies, the star falls out of its mouth into the next slot,
-        // then the jar stands back up (Astra, 2026-10-29)
-        const r = jar.getBoundingClientRect(), O = { x: r.left + r.width * .88, y: r.top + r.height * .96 };
+        // slow and smooth (Astra, 2026-10-29): the jar tips over to the right and settles on its side, its lid pops off and
+        // drops, the star slides out of the mouth and lands on the ground, sparkles shake off it, and it glides down into its
+        // slot with them trailing; then the lid is back and the jar stands up again
+        const r = jar.getBoundingClientRect(), O = { x: r.left + r.width * .88, y: r.top + r.height * .96 }, T = 5200;
         jar.style.transformOrigin = '88% 96%';
         const lay = (d) => `rotate(${d}deg)`;
         const tip = jar.animate([
-          { transform: lay(0) }, { transform: lay(98), offset: .24, easing: 'ease-out' }, { transform: lay(86), offset: .3 }, { transform: lay(93), offset: .36 },
-          { transform: lay(88), offset: .42 }, { transform: lay(94), offset: .48 }, { transform: lay(89), offset: .54 }, { transform: lay(92), offset: .6 },
-          { transform: lay(90), offset: .74 }, { transform: lay(-6), offset: .92, easing: 'ease-in-out' }, { transform: lay(0) },
-        ], { duration: 2600, easing: 'ease-in' });
+          { transform: lay(0) }, { transform: lay(93), offset: .26, easing: 'cubic-bezier(.3, 0, .2, 1)' }, { transform: lay(88), offset: .31 }, { transform: lay(91), offset: .36 },
+          { transform: lay(90), offset: .42 }, { transform: lay(90), offset: .76 }, { transform: lay(0), offset: 1 },
+        ], { duration: T, easing: 'cubic-bezier(.55, 0, .45, 1)' });
+        // the lid, in the jar's own frame: up the jar's axis is to the right while it lies down, and along the axis across is down
+        const lid = jar.querySelector('.jar-lid-g');
+        const lidOff = lid && lid.animate([
+          { transform: 'none', opacity: 1, offset: 0 }, { transform: 'none', opacity: 1, offset: .25 },
+          { transform: 'translate(10px, -60px) rotate(35deg)', offset: .32, easing: 'ease-in' },
+          { transform: 'translate(118px, -92px) rotate(92deg)', offset: .4, easing: 'ease-out' }, { transform: 'translate(112px, -96px) rotate(88deg)', offset: .44 },
+          { transform: 'translate(112px, -96px) rotate(88deg)', opacity: 1, offset: .72 }, { transform: 'translate(112px, -96px) rotate(88deg)', opacity: 0, offset: .78 },
+          { transform: 'none', opacity: 0, offset: .9 }, { transform: 'none', opacity: 1, offset: 1 },
+        ], { duration: T });
+        jar.classList.add('tipped');
         for (const m of minis) {
-          const base = `translate(-50%, -50%) rotate(${m.style.getPropertyValue('--r')})`, j = () => `translate(calc(-50% + ${Math.random() * 24 - 12}px), calc(-50% + ${Math.random() * -26}px)) rotate(${Math.random() * 120 - 60}deg)`;
-          m.animate([{ transform: base }, { transform: j(), offset: .3 }, { transform: j(), offset: .45 }, { transform: j(), offset: .6 }, { transform: base }], { duration: 2600, easing: 'ease-in-out' });
+          const base = `translate(-50%, -50%) rotate(${m.style.getPropertyValue('--r')})`, j = () => `translate(calc(-50% + ${Math.random() * 14 - 7}px), calc(-50% + ${Math.random() * -14}px)) rotate(${Math.random() * 60 - 30}deg)`;
+          m.animate([{ transform: base }, { transform: j(), offset: .28 }, { transform: j(), offset: .4 }, { transform: base, offset: .8 }, { transform: base }], { duration: T, easing: 'ease-in-out' });
         }
         // where the mouth is while the jar lies on its side: the top middle, turned a quarter round the bottom right corner
         const M = { x: r.left + r.width * .5, y: r.top + r.height * .08 };
         const mouth = { x: O.x - (M.y - O.y), y: O.y + (M.x - O.x) };
-        await new Promise((ok) => setTimeout(ok, 1150));
+        await new Promise((ok) => setTimeout(ok, T * .36));
         gone();
         const size = from ? from.getBoundingClientRect().width : 40;
-        await Promise.all([fly(mouth, size, pick, into), tip.finished.catch(() => {})]);
-        jar.style.transformOrigin = '';
+        await Promise.all([fly(mouth, O.y, size, pick, into), tip.finished.catch(() => {}), lidOff && lidOff.finished.catch(() => {})]);
+        jar.style.transformOrigin = ''; jar.classList.remove('tipped');
       }
       jar.classList.remove('shaking');
       caught.push(key);
@@ -614,20 +639,44 @@
       card.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'nearest' });
       shaking = false;
     }
-    // the star slides out of the mouth, drops, and grows into its slot, ringed by the page's pastel sparkles
-    function fly(mouth, size, it, to) {
-      const st = box.getBoundingClientRect(), b = to.getBoundingClientRect();
+    // a pastel sparkle let loose at a point in the jar's box: it drifts by (dx, dy), twinkles and fades
+    function puff(x, y, dx, dy, ms) {
+      const st = box.getBoundingClientRect(), k = (Math.random() * 1e9) >>> 0, s = el('i', 'jar-spark');
+      s.style.cssText = `left:${x - st.left}px;top:${y - st.top}px;--s:${8 + (k % 12)}px;--c:${pastel(k)}`;
+      box.append(s);
+      s.animate([{ transform: 'translate(-50%, -50%) scale(.3) rotate(0)', opacity: 0 }, { transform: `translate(calc(-50% + ${dx * .4}px), calc(-50% + ${dy * .4}px)) scale(1.1) rotate(60deg)`, opacity: 1, offset: .25 },
+        { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(.4) rotate(160deg)`, opacity: 0 }], { duration: ms, easing: 'ease-out' }).finished.then(() => s.remove());
+    }
+    // the star slides out of the mouth and drops to the ground with a little bounce; sparkles shake off it there; then it
+    // glides into its slot, growing to full size, the sparkles trailing behind it the whole way
+    async function fly(mouth, ground, size, it, to) {
+      const st = box.getBoundingClientRect();
       const f = kind.mini(it); f.classList.add('flyer'); f.style.setProperty('--s', size + 'px');
-      f.append(sparkles(hash(keyOf(it) + ':fly'), 10));
       f.style.left = mouth.x - size / 2 - st.left + 'px'; f.style.top = mouth.y - size / 2 - st.top + 'px'; box.append(f);
       const at = (x, y, sc, rot) => `translate(${x}px, ${y}px) scale(${sc}) rotate(${rot}deg)`;
+      const gx = size * 2.2, gy = ground - size * .6 - mouth.y;
+      await f.animate([
+        { transform: at(0, 0, .9, 0) }, { transform: at(size * 1.1, -size * .15, 1, 40), offset: .3, easing: 'ease-in' },
+        { transform: at(gx, gy, 1, 120), offset: .75, easing: 'ease-out' }, { transform: at(gx + size * .25, gy - size * .5, 1.05, 150), offset: .87, easing: 'ease-in' },
+        { transform: at(gx + size * .4, gy, 1, 170) },
+      ], { duration: 1300, fill: 'forwards' }).finished;
+      // it hits the ground: a ring of sparkles shakes off
+      const c = f.getBoundingClientRect(), cx0 = c.left + c.width / 2, cy0 = c.top + c.height / 2;
+      for (let i = 0; i < 14; i++) { const a = (i / 14) * Math.PI * 2 - Math.PI / 2; puff(cx0, cy0, Math.cos(a) * size * 1.6, Math.sin(a) * size * 1.2 - size * .5, 1100); }
+      await new Promise((ok) => setTimeout(ok, 250));
+      const b = to.getBoundingClientRect(), sx = gx + size * .4, sy = gy;
       const ex = b.left + b.width / 2 - mouth.x, ey = b.top + b.height / 2 - mouth.y, grow = b.width / size;
-      return f.animate([
-        { transform: at(0, 0, .8, 0) },
-        { transform: at(size * 1.6, -size * .4, 1.3, 90), offset: .25 },
-        { transform: at(ex * .6 + size, ey * .5, grow * .45, 240), offset: .6 },
+      const glide = f.animate([
+        { transform: at(sx, sy, 1, 170) }, { transform: at(sx + (ex - sx) * .5, Math.min(sy, ey) - size * 1.5, grow * .4, 260), offset: .45 },
         { transform: at(ex, ey, grow, 360) },
-      ], { duration: 1300, easing: 'cubic-bezier(.45, 0, .35, 1)' }).finished.then(() => f.remove());
+      ], { duration: 2200, easing: 'cubic-bezier(.45, .05, .3, 1)', fill: 'forwards' });
+      let trailing = true;
+      (function trail() {
+        if (!trailing) return;
+        const q = f.getBoundingClientRect(); puff(q.left + q.width * (.3 + Math.random() * .4), q.top + q.height * (.3 + Math.random() * .4), (Math.random() - .5) * 30, 10 + Math.random() * 30, 1400);
+        setTimeout(trail, 70);
+      })();
+      await glide.finished; trailing = false; f.remove();
     }
     // empty the jar: every one left lands in the row at once; when none are left, they all go back in
     function pour() {
@@ -664,7 +713,7 @@
       if (force > 14 && Date.now() - lastShake > 1400) { lastShake = Date.now(); shake(); }
     });
   }
-  const petJar = makeJar('pet-jar', { key: (e) => 'pet-' + e.p.number, mini: miniStar, full: star, hasPics: (e) => e.pics.length > 0, maxMini: 84, glints: (h) => 1 + (h % 3 === 0), one: 'pet', many: 'pets' });
+  const petJar = makeJar('pet-jar', { key: (e) => 'pet-' + e.p.number, mini: miniStar, full: star, hasPics: (e) => e.pics.length > 0, tint: (e) => petNeon(iconOf(e.p)).then((c) => c || colorOf('pet-' + e.p.number)), maxMini: 84, glints: (h) => 1 + (h % 3 === 0), one: 'pet', many: 'pets' });
 
   // ---------- Astra's PetOS as Polaroids: the System Map (live), all the pets at once, and every pet to flip through ----------
   const HUB_PAGES = 'https://findastra.github.io/astras-pet-os/';
@@ -715,11 +764,12 @@
     $('web-list').replaceChildren(...others.filter((r) => !DISCORD.has(r.name)).map(extraCard));
     for (const ch of document.querySelectorAll('.chapter')) ch.classList.toggle('empty', !!query && !ch.querySelector('.polaroid, .mini'));
   }
-  // each wall of Polaroids gets as many per row as fit near 250px wide (two at least), sized so a full row spans the wall
-  // exactly: its first and last hang just off the paper, and a short last row sits in the middle (Astra, 2026-10-29)
+  // each wall of Polaroids gets as many per row as fit near 250px wide, sized so a full row spans the wall exactly: its
+  // first and last hang just off the paper, and a short last row sits in the middle (Astra, 2026-10-29). On a phone, or a
+  // window as narrow as one, it is one Polaroid under the other, never side by side (Astra, 2026-10-29)
   const sizeWall = (wall) => {
     const w = wall.getBoundingClientRect().width - 1, gap = parseFloat(getComputedStyle(wall).columnGap) || 0;
-    const n = Math.max(2, Math.round((w + gap) / (250 + gap)));
+    const n = w < 560 ? 1 : Math.max(2, Math.round((w + gap) / (250 + gap)));
     wall.style.setProperty('--pw', Math.floor((w - (n - 1) * gap) / n * 10) / 10 + 'px');
   };
   const walls = new ResizeObserver((seen) => seen.forEach((s) => sizeWall(s.target)));
@@ -881,10 +931,19 @@
   // ---------- links ----------
 
   // ---------- code rain behind the hero, in rainbow colors that drift down the spectrum (Astra, 2026-10-27; it was white) ----------
+  // Each column spells, top to bottom, "find the stars" (or "find Astra") in one of many languages, then starts another
+  // (Astra, 2026-10-29). Only scripts whose letters stand alone are used, so a word drawn one letter at a time still reads;
+  // Arabic, Hindi and Thai join or stack their letters and would come out broken this way. Latin "astra" means "the stars".
+  const FIND = [
+    'find Astra', 'find the stars', 'ad astra', 'quaere astra', '星を探して', '星を見つけて', 'アストラを探して', '별을 찾아', '별을 찾아서', '아스트라를 찾아',
+    '寻找星星', '尋找星星', 'encuentra las estrellas', 'trouve les étoiles', 'finde die Sterne', 'trova le stelle', 'encontre as estrelas',
+    'найди звёзды', 'знайди зірки', 'βρες τα αστέρια', 'מצא את הכוכבים', 'yıldızları bul', 'vind de sterren', 'hitta stjärnorna', 'znajdź gwiazdy',
+    'löydä tähdet', 'tìm những vì sao', 'temukan bintang', 'hanapin ang mga bituin', 'trovu la stelojn', 'aimsigh na réaltaí', 'find stjernerne',
+  ].map((s) => Array.from(s));
   const cv = $('rain'), cx = cv.getContext('2d'); let cols = [];
-  const size = () => { cv.width = cv.offsetWidth; cv.height = cv.offsetHeight; cols = Array(Math.ceil(cv.width / 16)).fill(0).map(() => Math.random() * cv.height); };
+  const word = () => ({ w: FIND[Math.floor(Math.random() * FIND.length)], at: 0 });
+  const size = () => { cv.width = cv.offsetWidth; cv.height = cv.offsetHeight; cols = Array(Math.ceil(cv.width / 16)).fill(0).map(() => Object.assign(word(), { y: Math.random() * cv.height })); };
   size(); new ResizeObserver(size).observe(cv);
-  const glyphs = 'ASTRAUDRA01アストラ✦';
   // the rain's colors: the rainbow first; catching the white rabbit moves to the next set (Astra, 2026-10-27). Each is a run of
   // hues (from, span) that the columns spread over and drift down.
   const PALETTES = [
@@ -896,15 +955,21 @@
     if (reduced) return;
     cx.globalCompositeOperation = 'destination-out'; cx.fillStyle = 'rgba(0, 0, 0, .14)'; cx.fillRect(0, 0, cv.width, cv.height);
     cx.globalCompositeOperation = 'source-over';
-    cx.font = '14px JetBrains Mono';
+    cx.font = '14px "JetBrains Mono", "Noto Sans JP", "Noto Sans KR", "Noto Sans SC", sans-serif'; cx.textAlign = 'center';
     const t = performance.now() / 40;
-    cols.forEach((y, i) => {
+    cols.forEach((col, i) => {
+      const y = col.y;
       const pal = PALETTES[palette], k = (i * 9 + y / 6 + t) % 360;
       const color = `hsl(${pal.from + (pal.span === 360 ? k : Math.abs(((k / 360) * 2 * pal.span) % (2 * pal.span) - pal.span))} 100% ${unmasked ? 55 : 62}%)`;
       // unmasked: black code on white, glowing in the color it would have been
       if (unmasked) { cx.fillStyle = '#050505'; cx.shadowColor = color; cx.shadowBlur = 9; } else { cx.fillStyle = color; cx.shadowBlur = 0; }
-      cx.fillText(glyphs[Math.floor(Math.random() * glyphs.length)], i * 16, y); cols[i] = y > cv.height + Math.random() * 1e4 ? 0 : y + 16;
+      // the next letter of this column's words; a short gap after them, then new words in another language
+      const ch = col.w[col.at]; if (ch && ch !== ' ') cx.fillText(ch, i * 16 + 8, y);
+      col.at++; col.y = y + 16;
+      if (col.at > col.w.length + 3) Object.assign(col, word());
+      if (col.y > cv.height + Math.random() * 1e4) Object.assign(col, word(), { y: 0 });
     });
+    cx.textAlign = 'start';
     setTimeout(() => requestAnimationFrame(rain), 60);
   })();
 
