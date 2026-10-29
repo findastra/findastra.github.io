@@ -429,9 +429,10 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 /* a short last row sits in the middle, not stacked to the left; each one pinned a little higher or lower than its neighbors,
    close enough that tilted corners just touch the white border next door, never the writing (Astra, 2026-10-29) */
 /* a full row reaches --hang past the paper on both sides, so its first and last Polaroids just hang off the edges; cyber.js
-   sizes them (--pw) so a row fills that width exactly (Astra, 2026-10-29) */
+   sizes them (--pw) so a row fills that width exactly (Astra, 2026-10-29). Tilted corners included, they hang off by less
+   than one of the paper's squares (the smallest is 22px), so none is lost past the border (Astra, 2026-10-29) */
 /* rows far enough apart that no tape or sticky note lands on the Polaroid above (Astra, 2026-10-29: "make sure they're all separate") */
-.polaroids { --hang: 34px; display: flex; flex-wrap: wrap; justify-content: center; gap: 48px 32px; padding: 28px 0 0;
+.polaroids { --hang: 8px; display: flex; flex-wrap: wrap; justify-content: center; gap: 48px 32px; padding: 28px 0 0;
   margin-inline: calc(-1 * (var(--sheet, 0px) + var(--hang))); }
 /* one Polaroid under the other (a phone): the wall stays on the paper instead of hanging just off it */
 .polaroids.single { margin-inline: 0; }
@@ -468,19 +469,19 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
    like the card's */
 .ai-real-card { display: block; aspect-ratio: 600 / 260; border-radius: 2% / 4.6%; overflow: hidden; }
 .ai-real-card img { display: block; width: 108%; height: auto; margin: -4% 0 0 -4%; max-width: none; }
-.ai-cards { position: absolute; inset: 0; display: grid; align-content: center; gap: 8px; padding: 8% 7%; }
-.ai-card { display: grid; grid-template-columns: 30% 1fr; grid-template-rows: auto 1fr; align-items: center; column-gap: 8px; padding: 5px 8px 7px; text-align: left;
-  text-decoration: none; color: #f2f2f2; background: #232428; border-radius: 8px; box-shadow: 0 0 0 1px rgba(255, 255, 255, .08), 0 3px 8px rgba(0, 0, 0, .5); }
-.ai-card:hover, .ai-card:focus-visible { background: #2b2d31; color: #fff; outline: none; box-shadow: 0 0 0 2px var(--c); }
-.ai-card.idle { opacity: .6; }
-.ai-head { grid-column: 1 / -1; display: flex; align-items: center; gap: 4px; margin-bottom: 3px; font: 700 9px/1.4 Inter, sans-serif; letter-spacing: .02em; color: #b5bac1; }
-.ai-head svg, .ai-time svg { width: 11px; height: 11px; fill: currentColor; flex: none; }
-.ai-card .ai-art { width: 100%; aspect-ratio: 1; border-radius: 6px; object-fit: cover; background: #000; }
-.ai-words { display: grid; min-width: 0; font: 500 9.5px/1.3 Inter, sans-serif; color: #dbdee1; }
-.ai-words > span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.ai-words b { font: 700 11.5px/1.25 Inter, sans-serif; color: #fff; }
-.ai-time { display: flex; align-items: center; gap: 3px; color: #23a55a !important; font-weight: 600; }
-.ai-time[hidden] { display: none; }
+.ai-real-card { position: relative; container-type: inline-size; }
+/* the live card, over the picture and drawn to its measures (the GIF's card is 600 across) */
+.ai-live { position: absolute; inset: 0; display: none; grid-template-columns: 21.3cqw 1fr; grid-template-rows: auto 1fr; column-gap: 3.7cqw; padding: 3.7cqw 4.3cqw 4.6cqw;
+  background: #1c1a1d; border: 1px solid #3a383c; border-radius: inherit; color: #fff; font-family: Inter, 'Segoe UI', sans-serif; text-align: left; }
+.ai-real-card.live .ai-live { display: grid; }
+.ai-live .ai-head { grid-column: 1 / -1; display: flex; justify-content: space-between; margin-bottom: 3cqw; font: 700 3.5cqw/1.2 Inter, 'Segoe UI', sans-serif; }
+.ai-live .ai-head i { font-style: normal; color: #b5bac1; letter-spacing: .1em; }
+.ai-live .ai-art { width: 100%; aspect-ratio: 1; border-radius: 1.8cqw; object-fit: cover; background: #000; }
+.ai-live .ai-words { display: grid; align-content: center; gap: 1cqw; min-width: 0; font: 400 3.3cqw/1.3 Inter, 'Segoe UI', sans-serif; color: #f2f3f5; }
+.ai-live .ai-words > * { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ai-live .ai-words b { font: 700 4.2cqw/1.25 Inter, 'Segoe UI', sans-serif; }
+.ai-live .ai-time { display: flex; align-items: center; gap: 1.2cqw; color: #3ba55d; font: 600 3.2cqw/1.3 ui-monospace, Consolas, monospace; }
+.ai-live .ai-time svg { width: 3.8cqw; height: 3.8cqw; fill: currentColor; flex: none; }
 .polaroid:hover .frame { rotate: 0deg; transform: scale(1.03); }
 /* a strip of neon tape holds each one up */
 #vr .polaroid { --c: var(--c-vr) !important; }
@@ -548,14 +549,6 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 /* the galaxies only grow with the Polaroid, not a second time under the pointer (Astra, 2026-10-29) */
 .polaroid .photo:hover img[src$="galaxy.png"] { transform: none; }
 .polaroid div.photo { cursor: default; }
-/* Moodglass's picture: a staggered collage, columns split at different heights, edge to edge with soft seams */
-.mg-shot { position: absolute; inset: 0; display: flex; overflow: hidden; background: #111; }
-.mg-col { flex: 1; display: flex; flex-direction: column; min-width: 0; }
-.mg-col:nth-child(2) { flex: 1.25; }
-.mg-col img { flex: 1 1 0; min-height: 0; width: 100%; object-fit: cover; margin: -2px 0; -webkit-mask: linear-gradient(transparent, #000 6%, #000 94%, transparent); mask: linear-gradient(transparent, #000 6%, #000 94%, transparent); }
-.mg-col img:first-child { -webkit-mask: linear-gradient(#000 94%, transparent); mask: linear-gradient(#000 94%, transparent); margin-top: 0; }
-.mg-col img:last-child { -webkit-mask: linear-gradient(transparent, #000 6%); mask: linear-gradient(transparent, #000 6%); margin-bottom: 0; }
-.mg-col img:only-child { -webkit-mask: none; mask: none; }
 .photo .developing { font: 1.3rem/1 "Permanent Marker", cursive; color: color-mix(in srgb, var(--c) 55%, #fff); text-shadow: 0 0 12px var(--c); rotate: -7deg; }
 /* the little arrows snug in the white border's bottom corners, as far from the side as from the bottom, and "1 of 3"
    between them on the same line (Astra, 2026-10-29) */

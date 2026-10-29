@@ -643,26 +643,12 @@
     return polaroid({ key: w.repo, name: w.name, kind: 'VRChat world' + (r && r.language ? ' · ' + r.language : ''), date: r ? when(made(r)) : '', text: cleanText((r && r.description) || w.text), pics: worldPics(w),
       repo: r ? 'https://github.com/findastra/' + w.repo : null });
   };
-  // Moodglass's picture (Astra, 2026-10-27): a staggered collage the way Moodglass lays photos behind a chat, edge to edge
-  // with soft seams, of Liminal Doors' most planted floors; not the hummingbird's conservatory, which is Liminal Doors' own
-  // picture (Astra, 2026-10-29: "they're reusing one on there that's somewhere else")
-  const moodglassShot = () => {
-    const box = el('div', 'mg-shot');
-    box.setAttribute('role', 'img'); box.setAttribute('aria-label', 'Moodglass: a staggered collage of Liminal Doors pictures, the way it fills a Discord chat');
-    const cols = [['26-flamingo-red-sun-reservoir-20261015', '13-hedgehog-vending-machine-clearing-20261015'],
-      ['28-butterfly-glass-orchard-20261015', '02-hare-faraway-field-20261015'],
-      ['33-dolphin-aquaglass-concourse-20261015', '31-otter-steam-between-stars-20261015']];
-    const split = [[62, 38], [40, 60], [55, 45]];
-    cols.forEach((list, ci) => {
-      const col = el('div', 'mg-col');
-      list.forEach((f, k) => { const im = el('img'); im.src = LD + f + '.png'; im.alt = ''; im.loading = 'lazy'; im.style.flexBasis = split[ci][k] + '%'; col.append(im); });
-      box.append(col);
-    });
-    return box;
-  };
   // Discord and Web & More: the repo name, written out with spaces, and its language
   // what each website looks like (Astra, 2026-10-27): its own page, shown first on its Polaroid
   const SITE_PICS = {
+    // Moodglass: three collages of the garden pictures it posted in Astra's plants channel (Astra, 2026-10-29: "you can use
+    // the 'plants' chat", then "do all on there")
+    moodglass: ['a', 'b', 'c'].map((k) => ({ src: 'art/projects/moodglass-plants-collage-' + k + '-20261029.webp', cap: 'Moodglass: plant pictures from its Discord channel' })),
     // a little smaller, so its green banner sits clear of the tape (Astra, 2026-10-29)
     // and the border round it filled with its own blue, not see-through (Astra, 2026-10-29)
     'fuzzboi-factory': [{ src: 'art/projects/fuzzboi-factory-site-20261027.jpg', cap: 'The Fuzzboi Factory', fit: 'contain', bg: '#121a6b', size: 0.88, fill: '#121a6b' }],
@@ -688,16 +674,47 @@
   // the real cards instead (Astra, 2026-10-29: "you still have those wrong ... go open the actual program"): the two card GIFs
   // the apps' own README shows, recorded from Discord, OpenAI over Anthropic, each linking to its app
   const PRESENCE_REPO = 'https://raw.githubusercontent.com/findastra/ai-discord-presence/main/';
+  // live (Astra, 2026-10-29: "hook them up to actual usage", then "make it"): on Astra's PC each app copies the card it shows
+  // on Discord into this public gist; while that copy is fresh the real card picture gives way to it, timer and all. Without
+  // a card, or once the copy is older than 12 minutes (the apps re-write a live card every 5), the picture stays
+  const LIVE_GIST = 'ac8f1fed8d511b51096187a7ec71edc1', LIVE_STALE_MS = 12 * 60 * 1000;
+  const padIcon = () => {
+    const pad = svgEl('svg', { viewBox: '0 0 24 24', 'aria-hidden': 'true' });
+    pad.append(svgEl('path', { d: 'M7 6h10a5 5 0 0 1 4.9 6l-.8 4a3 3 0 0 1-5.2 1.4L14 15h-4l-1.9 2.4A3 3 0 0 1 2.9 16l-.8-4A5 5 0 0 1 7 6zm0 3v2H5v2h2v2h2v-2h2v-2H9V9H7zm9.5 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm-2 3a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z' }));
+    return pad;
+  };
+  const elapsed = (ms) => { const s = Math.max(0, Math.floor(ms / 1000)), h = Math.floor(s / 3600), m = Math.floor(s / 60) % 60, pad2 = (n) => String(n).padStart(2, '0'); return (h ? h + ':' : '') + pad2(m) + ':' + pad2(s % 60); };
   const realCardsShot = () => {
-    const box = el('div', 'ai-real');
+    const box = el('div', 'ai-real'), cards = [];
     for (const [who, what] of [['openai', 'OpenAI'], ['anthropic', 'Anthropic']]) {
       const a = link('https://github.com/findastra/ai-discord-presence/tree/main/' + who + '-discord-presence', 'ai-real-card');
       const im = el('img'); im.src = PRESENCE_REPO + 'docs/images/' + who + '-card-20261029.gif'; im.alt = what + ' Discord Presence card on a Discord profile'; im.loading = 'lazy';
-      a.append(im); box.append(a);
+      // the live card, drawn like the picture: "Playing", the app's turning galaxy, its name, its two lines, the time in green
+      const live = el('span', 'ai-live'), head = el('span', 'ai-head'), art = el('img', 'ai-art');
+      head.append('Playing', el('i', null, '•••'));
+      art.src = PRESENCE_REPO + who + '-discord-presence/public/galaxy-card.gif'; art.alt = ''; art.loading = 'lazy';
+      const name = el('b'), details = el('span'), state = el('span'), time = el('span', 'ai-time');
+      const words = el('span', 'ai-words'); words.append(name, details, state, time);
+      live.append(head, art, words); a.append(im, live); box.append(a);
+      cards.push({ who, a, name, details, state, time, start: 0 });
     }
+    const pull = () => fetch('https://api.github.com/gists/' + LIVE_GIST, { cache: 'no-store' }).then((r) => (r.ok ? r.json() : null)).then((g) => {
+      for (const c of cards) {
+        let d = null;
+        try { d = JSON.parse(g.files[c.who + '.json'].content); } catch { /* no copy yet */ }
+        const on = !!(d && d.active && Date.now() - d.updatedAt < LIVE_STALE_MS);
+        c.a.classList.toggle('live', on);
+        if (!on) { c.start = 0; continue; }
+        c.name.textContent = d.name || ''; c.details.textContent = d.details || ''; c.state.textContent = d.state || '';
+        c.start = (d.startedAt || 0) * 1000;
+      }
+    }).catch(() => {});
+    // GitHub lets each visitor read it 60 times an hour; every 2 minutes, only while the page is in view
+    pull(); setInterval(() => { if (!document.hidden) pull(); }, 120000);
+    setInterval(() => { for (const c of cards) if (c.start) c.time.replaceChildren(padIcon(), elapsed(Date.now() - c.start)); }, 1000);
     return box;
   };
-  const SHOTS = { moodglass: moodglassShot, 'ai-discord-presence': realCardsShot };
+  const SHOTS = { 'ai-discord-presence': realCardsShot };
   // the two presence apps show two pictures each (Astra, 2026-10-29: "should only be two on each of those"): first the
   // turning galaxy, the "really fancy spiral", a little smaller so it is not zoomed in to the edges, then the app
   const TWO = new Set(['openai-discord-presence', 'anthropic-discord-presence']);
