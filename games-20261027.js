@@ -649,7 +649,9 @@
       const saved = [];
       count(); showScore();
       const linked = /^#fuzzboi-([0-9]{6})$/.exec(location.hash);
-      make(linked ? linked[1].toUpperCase() : '456900', !!linked && !(Array.isArray(saved) && saved.includes(linked[1].toUpperCase())));
+      // the first one on the page (Astra, 2026-10-29: "light blue and yellow vibes and princess and crown", "give it cheese
+      // also"): 046590, light blue A4 with a crown, a flower, cheese and a blush, on blue
+      make(linked ? linked[1].toUpperCase() : '046590', !!linked && !(Array.isArray(saved) && saved.includes(linked[1].toUpperCase())));
       requestAnimationFrame(frame);
     });
     count();

@@ -126,19 +126,20 @@ h3 { display: inline-block; font: 700 12px var(--mono); text-transform: uppercas
 .light { background: linear-gradient(#262626 1px, transparent 1px) 0 0 / 100% 28px, linear-gradient(90deg, #262626 1px, transparent 1px) 0 0 / 28px 100%, #1b1b1b; }.mid { background: repeating-linear-gradient(-45deg, #242424 0 16px, #2d2d2d 16px 32px); }
 .dots { background: radial-gradient(circle, #2f2f2f 1.5px, transparent 2px) 0 0 / 13px 13px, linear-gradient(#161616, #0c0c0c); }
 .checker { background: repeating-conic-gradient(#111 0 25%, #1c1c1c 0 50%) 0 0 / 44px 44px; }
-.lines { background: repeating-linear-gradient(#151515 0 3px, #1e1e1e 3px 4px); }
+/* stripes big enough to see on a phone (Astra, 2026-10-29: "not visible from the human eye on the phone") */
+.lines { background: repeating-linear-gradient(#151515 0 7px, #262626 7px 9px); }
 /* sections are separated by an open gap one grid square tall, where the code rain falls through (Astra, 2026-10-29);
    each has its own pattern */
 .block + .block, .ticker + .block, .race-stripe + .block { margin-top: 28px; }
 .weave { background: repeating-linear-gradient(45deg, #1d1d1d 0 2px, transparent 2px 14px), repeating-linear-gradient(-45deg, #1d1d1d 0 2px, transparent 2px 14px), #121212; }
-#arcade h2 { text-shadow: 4px 4px 0 #555, 8px 8px 0 #000; }
+/* every section's title written like the Arcade's (Astra, 2026-10-29): a gray shadow and a black one behind it */
+.block h2 { text-shadow: 4px 4px 0 #555, 8px 8px 0 #000; }
 /* each section's little tag above its title, in that section's color, black writing on it so it reads (Astra, 2026-10-29) */
 #vr { --tag: var(--c-vr); } #discord { --tag: var(--c-discord); } #web { --tag: var(--c-web); } #pets { --tag: var(--c-pets); }
 #arcade { --tag: var(--c-arcade); } #contact { --tag: var(--c-contact); }
 /* a little less saturated than the neon (Astra, 2026-10-29) */
 .block .kicker { background: color-mix(in oklab, var(--tag, var(--ink)) 68%, #8a8a8a); color: #000; font-weight: 700; box-shadow: 3px 3px 0 #000, 0 0 12px color-mix(in srgb, var(--tag, transparent) 45%, transparent); }
 /* "Astra's PetOS" as written, so the capitals do not run together (Astra, 2026-10-29: in all capitals it read wrong) */
-#pets h2 { letter-spacing: -.035em; }
 
 /* tickers: what changed lately, right under the header, and what is being worked on now, under the hero. Both are the same
    slim, straight news strip; working on runs the other way (Astra, 2026-10-28: "make it straight", "the same size as the other one") */
@@ -414,7 +415,7 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 /* a full row reaches --hang past the paper on both sides, so its first and last Polaroids just hang off the edges; cyber.js
    sizes them (--pw) so a row fills that width exactly (Astra, 2026-10-29) */
 /* rows far enough apart that no tape or sticky note lands on the Polaroid above (Astra, 2026-10-29: "make sure they're all separate") */
-.polaroids { --hang: 14px; display: flex; flex-wrap: wrap; justify-content: center; gap: 72px 24px; padding: 28px 0 32px;
+.polaroids { --hang: 14px; display: flex; flex-wrap: wrap; justify-content: center; gap: 72px 24px; padding: 28px 0 0;
   margin-inline: calc(-1 * (var(--sheet, 0px) + var(--hang))); }
 /* one Polaroid under the other (a phone): the wall stays on the paper instead of hanging just off it */
 .polaroids.single { margin-inline: 0; }
@@ -446,8 +447,11 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
    using, what it is working on, and the elapsed time in green */
 /* the real Discord cards, one over the other on the bare paper */
 .ai-real { position: absolute; inset: 0; display: grid; align-content: center; gap: 10px; padding: 6%; }
-.ai-real-card { display: block; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 0 rgba(0, 0, 0, .35); }
-.ai-real-card img { display: block; width: 100%; height: auto; }
+/* only the card itself (Astra, 2026-10-29: the dark around it "needs to be actually completely transparent"): the GIF is
+   648 by 308 with the card from 24 to 623 across and 24 to 283 down, so the window is that 600 by 260 and the corners round
+   like the card's */
+.ai-real-card { display: block; aspect-ratio: 600 / 260; border-radius: 2% / 4.6%; overflow: hidden; }
+.ai-real-card img { display: block; width: 108%; height: auto; margin: -4% 0 0 -4%; max-width: none; }
 .ai-cards { position: absolute; inset: 0; display: grid; align-content: center; gap: 8px; padding: 8% 7%; }
 .ai-card { display: grid; grid-template-columns: 30% 1fr; grid-template-rows: auto 1fr; align-items: center; column-gap: 8px; padding: 5px 8px 7px; text-align: left;
   text-decoration: none; color: #f2f2f2; background: #232428; border-radius: 8px; box-shadow: 0 0 0 1px rgba(255, 255, 255, .08), 0 3px 8px rgba(0, 0, 0, .5); }
@@ -638,7 +642,9 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 .contact .list { margin-top: 10px; }
 
 /* arcade: black cabinets on white scanlines */
-.arcade { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+.arcade { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 30px; }
+/* a cabinet never wider than its column, so none runs off the paper on a phone (Astra, 2026-10-29) */
+.cab { min-width: 0; }
 .cab { --bg: #0c0c0c; --ink: #f2f2f2; --muted: #8c8c8c; background: var(--bg); color: var(--ink); border: 3px solid #000; padding: 20px; box-shadow: 10px 10px 0 #3a3a3a; }
 .cab:nth-child(even) { box-shadow: -10px 10px 0 #3a3a3a; }
 .cab h3 { margin-top: 0; }
@@ -652,6 +658,9 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 /* its bar is the terminal's own (Astra, 2026-10-29: "if it's going to be a tool panel ... it needs to have the buttons"): the
    striped bar with the paired lights left of its name, which stays on one line */
 .hack-term .term-bar { white-space: nowrap; overflow: hidden; }
+/* and matching the hero terminal, a Linux one (Astra, 2026-10-29): the flat dark bar, its name in the middle */
+.hack-term > .term-bar { position: relative; padding: 7px 10px; background: #2d2d2d; border-bottom: 1px solid #111; color: #e6e6e6; }
+.hack-term > .term-bar > span:not(.lights) { position: absolute; left: 50%; translate: -50% 0; max-width: calc(100% - 84px); margin: 0; padding: 0; background: none; color: #e6e6e6; font-weight: 700; pointer-events: none; }
 .hack-term .term-bar > span:not(.lights) { overflow: hidden; text-overflow: ellipsis; }
 .hack-term.is-off #hack { opacity: .08; pointer-events: none; transition: opacity .3s; }
 #hack { flex: 1; display: flex; flex-direction: column; justify-content: space-evenly; padding: 12px 16px; background: repeating-linear-gradient(transparent 0 2px, rgba(255, 255, 255, .035) 2px 3px); }
@@ -825,7 +834,7 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 
 @media (max-width: 900px) {
   .hero { grid-template-columns: var(--sq); gap: 32px; }
-  .arcade, .contacts { grid-template-columns: 1fr; }
+  .arcade, .contacts { grid-template-columns: minmax(0, 1fr); }
   .jar-stage { grid-template-columns: minmax(0, 1fr); min-height: 0; }
   .jar-out { display: none; }
   /* the holder takes the width and the jar fills it: a jar 100% of a holder that shrinks to the jar came out 0 wide, so the

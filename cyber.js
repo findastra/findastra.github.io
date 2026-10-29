@@ -306,10 +306,10 @@
   const isOther = (r) => !/^pet-program-\d+$/.test(r.name) && !WORLD_REPOS.has(r.name) && !PETOS_REPOS.has(r.name) && !petByRepo[r.name] && !HIDDEN.has(r.name);
   let repos = [], byName = {}, query = '';
   const when = (iso) => { const d = new Date(iso); return isNaN(d) ? '' : d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }); };
-  // the date a Polaroid shows: the repo's last real change, skipping README and docs passes (Astra, 2026-10-29), from
-  // real-dates-data-20261029.js; GitHub's last push when a repo is not in it yet
-  const REAL_DATES = window.REAL_DATES || {};
-  const lastReal = (r) => (r && (REAL_DATES[r.name] || r.pushed_at)) || '';
+  // the date a Polaroid shows, and the order within a section: the day the repo was made (Astra, 2026-10-29: "go back to
+  // like the date it was created and then organize them in that order"), from GitHub's list or repo-dates-data-20261029.js
+  const REPO_CREATED = window.REPO_CREATED || {};
+  const made = (r) => (r && (r.created_at || REPO_CREATED[r.name] || r.pushed_at)) || '';
   // The Polaroids' tape, the stars and their sparkles are the only color on the page. Each keeps its color and tilt (hashed from its name).
   const COLORS = ['#ff3ea5', '#00e1ff', '#c6ff00', '#ff9500', '#c7a6ff', '#ffe500', '#ff5c5c', '#00f5a0', '#5ab0ff', '#ff8ef0'];
   const hash = (s) => { let h = 2166136261; for (const ch of s) h = Math.imul(h ^ ch.codePointAt(0), 16777619); return h >>> 0; };
@@ -610,7 +610,7 @@
     const r = byName[w.repo];
     // every world says what it is (Astra, 2026-10-29: "all the stuff that is a VRChat world needs to say VRChat world"), then
     // its one most common language, GitHub's own pick (UdonSharp counts as C#)
-    return polaroid({ key: w.repo, name: w.name, kind: 'VRChat world' + (r && r.language ? ' · ' + r.language : ''), date: r ? when(lastReal(r)) : '', text: cleanText((r && r.description) || w.text), pics: worldPics(w),
+    return polaroid({ key: w.repo, name: w.name, kind: 'VRChat world' + (r && r.language ? ' · ' + r.language : ''), date: r ? when(made(r)) : '', text: cleanText((r && r.description) || w.text), pics: worldPics(w),
       repo: r ? 'https://github.com/findastra/' + w.repo : null });
   };
   // Moodglass's picture (Astra, 2026-10-27): a staggered collage the way Moodglass lays photos behind a chat, edge to edge
@@ -679,7 +679,7 @@
   };
   const extraCard = (r) => {
     const repoUrl = 'https://github.com/findastra/' + r.name, shot = SHOTS[r.name];
-    return polaroid({ key: r.name, shot: shot ? shot() : null, clear: r.name === 'ai-discord-presence', name: nameOf(r.name), kind: r.language || '', date: when(lastReal(r)),
+    return polaroid({ key: r.name, shot: shot ? shot() : null, clear: r.name === 'ai-discord-presence', name: nameOf(r.name), kind: r.language || '', date: when(made(r)),
       text: cleanText(r.description || 'No description yet.'), pics: picsOf(r.name), repo: repoUrl });
   };
 
@@ -1138,7 +1138,7 @@
   function petosCards() {
     const drawn = pets.filter(iconOf), hub = byName['astras-pet-os'], HUB_REPO = 'https://github.com/findastra/astras-pet-os';
     // like the rest: the hub's code and the day it last changed
-    const kind = (hub && hub.language) || 'HTML', date = hub ? when(lastReal(hub)) : '';
+    const kind = (hub && hub.language) || 'HTML', date = hub ? when(made(hub)) : '';
     return [
       polaroid({ key: 'system-map', name: 'The System Map', kind, date, text: 'Every pet, program and tool in Astra\'s PetOS, and how they work together. Drag it around.',
         // drawn at twice the photo's size, so its key in the top left is big enough to read (Astra, 2026-10-29)
@@ -1172,8 +1172,8 @@
     petJar.fill(pets.filter(iconOf).map(petEntry).filter(({ p, r }) => shown(`${p.pet} ${p.program} ${p.text} ${p.repo} ${(r && r.description) || ''}`))
       .sort((a, b) => (b.pics.length > 0) - (a.pics.length > 0) || (b.r ? 1 : 0) - (a.r ? 1 : 0) || a.p.number - b.p.number));
     // Discord and Web & More, newest first
-    const others = repos.filter(isOther).filter((r) => shown(`${r.name} ${r.description}`)).sort((a, b) => String(lastReal(b)).localeCompare(String(lastReal(a))));
-    // AI Discord Presence first, then the rest newest first (Astra, 2026-10-29)
+    const others = repos.filter(isOther).filter((r) => shown(`${r.name} ${r.description}`)).sort((a, b) => String(made(a)).localeCompare(String(made(b)))); // oldest first, so the newest (Iris) is last
+    // AI Discord Presence first, then the rest in the order they were made (Astra, 2026-10-29)
     $('discord-list').replaceChildren(...others.filter((r) => DISCORD.has(r.name)).sort((a, b) => (b.name === 'ai-discord-presence') - (a.name === 'ai-discord-presence')).map(extraCard));
     $('web-list').replaceChildren(...others.filter((r) => !DISCORD.has(r.name)).map(extraCard));
     for (const ch of document.querySelectorAll('.chapter')) ch.classList.toggle('empty', !!query && !ch.querySelector('.polaroid, .mini'));
@@ -1191,6 +1191,25 @@
   };
   const walls = new ResizeObserver((seen) => seen.forEach((s) => sizeWall(s.target)));
   document.querySelectorAll('.polaroids').forEach((wall) => walls.observe(wall));
+  // every paper ends as far below its last thing as its title starts below its top edge (Astra, 2026-10-29: "the same size
+  // across the board"): the Polaroids' lifts and tilts, the jar and the walls' own padding left some sections too long, so
+  // each section's bottom padding is set to make up the difference
+  const LAST = '.frame, .sticky, .jar, .jar-stage, .jar-side > :not([hidden]), .cab, .contact, .chapter > p, .btn, h2, .kicker';
+  let evening = 0;
+  const evenPaper = () => {
+    cancelAnimationFrame(evening);
+    evening = requestAnimationFrame(() => {
+      for (const b of document.querySelectorAll('main .block')) {
+        b.style.paddingBottom = '';
+        const sheet = parseFloat(getComputedStyle(b).paddingTop), edge = b.getBoundingClientRect().bottom;
+        let low = -Infinity;
+        for (const e of b.querySelectorAll(LAST)) { if (!e.offsetParent && getComputedStyle(e).position !== 'fixed') continue; const r = e.getBoundingClientRect(); if (r.height) low = Math.max(low, r.bottom); }
+        if (low > -Infinity) b.style.paddingBottom = Math.max(0, 2 * sheet - (edge - low)) + 'px';
+      }
+    });
+  };
+  const papers = new ResizeObserver(evenPaper);
+  document.querySelectorAll('main .block').forEach((b) => papers.observe(b));
   // the header's search finds any words on the page: every match is lit, typing goes to the first, Enter to the next and
   // Shift+Enter back (Astra, 2026-10-28: "that search bar will search anything on the page")
   (() => {
@@ -1226,7 +1245,7 @@
   useRepos(S.repos || [], false);
   fetch('https://api.github.com/users/findastra/repos?per_page=100&sort=pushed')
     .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-    .then((d) => useRepos(d.filter((r) => !r.fork && !r.private).map((r) => ({ name: r.name, description: r.description || '', language: r.language || '', pushed_at: r.pushed_at, homepage: r.homepage || (r.has_pages ? `https://findastra.github.io/${r.name}/` : '') })), true))
+    .then((d) => useRepos(d.filter((r) => !r.fork && !r.private).map((r) => ({ name: r.name, description: r.description || '', language: r.language || '', pushed_at: r.pushed_at, created_at: r.created_at, homepage: r.homepage || (r.has_pages ? `https://findastra.github.io/${r.name}/` : '') })), true))
     .catch(() => {});
   // the hub's live pet list, picture index, pets.json and pet program pages: new pets, new drawings and new pages show up
   // without changing this site
