@@ -721,8 +721,10 @@
         spawnIn = Math.max(16, 46 - score * .28);
         const hs = hues();
         const hue = isRainbow() ? hs[nextHue++ % hs.length] : hs[(Math.random() * hs.length) | 0];
-        // each lasts twice as long before it burns out (Astra, 2026-10-29: "twice as long duration for you to solve")
-        targets.push({ x: 24 + Math.random() * (w - 48), y: 24 + Math.random() * (h - 48), t: 1, hue, sp: (.010 + Math.min(.014, score * .00013)) / 2 });
+        // the first game's pace again, quick from the start (Astra, 2026-10-29: "I liked the mechanics ... the way it was the
+        // first time"), but each sparkle lasting about a third longer before it burns out, for more time to tap it; twice as
+        // long slowed the whole game down
+        targets.push({ x: 24 + Math.random() * (w - 48), y: 24 + Math.random() * (h - 48), t: 1, hue, sp: (.010 + Math.min(.014, score * .00013)) / 1.35 });
       }
       bx.save(); bx.globalCompositeOperation = 'lighter';
       for (const t of targets) {
