@@ -426,7 +426,8 @@
       burst(W / 2, H / 2, 120, null, 5);
       broken = null; count();
     }
-    // the puzzle by hand (Astra, 2026-10-29): drag a piece; while holding it, the scroll wheel turns it; tap one to turn it an
+    // the puzzle by hand (Astra, 2026-10-29): drag a piece; while holding it, the scroll wheel turns it (on a touch screen it
+    // turns slowly by itself); tap one to turn it an
     // eighth; drag anywhere else in the ring (or scroll there) to turn the whole sphere with the pieces already in, and line up
     // the next one against it
     const angleAt = (x, y) => Math.atan2(y - H / 2, x - W / 2);
@@ -469,6 +470,19 @@
         if (!p) { if (Math.hypot(x - W / 2, y - H / 2) < R() * 1.1) drag = { sphere: true, a: angleAt(x, y), sx: x, sy: y, moved: false }; return; }
         broken.pieces.splice(broken.pieces.indexOf(p), 1); broken.pieces.push(p); // to the top
         drag = { p, dx: x - p.x, dy: y - p.y, sx: x, sy: y, moved: false };
+        // on a touch screen there is no wheel (Astra, 2026-10-29: "just automatically start doing it, and then I can line it
+        // up"): a held piece turns slowly by itself, and clicks in the moment it is both in its place and turned right
+        if (e.pointerType !== 'mouse') {
+          const held = drag; let last = performance.now();
+          const turn = (t) => {
+            if (drag !== held || !broken) return;
+            p.rotTo += Math.min(50, t - last) / 1000 * .5; last = t;
+            const home = homeOf(p, broken.spinTo);
+            if (Math.hypot(p.x - home.x, p.y - home.y) < R() * .22 && Math.abs(norm(p.rotTo - broken.spinTo)) < .12) { drag = null; tryPlace(p); return; }
+            requestAnimationFrame(turn);
+          };
+          requestAnimationFrame(turn);
+        }
         return;
       }
       const hit = inside().filter((f) => f.ss).sort((p, q) => q.z - p.z).find((f) => Math.hypot(f.sx - x, f.sy - y) < f.ss * .45);

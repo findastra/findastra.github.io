@@ -52,7 +52,11 @@
         list.push({ src: 'art/projects/' + pg.file, cap: repo + ' · ' + cap });
       }
     }
-    return list;
+    // one galaxy per deck (Astra, 2026-10-29: "check for extra photos"): a presence repo commits the same galaxy as a still,
+    // a GIF and a card GIF, in docs/ and public/; keep the public still (shown as the turning galaxy), else the first
+    const isGalaxy = (p) => /galaxy(-card)?\.(png|gif)$/i.test(p.src);
+    const keep = list.find((p) => /\/public\/galaxy\.png$/.test(p.src)) || list.find(isGalaxy);
+    return list.filter((p) => !isGalaxy(p) || p === keep);
   };
 
   // ---------- lightbox (pictures keep their color) ----------
@@ -169,8 +173,12 @@
     }
     const repoLink = (name, text, hidden) => { const a = link('https://github.com/findastra/' + name, 'repo', text); if (hidden) a.tabIndex = -1; return a; };
     // each item in its own color on the black and gray bars (Astra, 2026-10-27: "different colors for each item"), the same
-    // color every time for the same project
-    const tint = (s, name) => { let h = 7; for (const ch of String(name)) h = (h * 31 + ch.codePointAt(0)) % 360; s.style.setProperty('--c', `hsl(${h} 100% 66%)`); return s; };
+    // color every time for the same project, but calmer (Astra, 2026-10-29: "less colorful"): white most of all, then gray,
+    // then a pastel of the project's own color, and least often its neon
+    const tint = (s, name) => {
+      let h = 7, k = 3; for (const ch of String(name)) { h = (h * 31 + ch.codePointAt(0)) % 360; k = (k * 17 + ch.codePointAt(0)) % 20; }
+      s.style.setProperty('--c', k < 9 ? '#f2f2f2' : k < 15 ? '#9a9a9a' : k < 18 ? `hsl(${h} 70% 82%)` : `hsl(${h} 100% 62%)`); return s;
+    };
     function fill(id, makers) {
       const box = $(id), track = box.querySelector('.track');
       box.hidden = !makers.length;
@@ -240,7 +248,7 @@
         { src: 'art/worlds/infinite-pole-spawn.jpg', cap: "Astra's Infinite Pole · the spawn" }] },
     { name: 'Piranesi House', kind: 'VRChat world · PC VR / desktop', text: "Inspired by Susanna Clarke's Piranesi: an endless labyrinth of marble statues on an island, with a tide that rises and falls, a colossus you can sit in, and a very special developers' easter egg.", repo: 'piranesi-house',
       // its labyrinth key, the Cross of the Four Winds map from Piranesi Nessi's key page (Astra, 2026-10-29)
-      local: [{ src: 'art/worlds/piranesi-house-labyrinth-key-20261029.png', cap: 'Piranesi House · the Cross of the Four Winds', fit: 'contain', bg: '#142225', size: 0.9, fill: '#142225', label: 'maze layout' }] },
+      local: [{ src: 'art/worlds/piranesi-house-labyrinth-key-20261029.png', cap: 'Piranesi House · the Cross of the Four Winds', fit: 'contain', bg: '#142225', size: 0.97, fill: '#142225', label: 'maze layout' }] },
     // the pictures each world has so far (Astra, 2026-10-27); proper captures from the worlds come later
     { name: 'Liminal Doors', kind: 'VRChat world · PC VR / desktop', text: 'Doors that open onto quiet in-between places: an empty pool after closing, a laundrette with a sky turning in one washer, a platform between trains. Every door hides a unique crystal animal.', repo: 'liminal-doors', local: [ // all of its floors, the hummingbird's first (Astra, 2026-10-27)
       '09-hummingbird-upside-down-conservatory-20261015', '01-fox-pinkscape-20261020', '02-hare-faraway-field-20261015', '03-axolotl-pool-after-closing-20261015',
@@ -261,17 +269,15 @@
         { src: 'art/worlds/phone-booth.jpg', label: 'concept art', cap: 'A pink phone booth above the clouds' }], extra: ['mommys', 'role-fairy'] },
     // first the still with its gray cut away, so it shines over the paper (Astra, 2026-10-29); the video and the crystals keep theirs
     // first its turning video with the gray cut away, so it turns on the bare paper (Astra, 2026-10-29), sparkles circling it and
-    // pouring out of its crystals across the page; then the still, then the crystals
-    { name: 'The Rainbow Maker', kind: 'VRChat world · PC VR / desktop', text: 'The mechanics of the Kikkerland Rainbow Maker: watch its tiny gear train turn and spin a crystal that refracts rainbows across the room.', repo: 'the-rainbow-maker', local: [
+    // pouring out of its crystals across the page; only that 3D model now, not the still or the crystals (Astra, 2026-10-29)
+    { name: 'The Rainbow Maker', ownPicsOnly: true, kind: 'VRChat world · PC VR / desktop', text: 'The mechanics of the Kikkerland Rainbow Maker: watch its tiny gear train turn and spin a crystal that refracts rainbows across the room.', repo: 'the-rainbow-maker', local: [
       { src: RM + 'rainbow-maker-preview-20261022.mp4', cap: 'The Rainbow Maker · turning', type: 'video', key: [69, 69, 74], clear: true,
         // one wide ring round the whole machine, a small fast one round each crystal, and a few glints on the glass
         // sparkles circling each of the two crystals, just wide of them so the crystals can be seen turning (Astra, 2026-10-29:
         // "go around the actual crystals"), and the spray thrown off those same rings: center x, y and radii, in percent
         // (wide of the gems, so they are seen clearly; the sparkles only now and then cross in front of them)
         orbits: [[44, 79, 17, 12, 5, 5], [54, 68, 16, 11, 5, 6]], still: [[46, 30], [56, 40]],
-        spray: [[44, 79, 18, 13], [54, 68, 17, 12]] },
-      { src: 'art/worlds/rainbow-maker-still-clear-20261029.png', cap: 'The Rainbow Maker', fit: 'contain', clear: true, nudge: '0 7%' },
-      { src: RM + 'rainbow-maker-crystals-cycles-20261023.png', cap: 'The Rainbow Maker · the crystals', fit: 'contain', bg: '#47423f' }] },
+        spray: [[44, 79, 18, 13], [54, 68, 17, 12]] }] },
     { name: 'The Cooling Tower', siteLabel: 'see full mini model ↗', kind: 'VRChat world · PC VR / desktop', text: "A rave world inside a nuclear plant's cooling tower: break into the facility and power it up with music. The Stack, the Turbine Hall, then the Reactor Hall.", repo: 'the-cooling-tower', local: [{ src: 'https://findastra.github.io/the-cooling-tower/mini-model/the-cooling-tower-mini-model-20261024.html', cap: 'The Cooling Tower · Mini Model', type: 'frame', label: 'concept model', bare: true, back: 7 }] },
   ];
   // vrchat-ai-astra was renamed the-astral-plane (2026-10-18); the pet list may still use the old name
@@ -288,6 +294,10 @@
   const isOther = (r) => !/^pet-program-\d+$/.test(r.name) && !WORLD_REPOS.has(r.name) && !PETOS_REPOS.has(r.name) && !petByRepo[r.name] && !HIDDEN.has(r.name);
   let repos = [], byName = {}, query = '';
   const when = (iso) => { const d = new Date(iso); return isNaN(d) ? '' : d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }); };
+  // the date a Polaroid shows: the repo's last real change, skipping README and docs passes (Astra, 2026-10-29), from
+  // real-dates-data-20261029.js; GitHub's last push when a repo is not in it yet
+  const REAL_DATES = window.REAL_DATES || {};
+  const lastReal = (r) => (r && (REAL_DATES[r.name] || r.pushed_at)) || '';
   // The Polaroids' tape, the stars and their sparkles are the only color on the page. Each keeps its color and tilt (hashed from its name).
   const COLORS = ['#ff3ea5', '#00e1ff', '#c6ff00', '#ff9500', '#c7a6ff', '#ffe500', '#ff5c5c', '#00f5a0', '#5ab0ff', '#ff8ef0'];
   const hash = (s) => { let h = 2166136261; for (const ch of s) h = Math.imul(h ^ ch.codePointAt(0), 16777619); return h >>> 0; };
@@ -586,15 +596,16 @@
   // a world: its repo (when public) gives the link, date and description; the README's words when it is private
   const worldCard = (w) => {
     const r = byName[w.repo];
-    return polaroid({ key: w.repo, name: w.name, kind: (r && r.language) || w.kind.replace(' · PC VR / desktop', ''), date: r ? when(r.pushed_at) : '', text: cleanText((r && r.description) || w.text), pics: worldPics(w),
+    return polaroid({ key: w.repo, name: w.name, kind: (r && r.language) || w.kind.replace(' · PC VR / desktop', ''), date: r ? when(lastReal(r)) : '', text: cleanText((r && r.description) || w.text), pics: worldPics(w),
       repo: r ? 'https://github.com/findastra/' + w.repo : null });
   };
   // Moodglass's picture (Astra, 2026-10-27): a staggered collage the way Moodglass lays photos behind a chat, edge to edge
-  // with soft seams, of Liminal Doors' most planted floors, the hummingbird's conservatory biggest
+  // with soft seams, of Liminal Doors' most planted floors; not the hummingbird's conservatory, which is Liminal Doors' own
+  // picture (Astra, 2026-10-29: "they're reusing one on there that's somewhere else")
   const moodglassShot = () => {
     const box = el('div', 'mg-shot');
     box.setAttribute('role', 'img'); box.setAttribute('aria-label', 'Moodglass: a staggered collage of Liminal Doors pictures, the way it fills a Discord chat');
-    const cols = [['09-hummingbird-upside-down-conservatory-20261015', '13-hedgehog-vending-machine-clearing-20261015'],
+    const cols = [['26-flamingo-red-sun-reservoir-20261015', '13-hedgehog-vending-machine-clearing-20261015'],
       ['28-butterfly-glass-orchard-20261015', '02-hare-faraway-field-20261015'],
       ['33-dolphin-aquaglass-concourse-20261015', '31-otter-steam-between-stars-20261015']];
     const split = [[62, 38], [40, 60], [55, 45]];
@@ -623,57 +634,29 @@
     // the four angels under the rainbow sky, Iris's picture (Astra, 2026-10-29)
     'iris-the-origin-story': [{ src: 'art/projects/iris-the-origin-story-cover-20261029.webp', cap: 'Iris: the origin story', bg: '#2a1530' }],
   };
+  // each presence app's own page first (Astra, 2026-10-29: what the actual program looks like), from its repo
+  for (const [who, what] of [['openai', 'OpenAI'], ['anthropic', 'Anthropic']])
+    SITE_PICS[who + '-discord-presence'] = [{ src: `https://raw.githubusercontent.com/findastra/${who}-discord-presence/main/public/${who}-app-20261029.png`, cap: what + ' Discord Presence · the app', fit: 'contain', bg: '#02050a', fill: '#02050a' }];
   // Photostar is one word (Astra, 2026-10-29)
   const NAMES = { 'astras-photostar': "Astra's Photostar" };
   // and "Iris: the origin story" (Astra, 2026-10-29), whatever its repo is called
   const nameOf = (repo) => NAMES[repo] || (/^iris/i.test(repo) ? 'Iris: the origin story' : repo.replace(/-/g, ' '));
-  // AI Discord Presence's picture (Astra, 2026-10-29): its two Discord cards, OpenAI over Anthropic, laid out like the
-  // activity on a Discord profile (the "Playing" line, the galaxy, the app, what it is using), on the bare paper
-  // Each card is the activity the two presence apps (findastra-discord-presence) send to Discord, laid out the way Discord
-  // shows it: "Playing", the app's own galaxy card art, its name, "Using <model> on <effort>", "Working on <project>" and
-  // the green elapsed time. Live from Discord through Lanyard (api.lanyard.rest), which reads a Discord user's public
-  // activity once they have joined its server: set DISCORD_USER to Astra's Discord user ID to turn it on. Until then the
-  // cards show what the apps send when nothing more is known.
-  const DISCORD_USER = '';
-  const PRESENCE = [
-    { app: '1548931548986875954', who: 'OpenAI', art: 'openai', using: 'Using Codex' },
-    { app: '1555096326734094356', who: 'Anthropic', art: 'anthropic', using: 'Using Claude' },
-  ];
-  const padIcon = () => {
-    const pad = svgEl('svg', { viewBox: '0 0 24 24', 'aria-hidden': 'true' });
-    pad.append(svgEl('path', { d: 'M7 6h10a5 5 0 0 1 4.9 6l-.8 4a3 3 0 0 1-5.2 1.4L14 15h-4l-1.9 2.4A3 3 0 0 1 2.9 16l-.8-4A5 5 0 0 1 7 6zm0 3v2H5v2h2v2h2v-2h2v-2H9V9H7zm9.5 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm-2 3a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z' }));
-    return pad;
-  };
-  const elapsed = (ms) => { const s = Math.max(0, Math.floor(ms / 1000)), h = Math.floor(s / 3600), m = Math.floor(s / 60) % 60, pad2 = (n) => String(n).padStart(2, '0'); return (h ? h + ':' : '') + pad2(m) + ':' + pad2(s % 60); };
-  const aiCardsShot = () => {
-    const box = el('div', 'ai-cards'), live = [];
-    for (const pr of PRESENCE) {
-      const card = link('https://github.com/findastra/findastra-discord-presence/tree/main/' + pr.art + '-discord-presence', 'ai-card');
-      const head = el('span', 'ai-head'); head.append(padIcon(), 'Playing');
-      const g = el('img', 'ai-art'); g.src = `https://raw.githubusercontent.com/findastra/findastra-discord-presence/main/${pr.art}-discord-presence/public/galaxy-card.gif`; g.alt = ''; g.loading = 'lazy';
-      const details = el('span', null, pr.using), state = el('span', null, 'Exploring ideas'), time = el('span', 'ai-time'); time.hidden = true;
-      const words = el('span', 'ai-words'); words.append(el('b', null, pr.who), details, state, time);
-      card.append(head, g, words); box.append(card);
-      live.push({ pr, card, details, state, time, start: 0 });
-    }
-    if (DISCORD_USER) {
-      const pull = () => fetch('https://api.lanyard.rest/v1/users/' + DISCORD_USER).then((r) => r.json()).then(({ data }) => {
-        for (const l of live) {
-          const a = data && (data.activities || []).find((x) => x.application_id === l.pr.app);
-          l.card.classList.toggle('idle', !a);
-          l.details.textContent = (a && a.details) || l.pr.using; l.state.textContent = a ? a.state || '' : 'not on right now';
-          l.start = (a && a.timestamps && a.timestamps.start) || 0;
-        }
-      }).catch(() => {});
-      pull(); setInterval(pull, 30000);
-      setInterval(() => { for (const l of live) { l.time.hidden = !l.start; if (l.start) { l.time.replaceChildren(padIcon(), elapsed(Date.now() - l.start)); } } }, 1000);
+  // the real cards instead (Astra, 2026-10-29: "you still have those wrong ... go open the actual program"): the two card GIFs
+  // the apps' own README shows, recorded from Discord, OpenAI over Anthropic, each linking to its app
+  const PRESENCE_REPO = 'https://raw.githubusercontent.com/findastra/ai-discord-presence/main/';
+  const realCardsShot = () => {
+    const box = el('div', 'ai-real');
+    for (const [who, what] of [['openai', 'OpenAI'], ['anthropic', 'Anthropic']]) {
+      const a = link('https://github.com/findastra/ai-discord-presence/tree/main/' + who + '-discord-presence', 'ai-real-card');
+      const im = el('img'); im.src = PRESENCE_REPO + 'docs/images/' + who + '-card-20261029.gif'; im.alt = what + ' Discord Presence card on a Discord profile'; im.loading = 'lazy';
+      a.append(im); box.append(a);
     }
     return box;
   };
-  const SHOTS = { moodglass: moodglassShot, 'ai-discord-presence': aiCardsShot };
+  const SHOTS = { moodglass: moodglassShot, 'ai-discord-presence': realCardsShot };
   const extraCard = (r) => {
     const repoUrl = 'https://github.com/findastra/' + r.name, shot = SHOTS[r.name];
-    return polaroid({ key: r.name, shot: shot ? shot() : null, clear: r.name === 'ai-discord-presence', name: nameOf(r.name), kind: r.language || '', date: when(r.pushed_at),
+    return polaroid({ key: r.name, shot: shot ? shot() : null, clear: r.name === 'ai-discord-presence', name: nameOf(r.name), kind: r.language || '', date: when(lastReal(r)),
       text: cleanText(r.description || 'No description yet.'), pics: [...(SITE_PICS[r.name] || []), ...picturesOf(r.name)], repo: repoUrl });
   };
 
@@ -1121,7 +1104,7 @@
   function petosCards() {
     const drawn = pets.filter(iconOf), hub = byName['astras-pet-os'], HUB_REPO = 'https://github.com/findastra/astras-pet-os';
     // like the rest: the hub's code and the day it last changed
-    const kind = (hub && hub.language) || 'HTML', date = hub ? when(hub.pushed_at) : '';
+    const kind = (hub && hub.language) || 'HTML', date = hub ? when(lastReal(hub)) : '';
     return [
       polaroid({ key: 'system-map', name: 'The System Map', kind, date, text: 'Every pet, program and tool in Astra\'s PetOS, and how they work together. Drag it around.',
         // drawn at twice the photo's size, so its key in the top left is big enough to read (Astra, 2026-10-29)
@@ -1152,7 +1135,7 @@
     petJar.fill(pets.filter(iconOf).map(petEntry).filter(({ p, r }) => shown(`${p.pet} ${p.program} ${p.text} ${p.repo} ${(r && r.description) || ''}`))
       .sort((a, b) => (b.pics.length > 0) - (a.pics.length > 0) || (b.r ? 1 : 0) - (a.r ? 1 : 0) || a.p.number - b.p.number));
     // Discord and Web & More, newest first
-    const others = repos.filter(isOther).filter((r) => shown(`${r.name} ${r.description}`)).sort((a, b) => String(b.pushed_at).localeCompare(String(a.pushed_at)));
+    const others = repos.filter(isOther).filter((r) => shown(`${r.name} ${r.description}`)).sort((a, b) => String(lastReal(b)).localeCompare(String(lastReal(a))));
     $('discord-list').replaceChildren(...others.filter((r) => DISCORD.has(r.name)).map(extraCard));
     $('web-list').replaceChildren(...others.filter((r) => !DISCORD.has(r.name)).map(extraCard));
     for (const ch of document.querySelectorAll('.chapter')) ch.classList.toggle('empty', !!query && !ch.querySelector('.polaroid, .mini'));
@@ -1266,8 +1249,8 @@
       // spots, with a little chance so they spread over the whole picture
       const first = [...spots].sort((a, b) => (b.sat * .7 + b.light * .3 + b.w * .5) - (a.sat * .7 + a.light * .3 + a.w * .5)).slice(0, 70);
       for (const sp of first) if (!picked.includes(sp)) picked.push(sp);
-      // sizes vary, now and then a big one (Astra, 2026-10-29)
-      const size = (k) => (k % 9 === 0 ? 22 + ((k >>> 4) % 14) : 6 + (k % 13));
+      // sizes vary; the ones that were big are now really tiny (Astra, 2026-10-29: "too big of sparkles on my face")
+      const size = (k) => (k % 9 === 0 ? 3 + ((k >>> 4) % 3) : 6 + (k % 13));
       const one = (x, y, c, k) => {
         const s = el('i');
         s.style.cssText = `--x:${x.toFixed(1)}%;--y:${y.toFixed(1)}%;--s:${size(k)}px;--d:${((k >>> 8) % 40) / 10}s;--c:${c};--dh:${[-150, -100, -50, 0, 50, 100, 150][(k >>> 12) % 7]};--l:0`;
@@ -1423,23 +1406,23 @@
   // ---------- the terminal's paired lights, as on the pet program pages (astras-pet-os pet-program-page-20261018.js): left
   // ON/OFF, right checked and works or report issues. Each click moves a light to its next state and a bubble under it says
   // what that state means, for four seconds; saved in this browser only (Astra, 2026-10-29) ----------
-  (() => {
-    const term = document.querySelector('.term'), on = term.querySelector('.light.onoff'), care = term.querySelector('.light.care');
-    const KEY = 'findastra-terminal-lights';
+  // the arcade's Hack the terminal tool panel has the same pair on its bar (Astra, 2026-10-29), its own state, its own name
+  const lights = (term, KEY, name) => {
+    const on = term.querySelector('.light.onoff'), care = term.querySelector('.light.care');
     let s; try { s = JSON.parse(localStorage.getItem(KEY)) || {}; } catch { s = {}; }
     const save = () => { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch {} };
     const tip = el('div', 'light-bubble'); tip.setAttribute('role', 'status'); tip.hidden = true; document.body.append(tip);
     let tipTimer = 0;
     const say = (b, text) => {
-      tip.textContent = 'terminal: ' + text; tip.hidden = false;
+      tip.textContent = name + ': ' + text; tip.hidden = false;
       const r = b.getBoundingClientRect(), w = document.documentElement.clientWidth;
       tip.style.left = scrollX + Math.max(8, Math.min(r.left - 8, w - tip.offsetWidth - 8)) + 'px'; tip.style.top = scrollY + r.bottom + 8 + 'px';
       clearTimeout(tipTimer); tipTimer = setTimeout(() => (tip.hidden = true), 4000);
     };
     const paint = () => {
       const off = s.power === 'off', fix = s.health === 'fix';
-      on.classList.toggle('is-off', off); on.setAttribute('aria-pressed', String(!off)); on.setAttribute('aria-label', 'terminal: ' + (off ? 'off' : 'on'));
-      care.classList.toggle('is-fix', fix); care.setAttribute('aria-label', 'terminal: ' + (fix ? 'report issues' : 'checked, works'));
+      on.classList.toggle('is-off', off); on.setAttribute('aria-pressed', String(!off)); on.setAttribute('aria-label', name + ': ' + (off ? 'off' : 'on'));
+      care.classList.toggle('is-fix', fix); care.setAttribute('aria-label', name + ': ' + (fix ? 'report issues' : 'checked, works'));
       term.classList.toggle('is-off', off);
     };
     on.addEventListener('click', () => {
@@ -1452,7 +1435,9 @@
       say(care, s.health === 'fix' ? 'report issues: you reported one. Click again to take it back.' : 'checked, works.');
     });
     paint();
-  })();
+  };
+  lights(document.querySelector('.term'), 'findastra-terminal-lights', 'terminal');
+  lights(document.querySelector('.hack-term'), 'findastra-hack-lights', 'hack the terminal');
 
   // ---------- the scroll bar: the pole's sparkle rides it with the page; drag it to scroll (Astra, 2026-10-29) ----------
   (() => {

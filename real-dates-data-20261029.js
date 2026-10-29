@@ -1,0 +1,32 @@
+// Built by scripts/build-real-dates-20261029.mjs on 2026-10-29: each public repo's last change
+// that was more than its words (README and docs passes skipped). Run it again to bring the dates up to date.
+window.REAL_DATES = {
+ "ai-discord-presence": "2026-10-29T06:46:08Z",
+ "anthropic-discord-presence": "2026-10-29T07:17:32Z",
+ "astras-gif-maker": "2026-10-18T09:15:22Z",
+ "astras-infinite-pole": "2026-09-14T18:57:15Z",
+ "astras-pet-os": "2026-10-29T03:34:12Z",
+ "astras-photostar": "2026-10-27T02:32:56Z",
+ "astras-star-window": "2026-10-22T06:39:58Z",
+ "detour-into-vr": "2026-10-09T22:00:38Z",
+ "dubstep-armory": "2026-10-18T09:26:33Z",
+ "findastra": "2026-10-25T19:26:27Z",
+ "findastra.github.io": "2026-10-29T11:24:18Z",
+ "fuzzboi-factory": "2026-10-18T07:07:33Z",
+ "ghost-protocol": "2026-10-18T09:14:10Z",
+ "infinite-studio": "2026-10-18T09:26:35Z",
+ "iris-the-origin-story": "2026-10-27T04:54:42Z",
+ "learn-python": "2026-10-25T18:43:44Z",
+ "liminal-doors": "2026-10-24T00:44:44Z",
+ "mommys-website": "2026-10-24T08:46:05Z",
+ "mommys-world": "2026-10-20T04:20:15Z",
+ "moodglass": "2026-10-28T01:12:04Z",
+ "openai-discord-presence": "2026-10-29T07:17:28Z",
+ "paper-girl": "2026-10-25T18:43:32Z",
+ "piranesi-house": "2026-10-20T04:25:46Z",
+ "pocket-message-board": "2026-10-20T02:44:18Z",
+ "rift-rabbit": "2026-10-26T09:57:01Z",
+ "the-cooling-tower": "2026-10-25T10:55:02Z",
+ "the-rainbow-maker": "2026-10-23T09:05:54Z",
+ "unity-unicorn": "2026-10-29T05:06:02Z"
+};
