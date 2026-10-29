@@ -674,13 +674,44 @@
   // the real cards instead (Astra, 2026-10-29: "you still have those wrong ... go open the actual program"): the two card GIFs
   // the apps' own README shows, recorded from Discord, OpenAI over Anthropic, each linking to its app
   const PRESENCE_REPO = 'https://raw.githubusercontent.com/findastra/ai-discord-presence/main/';
+  // live (Astra, 2026-10-29: "hook them up to actual usage", then "make it"): on Astra's PC each app copies the card it shows
+  // on Discord into this public gist; while that copy is fresh the real card picture gives way to it, timer and all. Without
+  // a card, or once the copy is older than 12 minutes (the apps re-write a live card every 5), the picture stays
+  const LIVE_GIST = 'ac8f1fed8d511b51096187a7ec71edc1', LIVE_STALE_MS = 12 * 60 * 1000;
+  const padIcon = () => {
+    const pad = svgEl('svg', { viewBox: '0 0 24 24', 'aria-hidden': 'true' });
+    pad.append(svgEl('path', { d: 'M7 6h10a5 5 0 0 1 4.9 6l-.8 4a3 3 0 0 1-5.2 1.4L14 15h-4l-1.9 2.4A3 3 0 0 1 2.9 16l-.8-4A5 5 0 0 1 7 6zm0 3v2H5v2h2v2h2v-2h2v-2H9V9H7zm9.5 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm-2 3a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z' }));
+    return pad;
+  };
+  const elapsed = (ms) => { const s = Math.max(0, Math.floor(ms / 1000)), h = Math.floor(s / 3600), m = Math.floor(s / 60) % 60, pad2 = (n) => String(n).padStart(2, '0'); return (h ? h + ':' : '') + pad2(m) + ':' + pad2(s % 60); };
   const realCardsShot = () => {
-    const box = el('div', 'ai-real');
+    const box = el('div', 'ai-real'), cards = [];
     for (const [who, what] of [['openai', 'OpenAI'], ['anthropic', 'Anthropic']]) {
       const a = link('https://github.com/findastra/ai-discord-presence/tree/main/' + who + '-discord-presence', 'ai-real-card');
       const im = el('img'); im.src = PRESENCE_REPO + 'docs/images/' + who + '-card-20261029.gif'; im.alt = what + ' Discord Presence card on a Discord profile'; im.loading = 'lazy';
-      a.append(im); box.append(a);
+      // the live card, drawn like the picture: "Playing", the app's turning galaxy, its name, its two lines, the time in green
+      const live = el('span', 'ai-live'), head = el('span', 'ai-head'), art = el('img', 'ai-art');
+      head.append('Playing', el('i', null, '•••'));
+      art.src = PRESENCE_REPO + who + '-discord-presence/public/galaxy-card.gif'; art.alt = ''; art.loading = 'lazy';
+      const name = el('b'), details = el('span'), state = el('span'), time = el('span', 'ai-time');
+      const words = el('span', 'ai-words'); words.append(name, details, state, time);
+      live.append(head, art, words); a.append(im, live); box.append(a);
+      cards.push({ who, a, name, details, state, time, start: 0 });
     }
+    const pull = () => fetch('https://api.github.com/gists/' + LIVE_GIST, { cache: 'no-store' }).then((r) => (r.ok ? r.json() : null)).then((g) => {
+      for (const c of cards) {
+        let d = null;
+        try { d = JSON.parse(g.files[c.who + '.json'].content); } catch { /* no copy yet */ }
+        const on = !!(d && d.active && Date.now() - d.updatedAt < LIVE_STALE_MS);
+        c.a.classList.toggle('live', on);
+        if (!on) { c.start = 0; continue; }
+        c.name.textContent = d.name || ''; c.details.textContent = d.details || ''; c.state.textContent = d.state || '';
+        c.start = (d.startedAt || 0) * 1000;
+      }
+    }).catch(() => {});
+    // GitHub lets each visitor read it 60 times an hour; every 2 minutes, only while the page is in view
+    pull(); setInterval(() => { if (!document.hidden) pull(); }, 120000);
+    setInterval(() => { for (const c of cards) if (c.start) c.time.replaceChildren(padIcon(), elapsed(Date.now() - c.start)); }, 1000);
     return box;
   };
   const SHOTS = { 'ai-discord-presence': realCardsShot };
