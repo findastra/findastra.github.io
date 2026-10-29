@@ -190,6 +190,20 @@ main { position: relative; z-index: 1; }
 .term { position: relative; display: flex; flex-direction: column; aspect-ratio: 1; box-sizing: border-box; background: #000; border: 2px solid var(--ink); }
 .term::before { content: ""; position: absolute; inset: 0; z-index: -1; transform: translate(14px, 14px); background: repeating-linear-gradient(45deg, var(--ink) 0 2px, transparent 2px 8px); }
 .term-bar { display: flex; align-items: center; gap: 6px; padding: 8px 12px; background: repeating-linear-gradient(#f2f2f2 0 2px, #9c9c9c 2px 3px); border-bottom: 2px solid #f2f2f2; font: 12px var(--mono); color: #000; }
+/* the hero terminal as a Linux one (Astra, 2026-10-29): a flat dark title bar with its title in the middle, like GNOME's
+   Terminal, the lights still on the left; and the shell's colored prompt */
+.term > .term-bar { position: relative; justify-content: flex-start; padding: 7px 10px; background: #2d2d2d; border-bottom: 1px solid #111; color: #e6e6e6; }
+.term > .term-bar #term-title { position: absolute; left: 50%; translate: -50% 0; margin: 0; padding: 0; background: none; color: #e6e6e6; font-weight: 700; white-space: nowrap; pointer-events: none; }
+.term .ps-user { color: #5fd35f; font-weight: 700; }
+.term .ps-path { color: #5c9dff; font-weight: 700; }
+.term .ps { color: #e6e6e6; font-weight: 400; }
+#term-prompt .ps-user, #term-prompt .ps-path { font-weight: 700; }
+/* the user@findastra part shifts slowly through the neon colors (Astra, 2026-10-29: "noticeable, but not too fast"), and the
+   path a step behind it */
+@keyframes ps-neon { 0%, 100% { color: #39ff88; } 17% { color: #39e6ff; } 33% { color: #4f7dff; } 50% { color: #b84dff; } 67% { color: #ff3fb4; } 83% { color: #ffe14d; } }
+.term .ps-user { animation: ps-neon 12s linear infinite; text-shadow: 0 0 6px currentColor; }
+.term .ps-path { animation: ps-neon 12s linear infinite -2s; }
+@media (prefers-reduced-motion: reduce) { .term .ps-user, .term .ps-path { animation: none; } }
 /* the paired lights from the pet program pages' tool panels (astras-pet-os pet-program-page-20261018.css, Unity Stable):
    left ON/OFF (green, red), right checked and works or report issues (blue, yellow). A click moves a light to its next state
    and a bubble says what it means; nothing on hover (Astra, 2026-10-29) */
@@ -485,12 +499,15 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 /* always exactly square, whatever is written on it (Astra, 2026-10-29): a fixed size, the writing a size to fit */
 /* (not clipped, so its tape shows whole) */
 /* (a little lower and smaller, Astra 2026-10-29) */
-.polaroid .sticky { position: absolute; right: -14px; bottom: 98px; z-index: 3; width: 90px; height: 90px; display: grid; align-content: center; padding: 6px;
+.polaroid .sticky { position: absolute; right: -14px; bottom: 98px; z-index: 3; width: 104px; height: 104px; display: grid; align-content: center; padding: 6px;
   background: #fff36b; color: #151515; font: 12.5px/1.22 "Permanent Marker", cursive; text-align: center; rotate: 7deg; box-shadow: 3px 4px 0 rgba(0, 0, 0, .55);
   /* a black edge, so it shows where it lies over the white border (Astra, 2026-10-29) */
   outline: 2px solid #111; }
 /* a note naming things (the levels) gets a smaller hand, so long names fit inside the square */
-.polaroid .sticky.names { font-size: 10px; line-height: 1.1; gap: 3px; text-align: left; overflow-wrap: anywhere; }
+/* both notes in the same hand, the levels note's (Astra, 2026-10-29), lined up on the left, every line on one line: a line too
+   long for the square is drawn a little smaller to fit (fitLines in cyber.js), never wrapped */
+.polaroid .sticky.names { font-size: 10px; line-height: 1.15; gap: 3px; text-align: left; justify-items: start; }
+.polaroid .sticky.names > div { white-space: nowrap; }
 .polaroid .sticky::before { content: ""; position: absolute; left: 50%; top: -7px; width: 40px; height: 13px; translate: -50% 0; rotate: -4deg;
   background: color-mix(in srgb, var(--c) 72%, transparent); box-shadow: 0 0 8px var(--c); }
 .polaroid .sticky b { display: block; font: 700 9px var(--mono); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 3px; }

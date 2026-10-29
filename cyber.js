@@ -71,12 +71,20 @@
 
   // ---------- hero terminal ----------
   const term = $('term');
-  const line = (text, cls) => { const p = el('div', cls, text); term.append(p); return p; };
+  // a Linux prompt (Astra, 2026-10-29: "look like a Linux terminal"): user@host in green, the path in blue, the rest plain
+  const PROMPT = /^(\w+@[\w.]+)(:)([^$\s]*)(\$)(.*)$/;
+  const paintPrompt = (p) => {
+    const m = PROMPT.exec(p.textContent); if (!m) return p;
+    p.replaceChildren(el('span', 'ps-user', m[1]), m[2], el('span', 'ps-path', m[3]), m[4], m[5]); p.classList.add('ps');
+    return p;
+  };
+  const line = (text, cls) => { const p = el('div', cls, text); term.append(paintPrompt(p)); return p; };
   const wait = (ms) => new Promise((r) => setTimeout(r, reduced ? 0 : ms));
   async function type(text, cls, speed = 12) {
     const p = line('', cls);
     if (reduced) { p.textContent = text; return; }
     for (const ch of text) { p.textContent += ch; await wait(speed); }
+    paintPrompt(p);
   }
   let unmasked = false;
   async function boot() {
@@ -113,6 +121,7 @@
     }
     masking = false;
   };
+  paintPrompt($('term-prompt'));
   boot();
   // the line to type into: a few commands, the rest answered like a real shell would (Astra, 2026-10-27)
   const SECTIONS = { vr: 'vr', discord: 'discord', web: 'web', petos: 'pets', pets: 'pets', arcade: 'arcade', contact: 'contact', top: 'top' };
@@ -143,7 +152,7 @@
     else if (/^echo\s+/.test(cmd)) out = raw.slice(5);
     else out = `${raw.split(' ')[0]}: command not found. try help`;
     if (out) line(out, 'dim');
-    $('term-prompt').textContent = `${who()}@findastra:~$`;
+    paintPrompt(Object.assign($('term-prompt'), { textContent: `${who()}@findastra:~$` }));
     term.scrollTop = term.scrollHeight;
   });
 
@@ -599,7 +608,9 @@
   // a world: its repo (when public) gives the link, date and description; the README's words when it is private
   const worldCard = (w) => {
     const r = byName[w.repo];
-    return polaroid({ key: w.repo, name: w.name, kind: (r && r.language) || w.kind.replace(' · PC VR / desktop', ''), date: r ? when(lastReal(r)) : '', text: cleanText((r && r.description) || w.text), pics: worldPics(w),
+    // every world says what it is (Astra, 2026-10-29: "all the stuff that is a VRChat world needs to say VRChat world"), then
+    // its one most common language, GitHub's own pick (UdonSharp counts as C#)
+    return polaroid({ key: w.repo, name: w.name, kind: 'VRChat world' + (r && r.language ? ' · ' + r.language : ''), date: r ? when(lastReal(r)) : '', text: cleanText((r && r.description) || w.text), pics: worldPics(w),
       repo: r ? 'https://github.com/findastra/' + w.repo : null });
   };
   // Moodglass's picture (Astra, 2026-10-27): a staggered collage the way Moodglass lays photos behind a chat, edge to edge
@@ -1103,7 +1114,18 @@
     const pet = p[at], lv = levels[pet.pet];
     box.classList.add('names');
     box.replaceChildren(...[`L1 – ${(lv && lv.others) || pet.repo || '—'}`, `L2 – ${pet.program || '—'}`, `L3 – ${pet.pet}`, 'L4 – Astra'].map((t) => el('div', null, t)));
+    fitLines(box);
   };
+  // each line of a note on one line (Astra, 2026-10-29: "I don't want to see them go a line lower"): a line wider than the
+  // square is drawn smaller, just enough to fit; the others keep the note's own size
+  const fitLines = (box) => requestAnimationFrame(() => {
+    const room = box.clientWidth - parseFloat(getComputedStyle(box).paddingLeft) * 2;
+    for (const d of box.children) {
+      d.style.fontSize = '';
+      const w = d.scrollWidth, size = parseFloat(getComputedStyle(d).fontSize);
+      if (w > room && room > 0) d.style.fontSize = Math.max(5.5, size * room / w * .98) + 'px';
+    }
+  });
   function petosCards() {
     const drawn = pets.filter(iconOf), hub = byName['astras-pet-os'], HUB_REPO = 'https://github.com/findastra/astras-pet-os';
     // like the rest: the hub's code and the day it last changed
@@ -1124,8 +1146,11 @@
         // many are drawn
         sticky: (at, box) => {
           const n = (s) => pets.filter((p) => p.stage === s).length;
-          box.replaceChildren(...[[n('registered'), 'done'], [n('pipeline'), 'pipeline'], [n('seed'), 'seed'], [n('roadmap'), 'roadmap'], [drawn.length, 'drawn']]
+          // in this order (Astra, 2026-10-29): done, drawn, seed, pipeline, roadmap; in the levels note's hand, on the left
+          box.classList.add('names');
+          box.replaceChildren(...[[n('registered'), 'done'], [drawn.length, 'drawn'], [n('seed'), 'seed'], [n('pipeline'), 'pipeline'], [n('roadmap'), 'roadmap']]
             .filter(([k, what]) => k || what === 'done').map(([k, what]) => el('div', null, `${k} ${what}`)));
+          fitLines(box);
         } }),
     ];
   }
