@@ -100,7 +100,7 @@
     new ResizeObserver(resize).observe(cv); resize();
     const R = () => Math.min(W, H) * .46;
     // a Fuzzboi's size as a share of the sphere: big while the dome is nearly empty, smaller as it fills, so all 30 fit
-    const share = () => Math.max(.18, Math.min(.42, 1.1 / (2.4 + folks.length * .3)));
+    const share = () => Math.max(.18, Math.min(.42, 1.1 / (2.4 + inside().length * .3)));
     const rand = () => Math.random() * 2 - 1;
     function spawn(code) {
       const p = F.decode(code).parts, sp = .008 + Math.random() * .005;
@@ -108,64 +108,98 @@
       return { code, art: sprite(p, 192), x: rand() * .3, y: rand() * .3, z: .5, vx: v[0], vy: v[1], vz: v[2], squash: 0, spin: 0, born: performance.now() };
     }
     function save() { store.set(HOME_KEY, folks.map((f) => f.code)); count(); }
+    const inside = () => folks.filter((f) => !f.out), outside = () => folks.filter((f) => f.out);
     function count() {
-      $('home-count').textContent = loose ? `${folks.length} out on your screen` : `${folks.length} of ${HOME_MAX} moved in`;
-      $('home-out').disabled = !folks.length; $('home-out').textContent = loose ? 'call them home' : 'let them out';
+      const n = outside().length;
+      $('home-count').textContent = n ? `${inside().length} in the dome · ${n} loose on the page` : `${folks.length} of ${HOME_MAX} moved in`;
+      $('home-out').disabled = !folks.length; $('home-out').textContent = n ? 'call them all home' : 'let them out';
       $('home-clear').disabled = !folks.length;
-      $('home-pick').textContent = loose ? 'They are loose on your screen. Keep scrolling; they come along.' : picked ? `#${picked.code}` : folks.length ? 'Tap a Fuzzboi to see its code.' : 'Nobody lives here yet. Make a Fuzzboi above and send it in.';
+      $('home-pick').textContent = n ? 'Catch one: grab it, drag it back over the dome and let go.' : picked ? `#${picked.code}` : folks.length ? 'Tap a Fuzzboi to see its code.' : 'Nobody lives here yet. Make a Fuzzboi above and send it in.';
     }
-    // let them out (Astra, 2026-10-29): every Fuzzboi in the dome bursts out onto the whole screen and keeps bouncing off its
-    // edges, over whatever the visitor is doing, until they are called home
-    let loose = null;
-    function letOut() {
-      const cvLoose = document.createElement('canvas'); cvLoose.className = 'fuzz-loose'; cvLoose.setAttribute('aria-hidden', 'true'); document.body.append(cvLoose);
-      const lx = cvLoose.getContext('2d'), dpr = Math.min(2, devicePixelRatio || 1), box = cv.getBoundingClientRect();
-      const size = () => Math.max(56, Math.min(120, innerWidth * .14));
-      const fitLoose = () => { cvLoose.width = innerWidth * dpr; cvLoose.height = innerHeight * dpr; lx.setTransform(dpr, 0, 0, dpr, 0, 0); };
-      fitLoose(); addEventListener('resize', fitLoose);
-      const ox = box.left + box.width / 2, oy = box.top + box.height / 2;
-      const run = folks.map((f) => {
-        const x = f.sx != null ? box.left + f.sx : ox, y = f.sy != null ? box.top + f.sy : oy, a = Math.atan2(y - oy, x - ox) || Math.random() * 7, sp = 4 + Math.random() * 4;
-        return { f, x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, squash: 0, spin: 0 };
+    // let them out (Astra, 2026-10-29): every Fuzzboi bursts out of the dome onto the whole page, not just the window, so
+    // they bounce off up and down it and go off screen, leaving pastel sparkles behind them. Grab one, drag it back over the
+    // dome (scrolling as you hold it) and let go to put it back; let go anywhere else and it bounces off again.
+    const layer = document.createElement('div'); layer.className = 'fuzz-loose'; layer.setAttribute('aria-hidden', 'true');
+    const page = () => ({ w: document.documentElement.scrollWidth, h: document.documentElement.scrollHeight });
+    const bodySize = () => Math.max(56, Math.min(120, innerWidth * .12));
+    let held = null, lastPt = null, roaming = 0, trailT = 0;
+    const overDome = (cx0, cy0) => { const r = cv.getBoundingClientRect(); return cx0 > r.left && cx0 < r.right && cy0 > r.top && cy0 < r.bottom; };
+    function goHome(f) {
+      f.out = false; f.node.remove(); f.node = null; f.born = performance.now(); f.x = rand() * .4; f.y = rand() * .4; f.z = rand() * .4;
+      if (!outside().length) { layer.remove(); cancelAnimationFrame(roaming); roaming = 0; }
+      count();
+    }
+    function free(f, x, y, vx, vy) {
+      const c2 = document.createElement('canvas'); c2.width = c2.height = 192; c2.getContext('2d').drawImage(f.art, 0, 0, 192, 192); c2.className = 'fuzz';
+      Object.assign(f, { out: true, node: c2, px: x, py: y, pvx: vx, pvy: vy, psq: 0, pspin: 0 });
+      c2.addEventListener('pointerdown', (e) => { held = f; lastPt = { x: e.clientX, y: e.clientY, t: performance.now(), vx: 0, vy: 0 }; c2.setPointerCapture(e.pointerId); c2.classList.add('held'); e.preventDefault(); });
+      c2.addEventListener('pointermove', (e) => {
+        if (held !== f) return;
+        const t = performance.now(), dt = Math.max(1, t - lastPt.t);
+        lastPt = { x: e.clientX, y: e.clientY, t, vx: (e.clientX - lastPt.x) / dt * 16, vy: (e.clientY - lastPt.y) / dt * 16 };
+        f.px = e.clientX + scrollX; f.py = e.clientY + scrollY;
       });
-      let raf = 0;
-      const tick = () => {
-        raf = requestAnimationFrame(tick);
-        const s = size(), half = s / 2, Wl = innerWidth, Hl = innerHeight;
-        lx.clearRect(0, 0, Wl, Hl);
-        for (const b of run) {
-          if (!reduced) {
-            b.x += b.vx; b.y += b.vy;
-            // slow down to an easy bounce after the burst
-            const v = Math.hypot(b.vx, b.vy); if (v > 2.6) { b.vx *= .99; b.vy *= .99; }
-            if (b.x < half && b.vx < 0 || b.x > Wl - half && b.vx > 0) { b.vx = -b.vx; b.squash = 1; b.spin = (Math.random() - .5) * .6; }
-            if (b.y < half && b.vy < 0 || b.y > Hl - half && b.vy > 0) { b.vy = -b.vy; b.squash = 1; b.spin = (Math.random() - .5) * .6; }
-            b.x = Math.min(Wl - half, Math.max(half, b.x)); b.y = Math.min(Hl - half, Math.max(half, b.y));
-          }
-          b.squash = Math.max(0, b.squash - .06); b.spin *= .95;
-          const sq = Math.sin(b.squash * Math.PI) * .2;
-          lx.save(); lx.translate(b.x, b.y); lx.rotate(b.spin); lx.scale(1 + sq, 1 - sq); lx.drawImage(b.f.art, -half, -half, s, s); lx.restore();
-        }
+      const drop = (e) => {
+        if (held !== f) return;
+        held = null; c2.classList.remove('held');
+        if (overDome(e.clientX, e.clientY)) goHome(f);
+        else { f.pvx = Math.max(-14, Math.min(14, lastPt.vx || (Math.random() - .5) * 6)); f.pvy = Math.max(-14, Math.min(14, lastPt.vy || (Math.random() - .5) * 6)); }
       };
-      tick();
-      loose = { add(f) { const a = Math.random() * 7; run.push({ f, x: ox, y: oy, vx: Math.cos(a) * 5, vy: Math.sin(a) * 5, squash: 0, spin: 0 }); }, home() { cancelAnimationFrame(raf); removeEventListener('resize', fitLoose); cvLoose.remove(); loose = null; for (const f of folks) { f.born = performance.now(); f.x = rand() * .4; f.y = rand() * .4; f.z = rand() * .4; } count(); } };
+      c2.addEventListener('pointerup', drop); c2.addEventListener('pointercancel', drop);
+      layer.append(c2);
+    }
+    // holding one while scrolling keeps it under the pointer
+    addEventListener('scroll', () => { if (held && lastPt) { held.px = lastPt.x + scrollX; held.py = lastPt.y + scrollY; } }, { passive: true });
+    function roam(t) {
+      roaming = requestAnimationFrame(roam);
+      const { w, h } = page(), s = bodySize(), half = s / 2;
+      if (layer.style.height !== h + 'px') layer.style.height = h + 'px';
+      const trail = !reduced && t - trailT > 110; if (trail) trailT = t;
+      for (const f of outside()) {
+        if (f !== held && !reduced) {
+          f.px += f.pvx; f.py += f.pvy;
+          const v = Math.hypot(f.pvx, f.pvy); if (v > 3.2) { f.pvx *= .99; f.pvy *= .99; } else if (v < 1.5) { f.pvx *= 1.05; f.pvy *= 1.05; }
+          if (f.px < half && f.pvx < 0 || f.px > w - half && f.pvx > 0) { f.pvx = -f.pvx; f.psq = 1; f.pspin = (Math.random() - .5) * .6; }
+          if (f.py < half && f.pvy < 0 || f.py > h - half && f.pvy > 0) { f.pvy = -f.pvy; f.psq = 1; f.pspin = (Math.random() - .5) * .6; }
+          f.px = Math.min(w - half, Math.max(half, f.px)); f.py = Math.min(h - half, Math.max(half, f.py));
+        }
+        f.psq = Math.max(0, f.psq - .06); f.pspin *= .95;
+        const sq = Math.sin(f.psq * Math.PI) * .2;
+        f.node.style.width = f.node.style.height = s + 'px';
+        f.node.style.transform = `translate(${f.px - half}px, ${f.py - half}px) rotate(${f.pspin}rad) scale(${1 + sq}, ${1 - sq})`;
+        // a pastel sparkle left behind where it has just been; it twinkles and fades where it fell
+        if (trail && f !== held && layer.childElementCount < 260) {
+          const sp = document.createElement('i'); sp.className = 'fuzz-trail';
+          sp.style.cssText = `left:${f.px - f.pvx * 6 + (Math.random() - .5) * half}px;top:${f.py - f.pvy * 6 + (Math.random() - .5) * half}px;--s:${8 + Math.random() * 12}px;--c:hsl(${Math.floor(Math.random() * 360)} 55% 80%)`;
+          layer.prepend(sp); setTimeout(() => sp.remove(), 2600);
+        }
+      }
+    }
+    function letOut() {
+      const box = cv.getBoundingClientRect(), ox = box.left + box.width / 2 + scrollX, oy = box.top + box.height / 2 + scrollY;
+      if (!layer.isConnected) document.body.append(layer);
+      for (const f of inside()) {
+        const x = f.sx != null ? box.left + f.sx + scrollX : ox, y = f.sy != null ? box.top + f.sy + scrollY : oy, a = Math.atan2(y - oy, x - ox) || Math.random() * 7, sp = 5 + Math.random() * 5;
+        free(f, x, y, Math.cos(a) * sp, Math.sin(a) * sp);
+      }
+      if (!roaming) roaming = requestAnimationFrame(roam);
       picked = null; count();
     }
+    const loose = { home() { for (const f of outside()) goHome(f); } };
     function add(code) {
       if (folks.length >= HOME_MAX) return `The Cyber Dome is full (${HOME_MAX}). Let one out to make room.`;
-      const f = spawn(code); folks.push(f); if (loose) loose.add(f); save();
+      folks.push(spawn(code)); save();
       return `#${code} moved into the Cyber Dome (${folks.length} of ${HOME_MAX}).`;
     }
     cv.addEventListener('pointerdown', (e) => {
-      if (loose) return;
       const r = cv.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
-      const hit = [...folks].filter((f) => f.ss).sort((p, q) => q.z - p.z).find((f) => Math.hypot(f.sx - x, f.sy - y) < f.ss * .45);
+      const hit = inside().filter((f) => f.ss).sort((p, q) => q.z - p.z).find((f) => Math.hypot(f.sx - x, f.sy - y) < f.ss * .45);
       picked = hit === picked ? null : hit || null;
       if (picked) { picked.squash = 1; codeIn.value = picked.code; make(picked.code, false); }
       count();
     });
-    $('home-out').onclick = () => { if (loose) loose.home(); else if (folks.length) letOut(); };
-    $('home-clear').onclick = () => { if (loose) loose.home(); folks.length = 0; picked = null; save(); };
+    $('home-out').onclick = () => { if (outside().length) loose.home(); else if (folks.length) letOut(); };
+    $('home-clear').onclick = () => { loose.home(); folks.length = 0; picked = null; save(); };
     // the sphere: an outline, rings of latitude seen a little from above, and meridians that turn
     function globe() {
       const r = R(), ox = W / 2, oy = H / 2, tilt = .28;
@@ -184,7 +218,7 @@
       if (!W) return;
       if (!reduced) turn += .003;
       globe();
-      if (loose) return; // they are all out on the screen
+      const folks = inside(); // the ones loose on the page are drawn there, not here
       const r = R(), sh = share(), rr = sh / 2; // a Fuzzboi's radius inside the unit sphere
       for (const f of folks) {
         if (!reduced) {

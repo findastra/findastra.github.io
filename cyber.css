@@ -30,16 +30,15 @@ main { padding-left: var(--rail); }
   background: #7d7d7d; box-shadow: 0 0 6px rgba(255, 255, 255, .12); }
 /* the pole's sparkle is the scroll bar (Astra, 2026-10-29): it rides the pole with the page, glowing in the color of the
    section you are in; drag it to scroll. The browser's own scroll bar is hidden */
-.rail-spark { position: absolute; left: 50%; width: 28px; height: 28px; translate: -50% 0; filter: drop-shadow(0 0 0 #000) drop-shadow(0 0 4px var(--now)) drop-shadow(0 0 12px var(--now)) drop-shadow(0 0 20px var(--now)); transition: filter .4s; }
-/* a white core, and around it the section's color shimmering through the hues on either side of it (Astra, 2026-10-29) */
-.rail-spark::before { content: ""; position: absolute; inset: 0; background: var(--now); transition: background .4s;
-  clip-path: polygon(50% 0, 58% 42%, 100% 50%, 58% 58%, 50% 100%, 42% 58%, 0 50%, 42% 42%);
-  animation: sb-spin 7s ease-in-out infinite alternate, sb-shimmer 3s ease-in-out infinite alternate; }
-@keyframes sb-shimmer { from { filter: hue-rotate(-40deg) saturate(1.3); } to { filter: hue-rotate(40deg) saturate(1.3); } }
-.rail-spark::after { content: ""; position: absolute; left: 50%; top: 50%; width: 9px; height: 9px; translate: -50% -50%; background: #fff;
-  clip-path: polygon(50% 0, 58% 42%, 100% 50%, 58% 58%, 50% 100%, 42% 58%, 0 50%, 42% 42%); animation: twinkle 2.2s ease-in-out infinite; }
+/* the page's own pastel sparkle (Astra, 2026-10-29: "the exact same pastel sparkle"): the same four points, a pastel of the
+   section you are in, drifting round the hues like the rest */
+.rail-spark { --pale: color-mix(in srgb, var(--now) 45%, #fff); position: absolute; left: 50%; width: 30px; height: 30px; translate: -50% 0;
+  filter: drop-shadow(0 0 1px #000) drop-shadow(0 0 6px var(--pale)) drop-shadow(0 0 14px var(--pale)); transition: filter .4s; animation: rainbow-drift 14s linear infinite; }
+.rail-spark::before { content: ""; position: absolute; inset: 0; background: var(--pale); transition: background .4s;
+  clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%); animation: twinkle 2.6s ease-in-out infinite; }
+.rail-spark::after { content: none; }
 @keyframes sb-spin { from { rotate: 0deg; } to { rotate: 720deg; } }
-@media (prefers-reduced-motion: reduce) { .rail-spark::before, .rail-spark::after { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .rail-spark, .rail-spark::before { animation: none; } }
 #bead { top: 0; z-index: 2; pointer-events: auto; cursor: grab; touch-action: none; }
 #bead.held { cursor: grabbing; }
 html { scrollbar-width: none; }
@@ -61,10 +60,12 @@ html::-webkit-scrollbar { display: none; }
    thin dark edge so it reads over the white pole (Astra, 2026-10-29) */
 /* a new hand (Astra, 2026-10-29: "I don't like the text style"): written in the Polaroids' marker, each floor in its own
    neon with a black edge so it reads over the pole; the one you are on is white-hot in its color */
-.floors a { font-family: "Permanent Marker", cursive; font-weight: 400; letter-spacing: .08em; color: var(--c);
-  text-shadow: -1px 0 #000, 1px 0 #000, 0 -1px #000, 0 1px #000, 0 0 6px color-mix(in srgb, var(--c) 60%, transparent); }
-.floors a:hover, .floors a:focus-visible { background: none; color: #fff; text-shadow: -1px 0 #000, 1px 0 #000, 0 -1px #000, 0 1px #000, 0 0 8px var(--c); }
-.floors a.on { color: #fff; text-shadow: -1px 0 #000, 1px 0 #000, 0 -1px #000, 0 1px #000, 0 0 6px var(--c), 0 0 12px var(--c), 0 0 22px var(--c); }
+/* then (Astra, 2026-10-29): all white, thick like the section titles, each glowing in a pastel of its section's color; the
+   one you are on glows brighter */
+.floors a { --soft: color-mix(in srgb, var(--c) 50%, #fff); font-family: Inter, sans-serif; font-weight: 900; letter-spacing: .04em; color: #fff;
+  text-shadow: -1px 0 #000, 1px 0 #000, 0 -1px #000, 0 1px #000, 0 0 6px var(--soft), 0 0 12px color-mix(in srgb, var(--soft) 60%, transparent); }
+.floors a:hover, .floors a:focus-visible { background: none; color: #fff; text-shadow: -1px 0 #000, 1px 0 #000, 0 -1px #000, 0 1px #000, 0 0 8px var(--soft), 0 0 16px var(--soft); }
+.floors a.on { color: #fff; text-shadow: -1px 0 #000, 1px 0 #000, 0 -1px #000, 0 1px #000, 0 0 6px var(--soft), 0 0 14px var(--soft), 0 0 26px var(--soft); }
 /* film grain over everything */
 body::after { content: ""; position: fixed; inset: 0; z-index: 60; pointer-events: none; opacity: .09;
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
@@ -216,6 +217,10 @@ main { position: relative; z-index: 1; }
    them drifting round the hues (Astra, 2026-10-27); much more saturated and further round the rainbow (Astra, 2026-10-29) */
 .portrait .glitter { inset: 3px; z-index: 1; animation: rainbow-drift 14s linear infinite; }
 @keyframes rainbow-drift { 0%, 100% { filter: hue-rotate(-70deg); } 50% { filter: hue-rotate(70deg); } }
+/* one more veil over the picture (Astra, 2026-10-29): fine diagonal lines the other way from the stripes behind, and a
+   halftone of dots, so she keeps her shape but hides a little more */
+.portrait::after { content: ""; position: absolute; inset: 3px; z-index: 0; pointer-events: none;
+  background: repeating-linear-gradient(45deg, rgba(5, 5, 5, .5) 0 2px, transparent 2px 6px), radial-gradient(rgba(5, 5, 5, .45) 1px, transparent 1.6px) 0 0 / 5px 5px; }
 .portrait::before { content: ""; position: absolute; inset: 0; z-index: -1; transform: translate(-16px, 16px); background: repeating-linear-gradient(-45deg, #8c8c8c 0 3px, transparent 3px 8px); }
 /* Astra's hand lettering: transparent ink masks painted in --ink, so they follow the hero (white, then black when unmasked) */
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
@@ -282,8 +287,10 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 2px #f2f2f2; text
 /* projects: VR & VRChat, Discord and Web & More as Polaroids, Astra's PetOS as the star jar */
 .tag { display: inline-block; font: 11px var(--mono); text-transform: uppercase; letter-spacing: .12em; background: #000; color: #cfcfcf; padding: 2px 8px; }
 
-/* sparkles: four-point twinkles around each shape, in hues near its own color */
-.sparkles { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
+/* sparkles: one kind on the whole page, the portrait's (Astra, 2026-10-29): four-point twinkles in soft pastels, each a
+   little round the wheel from the next, all drifting through the hues, in front of what they ring */
+.sparkles { position: absolute; inset: 0; pointer-events: none; z-index: 6; animation: rainbow-drift 14s linear infinite; }
+.sparkles.field { inset: 0; z-index: 3; }
 .sparkles i { position: absolute; left: var(--x); top: var(--y); width: var(--s); aspect-ratio: 1; translate: -50% -50%; background: var(--c);
   clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%);
   animation: twinkle 2.6s ease-in-out var(--d) infinite; }
@@ -296,38 +303,45 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 2px #f2f2f2; text
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 0 22px; margin-top: 26px; }
 /* rows tuck into each other: each star's top point rises into the notch between the legs above it */
 .grid .card { margin-bottom: -5%; }
-.card { position: relative; container-type: inline-size; width: 100%; max-width: 420px; aspect-ratio: 229 / 220; justify-self: center; color: #000;
-  transform: rotate(var(--tilt, 0deg)); transition: transform .3s cubic-bezier(.3, 1.6, .5, 1); }
-.card:hover, .card:focus-within { transform: rotate(0deg) scale(1.06); z-index: 3; }
+/* the star tilts, grows and turns over as .turn; the card itself stays put, so its sparkles do not swing with it
+   (Astra, 2026-10-29) */
+.card { position: relative; container-type: inline-size; width: 100%; max-width: 420px; aspect-ratio: 229 / 220; justify-self: center; color: #000; perspective: 1400px; }
+.card:hover, .card:focus-within { z-index: 3; }
+.card .turn { position: absolute; inset: 0; transform: rotate(var(--tilt, 0deg)); transform-style: preserve-3d; transition: transform .55s cubic-bezier(.3, 1.4, .5, 1); }
+.card:hover .turn, .card:focus-within .turn { transform: rotate(0deg) scale(1.06); }
+.card.flipped .turn { transform: rotate(0deg) rotateY(180deg); }
+.card.flipped:hover .turn, .card.flipped:focus-within .turn { transform: rotate(0deg) scale(1.06) rotateY(180deg); }
+.card .face, .card .back { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.card .back { transform: rotateY(180deg); display: grid; place-content: center; justify-items: center; gap: 2.2cqw; }
+/* the back: the pet program as one big square in the star's color */
+.card .square { position: relative; display: grid; place-items: center; width: 72cqw; aspect-ratio: 1; padding: 0; overflow: hidden; cursor: zoom-in;
+  background: #0b0b0b; border: 3px solid var(--c); box-shadow: 0 0 14px var(--c), 8px 8px 0 #000; }
+.card div.square { cursor: default; background: color-mix(in srgb, var(--c) 22%, #0b0b0b); }
+.card .square img { width: 100%; height: 100%; object-fit: cover; }
+.card .square img.pix { width: 70%; height: 70%; object-fit: contain; image-rendering: pixelated; }
+.card .square .soon { position: absolute; bottom: 6%; font: 3.4cqw/1 var(--mono); color: #cfcfcf; }
+.card .back-links { display: flex; gap: 2cqw; align-items: center; }
+.card .back-links a, .card .turn-btn { font: 700 3.2cqw/1 var(--mono); color: #000; background: var(--c); border: 2px solid #000; padding: .5em .8em; border-radius: 99px;
+  text-decoration: none; cursor: pointer; box-shadow: 0 0 10px var(--c); }
+.card .back-links a:hover, .card .turn-btn:hover, .card .back-links a:focus-visible, .card .turn-btn:focus-visible { background: #fff; color: #000; outline: none; }
+.card .body .turn-btn { margin-top: auto; background: #000; color: #fff; box-shadow: none; border-color: #000; }
 .card .shape { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
 .card .s-shadow { fill: #000; stroke: #000; stroke-width: 30; transform: translate(7px, 7px); transition: transform .3s; }
 .card:hover .s-shadow { transform: translate(12px, 12px); }
 .card .s-line { fill: #000; stroke: #000; stroke-width: 30; }
 .card .s-fill { fill: var(--c); stroke: var(--c); stroke-width: 24; }
 .card .s-shine { fill: none; stroke: rgba(255, 255, 255, .45); stroke-width: 3; transform: scale(.86); }
-.card .sparkles { inset: 4% 2% 0; }
-/* the star's top point holds the pet; the side points hold the links */
+.card .sparkles { inset: 2% 0 0; }
+/* a small star in the top point */
 .card .tip { position: absolute; left: 48.47%; top: 19.09%; width: 13.1%; aspect-ratio: 1; transform: translate(-50%, -50%); display: grid; place-items: center; font: 400 9cqw/1 VT323, monospace; }
-.card .tip img { width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; }
-.card .arm { position: absolute; top: 40.32%; transform: translate(-50%, -50%) rotate(var(--r)); font: 700 2.9cqw/1 var(--mono); background: #000; color: var(--c);
-  padding: .45em .75em; border-radius: 99px; text-decoration: none; white-space: nowrap; }
-.card .arm:hover, .card .arm:focus-visible { background: #fff; color: #000; outline: none; }
-.card .arm.l { left: 11.79%; --r: 18deg; }
-.card .arm.r { left: 85.15%; --r: -18deg; }
-.card .win { position: absolute; left: 20.96%; width: 55.02%; top: 29.09%; height: 57.27%; display: grid; grid-template-rows: 49fr 75fr; row-gap: 1.2cqw; }
-.card .thumb { position: relative; display: grid; place-items: center; width: 100%; height: 100%; min-height: 0; padding: 0; overflow: hidden; cursor: zoom-in;
-  border: 2px solid #000; border-radius: 1.8cqw; background: color-mix(in srgb, var(--c) 50%, #fff); }
-.card .thumb img { width: 100%; height: 100%; object-fit: cover; }
-.card .thumb img.pix { width: auto; height: 84%; object-fit: contain; image-rendering: pixelated; }
-.card .thumb .count { position: absolute; right: 4px; bottom: 4px; font: 2.5cqw/1.4 var(--mono); background: #000; color: #fff; padding: 0 .55em; border-radius: 99px; }
-.card .thumb.empty { cursor: default; font: 400 11cqw/1 VT323, var(--mono); color: #000; }
-.card .body { display: flex; flex-direction: column; align-items: center; text-align: center; gap: .5cqw; min-height: 0; overflow: hidden; }
-.card .name { font: 800 4cqw/1.1 Inter, sans-serif; letter-spacing: -.01em; color: #000; text-decoration: none; max-width: 100%;
-  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
-.card .name:hover, .card .name:focus-visible { background: #000; color: var(--c); outline: none; }
+/* the window: the pet, big, where the picture box was, then its name and the flip button */
+.card .win { position: absolute; left: 20.96%; width: 55.02%; top: 27%; height: 60%; display: grid; grid-template-rows: 64fr 36fr; row-gap: .8cqw; }
+.card .pet-big { position: relative; display: grid; place-items: center; min-height: 0; font: 400 11cqw/1 VT323, var(--mono); }
+.card .pet-big img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; filter: drop-shadow(0 3px 0 rgba(0, 0, 0, .35)); }
+.card .body { display: flex; flex-direction: column; align-items: center; text-align: center; gap: .4cqw; min-height: 0; overflow: hidden; }
+.card .name { font: 800 4.4cqw/1.1 Inter, sans-serif; letter-spacing: -.01em; color: #000; max-width: 100%;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 1; overflow: hidden; }
 .card .pet { font: 500 3.05cqw/1.25 Inter, sans-serif; color: rgba(0, 0, 0, .72); max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.card p { margin: 0; font: 3.2cqw/1.28 Inter, sans-serif; color: #111; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; }
-.card .meta { margin-top: auto; display: flex; gap: .7em; justify-content: center; font: 2.75cqw/1.3 var(--mono); color: rgba(0, 0, 0, .7); }
 
 /* the chapters: read top to bottom like the GitHub profile README, a dashed rail down the left joining them (Astra, 2026-10-27) */
 .contents { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -371,11 +385,13 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 2px #f2f2f2; text
   filter: brightness(1.9) saturate(1.2); }
 /* AI Discord Presence: its two cards, one over the other */
 /* laid out like a Discord profile's activity: "Playing" over the art, the app's name and what it is using beside it */
-.ai-cards { position: absolute; inset: 0; display: grid; align-content: center; gap: 8px; padding: 7%; }
-.ai-card { display: grid; grid-template-columns: 44% 1fr; grid-template-rows: auto 1fr; align-items: center; column-gap: 8px; padding: 6px 8px 8px; text-align: left;
-  text-decoration: none; color: #f2f2f2; background: rgba(30, 31, 34, .55); border-radius: 8px; box-shadow: 0 0 0 1px rgba(255, 255, 255, .08); }
-.ai-card:hover, .ai-card:focus-visible { background: rgba(30, 31, 34, .8); color: #fff; outline: none; box-shadow: 0 0 0 2px var(--c); }
-.ai-head { grid-column: 1 / -1; font: 700 9px/1.6 Inter, sans-serif; letter-spacing: .04em; text-transform: uppercase; color: #b5bac1; }
+/* solid Discord cards, a little smaller, with the game controller by "Playing" (Astra, 2026-10-29) */
+.ai-cards { position: absolute; inset: 0; display: grid; align-content: center; gap: 8px; padding: 11%; }
+.ai-card { display: grid; grid-template-columns: 40% 1fr; grid-template-rows: auto 1fr; align-items: center; column-gap: 8px; padding: 6px 8px 8px; text-align: left;
+  text-decoration: none; color: #f2f2f2; background: #232428; border-radius: 8px; box-shadow: 0 0 0 1px rgba(255, 255, 255, .08), 0 4px 10px rgba(0, 0, 0, .5); }
+.ai-card:hover, .ai-card:focus-visible { background: #2b2d31; color: #fff; outline: none; box-shadow: 0 0 0 2px var(--c); }
+.ai-head { grid-column: 1 / -1; display: flex; align-items: center; gap: 4px; font: 700 9px/1.6 Inter, sans-serif; letter-spacing: .04em; text-transform: uppercase; color: #b5bac1; }
+.ai-head svg { width: 12px; height: 12px; fill: currentColor; }
 .ai-card img { width: 100%; aspect-ratio: 1; animation: galaxy-turn 60s linear infinite; }
 .ai-words { display: grid; min-width: 0; font: 500 11px/1.3 Inter, sans-serif; color: #dbdee1; }
 .ai-words b { font: 700 13px/1.25 Inter, sans-serif; color: #fff; }
@@ -397,6 +413,8 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 2px #f2f2f2; text
 .polaroid .photo img[src$="galaxy.png"] { scale: .94; animation: galaxy-turn 60s linear infinite; }
 @keyframes galaxy-turn { to { rotate: 360deg; } }
 .polaroid .photo img[src$=".svg"] { object-fit: contain; background: #0b0b0b; }
+/* a see-through one has no backing at all (the Photostar was sitting on this dark square) */
+.polaroid .photo.clear img[src$=".svg"] { background: none; }
 /* a live page (the Cooling Tower's Mini Model) drawn at twice the size and scaled down, so it fits the photo; it spins by itself
    and can be dragged around */
 .polaroid .photo iframe.live { position: absolute; left: 0; top: 0; width: 200%; height: 200%; border: 0; transform: scale(.5); transform-origin: 0 0; background: #000; }
@@ -407,9 +425,11 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 2px #f2f2f2; text
 .pet-grid img { width: 100%; aspect-ratio: 1; object-fit: contain; }
 #petos-list { margin-bottom: 34px; }
 /* a sticky note hanging off a Polaroid's corner (the pet's intelligence levels on "Meet every pet") */
-.polaroid .sticky { position: absolute; right: -14px; bottom: 54px; z-index: 3; width: 92px; padding: 8px 6px 7px; background: #fff36b; color: #151515;
-  font: 13px/1.25 "Permanent Marker", cursive; text-align: center; rotate: 7deg; box-shadow: 3px 4px 0 rgba(0, 0, 0, .55); }
-.polaroid .sticky::before { content: ""; position: absolute; left: 50%; top: -7px; width: 36px; height: 12px; translate: -50% 0; background: rgba(255, 255, 255, .55); }
+/* a perfectly square note, its tape the same color as the strip holding up the Polaroid (Astra, 2026-10-29) */
+.polaroid .sticky { position: absolute; right: -14px; bottom: 54px; z-index: 3; width: 96px; aspect-ratio: 1; display: grid; align-content: center; padding: 6px;
+  background: #fff36b; color: #151515; font: 12px/1.25 "Permanent Marker", cursive; text-align: center; rotate: 7deg; box-shadow: 3px 4px 0 rgba(0, 0, 0, .55); }
+.polaroid .sticky::before { content: ""; position: absolute; left: 50%; top: -7px; width: 40px; height: 13px; translate: -50% 0; rotate: -4deg;
+  background: color-mix(in srgb, var(--c) 72%, transparent); box-shadow: 0 0 8px var(--c); }
 .polaroid .sticky b { display: block; font: 700 9px var(--mono); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 3px; }
 /* "concept art" / "concept model", written at the top of the picture */
 .polaroid .badge { position: absolute; left: 6px; top: 6px; z-index: 2; transform: translateZ(0); font: 12px/1 "Permanent Marker", cursive; color: #fff; background: #151515; padding: 3px 7px; rotate: -3deg; pointer-events: none; }
@@ -426,9 +446,9 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 2px #f2f2f2; text
 .photo .developing { font: 1.3rem/1 "Permanent Marker", cursive; color: color-mix(in srgb, var(--c) 55%, #fff); text-shadow: 0 0 12px var(--c); rotate: -7deg; }
 /* the little arrows snug in the white border's bottom corners, as far from the side as from the bottom, and "1 of 3"
    between them on the same line (Astra, 2026-10-29) */
-/* --lift-arrows: the marker arrow's ink sits low in its box, so the box rides 4px higher to leave the same gap under the arrow as
+/* --lift-arrows: the marker arrow's ink sits low in its box, so the box rides higher to leave the same gap under the arrow as
    beside it (Astra, 2026-10-29) */
-.polaroid .frame { --corner: 5px; --flip: 20px; --lift-arrows: 4px; }
+.polaroid .frame { --corner: 5px; --flip: 20px; --lift-arrows: 7px; }
 .polaroid .frame.flips .note { padding-bottom: calc(var(--flip) + var(--corner) + var(--lift-arrows) + 2px); }
 .polaroid .count { position: absolute; left: 50%; bottom: calc(var(--corner) + var(--lift-arrows)); height: var(--flip); display: grid; place-items: center; translate: -50% 3px;
   font: 13px/1 "Permanent Marker", cursive; color: #6a6a6a; white-space: nowrap; rotate: -2deg; }
@@ -478,8 +498,11 @@ a.title:hover, a.title:focus-visible { color: color-mix(in srgb, var(--c) 45%, #
 .jar-out { position: relative; display: grid; place-items: center; min-height: 440px; }
 .jar-out .card { width: min(100%, 420px); animation: popout .55s cubic-bezier(.2, 1.6, .4, 1); }
 @keyframes popout { from { transform: scale(.2) rotate(-30deg); opacity: 0; } }
-.jar-hint { margin: 0; font: 700 clamp(1.4rem, 3vw, 2rem)/1.2 var(--mono); color: #4a4a4a; text-align: center; }
+/* the hint sits over the jar now; the room to its right is where the jar falls */
+.jar-hint { margin: 0; font: 700 clamp(1rem, 2vw, 1.25rem)/1.3 var(--mono); color: #9a9a9a; text-align: center; }
+.jar { z-index: 2; }
 .flyer { position: absolute; z-index: 30; pointer-events: none; width: var(--s); height: var(--s); }
+.flyer .sparkles { inset: -30%; }
 .jar-all[hidden] { display: none; }
 /* the row of star slots under the jar: each shake fills the dashed one and a new one waits after it (Astra, 2026-10-29) */
 .jar-all .slot { position: relative; width: 100%; max-width: 420px; aspect-ratio: 229 / 220; justify-self: center; margin-bottom: -5%; }
@@ -564,7 +587,16 @@ a.title:hover, a.title:focus-visible { color: color-mix(in srgb, var(--c) 45%, #
 #fz-note, #home-pick, #home-count { min-height: 1.4em; font-size: 12px; }
 .home { display: block; width: 100%; aspect-ratio: 1; cursor: pointer; touch-action: manipulation; }
 /* the Fuzzbois let out of the dome, loose over the whole screen; clicks go through to the page */
-.fuzz-loose { position: fixed; inset: 0; z-index: 55; width: 100vw; height: 100vh; pointer-events: none; }
+.fuzz-loose { position: absolute; left: 0; top: 0; width: 100%; z-index: 55; pointer-events: none; overflow: hidden; }
+.fuzz-loose .fuzz { position: absolute; left: 0; top: 0; pointer-events: auto; cursor: grab; touch-action: none; will-change: transform; }
+.fuzz-loose .fuzz.held { cursor: grabbing; filter: drop-shadow(0 0 10px hsl(320 55% 80%)); }
+/* the pastel sparkles a loose Fuzzboi leaves behind: they twinkle once where they fell and fade */
+.fuzz-trail { position: absolute; width: var(--s); aspect-ratio: 1; translate: -50% -50%; background: var(--c); pointer-events: none;
+  clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%); animation: trail-fade 2.6s ease-out forwards; }
+@keyframes trail-fade { 0% { transform: scale(.3) rotate(0); opacity: 0; } 15% { transform: scale(1.1) rotate(30deg); opacity: 1; } 100% { transform: scale(.4) rotate(120deg); opacity: 0; } }
+/* the dome's count sits right under its name */
+.cab-head { display: grid; gap: 6px; }
+.cab-head h3 { margin: 0; justify-self: start; }
 /* each game's name in the Arcade's yellow, like the rest of its color (Astra, 2026-10-29) */
 .cab h3 { color: var(--c-arcade); border-bottom-color: var(--c-arcade); font-size: 14px; text-shadow: 0 0 8px color-mix(in srgb, var(--c-arcade) 70%, transparent);
   box-shadow: 0 6px 10px -8px var(--c-arcade); }
@@ -647,6 +679,7 @@ a.title:hover, a.title:focus-visible { color: color-mix(in srgb, var(--c) 45%, #
   html { scroll-behavior: auto; }
   .letter-ink, .glitch, .ticker .track, .jar-out .card, .sparkles i, .portrait .glitter, .polaroid .photo img { animation: none; }
   .ticker { overflow-x: auto; }
-  .card, .card .s-shadow, .btn, .polaroid .frame, .polaroid .photo img, .tile button, .letter-track { transition: none; }
+  .card, .card .turn, .card .s-shadow, .btn, .polaroid .frame, .polaroid .photo img, .tile button, .letter-track { transition: none; }
+  .sparkles { animation: none; }
   #rain { display: none; }
 }

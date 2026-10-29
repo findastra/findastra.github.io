@@ -233,7 +233,7 @@
       local: [{ src: 'art/worlds/phone-booth.jpg', label: 'concept art', cap: 'A pink phone booth above the clouds' }], extra: ['mommys', 'role-fairy'] },
     // first the still with its gray cut away, so it shines over the paper (Astra, 2026-10-29); the video and the crystals keep theirs
     { name: 'The Rainbow Maker', kind: 'VRChat world · PC VR / desktop', text: 'The mechanics of the Kikkerland Rainbow Maker: watch its tiny gear train turn and spin a crystal that refracts rainbows across the room.', repo: 'the-rainbow-maker', local: [
-      { src: 'art/worlds/rainbow-maker-still-clear-20261029.png', cap: 'The Rainbow Maker', fit: 'contain', clear: true },
+      { src: 'art/worlds/rainbow-maker-still-clear-20261029.png', cap: 'The Rainbow Maker', fit: 'contain', clear: true, glitter: true },
       { src: RM + 'rainbow-maker-preview-20261022.mp4', cap: 'The Rainbow Maker · turning', type: 'video', fit: 'contain', bg: '#45444a' },
       { src: RM + 'rainbow-maker-crystals-cycles-20261023.png', cap: 'The Rainbow Maker · the crystals', fit: 'contain', bg: '#47423f' }] },
     { name: 'The Cooling Tower', siteLabel: 'see full mini model ↗', kind: 'VRChat world · PC VR / desktop', text: "A rave world inside a nuclear plant's cooling tower: break into the facility and power it up with music. The Stack, the Turbine Hall, then the Reactor Hall.", repo: 'the-cooling-tower', local: [{ src: 'https://findastra.github.io/the-cooling-tower/mini-model/the-cooling-tower-mini-model-20261024.html', cap: 'The Cooling Tower · Mini Model', type: 'frame', label: 'concept model', bare: true }] },
@@ -257,15 +257,26 @@
   const hash = (s) => { let h = 2166136261; for (const ch of s) h = Math.imul(h ^ ch.codePointAt(0), 16777619); return h >>> 0; };
   const colorOf = (key) => COLORS[hash(key) % COLORS.length];
   const paint = (node, key) => { const h = hash(key); node.style.setProperty('--c', COLORS[h % COLORS.length]); node.style.setProperty('--tilt', ((h >>> 8) % 9) - 4 + 'deg'); return h; };
-  // sparkles around each shape, in hues near its own color; spots and timing come from the same hash
-  const sparkles = (h, n = 6) => {
+  // One sparkle for the whole page (Astra, 2026-10-29: "unify the sparkles"): the portrait's, soft pastel in every hue,
+  // drifting round the rainbow. pastel() is its color; sparkles() rings a shape with them, more than before
+  const pastel = (k) => `hsl(${k % 360} 55% 80%)`;
+  const sparkle = (k, x, y, s) => {
+    const i = el('i');
+    i.style.cssText = `--x:${x}%;--y:${y}%;--s:${s}px;--d:${((k >>> 14) % 30) / 10}s;--c:${pastel(k)};--dh:${[-150, -100, -50, 0, 50, 100, 150][(k >>> 18) % 7]};--l:0`;
+    return i;
+  };
+  const sparkles = (h, n = 10) => {
     const box = el('div', 'sparkles'); box.setAttribute('aria-hidden', 'true');
     for (let i = 0; i < n; i++) {
-      const k = hash(h + ':' + i), a = (i / n) * Math.PI * 2 + ((k % 60) - 30) / 60, rad = 46 + (k >>> 6) % 9;
-      const s = el('i');
-      s.style.cssText = `--x:${(50 + rad * Math.cos(a)).toFixed(1)}%;--y:${(50 + rad * Math.sin(a)).toFixed(1)}%;--s:${12 + (k >>> 10) % 14}px;--d:${((k >>> 14) % 30) / 10}s;--dh:${[-50, -25, 0, 25, 50][(k >>> 18) % 5]};--l:${[18, 30, 0][(k >>> 21) % 3]}`;
-      box.append(s);
+      const k = hash(h + ':' + i), a = (i / n) * Math.PI * 2 + ((k % 60) - 30) / 60, rad = 44 + (k >>> 6) % 11;
+      box.append(sparkle(k, (50 + rad * Math.cos(a)).toFixed(1), (50 + rad * Math.sin(a)).toFixed(1), 9 + (k >>> 10) % 14));
     }
+    return box;
+  };
+  // sparkles scattered all over a picture, not just round its edge (the Rainbow Maker's glass, Astra 2026-10-29)
+  const sparkleField = (h, n = 14) => {
+    const box = el('div', 'sparkles field'); box.setAttribute('aria-hidden', 'true');
+    for (let i = 0; i < n; i++) { const k = hash(h + ':f' + i); box.append(sparkle(k, (6 + (k % 88)).toFixed(1), (6 + ((k >>> 8) % 88)).toFixed(1), 7 + (k >>> 12) % 12)); }
     return box;
   };
   const SVG = 'http://www.w3.org/2000/svg';
@@ -298,6 +309,7 @@
     const c = el('article', 'polaroid'); const h = paint(c, key);
     const photo = el(pics.length && !shot && !pics.some((p) => p.type === 'frame') ? 'button' : 'div', 'photo');
     photo.classList.toggle('clear', !!clear || clearOf(pics[0]));
+    const field = pics.some((p) => p.glitter) ? sparkleField(h) : null;
     if (shot) photo.append(shot);
     else if (!pics.length) photo.append(el('span', 'developing', 'still developing…'));
     let flip = null, count = null;
@@ -322,7 +334,7 @@
       };
       // what a picture is, written at its top (Astra, 2026-10-27: "wherever it's concept art, it says concept art")
       const badge = el('span', 'badge'); badge.hidden = !pics[0].label; badge.textContent = pics[0].label || '';
-      let shown = media(pics[0]); photo.append(shown, badge);
+      let shown = media(pics[0]); photo.append(shown, badge, ...(field ? [field] : []));
       const still = () => !pics[at].type;
       photo.setAttribute('aria-label', 'open pictures of ' + name);
       photo.onclick = (e) => { if (still()) openGallery(pics.filter((p) => !p.type), pics.filter((p) => !p.type).indexOf(pics[at])); };
@@ -343,7 +355,7 @@
     if (text && SHOW_DESCRIPTIONS) { const p = el('p', null, text); p.title = text; info.append(p); }
     let note2 = null;
     if (sticky) { note2 = el('div', 'sticky'); sticky(0, note2); frame.append(note2); }
-    c.append(sparkles(h, 5), frame, info); return c;
+    c.append(frame, info, sparkles(h, 12)); return c;
   }
   const worldPics = (w) => [...w.local, ...(w.ownPicsOnly ? [] : picturesOf(w.repo)), ...(w.extra || []).flatMap(picturesOf)];
   // a world: its repo (when public) gives the link, date and description; the README's words when it is private
@@ -389,7 +401,11 @@
       const card = link('https://github.com/findastra/ai-discord-presence/tree/main/' + app + '-discord-presence', 'ai-card');
       const g = el('img'); g.src = GALAXY[app]; g.alt = ''; g.loading = 'lazy';
       const words = el('span', 'ai-words'); words.append(el('b', null, who), el('span', null, using), el('span', null, 'Discord Presence'));
-      card.append(el('span', 'ai-head', 'Playing'), g, words); box.append(card);
+      // the game controller Discord puts by "Playing"
+      const head = el('span', 'ai-head'), pad = svgEl('svg', { viewBox: '0 0 24 24', 'aria-hidden': 'true' });
+      pad.append(svgEl('path', { d: 'M7 6h10a5 5 0 0 1 4.9 6l-.8 4a3 3 0 0 1-5.2 1.4L14 15h-4l-1.9 2.4A3 3 0 0 1 2.9 16l-.8-4A5 5 0 0 1 7 6zm0 3v2H5v2h2v2h2v-2h2v-2H9V9H7zm9.5 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm-2 3a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z' }));
+      head.append(pad, 'Playing');
+      card.append(head, g, words); box.append(card);
     }
     return box;
   };
@@ -442,34 +458,30 @@
   function star({ p, r, pics }) {
     const c = el('article', 'card'); const h = paint(c, r ? r.name : p.pet); neonStar(c, p);
     const repoUrl = r ? 'https://github.com/findastra/' + r.name : null, icon = iconOf(p), site = siteOf(p, r);
-    let thumb;
-    if (pics.length) {
-      thumb = el('button', 'thumb'); thumb.setAttribute('aria-label', 'open pictures of ' + p.pet);
-      const im = el('img'); im.src = pics[0].src; im.alt = ''; im.loading = 'lazy'; thumb.append(im);
-      if (pics.length > 1) thumb.append(el('span', 'count', pics.length + ' pictures'));
-      thumb.onclick = () => openGallery(pics);
-    } else if (icon) {
-      thumb = el('div', 'thumb'); const im = el('img', 'pix'); im.src = icon; im.alt = ''; im.loading = 'lazy'; thumb.append(im); thumb.style.cursor = 'default';
-    } else {
-      thumb = el('div', 'thumb empty', '{ }');
-    }
-    // top point: the pet (unless the window already shows it big), else a star
-    const tip = el('div', 'tip');
-    if (icon && pics.length) { const im = el('img'); im.src = icon; im.alt = ''; im.loading = 'lazy'; tip.append(im); }
-    else tip.textContent = '✦';
+    // the front (Astra, 2026-10-29): just the pet, big, filling the window, with its name; no picture box, no side tags
+    const big = el('div', 'pet-big');
+    if (icon) { const im = el('img'); im.src = icon; im.alt = p.pet; im.loading = 'lazy'; big.append(im); } else big.textContent = '{ }';
+    const tip = el('div', 'tip', '✦');
     const body = el('div', 'body');
-    const name = site || repoUrl ? link(site || repoUrl, 'name', p.pet) : el('b', 'name', p.pet); name.title = p.pet; body.append(name);
-    body.append(el('div', 'pet', [p.program, r ? r.name : null].filter(Boolean).join(' · ') || 'program not named yet'));
-    const text = cleanText((r && r.description) || p.text || 'No description yet.');
-    const desc = el('p', null, text); desc.title = text; body.append(desc);
-    const meta = el('div', 'meta');
-    meta.append(el('span', null, '#' + p.number), el('span', null, p.stage), el('span', null, r ? when(r.pushed_at) : ''));
-    body.append(meta);
-    const win = el('div', 'win'); win.append(thumb, body);
-    c.append(sparkles(h), shape('star', '-111 -116 229 220'), tip);
-    if (repoUrl) c.append(link(repoUrl, 'arm l', 'repo ↗'));
-    if (site) c.append(link(site, 'arm r', 'site ↗'));
-    c.append(win); return c;
+    body.append(el('b', 'name', p.pet), el('div', 'pet', [p.program, r ? r.name : null].filter(Boolean).join(' · ') || 'program not named yet'));
+    const turnBtn = el('button', 'turn-btn', 'flip the star ↻'); turnBtn.type = 'button'; turnBtn.setAttribute('aria-label', 'flip the star to see ' + p.pet + "'s program");
+    body.append(turnBtn);
+    const win = el('div', 'win'); win.append(big, body);
+    const face = el('div', 'face'); face.append(shape('star', '-111 -116 229 220'), tip, win);
+    // the back: the pet program, as one big square, with only its links and a way back
+    const back = el('div', 'back'), sq = el(pics.length ? 'button' : 'div', 'square');
+    if (pics.length) { const im = el('img'); im.src = pics[0].src; im.alt = ''; im.loading = 'lazy'; sq.append(im); sq.setAttribute('aria-label', 'open pictures of ' + p.pet); sq.onclick = () => openGallery(pics); }
+    else { const im = el('img', 'pix'); if (icon) { im.src = icon; im.alt = ''; im.loading = 'lazy'; sq.append(im); } sq.append(el('span', 'soon', 'program pictures coming')); }
+    const links = el('div', 'back-links');
+    if (site) links.append(link(site, null, 'open ' + (p.program || 'it') + ' ↗'));
+    if (repoUrl) links.append(link(repoUrl, null, 'repo ↗'));
+    const backBtn = el('button', 'turn-btn', '↻'); backBtn.type = 'button'; backBtn.setAttribute('aria-label', 'flip back to ' + p.pet); links.append(backBtn);
+    back.append(sq, links);
+    const turn = el('div', 'turn'); turn.append(face, back);
+    const flip = (on) => { c.classList.toggle('flipped', on); back.inert = !on; face.inert = on; };
+    turnBtn.onclick = () => flip(true); backBtn.onclick = () => flip(false); back.inert = true;
+    // the sparkles sit outside the part that tilts and turns, so they stay put when the star moves
+    c.append(turn, sparkles(h, 12)); return c;
   }
 
   // ---------- the pet jar: filled to the top with small stars, each holding its pet's icon; shake one out, or tip them all
@@ -483,7 +495,7 @@
     return m;
   };
   function makeJar(id, kind) {
-    const box = $(id), jar = box.querySelector('.jar'), inside = box.querySelector('.jar-stars'), out = box.querySelector('.jar-out'), all = box.querySelector('.jar-all');
+    const box = $(id), jar = box.querySelector('.jar'), inside = box.querySelector('.jar-stars'), hint = box.querySelector('.jar-hint'), all = box.querySelector('.jar-all');
     const shakeBtn = box.querySelector('.shake'), pourBtn = box.querySelector('.pour');
     // every shake adds the pet that fell out to a row of star slots under the jar, and they stay until all are out or put
     // back (Astra, 2026-10-29: "it just keeps extending the parchment paper down below the jar")
@@ -542,7 +554,7 @@
         return Array.from({ length: kind.glints(h) }, (_, g) => {
           const k = hash(h + ':g' + g), a = (k % 628) / 100, d = rad * (.15 + ((k >>> 10) % 50) / 100);
           const s = el('i'); s.dataset.key = key; s.hidden = caught.includes(key);
-          s.style.cssText = `--x:${((spots[i].x + Math.cos(a) * d) / W * 100).toFixed(1)}%;--y:${((spots[i].y + Math.sin(a) * d) / H * 100).toFixed(1)}%;--s:${Math.max(6, rad * (.45 + ((k >>> 16) % 40) / 100)).toFixed(1)}px;--d:${((k >>> 20) % 30) / 10}s;--c:${colorOf(key)};--dh:0;--l:40`;
+          s.style.cssText = `--x:${((spots[i].x + Math.cos(a) * d) / W * 100).toFixed(1)}%;--y:${((spots[i].y + Math.sin(a) * d) / H * 100).toFixed(1)}%;--s:${Math.max(6, rad * (.45 + ((k >>> 16) % 40) / 100)).toFixed(1)}px;--d:${((k >>> 20) % 30) / 10}s;--c:${pastel(k)};--dh:0;--l:0`;
           return s;
         });
       }));
@@ -552,7 +564,7 @@
     function count() {
       const n = left().length;
       box.querySelector('.jar-count').textContent = `${n} ${n === 1 ? kind.one : kind.many} in the jar`;
-      pourBtn.textContent = n ? `tip out all ${n}` : 'put them back in the jar';
+      pourBtn.textContent = n ? `empty the jar (${n})` : 'put them back in the jar';
       shakeBtn.disabled = !n;
     }
     new ResizeObserver(() => fill(items)).observe(inside);
@@ -560,54 +572,68 @@
       if (shaking || !left().length) return;
       shaking = true; jar.classList.add('shaking');
       const minis = [...inside.children];
-      if (!reduced) {
-        jar.animate([{ transform: 'rotate(0)' }, { transform: 'rotate(-10deg)' }, { transform: 'rotate(9deg)' }, { transform: 'rotate(-7deg)' }, { transform: 'rotate(5deg)' }, { transform: 'rotate(0)' }],
-          { duration: 760, easing: 'ease-in-out' });
-        for (const m of minis) {
-          const base = `translate(-50%, -50%) rotate(${m.style.getPropertyValue('--r')})`, j = () => `translate(calc(-50% + ${Math.random() * 24 - 12}px), calc(-50% + ${Math.random() * -26}px)) rotate(${Math.random() * 120 - 60}deg)`;
-          m.animate([{ transform: base }, { transform: j() }, { transform: j() }, { transform: base }], { duration: 760, easing: 'ease-in-out' });
-        }
-        await new Promise((ok) => setTimeout(ok, 640));
-      }
       // any one still in the jar, at random; one with pictures a little more often
       const choices = left(), withPics = choices.filter(kind.hasPics);
       const pool = withPics.length && Math.random() < .65 ? withPics : choices;
       const pick = pool[Math.floor(Math.random() * pool.length)], key = keyOf(pick);
       const from = minis.find((m) => m.dataset.key === key);
-      if (from) from.classList.add('gone');
-      for (const g of glints.children) if (g.dataset.key === key) g.hidden = true;
-      jar.classList.remove('shaking');
       if (!all.querySelector('.slot')) all.append(slot());
       const into = all.querySelector('.slot');
-      // its own star climbs out of the jar's mouth and drops into the next slot, growing to full size as it lands
-      if (!reduced && from) await fly(from, pick, into);
+      const gone = () => { if (from) from.classList.add('gone'); for (const g of glints.children) if (g.dataset.key === key) g.hidden = true; };
+      if (reduced) gone();
+      else {
+        // the jar falls over to the right, rocks and shakes where it lies, the star falls out of its mouth into the next slot,
+        // then the jar stands back up (Astra, 2026-10-29)
+        const r = jar.getBoundingClientRect(), O = { x: r.left + r.width * .88, y: r.top + r.height * .96 };
+        jar.style.transformOrigin = '88% 96%';
+        const lay = (d) => `rotate(${d}deg)`;
+        const tip = jar.animate([
+          { transform: lay(0) }, { transform: lay(98), offset: .24, easing: 'ease-out' }, { transform: lay(86), offset: .3 }, { transform: lay(93), offset: .36 },
+          { transform: lay(88), offset: .42 }, { transform: lay(94), offset: .48 }, { transform: lay(89), offset: .54 }, { transform: lay(92), offset: .6 },
+          { transform: lay(90), offset: .74 }, { transform: lay(-6), offset: .92, easing: 'ease-in-out' }, { transform: lay(0) },
+        ], { duration: 2600, easing: 'ease-in' });
+        for (const m of minis) {
+          const base = `translate(-50%, -50%) rotate(${m.style.getPropertyValue('--r')})`, j = () => `translate(calc(-50% + ${Math.random() * 24 - 12}px), calc(-50% + ${Math.random() * -26}px)) rotate(${Math.random() * 120 - 60}deg)`;
+          m.animate([{ transform: base }, { transform: j(), offset: .3 }, { transform: j(), offset: .45 }, { transform: j(), offset: .6 }, { transform: base }], { duration: 2600, easing: 'ease-in-out' });
+        }
+        // where the mouth is while the jar lies on its side: the top middle, turned a quarter round the bottom right corner
+        const M = { x: r.left + r.width * .5, y: r.top + r.height * .08 };
+        const mouth = { x: O.x - (M.y - O.y), y: O.y + (M.x - O.x) };
+        await new Promise((ok) => setTimeout(ok, 1150));
+        gone();
+        const size = from ? from.getBoundingClientRect().width : 40;
+        await Promise.all([fly(mouth, size, pick, into), tip.finished.catch(() => {})]);
+        jar.style.transformOrigin = '';
+      }
+      jar.classList.remove('shaking');
       caught.push(key);
       const card = kind.full(pick); card.classList.add('landed'); into.before(card);
       if (!left().length) into.remove();
-      out.querySelector('.jar-hint').innerHTML = left().length ? 'Shake again.<br>Another pet falls out.' : 'Every pet is out.';
+      hint.innerHTML = left().length ? 'Tip it again for another star.<br>Will you get every single pet?' : 'You got every single pet!';
       count();
       card.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'nearest' });
       shaking = false;
     }
-    function fly(from, it, to) {
-      const st = box.getBoundingClientRect(), a = from.getBoundingClientRect(), mouth = jar.getBoundingClientRect(), b = to.getBoundingClientRect();
-      const f = kind.mini(it); f.classList.add('flyer'); f.style.setProperty('--s', a.width + 'px');
-      f.style.left = a.left - st.left + 'px'; f.style.top = a.top - st.top + 'px'; box.append(f);
+    // the star slides out of the mouth, drops, and grows into its slot, ringed by the page's pastel sparkles
+    function fly(mouth, size, it, to) {
+      const st = box.getBoundingClientRect(), b = to.getBoundingClientRect();
+      const f = kind.mini(it); f.classList.add('flyer'); f.style.setProperty('--s', size + 'px');
+      f.append(sparkles(hash(keyOf(it) + ':fly'), 10));
+      f.style.left = mouth.x - size / 2 - st.left + 'px'; f.style.top = mouth.y - size / 2 - st.top + 'px'; box.append(f);
       const at = (x, y, sc, rot) => `translate(${x}px, ${y}px) scale(${sc}) rotate(${rot}deg)`;
-      const mx = mouth.left + mouth.width / 2 - a.left - a.width / 2, my = mouth.top - a.top - a.height;
-      const ex = b.left + b.width / 2 - a.left - a.width / 2, ey = b.top + b.height / 2 - a.top - a.height / 2, grow = b.width / a.width;
+      const ex = b.left + b.width / 2 - mouth.x, ey = b.top + b.height / 2 - mouth.y, grow = b.width / size;
       return f.animate([
-        { transform: at(0, 0, 1, 0) },
-        { transform: at(mx, my - 30, 1.4, 160), offset: .35 },
-        { transform: at((mx + ex) / 2, Math.min(my, ey) - 60, grow * .5, 300), offset: .6 },
+        { transform: at(0, 0, .8, 0) },
+        { transform: at(size * 1.6, -size * .4, 1.3, 90), offset: .25 },
+        { transform: at(ex * .6 + size, ey * .5, grow * .45, 240), offset: .6 },
         { transform: at(ex, ey, grow, 360) },
-      ], { duration: 1100, easing: 'cubic-bezier(.45, 0, .35, 1)' }).finished.then(() => f.remove());
+      ], { duration: 1300, easing: 'cubic-bezier(.45, 0, .35, 1)' }).finished.then(() => f.remove());
     }
-    // tip out: every one left lands in the row at once; when none are left, they all go back in the jar
+    // empty the jar: every one left lands in the row at once; when none are left, they all go back in
     function pour() {
       if (shaking) return;
       if (left().length) caught.push(...left().map(keyOf)); else caught = [];
-      out.querySelector('.jar-hint').innerHTML = left().length ? 'Shake the jar.<br>One pet falls out.' : 'Every pet is out.';
+      hint.innerHTML = left().length ? 'Tip the jar to collect a star.<br>Will you get every single pet?' : 'You got every single pet!';
       drawnFor = null; fill(items);
     }
     jar.addEventListener('click', shake);
@@ -638,7 +664,7 @@
       if (force > 14 && Date.now() - lastShake > 1400) { lastShake = Date.now(); shake(); }
     });
   }
-  const petJar = makeJar('pet-jar', { key: (e) => 'pet-' + e.p.number, mini: miniStar, full: star, hasPics: (e) => e.pics.length > 0, maxMini: 84, glints: (h) => (h % 10 < 7 ? 1 : 0), one: 'pet', many: 'pets' });
+  const petJar = makeJar('pet-jar', { key: (e) => 'pet-' + e.p.number, mini: miniStar, full: star, hasPics: (e) => e.pics.length > 0, maxMini: 84, glints: (h) => 1 + (h % 3 === 0), one: 'pet', many: 'pets' });
 
   // ---------- Astra's PetOS as Polaroids: the System Map (live), all the pets at once, and every pet to flip through ----------
   const HUB_PAGES = 'https://findastra.github.io/astras-pet-os/';
@@ -660,7 +686,9 @@
   }).catch(() => {});
   const levelNote = (p) => (at, box) => {
     const pet = p[at], lv = levels[pet.pet];
-    box.replaceChildren(el('b', null, 'intelligence'), ...(lv ? ['L1 ' + lv[0], 'L2 ' + lv[1], 'L3 ' + lv[2]] : ['not rated yet']).map((t) => el('div', null, t)));
+    // what the note is for, on the note (Astra, 2026-10-29: "I don't know what they're supposed to be for"): how smart this
+    // pet is so far, one line per level
+    box.replaceChildren(el('b', null, 'how smart?'), ...(lv ? [`tools ${lv[0]}`, `runs itself ${lv[1]}`, `AI agent ${lv[2]}`] : ['not rated yet']).map((t) => el('div', null, t)));
   };
   function petosCards() {
     const drawn = pets.filter(iconOf);

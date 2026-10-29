@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&family=JetBrains+Mono:wght@400;700&family=VT323&family=Permanent+Marker&display=swap">
-<link rel="stylesheet" href="cyber.css?v=20261030b">
+<link rel="stylesheet" href="cyber.css?v=20261030d">
 </head>
 <body>
 <!-- the fat star every pet window is cut from (R 100, r 70; rounded by the stroke in cyber.css) -->
@@ -109,13 +109,14 @@
   <section class="block weave chapter" id="pets">
     <p class="kicker">// 04 · astra's petos</p>
     <h2>Astra's PetOS</h2>
-    <p class="lede">Every project of mine gets a pet: a small app with a face, its own program, and a job. Together they are <a href="https://github.com/findastra/astras-pet-os">Astra's PetOS</a>. Portfolio Puffer keeps this page. Shake the jar and a pet falls out.</p>
+    <p class="lede">Every project of mine gets a pet: a small app with a face, its own program, and a job. Together they are <a href="https://github.com/findastra/astras-pet-os">Astra's PetOS</a>. Portfolio Puffer keeps this page. Tip the jar and a pet falls out.</p>
         <!-- Polaroids first (Astra, 2026-10-27): the System Map, what the pets look like, and every pet to flip through -->
         <div class="polaroids" id="petos-list"></div>
         <!-- the pet jar, filled to the top: shake it and a pet comes out; tip it out to see all of them -->
         <div class="jar-stage" id="pet-jar">
           <div class="jar-side">
-            <button class="jar" aria-label="Shake the pets jar. One pet comes out.">
+            <p class="jar-hint">Tip the jar to collect a star.<br>Will you get every single pet?</p>
+            <button class="jar" aria-label="Tip the pets jar over. One pet falls out.">
               <svg class="jar-glass" viewBox="0 0 300 380" aria-hidden="true">
                 <rect class="jar-lid" x="66" y="6" width="168" height="40" rx="8"/>
                 <path class="jar-lid-lines" d="M80 16H220M80 26H220M80 36H220"/>
@@ -128,11 +129,10 @@
               <span class="jar-label">pets</span>
             </button>
             <p class="mono jar-count"></p>
-            <div class="jar-buttons"><button class="btn hot shake">shake the jar</button><button class="btn pour"></button></div>
+            <div class="jar-buttons"><button class="btn hot shake">tip the jar</button><button class="btn pour"></button></div>
           </div>
-          <div class="jar-out" aria-live="polite">
-            <p class="jar-hint">Shake the jar.<br>One pet falls out.</p>
-          </div>
+          <!-- room to the right for the jar to fall over into -->
+          <div class="jar-out" aria-hidden="true"></div>
           <!-- every pet shaken out lands here, one more star slot each time -->
           <div class="jar-all grid" aria-live="polite" hidden></div>
         </div>
@@ -173,8 +173,7 @@
         <p class="muted mono" id="fz-note" aria-live="polite">Loading the Fuzzboi art…</p>
       </div>
       <div class="cab spread">
-        <h3>Fuzzboi Cyber Dome</h3>
-        <p class="muted mono" id="home-count"></p>
+        <div class="cab-head"><h3>Fuzzboi Cyber Dome</h3><p class="muted mono" id="home-count"></p></div>
         <canvas class="home" id="home" aria-label="The Fuzzboi Cyber Dome. Tap a Fuzzboi to see its code."></canvas>
         <p class="muted mono" id="home-pick" aria-live="polite"></p>
         <div class="fz-row"><button class="btn" id="home-out" disabled>let them out</button><button class="btn" id="home-clear" disabled>empty the dome</button></div>
@@ -271,7 +270,7 @@
 <script src="pets-data.js?v=20261027c"></script>
 <script src="project-images.js?v=20261020a"></script>
 <script src="updates-data.js?v=20261018c"></script>
-<script src="cyber.js?v=20261030b"></script>
-<script src="games-20261027.js?v=20261030a"></script>
+<script src="cyber.js?v=20261030c"></script>
+<script src="games-20261027.js?v=20261030b"></script>
 </body>
 </html>
