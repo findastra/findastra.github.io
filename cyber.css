@@ -164,11 +164,11 @@ h3 { display: inline-block; font: 700 12px var(--mono); text-transform: uppercas
    edges, so running off the side never widens the page, and his hops never cover the bar's words */
 .rabbit-lane { position: relative; z-index: 3; height: 84px; margin-top: -84px; overflow: hidden; pointer-events: none; }
 .rabbit-lane .white-rabbit { pointer-events: auto; }
-.white-rabbit { position: absolute; z-index: 0; bottom: 0; left: -60px; display: none; width: 38px; height: 32px; padding: 4px; border: 0; background: none; color: #fff;
+.white-rabbit { position: absolute; z-index: 0; bottom: 0; left: -60px; display: none; width: 38px; height: 32px; padding: 4px; border: 0; background: none; color: var(--fur, #fff);
   cursor: pointer; --glow: #fff; filter: drop-shadow(1.5px 0 0 #111) drop-shadow(-1.5px 0 0 #111) drop-shadow(0 1.5px 0 #111) drop-shadow(0 -1.5px 0 #111) drop-shadow(0 0 6px var(--glow)); }
 /* white with a dark outline (Astra, 2026-10-27); his glow is the color the rain turns when he is caught, every color before the rainbow */
 .white-rabbit.rainbow { animation: rabbit-rainbow 1.6s linear infinite; }
-@keyframes rabbit-rainbow { 0% { --glow: #ff2e4d; } 17% { --glow: #ff7a1a; } 33% { --glow: #fff01f; } 50% { --glow: #39ff14; } 67% { --glow: #1f8fff; } 83% { --glow: #b14bff; } 100% { --glow: #ff2bd6; } }
+@keyframes rabbit-rainbow { 0% { --glow: #ff2e4d; color: #ff2e4d; } 17% { --glow: #ff7a1a; color: #ff7a1a; } 33% { --glow: #fff01f; color: #fff01f; } 50% { --glow: #39ff14; color: #39ff14; } 67% { --glow: #1f8fff; color: #1f8fff; } 83% { --glow: #b14bff; color: #b14bff; } 100% { --glow: #ff2bd6; color: #ff2bd6; } }
 .white-rabbit.running { display: block; }
 .white-rabbit:hover, .white-rabbit:focus-visible { outline: none; scale: 1.15; }
 .white-rabbit svg { width: 30px; height: 24px; fill: currentColor; }
