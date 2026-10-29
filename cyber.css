@@ -41,7 +41,7 @@ main { padding-left: var(--rail); }
    section you are in; drag it to scroll. The browser's own scroll bar is hidden */
 /* the page's own pastel sparkle (Astra, 2026-10-29: "the exact same pastel sparkle"): the same four points, a pastel of the
    section you are in, drifting round the hues like the rest */
-.rail-spark { --pale: color-mix(in srgb, var(--now) 65%, #fff); position: absolute; left: 50%; width: 30px; height: 30px; translate: -50% 0;
+.rail-spark { --pale: color-mix(in srgb, var(--now) 65%, #fff); --pale: hsl(from var(--now) h 55% 80%); position: absolute; left: 50%; width: 30px; height: 30px; translate: -50% 0;
   filter: drop-shadow(0 0 1px #000) drop-shadow(0 0 6px var(--pale)) drop-shadow(0 0 14px var(--pale)); transition: filter .4s; animation: rainbow-drift 28s linear infinite; }
 .rail-spark::before { content: ""; position: absolute; inset: 0; background: var(--pale); transition: background .4s;
   clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%); animation: twinkle 4.8s ease-in-out infinite; }
@@ -468,8 +468,9 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 /* a sticky note hanging off a Polaroid's corner (the pet's intelligence levels on "Meet every pet") */
 /* a perfectly square note, its tape the same color as the strip holding up the Polaroid (Astra, 2026-10-29) */
 /* up off the writing, so every pet's name on the border can be read (Astra, 2026-10-29) */
-.polaroid .sticky { position: absolute; right: -14px; bottom: 116px; z-index: 3; width: 96px; aspect-ratio: 1; display: grid; align-content: center; padding: 6px;
-  background: #fff36b; color: #151515; font: 12px/1.25 "Permanent Marker", cursive; text-align: center; rotate: 7deg; box-shadow: 3px 4px 0 rgba(0, 0, 0, .55);
+/* always exactly square, whatever is written on it (Astra, 2026-10-29): a fixed size, the writing a size to fit */
+.polaroid .sticky { position: absolute; right: -14px; bottom: 116px; z-index: 3; width: 104px; height: 104px; overflow: hidden; display: grid; align-content: center; padding: 6px;
+  background: #fff36b; color: #151515; font: 11px/1.18 "Permanent Marker", cursive; text-align: center; rotate: 7deg; box-shadow: 3px 4px 0 rgba(0, 0, 0, .55);
   /* a black edge, so it shows where it lies over the white border (Astra, 2026-10-29) */
   outline: 2px solid #111; }
 .polaroid .sticky::before { content: ""; position: absolute; left: 50%; top: -7px; width: 40px; height: 13px; translate: -50% 0; rotate: -4deg;

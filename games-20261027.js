@@ -25,13 +25,14 @@
   // (Astra, 2026-10-27: "I liked it when I could enter them in and it was big and obvious")
   const POS = ['Style', 'Color', 'Acc 1', 'Acc 2', 'Acc 3', 'Rare?'];
   const boxes = POS.map((label, i) => {
-    const w = el('label', 'fz-digit'), inp = el('input'); inp.maxLength = 1; inp.autocomplete = 'off'; inp.spellcheck = false; inp.setAttribute('aria-label', `Position ${i + 1}: ${label}`);
+    const w = el('label', 'fz-digit'), inp = el('input'); inp.maxLength = 1; inp.inputMode = 'numeric'; inp.autocomplete = 'off'; inp.spellcheck = false; inp.setAttribute('aria-label', `Position ${i + 1}: ${label}`);
     w.append(inp, el('span', null, label)); $('fz-digits').append(w); return inp;
   });
   const codeIn = { get value() { return boxes.map((b) => b.value).join('').toUpperCase(); }, set value(v) { [...String(v).padEnd(6, ' ').slice(0, 6)].forEach((ch, i) => (boxes[i].value = ch.trim())); } };
   boxes.forEach((inp, i) => {
     inp.addEventListener('input', async () => {
-      inp.value = inp.value.replace(/[^0-9a-f]/gi, '').slice(-1).toUpperCase();
+      // numbers only (Astra, 2026-10-29)
+      inp.value = inp.value.replace(/[^0-9]/g, '').slice(-1);
       if (inp.value && i < 5) { boxes[i + 1].focus(); boxes[i + 1].select(); }
       if (codeIn.value.length === 6) { await ready; make(codeIn.value); }
     });
@@ -41,7 +42,7 @@
       if (e.key === 'ArrowRight' && i < 5) boxes[i + 1].focus();
     });
     inp.addEventListener('paste', async (e) => {
-      const t = (e.clipboardData.getData('text') || '').replace(/[^0-9a-f]/gi, '').toUpperCase();
+      const t = (e.clipboardData.getData('text') || '').replace(/[^0-9]/g, '');
       if (t.length > 1) { e.preventDefault(); codeIn.value = t.slice(0, 6); if (t.length >= 6) { await ready; make(codeIn.value); } }
     });
   });
@@ -123,7 +124,7 @@
     if (moveIn) try { history.replaceState(null, '', '#fuzzboi-' + d.code); } catch {}
   }
   $('fz-form').addEventListener('submit', async (e) => { e.preventDefault(); await ready; make(codeIn.value); });
-  $('fz-random').onclick = async () => { await ready; make(Math.floor(Math.random() * 0x1000000).toString(16).toUpperCase().padStart(6, '0')); };
+  $('fz-random').onclick = async () => { await ready; make(String(Math.floor(Math.random() * 1e6)).padStart(6, '0')); };
   // tap the Fuzzboi itself to save it, too (Astra, 2026-10-27: "make sure people can save it directly from there")
   factoryCv.title = 'Tap to save this Fuzzboi'; factoryCv.style.cursor = 'pointer'; factoryCv.onclick = () => $('fz-save').click();
   $('fz-send').onclick = async () => { await ready; if (F && codeIn.value.length === 6) { note.textContent = home.add(codeIn.value); $('home').scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'center' }); } };
@@ -335,7 +336,7 @@
         // 2026-10-29); it twinkles and fades where it fell
         if (trail && f !== held && layer.childElementCount < 260) {
           const sp = document.createElement('i'); sp.className = 'fuzz-trail';
-          sp.style.cssText = `left:${f.px - f.pvx * 6 + (Math.random() - .5) * half}px;top:${f.py - f.pvy * 6 + (Math.random() - .5) * half}px;--s:${8 + Math.random() * 12}px;--c:color-mix(in srgb, #${f.code} ${Math.round(35 + Math.random() * 50)}%, #fff)`;
+          sp.style.cssText = `left:${f.px - f.pvx * 6 + (Math.random() - .5) * half}px;top:${f.py - f.pvy * 6 + (Math.random() - .5) * half}px;--s:${8 + Math.random() * 12}px;--c:${paleOf(f.code, Math.random())}`;
           layer.prepend(sp); setTimeout(() => sp.remove(), 3600);
         }
       }
@@ -367,8 +368,11 @@
     // seals, and they can be put back in again ----------
     let broken = null, drag = null;
     const bits = []; // loose sparkles on the dome: from walls that get hit, the burst, the seal
-    // a Fuzzboi's background color, softened toward white
-    const paleOf = (code, w = .45) => { const n = parseInt(code, 16), c = [n >> 16, (n >> 8) & 255, n & 255].map((v) => Math.round(v + (255 - v) * w)); return `rgb(${c})`; };
+    // a Fuzzboi's background color as the page's one pastel (Astra, 2026-10-29: every sparkle "the same type of pastel and
+    // saturation as the ones at the top"): its hue, at the portrait sparkles' 55% saturation and 80% lightness, give or take
+    const hueOf = (code) => { const n = parseInt(code, 16), r = (n >> 16) / 255, g = ((n >> 8) & 255) / 255, b = (n & 255) / 255, mx = Math.max(r, g, b), d = mx - Math.min(r, g, b);
+      return !d ? 0 : Math.round((mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4) * 60 + 360) % 360; };
+    const paleOf = (code, w = .45) => `hsl(${hueOf(code)} 55% ${Math.round(76 + w * 8)}%)`;
     function burst(x, y, n, color, speed = 4) {
       for (let i = 0; i < n; i++) {
         const a = Math.random() * Math.PI * 2, v = speed * (.3 + Math.random());
@@ -615,7 +619,7 @@
       // the dome starts empty on every visit (Astra, 2026-10-29: "make sure it spawns with none in the Cyberdome")
       const saved = [];
       count();
-      const linked = /^#fuzzboi-([0-9A-F]{6})$/i.exec(location.hash);
+      const linked = /^#fuzzboi-([0-9]{6})$/.exec(location.hash);
       make(linked ? linked[1].toUpperCase() : '456900', !!linked && !(Array.isArray(saved) && saved.includes(linked[1].toUpperCase())));
       requestAnimationFrame(frame);
     });

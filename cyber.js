@@ -395,6 +395,22 @@
         if (p.size) im.style.scale = p.size;
         // nudge: moved within its frame, as a share of the frame (the Rainbow Maker a little lower, clear of the tape)
         if (p.nudge) im.style.translate = p.nudge;
+        // center: the drawing itself centered in the frame, not just its square (Astra, 2026-10-29: the Farmer sat to one
+        // side), from where its painted pixels actually are
+        if (p.center) {
+          const probe = new Image(); probe.crossOrigin = 'anonymous';
+          probe.onload = () => { try {
+            const n = 64, cv = document.createElement('canvas'); cv.width = cv.height = n; const x = cv.getContext('2d', { willReadFrequently: true });
+            const k = Math.min(n / probe.naturalWidth, n / probe.naturalHeight), w = probe.naturalWidth * k, h = probe.naturalHeight * k;
+            x.drawImage(probe, (n - w) / 2, (n - h) / 2, w, h); const d = x.getImageData(0, 0, n, n).data;
+            let l = n, r = 0, t = n, b = 0;
+            for (let i = 0; i < n * n; i++) if (d[i * 4 + 3] > 40) { const px = i % n, py = (i / n) | 0; l = Math.min(l, px); r = Math.max(r, px); t = Math.min(t, py); b = Math.max(b, py); }
+            // shrunk by size, so its off-center shrinks by that much too
+            const s = p.size || 1;
+            if (r >= l) im.style.translate = `${((n - 1) / 2 - (l + r) / 2) / n * 100 * s}% ${((n - 1) / 2 - (t + b) / 2) / n * 100 * s}%`;
+          } catch {} };
+          probe.src = im.src;
+        }
         // crop: [left, top, right, bottom] of the picture's [width, height] that the frame shows, fitted whole (or filling the
         // frame, with cover), so a page screenshot can show just its best part bigger (Astra, 2026-10-29: Mommy's stars and
         // windows without the pole; more of the Liminal Doors greenhouse)
@@ -892,15 +908,15 @@
     // like the rest: the hub's code and the day it last changed
     const kind = (hub && hub.language) || 'HTML', date = hub ? when(hub.pushed_at) : '';
     return [
-      // drawn larger than the photo and shrunk to fit, so the sphere has more room beside the map's own panels
       polaroid({ key: 'system-map', name: 'The System Map', kind, date, text: 'Every pet, program and tool in Astra\'s PetOS, and how they work together. Drag it around.',
-        pics: [{ src: HUB_PAGES + 'system-map-20261012.html', cap: 'The System Map', type: 'frame', label: 'live', view: 3 }], repo: HUB_REPO }),
+        // drawn at twice the photo's size, so its key in the top left is big enough to read (Astra, 2026-10-29)
+        pics: [{ src: HUB_PAGES + 'system-map-20261012.html', cap: 'The System Map', type: 'frame', label: 'live', view: 2 }], repo: HUB_REPO }),
       // the pets on the bare paper, and the one you flip to a little smaller (Astra, 2026-10-29)
       polaroid({ key: 'all-pets', name: 'The pets', kind, date, text: 'What they all look like. Each one is a small app with a face and a job.', pics: [], shot: petsShot(drawn), clear: true, repo: HUB_REPO,
         // its own sticky note (Astra, 2026-10-29), saying what the grid is
         sticky: (at, box) => box.replaceChildren(el('b', null, 'the pets'), el('div', null, drawn.length + ' drawn'), el('div', null, 'in rainbow order')) }),
       polaroid({ key: 'meet-pets', name: 'Meet every pet', kind, date, repo: HUB_REPO, text: 'One at a time, no shaking needed.',
-        pics: drawn.map((p) => ({ src: iconOf(p), cap: p.pet, label: p.pet, fit: 'contain', size: 0.78, clear: true })), sticky: levelNote(drawn) }),
+        pics: drawn.map((p) => ({ src: iconOf(p), cap: p.pet, label: p.pet, fit: 'contain', size: 0.78, clear: true, center: true })), sticky: levelNote(drawn) }),
     ];
   }
 
