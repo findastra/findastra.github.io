@@ -265,7 +265,7 @@
       local: [{ src: 'art/worlds/piranesi-house-labyrinth-key-20261029.png', cap: 'Piranesi House · the Cross of the Four Winds', fit: 'contain', bg: '#142225', size: 0.97, fill: '#142225', label: 'maze layout' },
         // then the real world (Astra, 2026-10-29): the hall of lilies under the round window, and the domes from above
         { src: 'art/worlds/piranesi-house-lily-hall-20261029.webp', cap: 'Piranesi House · the hall of lilies' },
-        { src: 'art/worlds/piranesi-house-domes-from-above-20261029.webp', cap: 'Piranesi House · the domes from above' }] },
+        { src: 'art/worlds/piranesi-house-domes-closer-20261029.webp', cap: 'Piranesi House · the domes from above' }] },
     // the pictures each world has so far (Astra, 2026-10-27); proper captures from the worlds come later
     { name: 'Liminal Doors', kind: 'VRChat world · PC VR / desktop', text: 'Doors that open onto quiet in-between places: an empty pool after closing, a laundrette with a sky turning in one washer, a platform between trains. Every door hides a unique crystal animal.', repo: 'liminal-doors', local: [ // all of its floors, the hummingbird's first (Astra, 2026-10-27)
       '09-hummingbird-upside-down-conservatory-20261015', '01-fox-pinkscape-20261020', '02-hare-faraway-field-20261015', '03-axolotl-pool-after-closing-20261015',
@@ -1409,18 +1409,19 @@
       spots.sort((a, b) => (b.edge + b.sat * .25 + b.w * .1) - (a.edge + a.sat * .25 + a.w * .1));
       const picked = [];
       for (const sp of spots) {
-        if (picked.length >= 64) break;
+        if (picked.length >= 96) break;
         const x = sp.i % N, y = Math.floor(sp.i / N);
         if (picked.every((q) => Math.hypot(q.i % N - x, Math.floor(q.i / N) - y) >= 3)) picked.push(sp);
       }
       // and the first ones back too (Astra, 2026-10-29: keep these and "put those back on"): her most colorful, brightest
       // spots, with a little chance so they spread over the whole picture
-      const first = [...spots].sort((a, b) => (b.sat * .7 + b.light * .3 + b.w * .5) - (a.sat * .7 + a.light * .3 + a.w * .5)).slice(0, 70);
+      const first = [...spots].sort((a, b) => (b.sat * .7 + b.light * .3 + b.w * .5) - (a.sat * .7 + a.light * .3 + a.w * .5)).slice(0, 100);
       for (const sp of first) if (!picked.includes(sp)) picked.push(sp);
       // sizes vary, but small (Astra, 2026-10-29: "too big of sparkles on my face", then "shrink a lot of the sparkles"):
       // most 3 to 8px, one in four 8 to 12px; then smaller again (Astra, 2026-10-29: "a lot of those to be shrunk"): most 2 to
-      // 5px, one in six 6 to 9px
-      const size = (k) => (k % 6 === 0 ? 6 + (k % 4) : 2 + (k % 4));
+      // 5px, one in six 6 to 9px; then all back and more of them, none big (Astra, 2026-10-29: "put all of those sparkles back
+      // on my face", "I don't need the bigger ones", "I just can't see them anymore"): every one 3 to 5px
+      const size = (k) => 3 + (k % 3);
       const one = (x, y, c, k) => {
         const s = el('i');
         s.style.cssText = `--x:${x.toFixed(1)}%;--y:${y.toFixed(1)}%;--s:${size(k)}px;--d:${((k >>> 8) % 40) / 10}s;--c:${c};--dh:${[-150, -100, -50, 0, 50, 100, 150][(k >>> 12) % 7]};--l:0`;
@@ -1432,8 +1433,7 @@
         const k = hash('c' + gx + ':' + gy), x = -6 + gx * 22.4 + (k % 100) / 100 * 16, y = -6 + gy * 22.4 + ((k >>> 7) % 100) / 100 * 16;
         cover.push(one(x, y, `hsl(${k % 360} 55% 80%)`, k));
       }
-      // a fifth fewer of them (Astra, 2026-10-29: "like 20% less sparkles on my face"): every fifth one left out
-      box.replaceChildren(...[...picked.map((sp) => one((sp.i % N + .5) / N * 100, (Math.floor(sp.i / N) + .5) / N * 100, sp.c, hash('p' + sp.i))), ...cover].filter((_, i) => i % 5 !== 4));
+      box.replaceChildren(...picked.map((sp) => one((sp.i % N + .5) / N * 100, (Math.floor(sp.i / N) + .5) / N * 100, sp.c, hash('p' + sp.i))), ...cover);
     };
     if (img.complete && img.naturalWidth) go(); else img.addEventListener('load', go, { once: true });
   })();
