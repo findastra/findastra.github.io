@@ -244,7 +244,7 @@
   const WORLD_REPOS = new Set(['astras-infinite-pole', 'piranesi-house', 'liminal-doors', 'mommys-world', 'the-rainbow-maker', 'the-cooling-tower', 'detour-into-vr', 'role-fairy', 'poppy', 'dubstep-armory']);
   const PETOS_REPOS = new Set(['astras-pet-os', 'startup-star', 'the-kennel', 'the-shed', 'vet-clinic', 'the-police-station', 'iron-gates', 'the-recovery-room', 'ai-doghouse', 'findastra']);
   // The rest, in the profile README's groups: Discord by name, Web & More is everything else
-  const DISCORD = new Set(['moodglass', 'findastra-discord-presence', 'openai-discord-presence', 'anthropic-discord-presence']);
+  const DISCORD = new Set(['moodglass', 'ai-discord-presence', 'openai-discord-presence', 'anthropic-discord-presence']);
   // the Star Window is the Photo Star now, so only the Photo Star gets a Polaroid (Astra, 2026-10-27)
   const HIDDEN = new Set(['astras-star-window']);
   const isOther = (r) => !/^pet-program-\d+$/.test(r.name) && !WORLD_REPOS.has(r.name) && !PETOS_REPOS.has(r.name) && !petByRepo[r.name] && !HIDDEN.has(r.name);

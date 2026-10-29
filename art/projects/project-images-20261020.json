@@ -425,7 +425,7 @@
    }
   },
   {
-   "name": "findastra-discord-presence",
+   "name": "ai-discord-presence",
    "description": "Show the exact AI model you're using on your Discord profile. Two free Windows downloads: OpenAI Discord Presence and Anthropic Discord Presence, plus a guide to add more models.",
    "language": "JavaScript",
    "pushed_at": "2026-10-18T07:16:02Z",
@@ -434,7 +434,7 @@
    "images": [
     {
      "path": "openai-discord-presence/public/galaxy-card.gif",
-     "url": "https://raw.githubusercontent.com/findastra/findastra-discord-presence/main/openai-discord-presence/public/galaxy-card.gif",
+     "url": "https://raw.githubusercontent.com/findastra/ai-discord-presence/main/openai-discord-presence/public/galaxy-card.gif",
      "size": 5061150,
      "score": 60,
      "why": [
@@ -444,7 +444,7 @@
     },
     {
      "path": "anthropic-discord-presence/public/galaxy-card.gif",
-     "url": "https://raw.githubusercontent.com/findastra/findastra-discord-presence/main/anthropic-discord-presence/public/galaxy-card.gif",
+     "url": "https://raw.githubusercontent.com/findastra/ai-discord-presence/main/anthropic-discord-presence/public/galaxy-card.gif",
      "size": 4303402,
      "score": 60,
      "why": [
@@ -454,7 +454,7 @@
     },
     {
      "path": "openai-discord-presence/public/galaxy.gif",
-     "url": "https://raw.githubusercontent.com/findastra/findastra-discord-presence/main/openai-discord-presence/public/galaxy.gif",
+     "url": "https://raw.githubusercontent.com/findastra/ai-discord-presence/main/openai-discord-presence/public/galaxy.gif",
      "size": 10715199,
      "score": 20,
      "why": [
@@ -463,7 +463,7 @@
     },
     {
      "path": "anthropic-discord-presence/public/galaxy.gif",
-     "url": "https://raw.githubusercontent.com/findastra/findastra-discord-presence/main/anthropic-discord-presence/public/galaxy.gif",
+     "url": "https://raw.githubusercontent.com/findastra/ai-discord-presence/main/anthropic-discord-presence/public/galaxy.gif",
      "size": 9809772,
      "score": 20,
      "why": [
@@ -472,7 +472,7 @@
     },
     {
      "path": "openai-discord-presence/public/galaxy.png",
-     "url": "https://raw.githubusercontent.com/findastra/findastra-discord-presence/main/openai-discord-presence/public/galaxy.png",
+     "url": "https://raw.githubusercontent.com/findastra/ai-discord-presence/main/openai-discord-presence/public/galaxy.png",
      "size": 1950506,
      "score": 20,
      "why": [
@@ -481,7 +481,7 @@
     },
     {
      "path": "anthropic-discord-presence/public/galaxy.png",
-     "url": "https://raw.githubusercontent.com/findastra/findastra-discord-presence/main/anthropic-discord-presence/public/galaxy.png",
+     "url": "https://raw.githubusercontent.com/findastra/ai-discord-presence/main/anthropic-discord-presence/public/galaxy.png",
      "size": 1712001,
      "score": 20,
      "why": [
@@ -2280,7 +2280,7 @@
   },
   {
    "name": "anthropic-discord-presence",
-   "description": "Moved: Anthropic Discord Presence now lives in findastra/findastra-discord-presence (download it there).",
+   "description": "Moved: Anthropic Discord Presence now lives in findastra/ai-discord-presence (download it there).",
    "language": "JavaScript",
    "pushed_at": "2026-10-10T05:38:30Z",
    "homepage": null,
@@ -2323,7 +2323,7 @@
   },
   {
    "name": "openai-discord-presence",
-   "description": "Moved: OpenAI Discord Presence now lives in findastra/findastra-discord-presence (download it there).",
+   "description": "Moved: OpenAI Discord Presence now lives in findastra/ai-discord-presence (download it there).",
    "language": "JavaScript",
    "pushed_at": "2026-10-10T05:25:33Z",
    "homepage": "https://findastra.github.io/openai-discord-presence/",

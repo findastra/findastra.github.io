@@ -4,11 +4,11 @@ window.SITE = {
  "snapshot": "2026-10-20",
  "repos": [
   {
-   "name": "findastra-discord-presence",
+   "name": "ai-discord-presence",
    "description": "Show the exact AI model you're using on your Discord profile. Two free Windows downloads: OpenAI Discord Presence and Anthropic Discord Presence, plus a guide to add more models.",
    "language": "JavaScript",
    "pushed_at": "2026-10-20T17:22:23Z",
-   "homepage": "https://github.com/findastra/findastra-discord-presence#start-it-about-2-minutes"
+   "homepage": "https://github.com/findastra/ai-discord-presence#start-it-about-2-minutes"
   },
   {
    "name": "piranesi-house",
@@ -75,7 +75,7 @@ window.SITE = {
   },
   {
    "name": "openai-discord-presence",
-   "description": "Moved: OpenAI Discord Presence now lives in findastra/findastra-discord-presence (download it there).",
+   "description": "Moved: OpenAI Discord Presence now lives in findastra/ai-discord-presence (download it there).",
    "language": "JavaScript",
    "pushed_at": "2026-10-18T08:24:18Z",
    "homepage": "https://findastra.github.io/openai-discord-presence/"
@@ -96,10 +96,10 @@ window.SITE = {
   },
   {
    "name": "anthropic-discord-presence",
-   "description": "Moved: Anthropic Discord Presence now lives in findastra/findastra-discord-presence (download it there).",
+   "description": "Moved: Anthropic Discord Presence now lives in findastra/ai-discord-presence (download it there).",
    "language": "JavaScript",
    "pushed_at": "2026-10-18T08:20:37Z",
-   "homepage": "https://github.com/findastra/findastra-discord-presence"
+   "homepage": "https://github.com/findastra/ai-discord-presence"
   }
  ],
  "pets": [
@@ -182,7 +182,7 @@ window.SITE = {
   },
   {
    "pet": "Discord Damsel",
-   "repo": "findastra-discord-presence",
+   "repo": "discord-tower",
    "art": "discord-damsel",
    "status": "hatching",
    "job": "Opens the installed OpenAI and Anthropic Discord presence controls, with a manual setup checklist."

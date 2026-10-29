@@ -139,11 +139,11 @@ window.PETS = [
   "pet": "Discord Damsel",
   "program": "Discord Tower",
   "stage": "registered",
-  "repo": "findastra-discord-presence",
+  "repo": "discord-tower",
   "repo_exists": true,
   "text": "Opens the installed OpenAI and Anthropic Discord presence controls, with a manual setup checklist.",
   "icon": "desktop-art/discord-damsel/idle.png",
-  "site": "https://findastra.github.io/astras-pet-os/apps/pet-programs/findastra-discord-presence-20261018.html"
+  "site": "https://findastra.github.io/astras-pet-os/apps/pet-programs/discord-tower-20261018.html"
  },
  {
   "number": 14,
