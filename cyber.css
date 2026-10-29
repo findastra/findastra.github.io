@@ -100,6 +100,8 @@ main { overflow-x: clip; }
 /* the search reads as the next part of the path: the same font as "find /astra /", a touch smaller, about as tall as the
    slash, right after it (Astra, 2026-10-29) */
 #search { flex: 0 1 190px; min-width: 0; box-sizing: border-box; height: 1.4em; font: 700 16px/1 var(--mono); color: #f2f2f2; background: #0a0a0a; border: 1px solid #555; padding: 0 4px; }
+/* a hair closer to the last /, so it reads as find /astra /search (Astra, 2026-10-29) */
+#search { margin-left: -4px; }
 #search::placeholder { color: #777; }
 #search:focus { outline: 2px dashed #8a8a8a; outline-offset: 3px; }
 #search.none { border-style: dashed; color: #8a8a8a; }
