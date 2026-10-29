@@ -335,7 +335,8 @@
     const box = el('div', 'sparkles'); box.setAttribute('aria-hidden', 'true');
     for (let i = 0; i < n; i++) {
       const k = hash(h + ':' + i), a = (i / n) * Math.PI * 2 + ((k % 60) - 30) / 60, rad = 44 + (k >>> 6) % 11;
-      box.append(sparkle(k, (50 + rad * Math.cos(a)).toFixed(1), (50 + rad * Math.sin(a)).toFixed(1), 9 + (k >>> 10) % 14));
+      // a third smaller (Astra, 2026-10-29: "about 50% bigger than it should be"), with a big one now and then
+      box.append(sparkle(k, (50 + rad * Math.cos(a)).toFixed(1), (50 + rad * Math.sin(a)).toFixed(1), k % 7 === 0 ? 13 + (k >>> 10) % 6 : 6 + (k >>> 10) % 7));
     }
     return box;
   };
@@ -692,14 +693,14 @@
     return box;
   };
   const SHOTS = { moodglass: moodglassShot, 'ai-discord-presence': realCardsShot };
-  // the two presence apps show two pictures each (Astra, 2026-10-29: "should only be two on each of those"): the app, then its
-  // website, or its galaxy when it has no website; the galaxy was too zoomed in beside the website
+  // the two presence apps show two pictures each (Astra, 2026-10-29: "should only be two on each of those"): first the
+  // turning galaxy, the "really fancy spiral", a little smaller so it is not zoomed in to the edges, then the app
   const TWO = new Set(['openai-discord-presence', 'anthropic-discord-presence']);
   const picsOf = (name) => {
     const all = [...(SITE_PICS[name] || []), ...picturesOf(name)];
     if (!TWO.has(name)) return all;
-    const site = all.find((p) => / · live site$/.test(p.cap)), galaxy = all.find((p) => /galaxy(-card)?\.(png|gif)$/i.test(p.src));
-    return [all[0], site || galaxy].filter(Boolean);
+    const galaxy = all.find((p) => /galaxy(-card)?\.(png|gif)$/i.test(p.src));
+    return [galaxy && { ...galaxy, size: .8 }, all[0]].filter(Boolean);
   };
   const extraCard = (r) => {
     const repoUrl = 'https://github.com/findastra/' + r.name, shot = SHOTS[r.name];
@@ -836,7 +837,7 @@
     // in front of the glass and behind it ("they need to be on the other side of the jar too")
     const scatter = (seed, n, cls) => {
       const box = el('div', 'sparkles ' + cls); box.setAttribute('aria-hidden', 'true');
-      for (let i = 0; i < n; i++) { const k = hash(seed + ':' + i); box.append(sparkle(k, (4 + (k % 92)).toFixed(1), (4 + ((k >>> 8) % 92)).toFixed(1), 5 + (k >>> 12) % 11)); }
+      for (let i = 0; i < n; i++) { const k = hash(seed + ':' + i); box.append(sparkle(k, (4 + (k % 92)).toFixed(1), (4 + ((k >>> 8) % 92)).toFixed(1), k % 7 === 0 ? 11 + (k >>> 12) % 4 : 4 + (k >>> 12) % 6)); }
       return box;
     };
     const ring = scatter(id + ':front', 24, 'ring'), ringBack = scatter(id + ':back', 20, 'ring back');
@@ -1214,7 +1215,7 @@
     const w = wall.getBoundingClientRect().width - 1, gap = parseFloat(getComputedStyle(wall).columnGap) || 0;
     const n = w < 560 ? 1 : Math.max(2, Math.round((w + gap) / (250 + gap)));
     wall.classList.toggle('single', n === 1);
-    wall.style.setProperty('--pw', (n === 1 ? Math.min(290, Math.floor(w * .86)) : Math.floor((w - (n - 1) * gap) / n * 10) / 10) + 'px');
+    wall.style.setProperty('--pw', (n === 1 ? Math.min(310, Math.floor(w * .9)) : Math.floor((w - (n - 1) * gap) / n * 10) / 10) + 'px');
   };
   const walls = new ResizeObserver((seen) => seen.forEach((s) => sizeWall(s.target)));
   document.querySelectorAll('.polaroids').forEach((wall) => walls.observe(wall));
@@ -1237,11 +1238,61 @@
   };
   const papers = new ResizeObserver(evenPaper);
   document.querySelectorAll('main .block').forEach((b) => papers.observe(b));
-  // the header's search finds any words on the page: every match is lit, typing goes to the first, Enter to the next and
-  // Shift+Enter back (Astra, 2026-10-28: "that search bar will search anything on the page")
+  // the header's search (Astra, 2026-10-29: "it should just give a drop down of stuff, and then you can select one something
+  // and it'll take you right to where it is"): Ctrl+F (or Cmd+F) opens it; as you type, a list of the sections, Polaroids,
+  // games and pets that match; pick one and the page goes there. A pet that is still in the jar opens on Meet every pet,
+  // turned to it. The last choice finds the words anywhere on the page, every match lit (Astra, 2026-10-28)
   (() => {
-    const box = $('search'), lit = window.CSS && CSS.highlights && window.Highlight;
-    let hits = [], at = -1;
+    const box = $('search'), list = $('search-list'), lit = window.CSS && CSS.highlights && window.Highlight;
+    let hits = [], at = -1, options = [], pick = -1;
+    const near = (node) => {
+      if (!node) return; const r = node.getBoundingClientRect();
+      scrollTo({ top: scrollY + r.top - 90, behavior: reduced ? 'auto' : 'smooth' });
+      node.classList.add('found'); setTimeout(() => node.classList.remove('found'), 1800);
+    };
+    // a pet: on Meet every pet, flipped round to it
+    const showPet = (name) => {
+      const f = [...document.querySelectorAll('.polaroid')].find((p) => /meet every pet/i.test((p.querySelector('.title') || {}).textContent || ''));
+      if (!f) return;
+      const next = f.querySelector('.flip.next'), badge = () => (f.querySelector('.badge') || {}).textContent;
+      for (let i = 0; i < 120 && badge() !== name && next; i++) next.click();
+      near(f);
+    };
+    // the places on the page, made fresh each time (the walls are drawn from GitHub after the page loads)
+    const places = () => {
+      const out = [];
+      for (const b of document.querySelectorAll('main .block')) { const h = b.querySelector('h2'); if (h) out.push({ kind: 'section', name: h.textContent.trim(), go: () => near(b) }); }
+      for (const p of document.querySelectorAll('.polaroid')) {
+        const t = p.querySelector('.title'); if (t) out.push({ kind: 'polaroid', name: t.textContent.trim(), sub: (p.querySelector('.kind') || {}).textContent || '', go: () => near(p) });
+      }
+      for (const c of document.querySelectorAll('.cab h3')) out.push({ kind: 'game', name: c.textContent.trim(), go: () => near(c.closest('.cab')) });
+      for (const p of pets.filter(iconOf)) out.push({ kind: 'pet', name: p.pet, sub: p.program || '', go: () => showPet(p.pet) });
+      return out;
+    };
+    const close = () => { list.hidden = true; box.setAttribute('aria-expanded', 'false'); pick = -1; };
+    const choose = (i) => { const o = options[i]; if (!o) return; close(); o.go(); };
+    const mark = (i) => {
+      pick = i; [...list.children].forEach((li, k) => li.setAttribute('aria-selected', String(k === i)));
+      const li = list.children[i]; if (li) li.scrollIntoView({ block: 'nearest' });
+    };
+    const showList = (q) => {
+      const words = q.split(/\s+/).filter(Boolean);
+      const score = (o) => { const t = (o.name + ' ' + (o.sub || '')).toLowerCase(); return words.every((w) => t.includes(w)) ? (o.name.toLowerCase().startsWith(q) ? 0 : 1) : -1; };
+      const seen = new Set();
+      options = places().map((o) => [score(o), o]).filter(([s, o]) => s >= 0 && !seen.has(o.kind + o.name) && seen.add(o.kind + o.name))
+        .sort((a, b) => a[0] - b[0]).slice(0, 12).map(([, o]) => o);
+      options.push({ kind: 'text', name: 'find "' + q + '" on the page', go: () => findText(q) });
+      list.replaceChildren(...options.map((o, i) => {
+        const li = el('li'); li.setAttribute('role', 'option'); li.append(el('i', null, o.kind), el('span', null, o.name));
+        if (o.sub) li.append(el('small', null, o.sub));
+        li.onmousedown = (e) => { e.preventDefault(); choose(i); }; return li;
+      }));
+      const r = box.getBoundingClientRect(), w = Math.min(320, innerWidth - 16);
+      Object.assign(list.style, { left: Math.max(8, Math.min(r.left, innerWidth - w - 8)) + 'px', top: r.bottom + 6 + 'px', width: w + 'px' });
+      list.hidden = false; box.setAttribute('aria-expanded', 'true'); mark(0);
+    };
+    addEventListener('keydown', (e) => { if ((e.ctrlKey || e.metaKey) && !e.altKey && e.key.toLowerCase() === 'f') { e.preventDefault(); box.focus(); box.select(); } });
+    box.addEventListener('blur', () => setTimeout(close, 150));
     const seen = (n) => { const e = n.parentElement; return e && !e.closest('script, style, header') && e.getClientRects().length > 0; };
     const clear = () => { hits = []; at = -1; if (lit) { CSS.highlights.delete('page-find'); CSS.highlights.delete('page-find-now'); } };
     function go(d) {
@@ -1250,8 +1301,9 @@
       if (lit) CSS.highlights.set('page-find-now', new Highlight(hits[at]));
       scrollTo({ top: scrollY + hits[at].getBoundingClientRect().top - innerHeight / 3, behavior: 'smooth' });
     }
-    box.addEventListener('input', () => {
-      const q = box.value.trim().toLowerCase(); clear(); box.classList.remove('none'); if (!q) return;
+    box.addEventListener('input', () => { const q = box.value.trim().toLowerCase(); clear(); box.classList.remove('none'); if (q) showList(q); else close(); });
+    function findText(q) {
+      clear();
       const walk = document.createTreeWalker(document.body, NodeFilter.FILTER_SHOW_TEXT);
       for (let n; (n = walk.nextNode());) {
         const t = (n.nodeValue || '').toLowerCase(); if (!t.includes(q) || !seen(n)) continue;
@@ -1259,8 +1311,12 @@
       }
       if (lit) CSS.highlights.set('page-find', new Highlight(...hits));
       box.classList.toggle('none', !hits.length); go(1);
+    }
+    box.addEventListener('keydown', (e) => {
+      if (!list.hidden && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) { e.preventDefault(); mark((pick + (e.key === 'ArrowDown' ? 1 : -1) + options.length) % options.length); return; }
+      if (e.key === 'Escape') { close(); return; }
+      if (e.key === 'Enter') { e.preventDefault(); if (!list.hidden) choose(Math.max(0, pick)); else go(e.shiftKey ? -1 : 1); }
     });
-    box.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); go(e.shiftKey ? -1 : 1); } });
   })();
   const shots = Object.values(IMG).filter((r) => r.screenshot || (r.pages || []).length || r.images.length).length;
   const source = (live) => ($('project-source').textContent = `${live ? 'live from GitHub' : 'snapshot'} · ${repos.length} public repos · ${WORLDS.length} worlds · ${pets.filter(iconOf).length} pets · ${shots} with pictures so far`);
