@@ -563,7 +563,8 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
    beside it (Astra, 2026-10-29) */
 .polaroid .frame { --corner: 5px; --flip: 28px; --lift-arrows: 6px; }
 .polaroid .frame.flips .note { padding-bottom: calc(var(--flip) + var(--corner) + var(--lift-arrows) + 2px); }
-.polaroid .count { position: absolute; left: 50%; bottom: calc(var(--corner) + var(--lift-arrows)); height: var(--flip); display: grid; place-items: center; translate: -50% 3px;
+/* "1 of 3" level with the middle of the arrows either side of it (Astra, 2026-10-29), measured on a straightened Polaroid */
+.polaroid .count { position: absolute; left: 50%; bottom: calc(var(--corner) + var(--lift-arrows)); height: var(--flip); display: grid; place-items: center; translate: -50% 6.5px;
   font: 13px/1 "Permanent Marker", cursive; color: #6a6a6a; white-space: nowrap; rotate: -2deg; }
 .polaroid .flip { position: absolute; bottom: calc(var(--corner) + var(--lift-arrows)); width: var(--flip); height: var(--flip); display: grid; place-items: center; padding: 0; border: 0; background: none;
   color: #151515; font: 34px/1 "Permanent Marker", cursive; cursor: pointer; }
