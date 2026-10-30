@@ -12,6 +12,13 @@
   };
   // a canvas drawn at the screen's pixel density; returns its size in CSS pixels
   const fit = (cv) => { const r = cv.getBoundingClientRect(), d = Math.min(devicePixelRatio || 1, 2); cv.width = Math.max(1, r.width * d); cv.height = Math.max(1, r.height * d); cv.getContext('2d').setTransform(d, 0, 0, d, 0, 0); return r; };
+  // draws a canvas every frame only while it is on screen, and rests while it is scrolled away, so a phone is not drawing
+  // games nobody is looking at (audit 2026-10-30)
+  const whileSeen = (cv, draw) => {
+    let seen = false, id = 0;
+    const run = (t) => { if (!seen) { id = 0; return; } id = requestAnimationFrame(run); draw(t); };
+    new IntersectionObserver(([e]) => { seen = e.isIntersecting; if (seen && !id) id = requestAnimationFrame(run); }, { rootMargin: '100px' }).observe(cv);
+  };
 
   // ---------- Fuzzboi Factory: type a six-digit code, get that exact Fuzzboi; each one moves into the Cyber Dome ----------
   const RULES = 'https://findastra.github.io/fuzzboi-factory/site/fuzzboi.js';
@@ -523,7 +530,6 @@
       if (!reduced) hue = (hue + .6) % 360;
     }
     function frame(t) {
-      requestAnimationFrame(frame);
       if (!W) return;
       if (!reduced) turn += .003;
       if (broken) { brokenFrame(); sparks(); return; }
@@ -642,7 +648,7 @@
       count(); showScore();
       const linked = /^#fuzzboi-([0-9]{6})$/.exec(location.hash);
       make(linked ? linked[1].toUpperCase() : '456900', !!linked && !(Array.isArray(saved) && saved.includes(linked[1].toUpperCase())));
-      requestAnimationFrame(frame);
+      whileSeen(cv, frame);
     });
     count();
     return { add };
@@ -682,19 +688,18 @@
       for (const k of Object.keys(SPARK)) { const v = SPARK[k][spark[k]]; $('sp-' + k).textContent = Array.isArray(v) ? v[0] : String(v); }
       store.set('findastra-sparkle', spark);
     }
-    (function preview(t) {
-      requestAnimationFrame(preview);
+    whileSeen(prev, (t) => {
       px.fillStyle = '#060606'; px.fillRect(0, 0, 192, 192);
       const hs = hues(), hue = hs[Math.floor(t / 900) % hs.length];
       px.save(); px.globalCompositeOperation = 'lighter'; drawSpark(px, 96, 96, 62, reduced ? 0 : t / 2600, hue, 1); px.restore();
-    })(0);
+    });
     document.querySelectorAll('[data-spark]').forEach((b) => (b.onclick = () => { const k = b.dataset.spark; spark[k] = (spark[k] + 1) % SPARK[k].length; showSpark(); }));
     $('sparkRand').onclick = () => { for (const k of Object.keys(SPARK)) spark[k] = Math.floor(Math.random() * SPARK[k].length); showSpark(); };
     showSpark();
     function start() { targets = []; score = 0; combo = 0; miss = 0; on = true; spawnIn = 0; bS.textContent = 0; bC.textContent = 0; $('beatBtn').textContent = 'playing…'; }
     function end() { on = false; $('beatBtn').textContent = 'start set'; if (score > best) { best = score; bB.textContent = best; store.set('findastra-beat-best', best); } }
+    // a set in play pauses while it is scrolled away, and picks up where it was when it comes back
     function loop() {
-      requestAnimationFrame(loop);
       bx.fillStyle = '#060606'; bx.fillRect(0, 0, w, h);
       bx.strokeStyle = 'rgba(255, 255, 255, .07)'; bx.lineWidth = 1;
       for (let i = 1; i < 4; i++) { bx.beginPath(); bx.moveTo(0, h * i / 4); bx.lineTo(w, h * i / 4); bx.stroke(); }
@@ -741,7 +746,7 @@
       if (!reduced) for (let k = 0; k < 14; k++) { const a = k / 14 * 6.283; pops.push({ x: t.x, y: t.y, vx: Math.cos(a) * 2.4, vy: Math.sin(a) * 2.4, hue: t.hue, life: 1 }); }
     });
     $('beatBtn').onclick = () => { if (!on) start(); };
-    loop();
+    whileSeen(bc, loop);
   })();
 
   // ---------- the Avatar Lab, from Mommy's website (copied unchanged from mommys-portfolio-20261024.html) ----------

@@ -179,6 +179,8 @@
     function fill(id, makers) {
       const box = $(id), track = box.querySelector('.track');
       box.hidden = !makers.length;
+      // its racing stripes go with it, so two never stack up with no bar between them (audit 2026-10-30)
+      for (const s of [box.previousElementSibling, box.nextElementSibling]) if (s && s.classList.contains('race-stripe')) s.hidden = box.hidden;
       const copy = (hidden) => { const s = el('span'); if (hidden) s.setAttribute('aria-hidden', 'true'); s.append(...makers.map((m) => m(hidden))); return s; };
       track.replaceChildren(copy(false), copy(true));
       track.style.setProperty('--dur', Math.max(45, track.textContent.length * .11) + 's');
@@ -189,8 +191,11 @@
         s.append(u.repos.length > 2 ? el('span', 'repo', u.repos.length + ' repos') : repoLink(u.repos[0], u.repos.slice(0, 2).join(' + '), hidden), el('span', null, u.text), el('span', 'when', ago(u.at)));
         return s;
       }));
-      // working on: projects with their own changes this week, busiest first
-      const week = Date.now() - 7 * 864e5, count = new Map(), last = new Map();
+      // working on: projects with their own changes this week, busiest first. The week ends at the newest change, so the saved
+      // snapshot (used when GitHub does not answer) still fills the bar; "this week" is said only when that is today's week
+      // (audit 2026-10-30: the bar went missing whenever GitHub said no)
+      const newest = Math.min(Date.now(), Math.max(0, ...updates.map((u) => +new Date(u.at) || 0)));
+      const fresh = Date.now() - newest < 7 * 864e5, week = newest - 7 * 864e5, count = new Map(), last = new Map();
       for (const u of updates) {
         if (u.repos.length > 2 || new Date(u.at) < week) continue;
         for (const r of u.repos) { count.set(r, (count.get(r) || 0) + 1); if (!last.has(r)) last.set(r, u.at); }
@@ -204,7 +209,7 @@
         if (pet && pet.pet && !/^pet-program/.test(pet.pet)) s.append(el('span', 'pet', pet.pet));
         const d = (r.description || (pet && pet.text) || '').replace(/^👉\s*\S+\s*[—-]\s*/, '');
         if (d) s.append(el('span', null, d.length > 110 ? d.slice(0, 107).trimEnd() + '…' : d));
-        s.append(el('span', 'when', count.get(name) + (count.get(name) === 1 ? ' change' : ' changes') + ' this week'));
+        s.append(el('span', 'when', count.get(name) + (count.get(name) === 1 ? ' change' : ' changes') + (fresh ? ' this week' : '')));
         return s;
       }));
     }
@@ -388,16 +393,21 @@
       };
       const fit = () => { const d = Math.min(devicePixelRatio || 1, 2); cv.width = innerWidth * d; cv.height = innerHeight * d; x.setTransform(d, 0, 0, d, 0, 0); };
       fit(); addEventListener('resize', fit);
-      let last = 0;
-      (function tick(t) {
-        requestAnimationFrame(tick);
+      // it only runs while the machine is on screen or its sparkles are still flying, and wakes again on scroll (audit 2026-10-30:
+      // it was clearing a whole-screen canvas every frame, all the time)
+      let last = 0, running = false;
+      const wake = () => { if (!running && !reduced) { running = true; last = 0; requestAnimationFrame(tick); } };
+      addEventListener('scroll', wake, { passive: true }); addEventListener('resize', wake);
+      function tick(t) {
         const dt = Math.min(50, t - last || 16); last = t;
         x.clearRect(0, 0, innerWidth, innerHeight);
-        if (!reduced) for (const s of sources) {
+        let seen = false;
+        for (const s of sources) {
           // a picture redrawn away (the section was drawn again) stops; while it was left in, it sprayed from the corner
           if (!s.photo.isConnected) { sources.delete(s); continue; }
           const r = s.photo.getBoundingClientRect();
           if (!r.width || r.bottom < 0 || r.top > innerHeight) continue;
+          seen = true;
           // from a ring round the machine, outside it, so the crystals turning inside stay clear (Astra, 2026-10-29: "the way
           // it is shedding sparkles ... from like a ring around where the rainbow maker is"), flying outward from it
           // a few at a time, every other frame or so (Astra, 2026-10-29: "a little bit less sparkles too, and less often"), each
@@ -421,8 +431,9 @@
           x.drawImage(stamp(p.hue), p.x - sz, p.y - sz, sz * 2, sz * 2);
         }
         x.globalAlpha = 1;
-      })(0);
-      spray = { add: (photo, from) => sources.add({ photo, from }) };
+        if (seen || dots.length) requestAnimationFrame(tick); else running = false;
+      }
+      spray = { add: (photo, from) => { sources.add({ photo, from }); wake(); } };
     }
     spray.add(photo, from);
   };
@@ -473,7 +484,7 @@
   const glows = (p) => /^https:.*galaxy(-card)?\.(png|gif)$/.test(p.src) && !ownGalaxy(p.src);
   const clearOf = (p) => !!(p && (p.clear || glows(p) || ownGalaxy(p.src)));
   function polaroid({ key, name, kind, date, text, pics, repo, site, siteLabel, shot, sticky, clear }) {
-    const c = el('article', 'polaroid'); const h = paint(c, key);
+    const c = el('article', 'polaroid'); c.dataset.key = key; const h = paint(c, key);
     const photo = el(pics.length && !shot && !pics.some((p) => p.type === 'frame') ? 'button' : 'div', 'photo');
     photo.classList.toggle('clear', !!clear || clearOf(pics[0]));
     if (pics[0] && pics[0].crop && pics[0].bg) photo.style.background = pics[0].bg;
@@ -558,7 +569,7 @@
       if (pics.length > 1) {
         // "1 of 3" (Astra, 2026-10-29)
         count = el('span', 'count', `1 of ${pics.length}`);
-        const go = (d) => { at = (at + d + pics.length) % pics.length; const next = media(pics[at]); shown.replaceWith(next); shown = next; photo.classList.toggle('clear', !!clear || clearOf(pics[at])); if (sound) sound.show(pics[at]); if (sticky) sticky(at, note2); badge.hidden = !pics[at].label; badge.textContent = pics[at].label || ''; count.textContent = `${at + 1} of ${pics.length}`; };
+        const go = (d) => { c.dataset.touched = '1'; at = (at + d + pics.length) % pics.length; const next = media(pics[at]); shown.replaceWith(next); shown = next; photo.classList.toggle('clear', !!clear || clearOf(pics[at])); if (sound) sound.show(pics[at]); if (sticky) sticky(at, note2); badge.hidden = !pics[at].label; badge.textContent = pics[at].label || ''; count.textContent = `${at + 1} of ${pics.length}`; };
         flip = ['‹', '›'].map((t, i) => { const b = el('button', 'flip ' + (i ? 'next' : 'prev'), t); b.type = 'button'; b.setAttribute('aria-label', (i ? 'next' : 'previous') + ' picture of ' + name); b.onclick = () => go(i ? 1 : -1); return b; });
       }
     }
@@ -775,7 +786,7 @@
     const shakeBtn = box.querySelector('.shake'), pourBtn = box.querySelector('.pour');
     // every shake adds the pet that fell out to a row of star slots under the jar, and they stay until all are out or put
     // back (Astra, 2026-10-29: "it just keeps extending the parchment paper down below the jar")
-    let items = [], caught = [], shaking = false, drawnFor = null;
+    let items = [], caught = [], shaking = false, drawnFor = null, waiting = null;
     const keyOf = (it) => kind.key(it);
     const left = () => items.filter((it) => !caught.includes(keyOf(it)));
     // the next empty slot: a dashed star where the next pet lands
@@ -821,6 +832,8 @@
       Promise.all(list.map((it) => kind.tint(it).then((c) => tints.set(keyOf(it), c)))).then(() => { if (items === list) fill(list); });
     }
     function fill(list) {
+      // new pets that arrive while a star is falling out wait until it has landed, so its slot is still there (audit 2026-10-30)
+      if (shaking) { waiting = list; return; }
       items = list; readTints(list);
       const placed = [...list].sort((a, b) => tintRank(a) - tintRank(b));
       const r = rand(list.length * 7919 + 17), n = list.length || 1;
@@ -950,6 +963,7 @@
       count();
       card.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'nearest' });
       shaking = false;
+      if (waiting) { const list = waiting; waiting = null; fill(list); }
     }
     // a pastel sparkle let loose at a point in the jar's box: it drifts by (dx, dy), twinkles and fades
     function puff(x, y, dx, dy, ms) {
@@ -1134,17 +1148,26 @@
     ];
   }
 
+  // the walls are drawn again each time GitHub or the hub answers; a Polaroid someone has flipped through, or whose live page
+  // has started, stays as it is, right where it is, so it does not jump back to its first picture or reload (audit 2026-10-30)
+  const keep = (c) => c.dataset.touched || c.querySelector('iframe[src]');
+  function wall(id, cards) {
+    const box = $(id), now = [...box.children], old = new Map(now.filter(keep).map((c) => [c.dataset.key, c]));
+    const want = cards.map((c) => old.get(c.dataset.key) || c);
+    if (now.length === want.length && want.every((c, i) => c === now[i] || !now.includes(c))) want.forEach((c, i) => { if (c !== now[i]) now[i].replaceWith(c); });
+    else box.replaceChildren(...want);
+  }
   function render() {
-    $('petos-list').replaceChildren(...(query ? [] : petosCards()));
-    $('world-list').replaceChildren(...WORLDS.filter((w) => shown(`${w.name} ${w.kind} ${w.text} ${w.repo}`)).map(worldCard));
+    wall('petos-list', query ? [] : petosCards());
+    wall('world-list', WORLDS.filter((w) => shown(`${w.name} ${w.kind} ${w.text} ${w.repo}`)).map(worldCard));
     // only pets with a picture go in the jar (Astra, 2026-10-27: "I don't want to see stars without pets on them"); the ones
     // with project pictures first, then the ones with a public repo, then by number
     petJar.fill(pets.filter(iconOf).map(petEntry).filter(({ p, r }) => shown(`${p.pet} ${p.program} ${p.text} ${p.repo} ${(r && r.description) || ''}`))
       .sort((a, b) => (b.pics.length > 0) - (a.pics.length > 0) || (b.r ? 1 : 0) - (a.r ? 1 : 0) || a.p.number - b.p.number));
     // Discord and Web & More, newest first
     const others = repos.filter(isOther).filter((r) => shown(`${r.name} ${r.description}`)).sort((a, b) => String(b.pushed_at).localeCompare(String(a.pushed_at)));
-    $('discord-list').replaceChildren(...others.filter((r) => DISCORD.has(r.name)).map(extraCard));
-    $('web-list').replaceChildren(...others.filter((r) => !DISCORD.has(r.name)).map(extraCard));
+    wall('discord-list', others.filter((r) => DISCORD.has(r.name)).map(extraCard));
+    wall('web-list', others.filter((r) => !DISCORD.has(r.name)).map(extraCard));
     for (const ch of document.querySelectorAll('.chapter')) ch.classList.toggle('empty', !!query && !ch.querySelector('.polaroid, .mini'));
   }
   // each wall of Polaroids gets as many per row as fit near 250px wide, sized so a full row spans the wall exactly: its
