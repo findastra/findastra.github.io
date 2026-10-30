@@ -62,7 +62,7 @@
       }
     }
     // one galaxy per deck (Astra, 2026-10-29: "check for extra photos"): a presence repo commits the same galaxy as a still,
-    // a GIF and a card GIF, in docs/ and public/; keep the public still (shown as the turning galaxy), else the first
+    // a GIF and a card GIF, in docs/ and public/; keep the public still, else the first
     const isGalaxy = (p) => /galaxy(-card)?\.(png|gif)$/i.test(p.src);
     const keep = list.find((p) => /\/public\/galaxy\.png$/.test(p.src)) || list.find(isGalaxy);
     return list.filter((p) => !isGalaxy(p) || p === keep);
@@ -532,14 +532,19 @@
   // the GitHub descriptions under the Polaroids are off for now (Astra, 2026-10-27: "just get rid of those descriptions ... I might
   // want to bring them back"); true brings them back
   const SHOW_DESCRIPTIONS = false;
-  // clear: the photo has no backing, so the paper shows through around the picture (Astra, 2026-10-29). The Discord galaxies
-  // are drawn on black, so their black is masked away (glow) and the whole spiral fits inside the frame
-  // The two still galaxies have see-through copies here, their black turned into real see-through with the color kept at
-  // full strength, so they glow on the paper like they do on Discord (Astra, 2026-10-29: the masked ones looked dull)
-  const GALAXY = { anthropic: 'art/projects/galaxies/anthropic-galaxy.png', openai: 'art/projects/galaxies/openai-galaxy.png' };
-  const ownGalaxy = (src) => { const m = /findastra\/(anthropic|openai)-discord-presence\/main\/public\/galaxy\.png$/.exec(src); return m && GALAXY[m[1]]; };
-  const glows = (p) => /^https:.*galaxy(-card)?\.(png|gif)$/.test(p.src) && !ownGalaxy(p.src);
-  const clearOf = (p) => !!(p && (p.clear || glows(p) || ownGalaxy(p.src)));
+  // The official galaxies keep their original colors and fade into black (Astra, 2026-10-30).
+  // Their shared app renderer moves each star; the matching still remains when WebGL is unavailable.
+  const GALAXY = Object.fromEntries(['openai', 'anthropic'].map((brand) => [brand, `art/projects/galaxies/official-${brand}-galaxy-20261030.png`]));
+  const glows = (p) => !p.galaxy && /^https:.*galaxy(-card)?\.(png|gif)$/.test(p.src);
+  const clearOf = (p) => !!(p && (p.clear || glows(p)));
+  const officialGalaxy = (p) => {
+    const box = el('span', 'official-galaxy'), still = el('img'), canvas = el('canvas');
+    box.style.setProperty('--galaxy-inset', ((1 - (p.size || 1)) * 50) + '%');
+    still.src = p.src; still.alt = ''; still.loading = 'lazy';
+    canvas.dataset.officialGalaxy = p.galaxy; canvas.setAttribute('aria-hidden', 'true');
+    box.append(still, canvas);
+    return box;
+  };
   // a short note for every Polaroid, saying more than the picture can (Astra, 2026-10-29: "a note for every single Polaroid ...
   // short notes that kind of tell more than what you can just see"), handwritten on its back: flip it over to read it (Astra,
   // 2026-10-29: "if we flip the Polaroid, we could put notes, handwritten notes on there"; on the paper they fought the layout)
@@ -576,7 +581,15 @@
     const spraying = pics.find((p) => p.spray); if (spraying) rainbowSpray(photo, spraying.spray);
     if (shot) photo.append(shot);
     else if (!pics.length) photo.append(el('span', 'developing', 'still developing…'));
-    let flip = null, count = null, badge = null, sound = null, look = null;
+    let flip = null, count = null, badge = null, sound = null, look = null, galaxyPause = null;
+    if (pics.some((p) => p.galaxy)) {
+      const paused = window.OfficialGalaxy ? window.OfficialGalaxy.state.paused : reduced;
+      galaxyPause = el('button', 'galaxy-pause', paused ? 'Play stars' : 'Pause stars');
+      galaxyPause.type = 'button'; galaxyPause.dataset.galaxyPause = '';
+      galaxyPause.setAttribute('aria-pressed', String(paused));
+      galaxyPause.setAttribute('aria-description', 'Controls both galaxy animations');
+      galaxyPause.hidden = !pics[0].galaxy;
+    }
     // a video with sound (Mommy's World): it plays muted, and a small button on the white border turns its sound on and off
     if (pics.some((p) => p.sound)) {
       let on = false;
@@ -589,6 +602,7 @@
       let at = 0;
       // each picture can also be a video (plays by itself, muted, on a loop) or a live page you can move around in
       const media = (p) => {
+        if (p.galaxy) return officialGalaxy(p);
         if (p.type === 'video' && p.key) return keyedVideo(p);
         if (p.inline) return inlineSvg(p);
         if (p.type === 'video') { const v = el('video'); Object.assign(v, { src: p.src, muted: true, loop: true, autoplay: !reduced, playsInline: true, preload: 'metadata' }); if (p.poster) v.poster = p.poster; if (p.fit) v.style.objectFit = p.fit; if (p.bg) v.style.background = p.bg; return v; }
@@ -628,7 +642,7 @@
           } catch {} }, 900));
           new IntersectionObserver((seen, io) => { if (seen.some((s) => s.isIntersecting)) { f.src = p.src; io.disconnect(); } }, { rootMargin: '400px' }).observe(photo); return f;
         }
-        const im = el('img'); im.src = ownGalaxy(p.src) || p.src; im.alt = ''; im.loading = 'lazy'; if (p.fit) im.style.objectFit = p.fit; if (p.bg) im.style.background = p.bg;
+        const im = el('img'); im.src = p.src; im.alt = ''; im.loading = 'lazy'; if (p.fit) im.style.objectFit = p.fit; if (p.bg) im.style.background = p.bg;
         // size: a picture set in from the frame's edges, so the tape covers none of it
         if (p.size) im.style.scale = p.size;
         // nudge: moved within its frame, as a share of the frame (the Rainbow Maker a little lower, clear of the tape)
@@ -670,7 +684,7 @@
       if (pics.length > 1) {
         // "1 of 3" (Astra, 2026-10-29)
         count = el('span', 'count', `1 of ${pics.length}`);
-        const go = (d) => { at = (at + d + pics.length) % pics.length; const next = media(pics[at]); shown.replaceWith(next); shown = next; photo.classList.toggle('clear', !!clear || clearOf(pics[at])); if (sound) sound.show(pics[at]); if (sticky) sticky(at, note2); setNo(pics[at]); badge.hidden = !pics[at].label; badge.textContent = pics[at].label || ''; count.textContent = `${at + 1} of ${pics.length}`; };
+        const go = (d) => { at = (at + d + pics.length) % pics.length; const next = media(pics[at]); shown.replaceWith(next); shown = next; photo.classList.toggle('clear', !!clear || clearOf(pics[at])); if (galaxyPause) galaxyPause.hidden = !pics[at].galaxy; if (sound) sound.show(pics[at]); if (sticky) sticky(at, note2); setNo(pics[at]); badge.hidden = !pics[at].label; badge.textContent = pics[at].label || ''; count.textContent = `${at + 1} of ${pics.length}`; };
         flip = ['‹', '›'].map((t, i) => { const b = el('button', 'flip ' + (i ? 'next' : 'prev'), t); b.type = 'button'; b.setAttribute('aria-label', (i ? 'next' : 'previous') + ' picture of ' + name); b.onclick = () => go(i ? 1 : -1); return b; });
       }
     }
@@ -680,7 +694,7 @@
     const note = el('div', 'note');
     // every note the same four parts (Astra, 2026-10-29): the title, what kind of thing it is · the language it is written in,
     // then the date on its own line
-    note.append(title, ...(kind ? [el('span', 'kind', kind)] : []), ...(date ? [el('span', 'kind date', date)] : []), ...(badge ? [badge] : []), ...(sound ? [sound.b] : []), ...(look ? [look] : []));
+    note.append(title, ...(kind ? [el('span', 'kind', kind)] : []), ...(date ? [el('span', 'kind date', date)] : []), ...(badge ? [badge] : []), ...(sound ? [sound.b] : []), ...(look ? [look] : []), ...(galaxyPause ? [galaxyPause] : []));
     if (sound) sound.show(pics[0]);
     // "1 of 3" sits on the bottom edge between the arrows, level with them (Astra, 2026-10-29)
     const frame = el('div', flip ? 'frame flips' : 'frame'); frame.append(el('i', 'tape'), photo, note, ...(flip || []), ...(count ? [count] : []));
@@ -746,7 +760,7 @@
   };
   // each presence app's own page first (Astra, 2026-10-29: what the actual program looks like), from its repo
   for (const [who, what] of [['openai', 'OpenAI'], ['anthropic', 'Anthropic']])
-    SITE_PICS[who + '-discord-presence'] = [{ src: `https://raw.githubusercontent.com/findastra/${who}-discord-presence/main/public/${who}-app-20261029.png`, cap: what + ' Discord Presence · the app', fit: 'contain', bg: '#02050a', fill: '#02050a' }];
+    SITE_PICS[who + '-discord-presence'] = [{ src: `https://raw.githubusercontent.com/findastra/ai-discord-presence/main/docs/images/${who}-app-20261030.png`, cap: what + ' Discord Presence · the app', fit: 'contain', bg: '#02050a', fill: '#02050a' }];
   // Photostar is one word (Astra, 2026-10-29)
   const NAMES = { 'astras-photostar': "Astra's Photostar" };
   // and "Iris: the origin story" (Astra, 2026-10-29), whatever its repo is called
@@ -768,11 +782,11 @@
     const box = el('div', 'ai-real'), cards = [];
     for (const [who, what] of [['openai', 'OpenAI'], ['anthropic', 'Anthropic']]) {
       const a = link('https://github.com/findastra/ai-discord-presence/tree/main/' + who + '-discord-presence', 'ai-real-card');
-      const im = el('img'); im.src = PRESENCE_REPO + 'docs/images/' + who + '-card-20261029.gif'; im.alt = what + ' Discord Presence card on a Discord profile'; im.loading = 'lazy';
-      // the live card, drawn like the picture: "Playing", the app's turning galaxy, its name, its two lines, the time in green
+      const im = el('img'); im.src = PRESENCE_REPO + 'docs/images/' + who + '-card-20261030.gif'; im.alt = what + ' Discord Presence card on a Discord profile'; im.loading = 'lazy';
+      // the live card, drawn like the picture: "Playing", the official star animation, its name, its two lines, the time in green
       const live = el('span', 'ai-live'), head = el('span', 'ai-head'), art = el('img', 'ai-art');
       head.append('Playing', el('i', null, '•••'));
-      art.src = PRESENCE_REPO + who + '-discord-presence/public/galaxy-card.gif'; art.alt = ''; art.loading = 'lazy';
+      art.src = PRESENCE_REPO + who + '-discord-presence/public/galaxy-card.gif?v=9'; art.alt = ''; art.loading = 'lazy';
       const name = el('b'), details = el('span'), state = el('span'), time = el('span', 'ai-time');
       const words = el('span', 'ai-words'); words.append(name, details, state, time);
       live.append(head, art, words); a.append(im, live); box.append(a);
@@ -796,13 +810,13 @@
   };
   const SHOTS = { 'ai-discord-presence': realCardsShot };
   // the two presence apps show two pictures each (Astra, 2026-10-29: "should only be two on each of those"): first the
-  // turning galaxy, the "really fancy spiral", a little smaller so it is not zoomed in to the edges, then the app
+  // individually moving stars, a little smaller so the whole spiral fits, then the app
   const TWO = new Set(['openai-discord-presence', 'anthropic-discord-presence']);
   const picsOf = (name) => {
     const all = [...(SITE_PICS[name] || []), ...picturesOf(name)];
     if (!TWO.has(name)) return all;
-    const galaxy = all.find((p) => /galaxy(-card)?\.(png|gif)$/i.test(p.src));
-    return [galaxy && { ...galaxy, size: .8 }, all[0]].filter(Boolean);
+    const brand = name.split('-')[0];
+    return [{ src: GALAXY[brand], cap: (brand === 'openai' ? 'OpenAI' : 'Anthropic') + ' official galaxy artwork', galaxy: brand, size: .8, fill: '#000' }, all[0]].filter(Boolean);
   };
   // what kind of thing each one is, for the line under its title (Astra, 2026-10-29: "title, type of software, language, date")
   const TYPES = { 'ai-discord-presence': 'Discord app', 'openai-discord-presence': 'Discord app', 'anthropic-discord-presence': 'Discord app', moodglass: 'Discord plugin' };
