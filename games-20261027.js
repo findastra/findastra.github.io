@@ -51,6 +51,31 @@
     try { await loadScript(RULES); F = window.Fuzzboi; } catch { note.textContent = 'The Fuzzboi Factory did not answer. Try again in a minute.'; return; }
     try { layersIn = await F.loadLayers(LAYERS, layers, true); } catch {}
   })();
+  // neon outlines (Astra, 2026-10-29: "I don't like the black borders that they have, but I need their bodies to have different
+  // neon borders ... neon orange, neon pink ... neon green"): each body style's outline layer is drawn in its own neon, with a
+  // soft glow, here on the page; the Procreate art itself is unchanged
+  const NEON = { A: '#ff7a1a', B: '#ff2bd6', C: '#39ff14' }, neonCache = new Map();
+  function neonOutline(style) {
+    if (neonCache.has(style)) return neonCache.get(style);
+    const src = layers.get('outline' + style); if (!src) return null;
+    const w = src.naturalWidth || src.width, h = src.naturalHeight || src.height, c = document.createElement('canvas'); c.width = w; c.height = h;
+    const x = c.getContext('2d'); x.drawImage(src, 0, 0); x.globalCompositeOperation = 'source-in'; x.fillStyle = NEON[style] || '#ff2bd6'; x.fillRect(0, 0, w, h);
+    neonCache.set(style, c); return c;
+  }
+  // one layer of a Fuzzboi drawn at (0, 0, px): the outline in its neon, glowing; everything else as painted
+  function drawSlot(x, p, slot, px) {
+    if (slot !== 'outline') { x.drawImage(layers.get(slot === 'fill' ? 'fill' + p.style + p.color : slot), 0, 0, px, px); return; }
+    const o = neonOutline(p.style) || layers.get('outline' + p.style);
+    x.save(); x.shadowColor = NEON[p.style] || '#ff2bd6'; x.shadowBlur = px * .025; x.drawImage(o, 0, 0, px, px); x.restore();
+  }
+  // the factory's big picture, the same way: its background, then its layers with the neon outline
+  function drawFactory(cv, p) {
+    const any = layers.get('fill' + p.style + p.color), W = any.naturalWidth || any.width, H = any.naturalHeight || any.height;
+    if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+    const x = cv.getContext('2d'); x.fillStyle = p.bg; x.fillRect(0, 0, W, H);
+    const want = new Set(['fill', 'outline', 'eyes', ...p.accs.map(F.accLayer), ...p.rares.map((r) => 'rare' + r)]);
+    for (const slot of F.STACK) if (want.has(slot)) drawSlot(x, p, slot, W);
+  }
   // draws one Fuzzboi on a transparent canvas (the home has its own background); a rough stand-in if the art did not load
   function sprite(p, px) {
     const c = document.createElement('canvas'); c.width = c.height = px;
@@ -59,7 +84,7 @@
       const want = new Set(['fill', 'outline', 'eyes', ...p.accs.map(F.accLayer), ...p.rares.map((r) => 'rare' + r)]);
       for (const slot of F.STACK) {
         if (!want.has(slot)) continue;
-        x.drawImage(layers.get(slot === 'fill' ? 'fill' + p.style + p.color : slot === 'outline' ? 'outline' + p.style : slot), 0, 0, px, px);
+        drawSlot(x, p, slot, px);
       }
     } else {
       const big = document.createElement('canvas'); F.drawStandIn(big, p); x.drawImage(big, 0, 0, px, px);
@@ -78,7 +103,7 @@
       const extra = !base.has(slot), last = parts[parts.length - 1];
       let c = !extra && last && !last.extra ? last.c : null;
       if (!c) { c = document.createElement('canvas'); c.width = c.height = px; parts.push({ c, extra }); }
-      c.getContext('2d').drawImage(layers.get(slot === 'fill' ? 'fill' + p.style + p.color : slot === 'outline' ? 'outline' + p.style : slot), 0, 0, px, px);
+      drawSlot(c.getContext('2d'), p, slot, px);
     }
     // the smoke cloud is drawn right to the edge of its square, so where the square cuts it off it would show a straight
     // edge; only that last strip at the border fades away, so the cloud keeps its black outline everywhere else (Astra,
@@ -111,7 +136,7 @@
     const d = F.decode(code);
     if (!/^[0-9A-F]{6}$/.test(d.code)) { note.textContent = d.flags.map((f) => f[1]).join(' '); return; }
     codeIn.value = d.code;
-    if (F.missing(d.parts, layers).length) F.drawStandIn(factoryCv, d.parts); else F.drawLayers(factoryCv, d.parts, layers);
+    if (F.missing(d.parts, layers).length) F.drawStandIn(factoryCv, d.parts); else drawFactory(factoryCv, d.parts);
     $('fz-traits').replaceChildren(...F.describe(d.parts).flatMap(([k, v, swatch]) => {
       const dd = el('dd', null, v); if (swatch) { const i = el('i'); i.style.background = swatch; dd.prepend(i); }
       return [el('dt', null, k), dd];
@@ -128,6 +153,18 @@
   // tap the Fuzzboi itself to save it, too (Astra, 2026-10-27: "make sure people can save it directly from there")
   factoryCv.title = 'Tap to save this Fuzzboi'; factoryCv.style.cursor = 'pointer'; factoryCv.onclick = () => $('fz-save').click();
   $('fz-send').onclick = async () => { await ready; if (F && codeIn.value.length === 6) { note.textContent = home.add(codeIn.value); $('home').scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'center' }); } };
+  // five random ones at once (Astra, 2026-10-29: "add 5 random Fuzzboys to the Cyberdome, and a warning symbol"), each one new
+  $('home-five').onclick = async () => {
+    await ready; if (!F) return;
+    const said = [];
+    for (let tries = 0, n = 0; n < 5 && tries < 50; tries++) {
+      const d = F.decode(String(Math.floor(Math.random() * 1e6)).padStart(6, '0'));
+      if (!/^[0-9A-F]{6}$/.test(d.code)) continue;
+      const r = home.add(d.code); if (/already lives here/.test(r)) continue;
+      said.push(r); n++; if (/broken|200/.test(r)) break;
+    }
+    note.textContent = said[said.length - 1] || '';
+  };
   $('fz-save').onclick = async () => { await ready; if (F && codeIn.value.length === 6) F.savePng(factoryCv, `fuzzboi-${codeIn.value}.png`).catch(() => (note.textContent = 'This browser would not save the picture.')); };
 
   // ---------- the Cyber Dome (it was the cyber home): every Fuzzboi made above moves in, up to 30; they bounce around like
@@ -146,6 +183,8 @@
       x.fillStyle = c; x.beginPath(); x.moveTo(16, 0); x.lineTo(16 + q, 16 - q); x.lineTo(32, 16); x.lineTo(16 + q, 16 + q); x.lineTo(16, 32); x.lineTo(16 - q, 16 + q); x.lineTo(0, 16); x.lineTo(16 - q, 16 - q); x.closePath(); x.fill();
       stamps.set(c, k); return k;
     };
+    // a sparkle in a Fuzzboi's own colors, its body's or its background's
+    const tintOf = (f) => paleOf(f.tints[Math.random() < .5 ? 0 : 1], [.3, .5, .7][Math.floor(Math.random() * 3)]);
     const keepMote = (x, y, c) => { const b = Math.random() * 7, sp = .002 + Math.random() * .004; motes.push({ x, y, vx: Math.cos(b) * sp, vy: Math.sin(b) * sp, s: 3 + Math.random() * 6, c, t: Math.random() * 7 }); };
     const folks = [], boings = [];
     function resize() { const r = fit(cv); W = r.width; H = r.height; }
@@ -185,11 +224,13 @@
       } catch {}
     }
     function count() {
+      // while it is broken, a finger on the dome moves the pieces, not the page
+      const dome = $('home'); if (dome) dome.classList.toggle('mending', !!broken);
       const n = outside().length, k = inside().length;
       $('home-count').textContent = broken ? `the dome is broken · ${n} loose on the page` : n ? `${k} in the dome · ${n} loose on the page` : `${k} moved in`;
       $('home-out').disabled = !folks.length || !!broken; $('home-out').textContent = n ? 'call them all home' : 'let them out';
       $('home-clear').disabled = !folks.length;
-      $('home-pick').textContent = broken ? 'It broke! Drag each piece back where it goes. Tap a piece to turn it.' : crowded() ? `Too crowded! ${k} in there and they are furious. Let some out.` : n ? 'Catch one: grab it, drag it back over the dome and let go.' : picked ? `#${picked.code}` : folks.length ? 'Tap a Fuzzboi to see its code.' : 'Nobody lives here yet. Make a Fuzzboi above and send it in.';
+      $('home-pick').textContent = broken ? 'It broke! Drag each piece back where it goes; drop it close and it clicks in. Tap a piece to turn it.' : crowded() ? `Too crowded! ${k} in there and they are furious. Let some out.` : n ? 'Catch one: grab it, drag it back over the dome and let go.' : picked ? `#${picked.code}` : folks.length ? 'Tap a Fuzzboi to see its code.' : 'Nobody lives here yet. Make a Fuzzboi above and send it in.';
       // the counter: how many are in, how many more until it breaks (Astra, 2026-10-29)
       const meter = $('dome-meter');
       if (meter) {
@@ -200,10 +241,12 @@
         meterSparks();
       }
     }
-    // the sparkle meter: every sparkle they knock off the walls stays in the dome, up to SPARK_MAX, and that many breaks it too
-    // (Astra, 2026-10-29: "a sparkle counter, and then ... a fuzzboy counter. And if either one of them meets the threshold")
-    // three meters (Astra, 2026-10-29: "sparkles generated, fuzz boys, and collisions"): any one full breaks it
-    const SPARK_MAX = 6667, HITS_MAX = 1667;
+    // three meters (Astra, 2026-10-29: "sparkles generated, fuzz boys, and collisions"): any one full breaks it.
+    // Collisions are Fuzzbois running into the dome; two running into each other make sparkles, which stay in the dome. So the
+    // more there are, the more they bump and the faster the sparkles pile up: the Fuzzbois, the sparkles or the collisions can
+    // each be what breaks it (Astra, 2026-10-29: "6, 7, 6 sparkles", "7, 6, 7 collisions", "every time ... any of them run
+    // into the dome, not to each other. When they run into each other, they generate more sparkles")
+    const SPARK_MAX = 676, HITS_MAX = 767;
     let hits = 0, shownSparks = -1, shownHits = -1;
     function meterSparks() {
       const meter = $('dome-meter'); if (!meter) return;
@@ -241,7 +284,7 @@
     function free(f, x, y, vx, vy) {
       const c2 = document.createElement('canvas'); c2.width = c2.height = 160; c2.className = 'fuzz';
       Object.assign(f, { out: true, node: c2, px: x, py: y, pvx: vx, pvy: vy, psq: 0, pspin: 0 });
-      c2.addEventListener('pointerdown', (e) => { held = f; f.orbit = null; lastPt = { x: e.clientX, y: e.clientY, t: performance.now(), vx: 0, vy: 0 }; c2.setPointerCapture(e.pointerId); c2.classList.add('held'); e.preventDefault(); });
+      c2.addEventListener('pointerdown', (e) => { held = f; f.orbit = null; f.stuck = false; lastPt = { x: e.clientX, y: e.clientY, t: performance.now(), vx: 0, vy: 0 }; c2.setPointerCapture(e.pointerId); c2.classList.add('held'); e.preventDefault(); });
       c2.addEventListener('pointermove', (e) => {
         if (held !== f) return;
         const t = performance.now(), dt = Math.max(1, t - lastPt.t);
@@ -286,7 +329,74 @@
     const GRAVITY = .24;
     // each one is always headed somewhere on the page, anywhere from the top to the bottom (Astra, 2026-10-29: "going around
     // the page"); every jump is as hard as it takes to get up there, and once it is close it picks somewhere new
-    const newGoal = (f) => { const { w, h } = page(); f.goal = { x: Math.random() * w, y: Math.random() * h }; };
+    // the raid (Astra, 2026-10-29: "if there's 5 fuzz boys at least ... they gather on the jar and they start spilling it and
+    // they hop around it. When it sits back up, they hop on top of it again and they spill it every, like, 5 seconds ... until
+    // they free all of their friends"): with five or more loose, the jar's top is where every one of them is headed, and once
+    // one is on it the jar is tipped every five seconds (each tip waits for the last to stand back up), until the jar is empty.
+    // Then (Astra, 2026-10-29: "way too often ... every 10 seconds", "only ... 5 of them focus on it at a time. The rest of them
+    // can bounce around wherever ... they can switch off"): every ten seconds, and only a crew of five plays on the jar,
+    // bouncing on it together; every so often one of the crew goes off and another loose one takes its turn
+    const petJar = () => document.getElementById('pet-jar');
+    const RAID_EVERY = 10000, CREW = 5, SWAP_EVERY = 12000;
+    const raiding = () => { const j = petJar(); return outside().length >= CREW && !!j && j.dataset.left !== '0'; };
+    let crew = [], swapAt = 0;
+    const onCrew = (f) => raiding() && crew.includes(f);
+    function pickCrew(t) {
+      const out = outside().filter((f) => !f.sinking);
+      crew = crew.filter((f) => out.includes(f));
+      if (!raiding()) { crew = []; return; }
+      if (t > swapAt && crew.length && out.length > CREW) { const off = crew.shift(); off.goal = null; swapAt = t + SWAP_EVERY; }
+      const rest = out.filter((f) => !crew.includes(f)).sort(() => Math.random() - .5);
+      while (crew.length < CREW && rest.length) { const on = rest.pop(); on.goal = null; crew.push(on); }
+    }
+    const jarTop = () => { const g = petJar() && petJar().querySelector('.jar'), r = g && g.getBoundingClientRect(); return r && r.width ? { x: r.left + scrollX + r.width / 2, y: r.top + scrollY, w: r.width } : null; };
+    let nextTip = 0;
+    // stuck in the jar (Astra, 2026-10-29: "some of the fuzz boys get stuck in the jar and then their friends have to free
+    // them. It's just chaos inside of there. Only let like one or two get stuck in there at a time"): now and then one of the
+    // crew on the lid falls in and bounces about inside the glass, wild, until the next tip pours it out of the mouth
+    const STUCK_MAX = 2, jarBox = () => { const g = petJar() && petJar().querySelector('.jar'), r = g && g.getBoundingClientRect(); return r && r.width ? { l: r.left + scrollX, t: r.top + scrollY, r: r.right + scrollX, b: r.bottom + scrollY } : null; };
+    let seenTip = null, fallAt = 0;
+    function jarChaos(t, half) {
+      const j = petJar(); if (!j) return;
+      const stuck = outside().filter((f) => f.stuck);
+      // the jar was tipped (by the crew or a person): out they come, through the mouth on the right
+      if (j.dataset.tippedAt !== seenTip) {
+        seenTip = j.dataset.tippedAt;
+        for (const f of stuck) { f.stuck = false; f.pvx = 6 + Math.random() * 4; f.pvy = -9 - Math.random() * 5; f.psq = 1; f.goal = null; }
+        return;
+      }
+      const box = jarBox(); if (!box) return;
+      // one falls in now and then, from the crew on the lid, never more than two at a time
+      if (stuck.length < STUCK_MAX && t > fallAt) {
+        fallAt = t + 6000 + Math.random() * 8000;
+        const on = crew.find((f) => !f.stuck && f !== held && f.px > box.l && f.px < box.r && Math.abs(f.py - box.t) < 90);
+        if (on) { on.stuck = true; on.px = (box.l + box.r) / 2; on.py = box.t + half * 1.5; on.pvy = 4; on.pvx = (Math.random() - .5) * 8; }
+      }
+      // inside: no climbing out, just wild bouncing off the glass
+      for (const f of outside()) {
+        if (!f.stuck || f === held) continue;
+        const l = box.l + half, r = box.r - half, top = box.t + half * 1.2, bot = box.b - half * .9;
+        f.pvy += GRAVITY * 1.4; f.px += f.pvx; f.py += f.pvy;
+        if (f.px < l) { f.px = l; f.pvx = Math.abs(f.pvx) * .9 + Math.random(); f.psq = 1; f.pspin = (Math.random() - .5) * .8; }
+        if (f.px > r) { f.px = r; f.pvx = -Math.abs(f.pvx) * .9 - Math.random(); f.psq = 1; f.pspin = (Math.random() - .5) * .8; }
+        if (f.py < top) { f.py = top; f.pvy = Math.abs(f.pvy) * .7; }
+        if (f.py > bot) { f.py = bot; f.pvy = -(6 + Math.random() * 6); f.pvx += (Math.random() - .5) * 7; f.psq = 1; f.pspin = (Math.random() - .5) * .8; }
+        f.pvx = Math.max(-9, Math.min(9, f.pvx));
+      }
+    }
+    function raid(t) {
+      if (!raiding() || t < nextTip) return;
+      const top = jarTop(); if (!top) return;
+      if (!crew.some((f) => Math.abs(f.px - top.x) < top.w && Math.abs(f.py - top.y) < 160)) return;
+      const j = petJar(), before = j.dataset.tippedAt;
+      j.dispatchEvent(new Event('fuzz-tip'));
+      nextTip = j.dataset.tippedAt !== before ? t + RAID_EVERY : t + 300;
+    }
+    const newGoal = (f) => {
+      const top = onCrew(f) && jarTop();
+      if (top) { f.goal = { x: top.x + (Math.random() - .5) * top.w * .8, y: top.y - 20 }; return; }
+      const { w, h } = page(); f.goal = { x: Math.random() * w, y: Math.random() * h };
+    };
     const hop = (f) => {
       if (!f.goal || Math.hypot(f.px - f.goal.x, f.py - f.goal.y) < 220) newGoal(f);
       const up = f.py - f.goal.y, dx = f.goal.x - f.px;
@@ -298,6 +408,7 @@
       roaming = requestAnimationFrame(roam);
       const { w, h } = page(), s = bodySize(), half = s / 2;
       if (t - solidsAt > 300) { solidsAt = t; readSolids(); }
+      pickCrew(t); raid(t); jarChaos(t, half);
       if (layer.style.height !== h + 'px') layer.style.height = h + 'px';
       const trail = !reduced && t - trailT > 110; if (trail) trailT = t;
       // a quirk (Astra, 2026-10-29): now and then, passing the Avatar Lab's girl, one swings round her a few times, then goes
@@ -306,7 +417,7 @@
       const her = ar && ar.width ? { x: ar.left + scrollX + ar.width / 2, y: ar.top + scrollY + ar.height / 2, r: Math.max(ar.width, ar.height) * .62 + half * .6 } : null;
       for (const f of outside()) {
         if (f.sinking) continue;
-        if (f !== held && !reduced) {
+        if (f.stuck && f !== held) { /* moved by jarChaos */ } else if (f !== held && !reduced) {
           if (f.orbit && her) {
             const o = f.orbit; o.a += o.w; near.push(f);
             f.px = her.x + Math.cos(o.a) * her.r; f.py = her.y + Math.sin(o.a) * her.r * .8;
@@ -449,9 +560,12 @@
     }
     const dropPiece = () => {
       if (!drag) return;
-      const { p, moved, sphere } = drag; drag = null;
+      const drag0 = drag, { p, moved, sphere } = drag; drag = null;
       if (sphere) { for (const q of broken.pieces) if (!q.placed) tryPlace(q); return; }
       if (!moved) p.rotTo = p.rot + Math.PI / 4;
+      // on a touch screen there is no wheel to turn it: dropped close to its own place, it turns itself the right way and clicks
+      // in (Astra, 2026-10-29: the touch controls "are kind of weird"; it used to spin by itself the whole time it was held)
+      else if (drag0.touch) { const home = homeOf(p, broken.spinTo); if (Math.hypot(p.x - home.x, p.y - home.y) < R() * .3) p.rotTo = broken.spinTo; }
       tryPlace(p);
     };
     cv.addEventListener('pointerup', dropPiece); cv.addEventListener('pointercancel', dropPiece);
@@ -469,20 +583,7 @@
         e.preventDefault();
         if (!p) { if (Math.hypot(x - W / 2, y - H / 2) < R() * 1.1) drag = { sphere: true, a: angleAt(x, y), sx: x, sy: y, moved: false }; return; }
         broken.pieces.splice(broken.pieces.indexOf(p), 1); broken.pieces.push(p); // to the top
-        drag = { p, dx: x - p.x, dy: y - p.y, sx: x, sy: y, moved: false };
-        // on a touch screen there is no wheel (Astra, 2026-10-29: "just automatically start doing it, and then I can line it
-        // up"): a held piece turns slowly by itself, and clicks in the moment it is both in its place and turned right
-        if (e.pointerType !== 'mouse') {
-          const held = drag; let last = performance.now();
-          const turn = (t) => {
-            if (drag !== held || !broken) return;
-            p.rotTo += Math.min(50, t - last) / 1000 * .5; last = t;
-            const home = homeOf(p, broken.spinTo);
-            if (Math.hypot(p.x - home.x, p.y - home.y) < R() * .22 && Math.abs(norm(p.rotTo - broken.spinTo)) < .12) { drag = null; tryPlace(p); return; }
-            requestAnimationFrame(turn);
-          };
-          requestAnimationFrame(turn);
-        }
+        drag = { p, dx: x - p.x, dy: y - p.y, sx: x, sy: y, moved: false, touch: e.pointerType !== 'mouse' };
         return;
       }
       const hit = inside().filter((f) => f.ss).sort((p, q) => q.z - p.z).find((f) => Math.hypot(f.sx - x, f.sy - y) < f.ss * .45);
@@ -556,14 +657,9 @@
             const nx = f.x / d, ny = f.y / d, nz = f.z / d, dot = f.vx * nx + f.vy * ny + f.vz * nz;
             if (dot > 0) {
               f.vx -= 2 * dot * nx; f.vy -= 2 * dot * ny; f.vz -= 2 * dot * nz; f.squash = .6;
-              // it hits the side and sparkles burst off it, in a pastel of its own color (Astra, 2026-10-29)
-              // in its own colors, its body's or its background's, as many as it sheds
-              const tint = () => paleOf(f.tints[Math.random() < .5 ? 0 : 1], [.3, .5, .7][Math.floor(Math.random() * 3)]);
-              const v = view(nx * lim, ny * lim, nz * lim); burst(v.sx + nx * r * rr, v.sy + ny * r * rr, Math.round((angry ? 7 : 5) * f.shed), tint(), 2.5);
-              // and some stay, bouncing round the dome with the rest
-              const keep = Math.floor(f.shed) + (Math.random() < f.shed % 1 ? 1 : 0);
-              for (let n = 0; n < keep; n++) keepMote(nx * .86, ny * .86, tint());
-              if (motes.length >= SPARK_MAX) explode();
+              // it hits the side: a collision, and a puff of sparkles off it, in a pastel of its own color, that fades away
+              const v = view(nx * lim, ny * lim, nz * lim); burst(v.sx + nx * r * rr, v.sy + ny * r * rr, Math.round((angry ? 7 : 5) * f.shed), tintOf(f), 2.5);
+              if (++hits >= HITS_MAX) explode();
             }
             f.x = nx * lim; f.y = ny * lim; f.z = nz * lim;
           }
@@ -578,7 +674,13 @@
         if (rel > 0) {
           p.vx -= rel * nx; p.vy -= rel * ny; p.vz -= rel * nz; q.vx += rel * nx; q.vy += rel * ny; q.vz += rel * nz;
           p.squash = q.squash = 1; p.spin = (Math.random() - .5) * .9; q.spin = (Math.random() - .5) * .9;
-          if (++hits >= HITS_MAX) explode();
+          // two that meet make sparkles that stay, bouncing round the dome with the rest, in their own colors; not while they
+          // are still arriving, piled up in the middle
+          if (t - p.born > 1500 && t - q.born > 1500) for (const o of [p, q]) {
+            const keep = Math.floor(o.shed) + (Math.random() < o.shed % 1 ? 1 : 0);
+            for (let n = 0; n < keep; n++) keepMote((p.x + q.x) / 2 * .9, (p.y + q.y) / 2 * .9, tintOf(o));
+          }
+          if (motes.length >= SPARK_MAX) explode();
           boings.push({ x: (p.x + q.x) / 2, y: (p.y + q.y) / 2, z: Math.max(p.z, q.z), t: 1, word: ['boing!', 'boop', 'bonk!', 'sproing'][Math.floor(Math.random() * 4)] });
         }
         const push = (min - d) / 2; p.x -= nx * push; p.y -= ny * push; p.z -= nz * push; q.x += nx * push; q.y += ny * push; q.z += nz * push;
@@ -718,13 +820,13 @@
       bx.strokeStyle = 'rgba(255, 255, 255, .07)'; bx.lineWidth = 1;
       for (let i = 1; i < 4; i++) { bx.beginPath(); bx.moveTo(0, h * i / 4); bx.lineTo(w, h * i / 4); bx.stroke(); }
       if (on && --spawnIn <= 0) {
-        spawnIn = Math.max(16, 46 - score * .28);
+        // much faster (Astra, 2026-10-29: "as soon as you click one, another one spawns ... only how fast you can hit them")
+        spawnIn = Math.max(10, 30 - score * .2);
         const hs = hues();
         const hue = isRainbow() ? hs[nextHue++ % hs.length] : hs[(Math.random() * hs.length) | 0];
-        // the first game's pace again, quick from the start (Astra, 2026-10-29: "I liked the mechanics ... the way it was the
-        // first time"), but each sparkle lasting about a third longer before it burns out, for more time to tap it; twice as
-        // long slowed the whole game down
-        targets.push({ x: 24 + Math.random() * (w - 48), y: 24 + Math.random() * (h - 48), t: 1, hue, sp: (.010 + Math.min(.014, score * .00013)) / 1.35 });
+        // the first game's speed exactly, fast from the start, for tapping on a phone (Astra, 2026-10-29: "whatever mechanics we
+        // changed about it, like as far as the speed, reverse"); the longer-lasting sparkles are gone again
+        targets.push({ x: 24 + Math.random() * (w - 48), y: 24 + Math.random() * (h - 48), t: 1, hue, sp: .010 + Math.min(.014, score * .00013) });
       }
       bx.save(); bx.globalCompositeOperation = 'lighter';
       for (const t of targets) {
@@ -757,7 +859,7 @@
       const r = bc.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
       const i = targets.findIndex((t) => Math.hypot(t.x - x, t.y - y) < 30);
       if (i < 0) { combo = 0; bC.textContent = 0; return; }
-      const [t] = targets.splice(i, 1);
+      const [t] = targets.splice(i, 1); spawnIn = 0;
       combo++; score += 10 + Math.min(40, combo * 2); bS.textContent = score; bC.textContent = combo;
       if (!reduced) for (let k = 0; k < 14; k++) { const a = k / 14 * 6.283; pops.push({ x: t.x, y: t.y, vx: Math.cos(a) * 2.4, vy: Math.sin(a) * 2.4, hue: t.hue, life: 1 }); }
     });
@@ -793,7 +895,7 @@
   const avPick=n=>Math.floor(Math.random()*n);
   const avNext=(old,n)=>(old+1+avPick(n-1))%n;
   const avPalette=()=>[...AV_PALETTES[avPick(AV_PALETTES.length)]];
-  const avState={group:'all',hairGroup:'girls',hair:0,bangs:0,hairColors:avPalette(),head:1,headColors:avPalette(),body:1,bodyColors:avPalette(),fit:0,fitColors:avPalette(),fx:0,fxColors:avPalette(),lashes:0,seed:347};
+  const avState={group:'all',hairGroup:'girls',hair:0,bangs:0,hairColors:avPalette(),head:1,headColors:avPalette(),body:1,bodyColors:avPalette(),fit:0,fitColors:avPalette(),fx:0,fxColors:avPalette(),lashes:0,seed:avPick(1e9)};
   const avPath=(d,c,s='',w=2)=>`<path d="${d}" fill="${c}"${s?` stroke="${s}" stroke-width="${w}"`:''}/>`;
   const avEllipse=(x,y,rx,ry,c,s='')=>`<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="${c}"${s?` stroke="${s}" stroke-width="2"`:''}/>`;
   const avLine=(d,c,w=2)=>avPath(d,'none',c,w);
@@ -864,6 +966,8 @@
   }
   // accessories that hang behind the body; drawn before the outfit so they tuck in behind it (2026-10-27)
   const AV_BEHIND=new Set([8,9,10,19]);
+  // head pieces that grow out of the head: drawn before the hair, so the hair covers their roots
+  const AV_UNDER_HAIR=new Set([1,3,7,8,9,18]);
   function avBody(behind=false){
    if(AV_BEHIND.has(avState.body)!==behind)return avState.body===8&&!behind?avLine('M88 128L80 160M112 128L120 160',avState.bodyColors[1],4):'';
    const [,a,b]=avState.bodyColors;
@@ -896,7 +1000,7 @@
    const random=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296};
    for(let j=0;j<14;j++){
     let angle=j/14*Math.PI*2,x=100+Math.cos(angle)*80,y=109+Math.sin(angle)*92;
-    const size=2+random()*3,c=j%2?a:b;
+    const size=2.6+random()*3.4,c=`hsl(${Math.floor(random()*360)} 95% 72%)`;
     if(avState.fx===3||avState.fx===18){x=100+Math.cos(angle)*67;y=30+Math.sin(angle)*17;}
     else if(avState.fx===15){x=100+Math.cos(angle*2)*(42+j*3);y=105+Math.sin(angle*2)*(42+j*3);}
     else if(![9,16].includes(avState.fx)){x+=random()*10-5;y+=random()*10-5;}
@@ -926,8 +1030,8 @@
   function drawLab(){
    const hair=avHair();
    const lashes=AV_LASH_D[avState.lashes]?avLine(AV_LASH_D[avState.lashes],'#2a1330',2.4):'';
-   labSvg.innerHTML=`<ellipse cx="100" cy="188" rx="52" ry="9" fill="#ff2e7e" opacity=".3"/>${hair.back}${avBody(true)}${avFit()}${avBody()}<circle cx="100" cy="88" r="42" fill="#f9d8c4"/>${hair.front}${avHead()}<g fill="#2a1330"><ellipse cx="85" cy="94" rx="6" ry="8"/><ellipse cx="115" cy="94" rx="6" ry="8"/></g>${lashes}<g fill="#fff"><circle cx="87" cy="91" r="2.3"/><circle cx="117" cy="91" r="2.3"/></g><ellipse cx="76" cy="106" rx="9" ry="5" fill="#ff8fd0" opacity=".55"/><ellipse cx="124" cy="106" rx="9" ry="5" fill="#ff8fd0" opacity=".55"/>${avLine('M95 108q5 5 10 0','#c4306b',2.4)}${avEffects()}`;
-   const labels={hair:AV_HAIR[avState.hairGroup][avState.hair][0],bangs:AV_BANGS[avState.bangs],head:AV_HEAD[avState.head],body:AV_BODY[avState.body],fit:AV_FITS[avState.fit],fx:AV_FX[avState.fx],lashes:AV_LASHES[avState.lashes]};
+   labSvg.innerHTML=`<ellipse cx="100" cy="188" rx="52" ry="9" fill="#ff2e7e" opacity=".3"/>${hair.back}${avBody(true)}${avFit()}${avBody()}<circle cx="100" cy="88" r="42" fill="#f9d8c4"/>${AV_UNDER_HAIR.has(avState.head)?avHead()+hair.front:hair.front+avHead()}<g fill="#2a1330"><ellipse cx="85" cy="94" rx="6" ry="8"/><ellipse cx="115" cy="94" rx="6" ry="8"/></g>${lashes}<g fill="#fff"><circle cx="87" cy="91" r="2.3"/><circle cx="117" cy="91" r="2.3"/></g><ellipse cx="76" cy="106" rx="9" ry="5" fill="#ff8fd0" opacity=".55"/><ellipse cx="124" cy="106" rx="9" ry="5" fill="#ff8fd0" opacity=".55"/>${avLine('M95 108q5 5 10 0','#c4306b',2.4)}${avEffects()}`;
+   const labels={hair:AV_HAIR[avState.hairGroup][avState.hair][0],bangs:AV_BANGS[avState.bangs],hairColors:avState.hairColors[0],head:AV_HEAD[avState.head],body:AV_BODY[avState.body],fit:AV_FITS[avState.fit],fx:AV_FX[avState.fx],lashes:AV_LASHES[avState.lashes]};
    for(const [part,label] of Object.entries(labels))document.getElementById('lb-'+part).textContent=label;
    document.getElementById('labLashes').setAttribute('aria-pressed',String(avState.lashes!==3));
    document.getElementById('labPalette').textContent='Hair colors: '+avState.hairColors[0]+' · '+avState.hairColors.slice(1).join(' / ');
@@ -944,6 +1048,7 @@
    if(part==='hair')avRandomHair();
    else if(part==='bangs'){avState.bangs=avNext(avState.bangs,AV_BANGS.length);avState.hairColors=avPalette()}
    else if(part==='lashes')avState.lashes=(avState.lashes+1)%AV_LASHES.length;
+   else if(part==='hairColors'){const was=avState.hairColors[0];do avState.hairColors=avPalette();while(avState.hairColors[0]===was&&AV_PALETTES.length>1)}
    else{const options={head:AV_HEAD,body:AV_BODY,fit:AV_FITS,fx:AV_FX};avState[part]=avNext(avState[part],options[part].length);avState[part+'Colors']=avPalette();if(part==='fx')avState.seed=avPick(1e9)}
    drawLab();
   });

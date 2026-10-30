@@ -1,105 +1,231 @@
 // Snapshot of public repos and pets, used when the live GitHub API cannot be reached.
 // Regenerate from gh repo list and astras-pet-os/pets.json.
 window.SITE = {
- "snapshot": "2026-10-20",
+ "snapshot": "2026-10-29",
  "repos": [
   {
    "name": "ai-discord-presence",
    "description": "Show the exact AI model you're using on your Discord profile. Two free Windows downloads: OpenAI Discord Presence and Anthropic Discord Presence, plus a guide to add more models.",
    "language": "JavaScript",
-   "pushed_at": "2026-10-20T17:22:23Z",
-   "homepage": "https://github.com/findastra/ai-discord-presence#start-it-about-2-minutes"
+   "pushed_at": "2026-10-29T18:50:24Z",
+   "created_at": "2026-10-08T02:46:28Z",
+   "homepage": "https://github.com/findastra/ai-discord-presence#the-app"
   },
   {
-   "name": "piranesi-house",
-   "description": "A VRChat world inspired by Susanna Clarke's Piranesi: an endless House of statues, tides and light (Unity 2022.3, VRChat SDK3, UdonSharp).",
-   "language": "C#",
-   "pushed_at": "2026-10-20T17:06:48Z",
-   "homepage": ""
+   "name": "anthropic-discord-presence",
+   "description": "Show your Claude Code model on your Discord profile. Free Windows app.",
+   "language": null,
+   "pushed_at": "2026-10-29T11:07:16Z",
+   "created_at": "2026-10-05T04:42:32Z",
+   "homepage": "https://github.com/findastra/findastra-discord-presence"
   },
   {
-   "name": "liminal-doors",
-   "description": "Astra's VRChat world of doors that open onto quiet in-between places, each hiding a little glass animal. Hatching: stop 1 is the pink phone booth above a sea of pink clouds.",
-   "language": "C#",
-   "pushed_at": "2026-10-20T16:15:45Z",
-   "homepage": ""
-  },
-  {
-   "name": "astras-star-window",
-   "description": "A fat star window that fades between Astra's favorite pictures of her avatar: one hosted picture, changed from Portfolio Puffer",
+   "name": "astras-gif-maker",
+   "description": "Gif Giraffe: a pet app by Astra that will make GIFs (placeholder).",
    "language": "HTML",
-   "pushed_at": "2026-10-20T08:22:05Z",
-   "homepage": "https://findastra.github.io/astras-star-window/"
-  },
-  {
-   "name": "fuzzboi-factory",
-   "description": "👉 https://findastra.github.io/fuzzbois/ — Make your Fuzzboi: hand-drawn characters where a 6-digit hex code picks the look.",
-   "language": "HTML",
-   "pushed_at": "2026-10-20T06:26:06Z",
-   "homepage": "https://findastra.github.io/fuzzboi-factory/"
-  },
-  {
-   "name": "findastra",
-   "description": "Profile page for Astra: what I'm building and where to find me.",
-   "language": "Markdown",
-   "pushed_at": "2026-10-20T06:16:50Z",
+   "pushed_at": "2026-10-27T02:31:40Z",
+   "created_at": "2026-10-09T22:46:29Z",
    "homepage": ""
-  },
-  {
-   "name": "astras-photo-star",
-   "description": "Make your own photo star: put your favorite photos in a fat neon star and download it. Your photos never leave your device",
-   "language": "HTML",
-   "pushed_at": "2026-10-20T05:06:33Z",
-   "homepage": "https://findastra.github.io/astras-photo-star/"
   },
   {
    "name": "astras-infinite-pole",
    "description": "Unity source, magical effects, and verified VRChat publication history for Astra’s Infinite Pole. PC VR / desktop.",
    "language": "C#",
-   "pushed_at": "2026-10-20T04:57:34Z",
+   "pushed_at": "2026-10-29T07:56:38Z",
+   "created_at": "2026-09-12T21:01:38Z",
+   "homepage": ""
+  },
+  {
+   "name": "astras-pet-os",
+   "description": "Astra's PetOS: the Friendly Farmer organizes the pets (intelligent apps). System Map (3D PFD), intelligence levels, and the plan for the Farm and the Kennel.",
+   "language": "HTML",
+   "pushed_at": "2026-10-30T02:36:04Z",
+   "created_at": "2026-10-09T02:19:59Z",
+   "homepage": "https://findastra.github.io/astras-pet-os/system-map-20261012.html"
+  },
+  {
+   "name": "astras-photostar",
+   "description": "Make your own photo star: put your favorite photos in a fat neon star and download it. Your photos never leave your device",
+   "language": "HTML",
+   "pushed_at": "2026-10-29T11:07:34Z",
+   "created_at": "2026-10-20T05:06:25Z",
+   "homepage": "https://findastra.github.io/astras-photostar/"
+  },
+  {
+   "name": "astras-star-window",
+   "description": "A fat star window that fades between Astra's favorite pictures of her avatar: one hosted picture, changed from Portfolio Puffer",
+   "language": "HTML",
+   "pushed_at": "2026-10-29T08:10:54Z",
+   "created_at": "2026-10-20T04:47:41Z",
+   "homepage": "https://findastra.github.io/astras-star-window/"
+  },
+  {
+   "name": "detour-into-vr",
+   "description": "Streaming DETOUR Mile 04 (IRL + VR rave) to TikTok LIVE: Twitch recorder, promo overlay, laptop OBS setup",
+   "language": "Python",
+   "pushed_at": "2026-10-29T08:13:25Z",
+   "created_at": "2026-10-09T21:34:50Z",
+   "homepage": ""
+  },
+  {
+   "name": "dubstep-armory",
+   "description": "Dubstep Gunsmith's pet program (#37, seed): Astra’s catalog site for avatar gun effects and loadouts, made with Codex on 2026-10-12. Its source is only in Codex’s workspace on the PC, not on GitHub yet.",
+   "language": null,
+   "pushed_at": "2026-10-22T08:29:33Z",
+   "created_at": "2026-10-14T10:01:37Z",
+   "homepage": ""
+  },
+  {
+   "name": "findastra",
+   "description": "Profile page for Astra: what I'm building and where to find me.",
+   "language": "Markdown",
+   "pushed_at": "2026-10-29T04:22:21Z",
+   "created_at": "2026-10-05T04:37:14Z",
    "homepage": ""
   },
   {
    "name": "findastra.github.io",
    "description": "👉 https://findastra.github.io — Astra's portfolio: worlds, projects, pets. The one place that connects Audra and Astra.",
    "language": "JavaScript",
-   "pushed_at": "2026-10-20T03:12:03Z",
+   "pushed_at": "2026-10-30T03:19:48Z",
+   "created_at": "2026-10-17T07:22:13Z",
    "homepage": "https://findastra.github.io"
+  },
+  {
+   "name": "fuzzboi-factory",
+   "description": "👉 https://findastra.github.io/fuzzbois/ — Make your Fuzzboi: hand-drawn characters where a 6-digit hex code picks the look.",
+   "language": "HTML",
+   "pushed_at": "2026-10-29T08:05:20Z",
+   "created_at": "2021-08-08T00:21:18Z",
+   "homepage": "https://findastra.github.io/fuzzboi-factory/"
+  },
+  {
+   "name": "ghost-protocol",
+   "description": "An interactive personal cybersecurity checklist.",
+   "language": "HTML",
+   "pushed_at": "2026-10-29T11:07:44Z",
+   "created_at": "2026-09-13T01:27:42Z",
+   "homepage": ""
+  },
+  {
+   "name": "infinite-studio",
+   "description": "Pole Puff's pet program (#38, seed): Manages Astra's Infinite Pole.",
+   "language": null,
+   "pushed_at": "2026-10-22T08:29:30Z",
+   "created_at": "2026-10-14T10:01:51Z",
+   "homepage": ""
+  },
+  {
+   "name": "iris-the-origin-story",
+   "description": "Iris, the Origin Story - a bedtime serial becoming a book",
+   "language": null,
+   "pushed_at": "2026-10-29T18:19:11Z",
+   "created_at": "2026-10-27T04:54:42Z",
+   "homepage": ""
+  },
+  {
+   "name": "learn-python",
+   "description": "Learning Python, in the open.",
+   "language": "Markdown",
+   "pushed_at": "2026-10-29T11:07:39Z",
+   "created_at": "2023-08-12T07:45:14Z",
+   "homepage": ""
+  },
+  {
+   "name": "liminal-doors",
+   "description": "Astra's VRChat world of doors that open onto quiet in-between places, each hiding a little glass animal. Hatching: stop 1 is the pink phone booth above a sea of pink clouds.",
+   "language": "C#",
+   "pushed_at": "2026-10-29T08:08:58Z",
+   "created_at": "2026-10-18T09:48:28Z",
+   "homepage": ""
+  },
+  {
+   "name": "mommys-website",
+   "description": "Plan and brief for the website of Mommy's, a VRChat dance academy & entertainers club.",
+   "language": "HTML",
+   "pushed_at": "2026-10-29T08:13:22Z",
+   "created_at": "2026-10-05T04:48:12Z",
+   "homepage": ""
+  },
+  {
+   "name": "mommys-world",
+   "description": "Mommy's World: the VRChat home of Mommy's, the dance academy and entertainers club. Seed: design first, built from scratch, with every maker and every bit of AI help written down.",
+   "language": null,
+   "pushed_at": "2026-10-29T18:19:40Z",
+   "created_at": "2026-10-20T04:15:13Z",
+   "homepage": ""
+  },
+  {
+   "name": "moodglass",
+   "description": "Discord photo-chat backgrounds with blended mosaics, inline categories, and optional James Webb imagery.",
+   "language": "JavaScript",
+   "pushed_at": "2026-10-29T18:18:22Z",
+   "created_at": "2026-10-25T04:06:20Z",
+   "homepage": ""
+  },
+  {
+   "name": "openai-discord-presence",
+   "description": "Show your Codex model on your Discord profile. Free Windows app.",
+   "language": null,
+   "pushed_at": "2026-10-29T11:07:11Z",
+   "created_at": "2026-09-13T06:50:09Z",
+   "homepage": "https://findastra.github.io/openai-discord-presence/"
+  },
+  {
+   "name": "paper-girl",
+   "description": "A free science discovery desk: real research, publisher explanations, fresh articles, and an anonymous shared reading history.",
+   "language": "TypeScript",
+   "pushed_at": "2026-10-26T01:45:58Z",
+   "created_at": "2026-10-05T02:52:58Z",
+   "homepage": "https://findastra.github.io/paper-girl/"
+  },
+  {
+   "name": "piranesi-house",
+   "description": "A VRChat world inspired by Susanna Clarke's Piranesi: an endless House of statues, tides and light (Unity 2022.3, VRChat SDK3, UdonSharp).",
+   "language": "C#",
+   "pushed_at": "2026-10-27T02:51:54Z",
+   "created_at": "2026-10-05T14:44:14Z",
+   "homepage": ""
   },
   {
    "name": "pocket-message-board",
    "description": "A scrolling LED sign for any screen: neon green board, big black letters. Fills a phone, iPad or computer window and turns with it.",
    "language": "HTML",
-   "pushed_at": "2026-10-20T02:44:24Z",
+   "pushed_at": "2026-10-29T07:58:18Z",
+   "created_at": "2026-10-20T02:44:18Z",
    "homepage": "https://findastra.github.io/pocket-message-board/"
   },
   {
-   "name": "openai-discord-presence",
-   "description": "Moved: OpenAI Discord Presence now lives in findastra/ai-discord-presence (download it there).",
-   "language": "JavaScript",
-   "pushed_at": "2026-10-18T08:24:18Z",
-   "homepage": "https://findastra.github.io/openai-discord-presence/"
-  },
-  {
-   "name": "mommys-website",
-   "description": "Plan and brief for the website of Mommy's, a VRChat dance academy & entertainers club.",
-   "language": "Markdown",
-   "pushed_at": "2026-10-18T08:24:07Z",
+   "name": "rift-rabbit",
+   "description": "Rift Rabbit: a white pet app by Astra that preps and tracks VR software and performance (placeholder).",
+   "language": "C#",
+   "pushed_at": "2026-10-29T11:07:30Z",
+   "created_at": "2026-10-09T22:50:51Z",
    "homepage": ""
   },
   {
-   "name": "detour-into-vr",
-   "description": "Streaming DETOUR Mile 04 (IRL + VR rave) to TikTok LIVE: Twitch recorder, promo overlay, laptop OBS setup",
-   "language": "Python",
-   "pushed_at": "2026-10-18T08:21:39Z",
+   "name": "the-cooling-tower",
+   "description": "A VRChat rave world inside a nuclear plant cooling tower, with a glowing reactor hall below",
+   "language": "HTML",
+   "pushed_at": "2026-10-29T07:53:49Z",
+   "created_at": "2026-10-24T19:04:08Z",
+   "homepage": "https://findastra.github.io/the-cooling-tower/mini-model/the-cooling-tower-mini-model-20261024.html"
+  },
+  {
+   "name": "the-rainbow-maker",
+   "description": "a VRChat world around a solar Rainbow Maker: watch its tiny gear train turn and spin a crystal that throws rainbows across the room.",
+   "language": "C#",
+   "pushed_at": "2026-10-29T08:09:53Z",
+   "created_at": "2026-10-23T01:50:27Z",
    "homepage": ""
   },
   {
-   "name": "anthropic-discord-presence",
-   "description": "Moved: Anthropic Discord Presence now lives in findastra/ai-discord-presence (download it there).",
-   "language": "JavaScript",
-   "pushed_at": "2026-10-18T08:20:37Z",
-   "homepage": "https://github.com/findastra/ai-discord-presence"
+   "name": "unity-unicorn",
+   "description": "Planned pet companion for Unity and VRChat world projects; scope to be decided.",
+   "language": "HTML",
+   "pushed_at": "2026-10-29T18:16:03Z",
+   "created_at": "2026-10-09T02:25:45Z",
+   "homepage": ""
   }
  ],
  "pets": [

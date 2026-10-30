@@ -4,7 +4,9 @@
 window.PROFILE = {
   name: "findastra",
   about: [
-    "I build virtual worlds, small single-purpose apps, and the tools that let AI assistants work alongside me.",
+    // Astra, 2026-10-29: "I need to put that I'm an agentic engineer ... it needs to be somewhere else on the page"
+    "Chemical process engineer in semiconductor manufacturing, and an agentic engineer.",
+    "I build virtual worlds, small single-purpose apps, and the tools that let AI agents work alongside me.",
     "Most of it lives in the open on GitHub. The rest of this page is the long version."
   ],
   languages: ["HTML & CSS", "JavaScript", "C#", "Python", "PowerShell", "TypeScript"],
