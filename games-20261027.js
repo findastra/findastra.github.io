@@ -183,6 +183,8 @@
       x.fillStyle = c; x.beginPath(); x.moveTo(16, 0); x.lineTo(16 + q, 16 - q); x.lineTo(32, 16); x.lineTo(16 + q, 16 + q); x.lineTo(16, 32); x.lineTo(16 - q, 16 + q); x.lineTo(0, 16); x.lineTo(16 - q, 16 - q); x.closePath(); x.fill();
       stamps.set(c, k); return k;
     };
+    // a sparkle in a Fuzzboi's own colors, its body's or its background's
+    const tintOf = (f) => paleOf(f.tints[Math.random() < .5 ? 0 : 1], [.3, .5, .7][Math.floor(Math.random() * 3)]);
     const keepMote = (x, y, c) => { const b = Math.random() * 7, sp = .002 + Math.random() * .004; motes.push({ x, y, vx: Math.cos(b) * sp, vy: Math.sin(b) * sp, s: 3 + Math.random() * 6, c, t: Math.random() * 7 }); };
     const folks = [], boings = [];
     function resize() { const r = fit(cv); W = r.width; H = r.height; }
@@ -237,10 +239,12 @@
         meterSparks();
       }
     }
-    // the sparkle meter: every sparkle they knock off the walls stays in the dome, up to SPARK_MAX, and that many breaks it too
-    // (Astra, 2026-10-29: "a sparkle counter, and then ... a fuzzboy counter. And if either one of them meets the threshold")
-    // three meters (Astra, 2026-10-29: "sparkles generated, fuzz boys, and collisions"): any one full breaks it
-    const SPARK_MAX = 6667, HITS_MAX = 1667;
+    // three meters (Astra, 2026-10-29: "sparkles generated, fuzz boys, and collisions"): any one full breaks it.
+    // Collisions are Fuzzbois running into the dome; two running into each other make sparkles, which stay in the dome. So the
+    // more there are, the more they bump and the faster the sparkles pile up: the Fuzzbois, the sparkles or the collisions can
+    // each be what breaks it (Astra, 2026-10-29: "6, 7, 6 sparkles", "7, 6, 7 collisions", "every time ... any of them run
+    // into the dome, not to each other. When they run into each other, they generate more sparkles")
+    const SPARK_MAX = 676, HITS_MAX = 767;
     let hits = 0, shownSparks = -1, shownHits = -1;
     function meterSparks() {
       const meter = $('dome-meter'); if (!meter) return;
@@ -661,14 +665,9 @@
             const nx = f.x / d, ny = f.y / d, nz = f.z / d, dot = f.vx * nx + f.vy * ny + f.vz * nz;
             if (dot > 0) {
               f.vx -= 2 * dot * nx; f.vy -= 2 * dot * ny; f.vz -= 2 * dot * nz; f.squash = .6;
-              // it hits the side and sparkles burst off it, in a pastel of its own color (Astra, 2026-10-29)
-              // in its own colors, its body's or its background's, as many as it sheds
-              const tint = () => paleOf(f.tints[Math.random() < .5 ? 0 : 1], [.3, .5, .7][Math.floor(Math.random() * 3)]);
-              const v = view(nx * lim, ny * lim, nz * lim); burst(v.sx + nx * r * rr, v.sy + ny * r * rr, Math.round((angry ? 7 : 5) * f.shed), tint(), 2.5);
-              // and some stay, bouncing round the dome with the rest
-              const keep = Math.floor(f.shed) + (Math.random() < f.shed % 1 ? 1 : 0);
-              for (let n = 0; n < keep; n++) keepMote(nx * .86, ny * .86, tint());
-              if (motes.length >= SPARK_MAX) explode();
+              // it hits the side: a collision, and a puff of sparkles off it, in a pastel of its own color, that fades away
+              const v = view(nx * lim, ny * lim, nz * lim); burst(v.sx + nx * r * rr, v.sy + ny * r * rr, Math.round((angry ? 7 : 5) * f.shed), tintOf(f), 2.5);
+              if (++hits >= HITS_MAX) explode();
             }
             f.x = nx * lim; f.y = ny * lim; f.z = nz * lim;
           }
@@ -683,7 +682,13 @@
         if (rel > 0) {
           p.vx -= rel * nx; p.vy -= rel * ny; p.vz -= rel * nz; q.vx += rel * nx; q.vy += rel * ny; q.vz += rel * nz;
           p.squash = q.squash = 1; p.spin = (Math.random() - .5) * .9; q.spin = (Math.random() - .5) * .9;
-          if (++hits >= HITS_MAX) explode();
+          // two that meet make sparkles that stay, bouncing round the dome with the rest, in their own colors; not while they
+          // are still arriving, piled up in the middle
+          if (t - p.born > 1500 && t - q.born > 1500) for (const o of [p, q]) {
+            const keep = Math.floor(o.shed) + (Math.random() < o.shed % 1 ? 1 : 0);
+            for (let n = 0; n < keep; n++) keepMote((p.x + q.x) / 2 * .9, (p.y + q.y) / 2 * .9, tintOf(o));
+          }
+          if (motes.length >= SPARK_MAX) explode();
           boings.push({ x: (p.x + q.x) / 2, y: (p.y + q.y) / 2, z: Math.max(p.z, q.z), t: 1, word: ['boing!', 'boop', 'bonk!', 'sproing'][Math.floor(Math.random() * 4)] });
         }
         const push = (min - d) / 2; p.x -= nx * push; p.y -= ny * push; p.z -= nz * push; q.x += nx * push; q.y += ny * push; q.z += nz * push;

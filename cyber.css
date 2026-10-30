@@ -439,7 +439,8 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 .chapter.empty { display: none; }
 .lede { max-width: 70ch; margin: -14px 0 26px; color: var(--muted); }
 /* Astra's PetOS: its four levels, one a line */
-.levels { list-style: none; padding: 0; display: grid; gap: 4px; }
+.levels-title { margin: -8px 0 10px; font: 700 15px var(--mono); letter-spacing: .04em; }
+.levels { list-style: none; padding: 0; display: grid; gap: 4px; margin-top: 0; }
 .levels b { display: inline-block; min-width: 3ch; color: var(--ink); }
 .levels .all { margin-top: 6px; }
 #project-source { max-width: none; white-space: pre-line; line-height: 1.55; }

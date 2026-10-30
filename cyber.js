@@ -575,6 +575,17 @@
           // size gives its picture more room (the System Map's sphere, Astra 2026-10-29)
           if (p.view) f.style.setProperty('--view', p.view);
           if (p.lift) f.style.height = `calc(var(--view, 2) * ${p.lift * 100}%)`;
+          // tidy: the System Map as Astra wants it in the Polaroid (2026-10-29: "I just want to see that and then show key. And
+          // then 2D, 3D ... and spin on the bottom right"): the key starts folded to the title and its Show key button, and the
+          // bottom bar keeps only Spin and 2D | 3D, at the bottom right, on phones too (the map hides those on touch screens).
+          // Like bare, it can only reach in on the live site
+          if (p.tidy) f.addEventListener('load', () => { try {
+            const d = f.contentDocument, st = d.createElement('style');
+            st.textContent = '#nZoomIn,#nZoomOut,#nReset,#petSpin{display:none!important}body .navpad .no-touch{display:inline-flex!important}' +
+              '.navpad{left:auto!important;right:14px!important;transform:none!important}';
+            d.head.append(st);
+            const fold = d.getElementById('hudMin'); if (fold && fold.getAttribute('aria-expanded') === 'true') fold.click();
+          } catch {} });
           if (p.bare) f.addEventListener('load', () => { try { const st = f.contentDocument.createElement('style'); st.textContent = '.panel{display:none!important}'; f.contentDocument.head.append(st); } catch {} });
           // says: messages the page's own message box takes in turn, typed in the way a visitor would. Like back, below, it
           // can only reach in on the live site, where the page shares this site's address
@@ -1328,7 +1339,7 @@
         // drawn at twice the photo's size, so its key in the top left is big enough to read (Astra, 2026-10-29)
         // (lift: drawn a little short of the photo's height, so the map's bottom bar, Spin and its 2D | 3D switch, sits up
         // where it can be seen)
-        pics: [{ src: HUB_PAGES + 'system-map-20261012.html', cap: 'The System Map', type: 'frame', label: 'live', view: 2, lift: .93, open: HUB_PAGES + 'system-map-20261012.html' }], repo: HUB_REPO }),
+        pics: [{ src: HUB_PAGES + 'system-map-20261012.html', cap: 'The System Map', type: 'frame', label: 'live', view: 1.6, lift: .93, tidy: true, open: HUB_PAGES + 'system-map-20261012.html' }], repo: HUB_REPO }),
       // the pets on the bare paper, and the one you flip to a little smaller (Astra, 2026-10-29); Meet every pet in the middle,
       // the pets grid on the right
       polaroid({ key: 'meet-pets', name: 'Meet every pet', kind: 'Pet gallery · ' + lang, date, repo: HUB_REPO, text: 'One at a time, no shaking needed.',
