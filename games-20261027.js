@@ -50,6 +50,7 @@
   const ready = (async () => {
     try { await loadScript(RULES); F = window.Fuzzboi; } catch { note.textContent = 'The Fuzzboi Factory did not answer. Try again in a minute.'; return; }
     try { layersIn = await F.loadLayers(LAYERS, layers, true); } catch {}
+    if (note.textContent.startsWith('Loading')) note.textContent = '';
   })();
   // draws one Fuzzboi on a transparent canvas (the home has its own background); a rough stand-in if the art did not load
   function sprite(p, px) {
@@ -116,7 +117,8 @@
       const dd = el('dd', null, v); if (swatch) { const i = el('i'); i.style.background = swatch; dd.prepend(i); }
       return [el('dt', null, k), dd];
     }));
-    const said = d.flags.map((f) => f[1]);
+    // only problems with the code; the long rarity notes stay out (Astra, 2026-10-29: "just get rid of that")
+    const said = d.flags.filter((f) => f[0] === 'bad').map((f) => f[1]);
     if (layersIn < F.EXPECTED.length) said.unshift(layersIn ? `Only ${layersIn} of ${F.EXPECTED.length} art layers loaded, so parts are a stand-in.` : 'The art layers did not load, so this is a stand-in sketch, not the art.');
     if (moveIn) said.push(home.add(d.code));
     note.textContent = said.filter(Boolean).join(' ');
@@ -187,6 +189,7 @@
     function count() {
       const n = outside().length, k = inside().length;
       $('home-count').textContent = broken ? `the dome is broken · ${n} loose on the page` : n ? `${k} in the dome · ${n} loose on the page` : `${k} moved in`;
+      cv.classList.toggle('is-broken', !!broken);
       $('home-out').disabled = !folks.length || !!broken; $('home-out').textContent = n ? 'call them all home' : 'let them out';
       $('home-clear').disabled = !folks.length;
       $('home-pick').textContent = broken ? 'It broke! Drag each piece back where it goes. Tap a piece to turn it.' : crowded() ? `Too crowded! ${k} in there and they are furious. Let some out.` : n ? 'Catch one: grab it, drag it back over the dome and let go.' : picked ? `#${picked.code}` : folks.length ? 'Tap a Fuzzboi to see its code.' : 'Nobody lives here yet. Make a Fuzzboi above and send it in.';
