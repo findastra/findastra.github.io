@@ -1639,10 +1639,16 @@
   size(); new ResizeObserver(size).observe(cv);
   // the rain's colors: the rainbow first; catching the white rabbit moves to the next set (Astra, 2026-10-27). Each is a run of
   // hues (from, span) that the columns spread over and drift down.
+  // one color at a time now, in rainbow order, then white, then the rainbow again (Astra, 2026-10-29: "red, orange, yellow,
+  // green, blue, purple, pink, white, and then back to rainbow"); each spans only enough hue to bleed into its neighbor a
+  // little, two or three colors at most ("if he's yellow, he needs like a yellow scale, and it can bleed a little orange")
   const PALETTES = [
-    { name: 'rainbow', from: 0, span: 360 }, { name: 'neon pink and cyan', from: 290, span: 110 }, { name: 'matrix green', from: 95, span: 60 },
-    { name: 'sunset', from: 330, span: 80 }, { name: 'ice', from: 170, span: 70 }, { name: 'gold', from: 30, span: 40 }, { name: 'vapor', from: 250, span: 90 },
+    { name: 'rainbow', from: 0, span: 360 }, { name: 'red', from: 350, span: 22 }, { name: 'orange', from: 16, span: 22 }, { name: 'yellow', from: 38, span: 22 },
+    { name: 'green', from: 100, span: 34 }, { name: 'blue', from: 200, span: 30 }, { name: 'purple', from: 262, span: 28 }, { name: 'pink', from: 308, span: 26 },
+    { name: 'white', from: 0, span: 0, white: true },
   ];
+  // a palette's middle color, the one the rabbit wears
+  const furOf = (pal) => (pal.white ? '#ffffff' : `hsl(${(pal.from + pal.span / 2) % 360} 100% 62%)`);
   let palette = 0;
   (function rain() {
     if (reduced) return;
@@ -1653,7 +1659,8 @@
     cols.forEach((col, i) => {
       const y = col.y;
       const pal = PALETTES[palette], k = (i * 9 + y / 6 + t) % 360;
-      const color = `hsl(${pal.from + (pal.span === 360 ? k : Math.abs(((k / 360) * 2 * pal.span) % (2 * pal.span) - pal.span))} 100% ${unmasked ? 55 : 62}%)`;
+      const color = pal.white ? `hsl(0 0% ${unmasked ? 55 : 88 - Math.abs((k % 60) - 30) / 3}%)`
+        : `hsl(${(pal.from + (pal.span === 360 ? k : Math.abs(((k / 360) * 2 * pal.span) % (2 * pal.span) - pal.span))) % 360} 100% ${unmasked ? 55 : 62}%)`;
       // unmasked: deep colored code on white, glowing in its color (Astra, 2026-10-29: more colorful; it was black)
       if (unmasked) { cx.fillStyle = color.replace(/ 55%\)$/, ' 40%)'); cx.shadowColor = color; cx.shadowBlur = 8; } else { cx.fillStyle = color; cx.shadowBlur = 0; }
       // the next letter of this column's words; a short gap after them, then new words in another language
@@ -1778,24 +1785,33 @@
     });
     lane.append(bun);
     let running = false, timer = 0, raf = 0;
-    const pose = (i, hop) => { sprites.forEach((s, n) => (s.style.display = n === i ? 'block' : 'none')); bun.style.transform = `translateY(${-Math.round(FRAMES[i].lift * hop)}px)`; };
     const later = (ms) => { clearTimeout(timer); timer = setTimeout(run, ms); };
-    function stop() { running = false; cancelAnimationFrame(raf); bun.classList.remove('running'); later(25000 + Math.random() * 35000); }
-    // 8-bit hops: four fixed frames per hop, and the rabbit jumps forward once per hop, from behind the label to off the right edge
+    // half as often as before (Astra, 2026-10-29: "run across a little bit less often, like twice as slow")
+    function stop() { running = false; cancelAnimationFrame(raf); bun.classList.remove('running'); later(50000 + Math.random() * 70000); }
+    // a hop, then a pause, then a hop (Astra, 2026-10-29: "hops once and pauses, and then hops once and pauses"): each hop is a
+    // quick arc through the rise, peak and land frames, moving forward as it goes; then he sits crouched a moment before the next
+    const pose = (i, y) => { sprites.forEach((s, n) => (s.style.display = n === i ? 'block' : 'none')); bun.style.transform = `translateY(${-Math.round(y)}px)`; };
     function run() {
       if (document.hidden) return later(5000);
       const x0 = -40, x1 = lane.clientWidth + 10;
-      const hopMs = 560 + Math.random() * 160, hop = 11 + Math.random() * 3, hops = Math.max(6, Math.round((x1 - x0) / 46)), step = (x1 - x0) / hops;
-      // his color is the colors the rain turns when he is caught (Astra, 2026-10-27)
+      const hopMs = 380 + Math.random() * 60, restMs = 480 + Math.random() * 160, hop = 12 + Math.random() * 3;
+      const hops = Math.max(6, Math.round((x1 - x0) / 46)), step = (x1 - x0) / hops, cycle = hopMs + restMs;
+      // he wears the color the rain turns when he is caught (Astra, 2026-10-27); a colored rabbit now, not only a glow (Astra,
+      // 2026-10-29: "I want you to do like a colored rabbit")
       const next = PALETTES[(palette + 1) % PALETTES.length];
-      bun.classList.toggle('rainbow', next.span === 360); bun.style.setProperty('--glow', next.span === 360 ? '#fff' : `hsl(${next.from + next.span / 2} 100% 62%)`);
-      running = true; bun.classList.add('running'); bun.style.left = x0 + 'px'; pose(0, hop);
+      bun.classList.toggle('rainbow', next.span === 360);
+      bun.style.setProperty('--glow', next.span === 360 ? '#fff' : furOf(next)); bun.style.setProperty('--fur', next.span === 360 ? '#fff' : furOf(next));
+      running = true; bun.classList.add('running'); bun.style.left = x0 + 'px'; pose(0, 0);
       const t0 = performance.now() + 600;
       raf = requestAnimationFrame(function tick(now) {
         if (!running) return;
-        const k = Math.max(0, Math.floor((now - t0) / (hopMs / 4))), n = Math.floor(k / 4), f = k % 4;
+        const e = Math.max(0, now - t0), n = Math.floor(e / cycle), u = (e % cycle) / hopMs;
         if (n >= hops) return stop();
-        bun.style.left = Math.round(x0 + (f ? n + 1 : n) * step) + 'px'; pose(f, hop);
+        if (u < 1) {
+          // in the air: forward smoothly, up and down in an arc
+          bun.style.left = Math.round(x0 + (n + u) * step) + 'px';
+          pose(u < .3 ? 1 : u < .72 ? 2 : 3, Math.sin(Math.PI * u) * hop);
+        } else { bun.style.left = Math.round(x0 + (n + 1) * step) + 'px'; pose(0, 0); }
         raf = requestAnimationFrame(tick);
       });
     }
@@ -1814,6 +1830,6 @@
       }
       stop();
     });
-    later(4000);
+    later(8000);
   })();
 })();
