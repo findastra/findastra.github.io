@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&family=JetBrains+Mono:wght@400;700&family=VT323&family=Permanent+Marker&display=swap">
-<link rel="stylesheet" href="cyber.css?v=20261031zz3">
+<link rel="stylesheet" href="cyber.css?v=20261031zz6">
 </head>
 <body>
 <!-- every star on the page is the Photostar's own outline (astras-star-window star-window.svg), scaled to this box (Astra, 2026-10-29) -->
@@ -274,45 +274,8 @@
         </ul>
       </article>
     </div>
-    <!-- her feeds the way the apps show them, scrolling inside a Polaroid (Astra, 2026-10-29: "content on there like exactly
-         as it appears on the app"), one at a time and cropped to the posts so none of the writing shows ("polaroids that only
-         show one at a time i dont want to seee all the writing"); Instagram's a dark one, the TikToks white ones. These are
-         Instagram's and TikTok's own embeds: Instagram's holds the newest 6 posts, TikTok's a sideways row of recent videos. -->
-    <div class="feeds" data-at="0">
-      <figure class="feed dark" data-crop="0 145 306 204">
-        <div class="shot"><iframe src="https://www.instagram.com/astra_on_fire/embed/" title="astra_on_fire on Instagram" loading="lazy"></iframe></div>
-        <figcaption><a href="https://www.instagram.com/astra_on_fire/" target="_blank" rel="noopener">@astra_on_fire · Instagram</a></figcaption>
-      </figure>
-      <figure class="feed" data-crop="23 152 284 170" hidden>
-        <div class="shot"><iframe src="https://www.tiktok.com/embed/@astra_on_fire" title="astra_on_fire on TikTok" loading="lazy"></iframe></div>
-        <figcaption><a href="https://www.tiktok.com/@astra_on_fire" target="_blank" rel="noopener">@astra_on_fire · TikTok</a></figcaption>
-      </figure>
-      <figure class="feed" data-crop="23 152 284 170" hidden>
-        <div class="shot"><iframe src="https://www.tiktok.com/embed/@findastra" title="findastra on TikTok" loading="lazy"></iframe></div>
-        <figcaption><a href="https://www.tiktok.com/@findastra" target="_blank" rel="noopener">@findastra · TikTok</a></figcaption>
-      </figure>
-      <div class="feed-nav"><button type="button" data-step="-1" aria-label="Previous feed">‹</button><span class="feed-dots" aria-hidden="true"></span><button type="button" data-step="1" aria-label="Next feed">›</button></div>
-    </div>
-    <script>
-      // each embed is drawn at 320 px wide and cropped to its posts (x y w h, measured 2026-10-29), scaled to fill the photo
-      (() => {
-        const box = document.querySelector('.feeds'), feeds = [...box.querySelectorAll('.feed')], dots = box.querySelector('.feed-dots');
-        const fit = () => feeds.forEach((f) => {
-          if (f.hidden) return;
-          const [x, y, w, h] = f.dataset.crop.split(' ').map(Number), shot = f.querySelector('.shot'), s = shot.clientWidth / w;
-          shot.style.height = Math.round(h * s) + 'px';
-          f.querySelector('iframe').style.transform = `scale(${s}) translate(${-x}px, ${-y}px)`;
-        });
-        const show = (i) => {
-          i = (i + feeds.length) % feeds.length; box.dataset.at = i;
-          feeds.forEach((f, n) => (f.hidden = n !== i));
-          dots.textContent = feeds.map((_, n) => (n === i ? '●' : '○')).join(' ');
-          fit();
-        };
-        box.querySelectorAll('[data-step]').forEach((b) => b.addEventListener('click', () => show(+box.dataset.at + +b.dataset.step)));
-        addEventListener('resize', fit); show(0);
-      })();
-    </script>
+    <!-- her feeds in a Polaroid, one post at a time, going on by itself (Astra, 2026-10-29); feeds-20261029.js fills it -->
+    <div class="feeds" id="feeds" aria-label="Astra's TikTok and Instagram"></div>
   </section>
 
   <!-- the unified footer, the same as on every pet program page (hub apps/pet-programs, Astra 2026-10-20): By Astra, ✦, the
@@ -341,5 +304,7 @@
 <script src="repo-dates-data-20261029.js?v=20261029a"></script>
 <script src="cyber.js?v=20261031zy"></script>
 <script src="games-20261027.js?v=20261031n"></script>
+<script src="feeds-data-20261029.js?v=20261029b"></script>
+<script src="feeds-20261029.js?v=20261029c"></script>
 </body>
 </html>

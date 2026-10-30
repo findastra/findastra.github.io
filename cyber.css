@@ -681,17 +681,26 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 .contact .chips li { font: 700 11px/1 var(--mono); letter-spacing: .04em; text-transform: lowercase; padding: 6px 9px; color: #f2f2f2; background: #000;
   border: 1.5px solid var(--n); border-radius: 99px; box-shadow: 0 0 8px color-mix(in srgb, var(--n) 45%, transparent); white-space: nowrap; }
 
-/* feeds: one Polaroid at a time, the embed cropped to its posts (Astra, 2026-10-29); Instagram's dark, the TikToks white */
-.feeds { width: min(100%, 380px); margin: 44px auto 0; }
-.feed { margin: 0; padding: 14px 14px 0; background: #f2f2f2; box-shadow: 8px 8px 0 #000; rotate: -1.5deg; }
-.feed.dark { background: #161616; box-shadow: 8px 8px 0 #000, 0 0 0 1px #3a3a3a; rotate: 1.5deg; }
-.feed .shot { position: relative; overflow: hidden; background: #000; }
-.feed iframe { position: absolute; left: 0; top: 0; width: 320px; height: 560px; border: 0; transform-origin: 0 0; }
-.feed figcaption { padding: 12px 0 14px; text-align: center; font: 700 13px var(--mono); }
+/* feeds: one post at a time in a Polaroid that goes on by itself (Astra, 2026-10-29); a TikTok is tall, so its Polaroid is a
+   longer one; the TikToks white, Instagram dark. The play count sits small at the bottom left, where TikTok puts it */
+.feeds { margin: 44px auto 0; }
+.feed { margin: 0 auto; width: min(100%, 300px); padding: 12px 12px 0; background: #f2f2f2; box-shadow: 8px 8px 0 #000; rotate: -1.5deg; }
+.feed.instagram { background: #161616; box-shadow: 8px 8px 0 #000, 0 0 0 1px #3a3a3a; rotate: 1.5deg; }
+.feed .shot { position: relative; overflow: hidden; aspect-ratio: 9 / 16; background: #000; }
+.feed.instagram .shot { aspect-ratio: 1; }
+.feed .shot iframe, .feed .shot img { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; object-fit: cover; }
+/* TikTok's player always puts her name across the top and black bars at the sides; zoomed a little from low down, both fall
+   outside the photo (Astra, 2026-10-29: "so it doesn't obstruct") */
+.feed .shot iframe { transform: scale(1.25); transform-origin: 50% 74%; pointer-events: none; }
+.feed .plays { position: absolute; left: 8px; bottom: 8px; z-index: 1; font: 700 11px/1 Inter, sans-serif; color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .8); pointer-events: none; }
+.feed figcaption { padding: 12px 0 16px; text-align: center; font: 700 13px var(--mono); }
 .feed figcaption a { color: #111; text-decoration: none; }
-.feed.dark figcaption a { color: #f2f2f2; }
-.feed-nav { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 18px; font: 14px var(--mono); color: #e6e6e6; }
-.feed-nav button { width: 40px; height: 40px; border: 2px solid #f2f2f2; background: #000; color: #f2f2f2; font: 700 20px/1 var(--mono); cursor: pointer; box-shadow: 3px 3px 0 #000; }
+.feed.instagram figcaption a { color: #f2f2f2; }
+.feed-step { flex: none; width: 32px; height: 32px; border: 2px solid #f2f2f2; background: #000; color: #f2f2f2; font: 700 20px/1 var(--mono); cursor: pointer; }
+.feed-tabs { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px; margin-top: 20px; }
+.feed-tabs button { padding: 6px 10px; border: 2px solid #f2f2f2; background: #000; color: #f2f2f2; font: 700 12px var(--mono); cursor: pointer; }
+.feed-tabs button[aria-pressed="true"] { background: #f2f2f2; color: #000; }
 
 /* arcade: black cabinets on white scanlines */
 .arcade { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 30px; }
