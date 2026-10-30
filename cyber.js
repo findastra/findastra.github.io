@@ -308,19 +308,9 @@
       // first, "baby girl, I'm a star", playing on a loop with its sound off until you turn it on (Astra, 2026-10-29)
       // not the pink phone booth, which is not Mommy's World (Astra, 2026-10-29)
       local: [{ src: 'art/worlds/mommys-world-baby-girl-im-a-star-20261029.mp4', cap: "Mommy's World · baby girl, I'm a star", type: 'video', sound: true, label: 'world coming soon' }], extra: ['mommys', 'role-fairy'] },
-    // first the still with its gray cut away, so it shines over the paper (Astra, 2026-10-29); the video and the crystals keep theirs
-    // first its turning video with the gray cut away, so it turns on the bare paper (Astra, 2026-10-29), sparkles circling it and
-    // pouring out of its crystals across the page; only that 3D model now, not the still or the crystals (Astra, 2026-10-29)
-    { name: 'The Rainbow Maker', ownPicsOnly: true, kind: 'VRChat world · PC VR / desktop', text: 'The mechanics of the Kikkerland Rainbow Maker: watch its tiny gear train turn and spin a crystal that refracts rainbows across the room.', repo: 'the-rainbow-maker', local: [
-      { src: RM + 'rainbow-maker-preview-20261022.mp4', cap: 'The Rainbow Maker · turning', type: 'video', key: [69, 69, 74], clear: true,
-        // one wide ring round the whole machine, a small fast one round each crystal, and a few glints on the glass
-        // sparkles circling each of the two crystals, just wide of them so the crystals can be seen turning (Astra, 2026-10-29:
-        // "go around the actual crystals"), and the spray thrown off those same rings: center x, y and radii, in percent
-        // (wide of the gems, so they are seen clearly; the sparkles only now and then cross in front of them)
-        // more of them, spinning in circles round the whole machine too (Astra, 2026-10-29): a wide ring round all of it and a
-        // tilted one inside turning the other way, bigger sparkles on those two; [x, y, rx, ry, how many, seconds, size]
-        orbits: [[44, 79, 17, 12, 8, 5], [54, 68, 16, 11, 8, 6], [50, 52, 44, 40, 14, 16, [5, 8]], [50, 56, 34, 24, 10, -11, [4, 6]]], still: [[46, 30], [56, 40]],
-        spray: [[44, 79, 18, 13], [54, 68, 17, 12]] }] },
+    // Reflective stained-glass model mounted on a window, approved by Astra, 2026-10-30.
+    { name: 'The Rainbow Maker', ownPicsOnly: true, kind: 'VRChat world · PC VR / desktop', text: 'Reflective stained-glass gears and sparkling crystals turning on a sunlit glass window.', repo: 'the-rainbow-maker', local: [
+      { src: 'art/worlds/rainbow-maker-window-20261030.mp4', poster: 'art/worlds/rainbow-maker-window-20261030.png', cap: 'The Rainbow Maker · stained glass on a window', type: 'video', fit: 'cover', toggle: true }] },
     { name: 'The Cooling Tower', siteLabel: 'see full mini model ↗', kind: 'VRChat world · PC VR / desktop', text: "A rave world inside a nuclear plant's cooling tower: break into the facility and power it up with music. The Stack, the Turbine Hall, then the Reactor Hall.", repo: 'the-cooling-tower', local: [{ src: 'https://findastra.github.io/the-cooling-tower/mini-model/the-cooling-tower-mini-model-20261024.html', cap: 'The Cooling Tower · Mini Model', type: 'frame', label: 'concept model', bare: true, back: 7 }] },
   ];
   // vrchat-ai-astra was renamed the-astral-plane (2026-10-18); the pet list may still use the old name
@@ -601,7 +591,7 @@
       const media = (p) => {
         if (p.type === 'video' && p.key) return keyedVideo(p);
         if (p.inline) return inlineSvg(p);
-        if (p.type === 'video') { const v = el('video'); Object.assign(v, { src: p.src, muted: true, loop: true, autoplay: !reduced, playsInline: true, preload: 'metadata' }); if (p.fit) v.style.objectFit = p.fit; if (p.bg) v.style.background = p.bg; return v; }
+        if (p.type === 'video') { const v = el('video'); Object.assign(v, { src: p.src, muted: true, loop: true, autoplay: !reduced, playsInline: true, preload: 'metadata' }); if (p.poster) v.poster = p.poster; if (p.fit) v.style.objectFit = p.fit; if (p.bg) v.style.background = p.bg; return v; }
         // a live page starts once the Polaroid scrolls near (the browser's own lazy loading never starts it inside the scaled frame)
         // a bare page is cropped to its picture (Astra, 2026-10-27: the Mini Model without its title and key); on the live site it
         // shares this site's address, so its panel is hidden outright too
@@ -674,7 +664,8 @@
       if (open) { look = link(open.open, 'look', 'open the map ↗'); look.setAttribute('aria-label', 'open ' + name + ' on its own page'); }
       const still = () => !pics[at].type;
       photo.setAttribute('aria-label', 'open pictures of ' + name);
-      photo.onclick = (e) => { if (still()) openGallery(pics.filter((p) => !p.type), pics.filter((p) => !p.type).indexOf(pics[at])); };
+      if (pics[at].toggle) photo.setAttribute('aria-label', 'play or pause ' + name);
+      photo.onclick = (e) => { if (pics[at].toggle) { const v = photo.querySelector('video'); if (v) { if (v.paused) v.play().catch(() => {}); else v.pause(); } return; } if (still()) openGallery(pics.filter((p) => !p.type), pics.filter((p) => !p.type).indexOf(pics[at])); };
       // more than one picture: two small arrows in the white border's bottom corners flip through them (Astra, 2026-10-27)
       if (pics.length > 1) {
         // "1 of 3" (Astra, 2026-10-29)
