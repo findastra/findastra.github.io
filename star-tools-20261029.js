@@ -599,3 +599,21 @@ window.STAR_L1 = {
   "VRChat"
  ]
 };
+// each pet program number's node on the System Map
+window.STAR_MAP_NODE = {
+ "1": "farm",
+ "3": "data-dealer-project",
+ "4": "key-ring",
+ "5": "unity-stable",
+ "7": "ai-astra",
+ "11": "paper-girl-site",
+ "12": "file-kingdom",
+ "17": "am-i-a-ghost",
+ "19": "audio-rescue",
+ "20": "spoonfed-app",
+ "27": "gif-maker",
+ "30": "fuzz-factory",
+ "37": "dubstep-gunsmith",
+ "78": "the-police-station",
+ "80": "the-recovery-room"
+};

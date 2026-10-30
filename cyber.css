@@ -412,6 +412,13 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 .card .back-links .turn-btn { display: grid; place-items: center; width: 8cqw; height: 8cqw; padding: 0; border-radius: 50%; }
 .card .back-links .turn-btn svg { width: 62%; height: 62%; }
 .card .tip.turn-btn:hover, .card .tip.turn-btn:focus-visible { background: none; color: #fff; outline: none; }
+/* the System Map button on the left arm, across from the flip (Astra, 2026-10-29) */
+.card .tip.map-btn { left: 23%; top: 46%; width: 7%; color: #000; z-index: 2; }
+.card .tip.map-btn svg { width: 100%; height: 100%; overflow: visible; }
+.card .tip.map-btn circle { fill: none; stroke: currentColor; stroke-width: 7; }
+.card .tip.map-btn circle.core, .card .tip.map-btn circle.node { fill: currentColor; stroke: none; }
+.card .tip.map-btn:hover, .card .tip.map-btn:focus-visible { color: #fff; outline: none; }
+.card.dark-star .tip.map-btn { color: #fff; }
 .card .shape { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
 /* thin strokes now, so the outline stays the Photostar's own rounded star, not puffed out by the stroke (Astra, 2026-10-29) */
 .card .s-shadow { fill: #000; stroke: #000; stroke-width: 12; transform: translate(7px, 7px); transition: transform .3s; }

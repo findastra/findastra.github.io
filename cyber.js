@@ -985,7 +985,17 @@
     // the flip turns it over to another star (Astra, 2026-10-29), and that side is the technical one (Astra, 2026-10-29: "when
     // you flip the stars, technical stuff's on that side"): its number and program, the app it works on top of (L1), its
     // repo, its code and how far along it is, like a spec sheet
-    const face = el('div', 'face'); face.append(shape('star', '-111 -116 229 220'), win, turnBtn);
+    // two buttons only (Astra, 2026-10-29): the flip, and the pet on the System Map, with the rings mark from the pet program
+    // pages; it opens the map at the pet program's own node
+    const mapBtn = () => {
+      const a = el('a', 'tip map-btn'); a.href = 'https://findastra.github.io/astras-pet-os/system-map-20261012.html#node=' +
+        encodeURIComponent((window.STAR_MAP_NODE || {})[p.number] || 'program-' + p.number);
+      a.target = '_blank'; a.rel = 'noopener'; a.title = p.pet + ' on the System Map'; a.setAttribute('aria-label', 'open ' + p.pet + ' on the System Map');
+      const s = svgEl('svg', { viewBox: '-6 -6 132 132', 'aria-hidden': 'true' });
+      for (const [r, cls] of [[56], [40], [24], [8, 'core']]) s.append(svgEl('circle', { cx: 60, cy: 60, r, ...(cls ? { class: cls } : {}) }));
+      s.append(svgEl('circle', { cx: 116, cy: 60, r: 7, class: 'node' })); a.append(s); return a;
+    };
+    const face = el('div', 'face'); face.append(shape('star', '-111 -116 229 220'), win, turnBtn, mapBtn());
     const back = el('div', 'back star-back');
     const backBtn = el('button', 'tip turn-btn'); backBtn.type = 'button'; backBtn.setAttribute('aria-label', 'flip back to ' + p.pet); backBtn.title = 'flip back'; backBtn.append(flipIcon());
     // the back (Astra, 2026-10-29): its four levels in a white box, L1 its third-party apps (three at most), L2 its program,

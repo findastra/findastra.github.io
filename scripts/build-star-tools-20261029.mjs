@@ -8,6 +8,9 @@
 import { writeFileSync } from 'node:fs';
 
 const REGISTRY = 'https://raw.githubusercontent.com/findastra/astras-pet-os/main/TOOLS-AND-TRICKS.md';
+// and where each pet program sits on the System Map, for the star's map button: the map's node for that program number,
+// else the program-<number> node the map makes for a program with none of its own
+const MAP = 'https://raw.githubusercontent.com/findastra/astras-pet-os/main/system-map.json';
 const MAX = 6;
 
 const HAND = {
@@ -118,11 +121,16 @@ for (const pet of new Set([...Object.keys(HAND), ...rows.map((r) => r.pet)])) {
   const apps = mine.filter((r) => r.kind === 'third-party program' && r.works).map((r) => app(r.name));
   if (apps.length) l1[pet] = [...new Set(apps)].slice(0, 3);
 }
+const nodes = (await (await fetch(MAP)).json()).nodes || [];
+const mapNode = {};
+for (const n of nodes) if (n.program != null && !(n.program in mapNode)) mapNode[n.program] = n.id;
 const day = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Denver' });
 writeFileSync('star-tools-20261029.js', `// Built by scripts/build-star-tools-20261029.mjs on ${day}: what each pet does, five or six points on its star (its tools
 // from the hub's registry first, then points from its description), and its L1 apps (the third-party programs the registry
 // says work today, three at most). Run it again after the hub's registry changes.
 window.STAR_TOOLS = ${JSON.stringify(points, null, 1)};
 window.STAR_L1 = ${JSON.stringify(l1, null, 1)};
+// each pet program number's node on the System Map
+window.STAR_MAP_NODE = ${JSON.stringify(mapNode, null, 1)};
 `);
 console.log(Object.keys(points).length + ' pets, ' + Object.keys(l1).length + ' with registry L1 apps');
