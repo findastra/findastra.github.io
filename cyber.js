@@ -1618,7 +1618,9 @@
     const stat = () => ($('mem-stat').textContent = `${who ? who + "'s moods · " : ''}moves ${moves} · pairs ${found}/6`);
     $('board').replaceChildren(...cards.map((p) => {
       const t = el('div', 'tile'), b = el('button'); b.setAttribute('aria-label', 'card');
-      const f2 = el('span', 'f f2'), im = el('img'); im.src = p.src; im.alt = p.alt; f2.append(im);
+      // cut to where the pet is painted, so it sits in the middle of its square (Astra, 2026-10-29: "they need to look like
+      // they take up the center of the square")
+      const f2 = el('span', 'f f2'), im = el('img'); im.src = p.src; im.alt = p.alt; f2.append(im); cropToInk(im);
       b.append(el('span', 'f f1', '✦'), f2); t.append(b);
       b.onclick = () => {
         if (lock || t.classList.contains('open') || t.classList.contains('done')) return;
