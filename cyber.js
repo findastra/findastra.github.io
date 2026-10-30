@@ -321,7 +321,7 @@
         // tilted one inside turning the other way, bigger sparkles on those two; [x, y, rx, ry, how many, seconds, size]
         orbits: [[44, 79, 17, 12, 8, 5], [54, 68, 16, 11, 8, 6], [50, 52, 44, 40, 14, 16, [5, 8]], [50, 56, 34, 24, 10, -11, [4, 6]]], still: [[46, 30], [56, 40]],
         spray: [[44, 79, 18, 13], [54, 68, 17, 12]] }] },
-    { name: 'The Cooling Tower', scribble: ['break into the stack', 'power up the plant with the power of music', 'one DJ per venue'], siteLabel: 'see full mini model ↗', kind: 'VRChat world · PC VR / desktop', text: "A rave world inside a nuclear plant's cooling tower: break into the facility and power it up with music. The Stack, the Turbine Hall, then the Reactor Hall.", repo: 'the-cooling-tower', local: [{ src: 'https://findastra.github.io/the-cooling-tower/mini-model/the-cooling-tower-mini-model-20261024.html', cap: 'The Cooling Tower · Mini Model', type: 'frame', label: 'concept model', bare: true, back: 7 }] },
+    { name: 'The Cooling Tower', siteLabel: 'see full mini model ↗', kind: 'VRChat world · PC VR / desktop', text: "A rave world inside a nuclear plant's cooling tower: break into the facility and power it up with music. The Stack, the Turbine Hall, then the Reactor Hall.", repo: 'the-cooling-tower', local: [{ src: 'https://findastra.github.io/the-cooling-tower/mini-model/the-cooling-tower-mini-model-20261024.html', cap: 'The Cooling Tower · Mini Model', type: 'frame', label: 'concept model', bare: true, back: 7 }] },
   ];
   // vrchat-ai-astra was renamed the-astral-plane (2026-10-18); the pet list may still use the old name
   const RENAMED = { 'vrchat-ai-astra': 'the-astral-plane' };
@@ -550,7 +550,32 @@
   const ownGalaxy = (src) => { const m = /findastra\/(anthropic|openai)-discord-presence\/main\/public\/galaxy\.png$/.exec(src); return m && GALAXY[m[1]]; };
   const glows = (p) => /^https:.*galaxy(-card)?\.(png|gif)$/.test(p.src) && !ownGalaxy(p.src);
   const clearOf = (p) => !!(p && (p.clear || glows(p) || ownGalaxy(p.src)));
+  // a short note on the paper for every Polaroid, saying more than the picture can (Astra, 2026-10-29: "a note for every single
+  // Polaroid ... short notes that kind of tell more than what you can just see"), written in a top corner and pointing down
+  const NOTES = {
+    'astras-infinite-pole': ['fall forever', 'the phone booths call each other', 'however far down you are'],
+    'piranesi-house': ['the tide really comes in', 'sit inside the colossus', 'find the developers’ easter egg'],
+    'liminal-doors': ['every door hides', 'a crystal animal', 'find them all'],
+    'mommys-world': ['home of Mommy’s dance academy', 'still being built'],
+    'the-rainbow-maker': ['a real solar toy', 'tiny gears spin a crystal', 'rainbows fill the room'],
+    'the-cooling-tower': ['break into the stack', 'power up the plant with the power of music', 'one DJ per venue, 1 hour each', '3-hour event on vrc.tl'],
+    'ai-discord-presence': ['your Discord status shows', 'the AI model you’re using, live'],
+    'openai-discord-presence': ['Codex’s model on your profile', 'free Windows app'],
+    'anthropic-discord-presence': ['Claude Code’s model on your profile', 'free Windows app'],
+    'moodglass': ['photo chats as mosaics', 'behind your Discord messages'],
+    'fuzzboi-factory': ['six numbers make one Fuzzboi', 'try your birthday'],
+    'mommys-website': ['the website plan for', 'Mommy’s dance academy'],
+    'pocket-message-board': ['a scrolling LED sign', 'on any phone', 'hold it up at a rave'],
+    'astras-photostar': ['your photos in a fat neon star', 'download it'],
+    'iris-the-origin-story': ['a bedtime story', 'becoming a book'],
+    'paper-girl': ['real science, explained'],
+    'ghost-protocol': ['check your own security', 'one step at a time'],
+    'system-map': ['every pet, program and device', 'tap one to see what it touches'],
+    'meet-pets': ['each pet is an app with a job', 'its four levels on the note'],
+    'all-pets': ['every pet drawn so far', 'more hatching'],
+  };
   function polaroid({ key, name, kind, date, text, pics, repo, site, siteLabel, shot, sticky, clear, scribble }) {
+    scribble = scribble || NOTES[key];
     const c = el('article', 'polaroid'); const h = paint(c, key);
     const photo = el(pics.length && !shot && !pics.some((p) => p.type === 'frame') ? 'button' : 'div', 'photo');
     photo.classList.toggle('clear', !!clear || clearOf(pics[0]));
@@ -674,9 +699,10 @@
     c.append(frame, info, sparkles(h, 12));
     // a few words written on the paper under it, an arrow pointing up at it, saying a little more (Astra, 2026-10-29)
     if (scribble) {
-      const s = el('div', 'scribble'); s.setAttribute('aria-hidden', 'true');
-      const arrow = svgEl('svg', { viewBox: '0 0 40 46' }); arrow.append(svgEl('path', { d: 'M28 44C10 34 8 20 18 4M18 4l-8 8M18 4l8 9' }));
-      s.append(arrow, ...scribble.map((t) => el('span', null, t))); c.append(s); c.classList.add('scribbled');
+      // in the top left or top right corner, by its name, the arrow curving down at the Polaroid
+      const s = el('div', 'scribble ' + (h % 2 ? 'right' : 'left')); s.setAttribute('aria-hidden', 'true');
+      const arrow = svgEl('svg', { viewBox: '0 0 40 46' }); arrow.append(svgEl('path', { d: 'M8 2C30 8 34 24 22 42M22 42l-9-5M22 42l2-10' }));
+      s.append(...scribble.map((t) => el('span', null, t)), arrow); c.append(s); c.classList.add('scribbled');
     }
     return c;
   }
@@ -687,7 +713,7 @@
     // every world says what it is (Astra, 2026-10-29: "all the stuff that is a VRChat world needs to say VRChat world"), then
     // its one most common language, GitHub's own pick (UdonSharp counts as C#)
     return polaroid({ key: w.repo, name: w.name, kind: 'VRChat world' + (r && r.language ? ' · ' + r.language : ''), date: r ? when(made(r)) : '', text: cleanText((r && r.description) || w.text), pics: worldPics(w),
-      repo: r ? 'https://github.com/findastra/' + w.repo : null, scribble: w.scribble });
+      repo: r ? 'https://github.com/findastra/' + w.repo : null });
   };
   // Discord and Web & More: the repo name, written out with spaces, and its language
   // what each website looks like (Astra, 2026-10-27): its own page, shown first on its Polaroid
