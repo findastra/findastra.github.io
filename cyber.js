@@ -664,7 +664,7 @@
       // border by the title, so it covers none of the picture (Astra, 2026-10-29: it hid the System Map's key)
       badge = el('span', 'badge'); badge.hidden = !pics[0].label; badge.textContent = pics[0].label || '';
       let shown = media(pics[0]); photo.append(shown, ...(field ? [field] : []));
-      // a door's number as a strip of black tape at the photo's bottom left, like the concept art sticker (Astra, 2026-10-29),
+      // a door's number as a strip of black tape at the photo's bottom right, like the concept art sticker (Astra, 2026-10-29),
       // over the small number drawn into the concept art
       const doorNo = el('span', 'door-no'), setNo = (p) => { doorNo.hidden = !p.no; doorNo.textContent = p.no || ''; };
       setNo(pics[0]); photo.append(doorNo);
@@ -699,11 +699,12 @@
     if (sticky) { note2 = el('div', 'sticky'); sticky(0, note2); frame.append(note2); }
     c.append(frame, info, sparkles(h, 12));
     if (scribble) {
-      // its back: the name and the note in the Polaroid hand; the same round button on the top right corner turns it over
-      // and back, with a quick half turn each way
+      // its back: the name and the note in the Polaroid hand; the same black tape button on the border above the title turns
+      // it over and back, with a quick half turn each way (Astra, 2026-10-29), beside the map's link when there is one
       const back = el('div', 'pback'); back.append(el('b', null, name), ...scribble.map((t) => el('span', null, t)));
       const turn = el('button', 'pflip'); turn.type = 'button'; turn.title = 'flip it over'; turn.setAttribute('aria-label', 'turn ' + name + ' over to read its note');
-      turn.append(flipIcon()); frame.append(back, turn); frame.classList.add('has-back');
+      turn.append(flipIcon()); frame.append(back); frame.classList.add('has-back');
+      if (look) { const stickers = el('span', 'stickers'); look.replaceWith(stickers); stickers.append(look, turn); } else note.append(turn);
       let busy = false;
       turn.onclick = (e) => {
         e.stopPropagation(); if (busy) return;

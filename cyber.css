@@ -599,9 +599,10 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 .polaroid .badge { position: absolute; left: calc(var(--edge-w) - 4px); top: -9px; z-index: 2; font: 12px/1 "Permanent Marker", cursive; color: #fff; background: #111;
   padding: 4px 8px; rotate: -5deg; pointer-events: none; box-shadow: 2px 2px 0 rgba(0, 0, 0, .35); max-width: 70%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .polaroid .badge[hidden] { display: none; }
-/* a door's number: black tape at the photo's bottom left (Astra, 2026-10-29) */
-.photo .door-no { position: absolute; left: 3%; bottom: 3%; z-index: 2; font: 12px/1 "Permanent Marker", cursive; color: #fff; background: #111; padding: 4px 7px;
-  rotate: -4deg; box-shadow: 2px 2px 0 rgba(0, 0, 0, .35); pointer-events: none; }
+/* a door's number: black tape at the photo's bottom right, clear of the words on the left (Astra, 2026-10-29), beside the
+   flip button rather than on top of it */
+.photo .door-no { position: absolute; right: 36px; bottom: 5px; z-index: 2; font: 12px/1 "Permanent Marker", cursive; color: #fff; background: #111; padding: 4px 7px;
+  rotate: 4deg; box-shadow: 2px 2px 0 rgba(0, 0, 0, .35); pointer-events: none; }
 .photo .door-no[hidden] { display: none; }
 /* the back of a Polaroid: its note, handwritten, on the same white paper (Astra, 2026-10-29) */
 .polaroid .pback { position: absolute; inset: 0; z-index: 3; display: none; align-content: center; justify-items: start; gap: 6px; padding: 26px 22px;
@@ -611,13 +612,17 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 .polaroid .pback span { rotate: -1deg; }
 .polaroid .frame.turned .pback { display: grid; }
 .polaroid .frame.turned > :not(.pback):not(.pflip):not(.tape) { visibility: hidden; }
-/* the button that turns it over: a small black round sticker on the top right corner of the border */
-.polaroid .pflip { position: absolute; right: -10px; top: -10px; z-index: 4; display: grid; place-items: center; width: 30px; height: 30px; padding: 6px; border: 0;
-  border-radius: 50%; background: #111; color: #fff; cursor: pointer; box-shadow: 2px 2px 0 rgba(0, 0, 0, .35); }
+/* the button that turns it over: down on the white border above the title at the right, a square of black tape like the
+   sticker on the left (Astra, 2026-10-29: "the flip needs to go on the bottom ... the same style with the square tape ...
+   above the title"); it stays showing on the back */
+.polaroid .pflip { position: absolute; right: calc(var(--edge-w) - 4px); top: -11px; z-index: 4; display: grid; place-items: center; width: 30px; height: 26px; padding: 5px 7px; border: 0;
+  background: #111; color: #fff; cursor: pointer; rotate: 4deg; box-shadow: 2px 2px 0 rgba(0, 0, 0, .35); visibility: visible; }
 .polaroid .pflip svg { width: 100%; height: 100%; }
+/* the map's link and the flip button side by side there */
+.polaroid .stickers { position: absolute; right: calc(var(--edge-w) - 4px); top: -11px; z-index: 4; display: flex; align-items: center; gap: 6px; visibility: visible; }
+.polaroid .stickers .look, .polaroid .stickers .pflip { position: static; }
+.polaroid .frame.turned .stickers .look { visibility: hidden; }
 .polaroid .pflip:hover, .polaroid .pflip:focus-visible { background: #000; box-shadow: 0 0 0 2px var(--c), 0 0 10px var(--c); outline: none; }
-/* a video's sound button moves over for it */
-.polaroid .frame.has-back .sound { right: calc(var(--edge-w) + 26px); }
 /* on a wide screen, the pet jar stands to the right of the PetOS Polaroids instead of under them (Astra, 2026-10-29) */
 @media (min-width: 1500px) {
   #pets { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 48px; align-items: start; }
@@ -625,8 +630,9 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
   #pets > #petos-list { grid-column: 1; justify-content: flex-start; }
   #pets > #pet-jar { grid-column: 2; }
 }
-/* the sound button for a video, on the border at the top right, like the sticker on the left */
-.polaroid .sound { position: absolute; right: calc(var(--edge-w) - 4px); top: -11px; z-index: 2; width: 30px; height: 26px; padding: 0; border: 0; cursor: pointer;
+/* the sound button for a video, in the picture's bottom right corner (Astra, 2026-10-29: "in the corner of the picture
+   panel ... not above the text"); it lives in the writing strip under the picture, pulled up into the corner */
+.polaroid .sound { position: absolute; right: calc(var(--edge-w) + 6px); top: -32px; z-index: 2; width: 30px; height: 26px; padding: 0; border: 0; cursor: pointer;
   background: #111; color: #fff; font: 14px/26px system-ui, sans-serif; rotate: 4deg; box-shadow: 2px 2px 0 rgba(0, 0, 0, .35); }
 /* no colored square round it (Astra, 2026-10-29) */
 .polaroid .sound:hover, .polaroid .sound:focus, .polaroid .sound:focus-visible { background: #000; outline: none; }
@@ -740,8 +746,9 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 .contact .muted { margin: 0 0 12px; }
 .contact .list { margin-top: 10px; }
 /* spritzed up (Astra, 2026-10-29): a neon edge across the top, the name glowing a little, what she does as neon chips */
-.contact { --n: #ff4fd8; position: relative; border-top: 4px solid var(--n); }
-.contact.vr { --n: #4ff0ff; }
+/* Audra J. Volk in yellow, Astra in white (Astra, 2026-10-29) */
+.contact { --n: #ffe94f; position: relative; border-top: 4px solid var(--n); }
+.contact.vr { --n: #f4f4f4; }
 .contact b { text-shadow: 0 0 14px color-mix(in srgb, var(--n) 55%, transparent); }
 .contact .role { color: color-mix(in oklab, var(--n) 60%, #f2f2f2); }
 .contact .pitch { margin: 10px 0 12px; color: #e6e6e6; line-height: 1.5; }
@@ -749,26 +756,51 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 .contact .chips li { font: 700 11px/1 var(--mono); letter-spacing: .04em; text-transform: lowercase; padding: 6px 9px; color: #f2f2f2; background: #000;
   border: 1.5px solid var(--n); border-radius: 99px; box-shadow: 0 0 8px color-mix(in srgb, var(--n) 45%, transparent); white-space: nowrap; }
 
-/* feeds: one post at a time in a Polaroid that goes on by itself (Astra, 2026-10-29); a TikTok is tall, so its Polaroid is a
-   longer one; the TikToks white, Instagram dark. The play count sits small at the bottom left, where TikTok puts it */
-.feeds { margin: 44px auto 0; }
-.feed { margin: 0 auto; width: min(100%, 300px); padding: 12px 12px 0; background: #f2f2f2; box-shadow: 8px 8px 0 #000; rotate: -1.5deg; }
+/* feeds: her three feeds as Polaroids side by side, Instagram in the middle, stacked on a phone; each one post at a time,
+   going on by itself (Astra, 2026-10-29). A TikTok is tall, so its Polaroid is a longer one; the TikToks white, Instagram dark */
+.feeds { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 40px 34px; margin: 44px auto 0; }
+.feed { position: relative; flex: 0 1 270px; width: min(100%, 270px); margin: 0; padding: 12px 12px 0; background: #f2f2f2; box-shadow: 8px 8px 0 #000; rotate: -1.5deg; }
 .feed.instagram { background: #161616; box-shadow: 8px 8px 0 #000, 0 0 0 1px #3a3a3a; rotate: 1.5deg; }
+.feed + .feed + .feed { rotate: 2deg; }
 .feed .shot { position: relative; overflow: hidden; aspect-ratio: 9 / 16; background: #000; }
 .feed.instagram .shot { aspect-ratio: 1; }
 .feed .shot iframe, .feed .shot img { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; object-fit: cover; }
-/* TikTok's player always puts her name across the top and black bars at the sides; zoomed a little from low down, both fall
-   outside the photo (Astra, 2026-10-29: "so it doesn't obstruct") */
-.feed .shot iframe { transform: scale(1.25); transform-origin: 50% 74%; pointer-events: none; }
+/* TikTok's player shown whole, like TikTok: her name at the top, likes, comments and shares down the side (Astra, 2026-10-29:
+   "it can appear like an actual TikTok video") */
+.feed .shot iframe { pointer-events: none; }
 .feed .plays { position: absolute; left: 8px; bottom: 8px; z-index: 1; font: 700 11px/1 Inter, sans-serif; color: #fff;
   text-shadow: 0 1px 2px rgba(0, 0, 0, .8); pointer-events: none; }
-.feed figcaption { padding: 12px 0 16px; text-align: center; font: 700 13px var(--mono); }
-.feed figcaption a { color: #111; text-decoration: none; }
-.feed.instagram figcaption a { color: #f2f2f2; }
-.feed-step { flex: none; width: 32px; height: 32px; border: 2px solid #f2f2f2; background: #000; color: #f2f2f2; font: 700 20px/1 var(--mono); cursor: pointer; }
-.feed-tabs { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px; margin-top: 20px; }
-.feed-tabs button { padding: 6px 10px; border: 2px solid #f2f2f2; background: #000; color: #f2f2f2; font: 700 12px var(--mono); cursor: pointer; }
-.feed-tabs button[aria-pressed="true"] { background: #f2f2f2; color: #000; }
+/* the saves, which TikTok's player leaves out, in its bookmark above its heart */
+.feed .saves { position: absolute; right: 0; bottom: var(--saves-y, 168px); z-index: 1; width: 44px; display: grid; justify-items: center; gap: 2px;
+  font: 700 10px/1 Inter, sans-serif; color: #fff; text-shadow: 0 1px 2px rgba(0, 0, 0, .6); pointer-events: none; }
+.feed .saves svg { width: 22px; height: 22px; fill: #fff; filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .4)); }
+.feed [hidden] { display: none; }
+/* the writing on the border is handwritten, like the other Polaroids (Astra, 2026-10-29: "it needs to be writing, not text"):
+   her Instagram caption, then her name on the feed */
+.feed figcaption { display: grid; justify-items: center; gap: 4px; padding: 12px 0 4px; text-align: center; }
+.feed .feed-caption { font: 18px/1.15 "Permanent Marker", cursive; color: #f2f2f2; rotate: -1.5deg; }
+.feed .feed-handle { font: 1.15rem/1.1 "Permanent Marker", cursive; color: #151515; text-decoration: none; rotate: -1.5deg; }
+.feed.instagram .feed-handle { font-size: 14px; color: #9a9a9a; }
+/* the bottom row, as on the other Polaroids: the little marker arrows in the corners, "1 of 10" between them */
+.feed-row { display: flex; align-items: center; justify-content: center; gap: 10px; height: 30px; margin: 0 -8px 8px; position: relative; }
+.feed .flip { position: absolute; top: 0; width: 28px; height: 28px; display: grid; place-items: center; padding: 0; border: 0; background: none;
+  color: #151515; font: 34px/1 "Permanent Marker", cursive; cursor: pointer; }
+.feed .flip.prev { left: 0; } .feed .flip.next { right: 0; }
+.feed.instagram .flip, .feed.instagram .count { color: #c8c8c8; }
+.feed .flip:hover, .feed .flip:focus-visible { text-shadow: 0 0 6px #ff4fd8, 0 0 12px #ff4fd8; outline: none; }
+.feed .count { font: 13px/1 "Permanent Marker", cursive; color: #6a6a6a; white-space: nowrap; rotate: -2deg; }
+/* the sound sticker, as on the Mommy's World Polaroid, in the picture's bottom left corner: TikToks start muted, and this
+   turns their sound on and off; the plays move over beside it */
+.feed .shot .plays { left: 46px; bottom: 13px; }
+.feed .sound { position: absolute; left: 6px; bottom: 6px; z-index: 2; width: 30px; height: 26px; padding: 0; border: 0; cursor: pointer; background: #111; color: #fff; font: 14px/26px system-ui, sans-serif;
+  rotate: 4deg; box-shadow: 2px 2px 0 rgba(0, 0, 0, .35); -webkit-tap-highlight-color: transparent; }
+.feed .sound:hover, .feed .sound:focus, .feed .sound:focus-visible { background: #000; outline: none; }
+.feed.locked figcaption { padding-bottom: 16px; }
+/* a TikTok profile that only signed-in viewers see: a Polaroid that opens it on TikTok */
+.feed .feed-locked { position: absolute; inset: 0; display: grid; place-content: center; gap: 10px; padding: 20px; text-align: center;
+  background: repeating-linear-gradient(135deg, #111 0 14px, #161616 14px 28px); color: #c8c8c8; text-decoration: none; font: 12px/1.4 var(--mono); }
+.feed .feed-locked b { font: 22px/1.1 "Permanent Marker", cursive; color: #f2f2f2; }
+.feed .feed-open { justify-self: center; padding: 6px 10px; border: 2px solid #f2f2f2; color: #f2f2f2; font-weight: 700; }
 
 /* arcade: black cabinets on white scanlines */
 .arcade { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 30px; }
@@ -1001,9 +1033,11 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
   /* the jar's two lines stay two lines on a phone (Astra, 2026-10-29) */
   .jar-hint { font-size: 12.5px; }
   /* the footer on a phone, never more than two rows (Astra, 2026-10-29): By Astra ✦ star ✦ Find Out More on the first, all
-     the links on the second, and less room above the star */
+     the links on the second, and less room above the star; the two rows as close together as the sparkles are to the star
+     (Astra, 2026-10-29), the icons' own padding counted in */
   .foot { padding-top: 16px; }
-  .astra-footer .footer-line { flex-wrap: wrap; gap: 10px 8px; }
+  .astra-footer .footer-line { flex-wrap: wrap; gap: 0 8px; }
+  .astra-footer .footer-icons { margin-top: -3px; }
   .astra-footer .footer-more { display: contents; }
   .astra-footer .footer-title { font-size: 12px; white-space: nowrap; }
   .astra-footer .footer-icons { flex: 0 0 100%; justify-content: center; }
