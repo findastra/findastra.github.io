@@ -550,8 +550,9 @@
   const ownGalaxy = (src) => { const m = /findastra\/(anthropic|openai)-discord-presence\/main\/public\/galaxy\.png$/.exec(src); return m && GALAXY[m[1]]; };
   const glows = (p) => /^https:.*galaxy(-card)?\.(png|gif)$/.test(p.src) && !ownGalaxy(p.src);
   const clearOf = (p) => !!(p && (p.clear || glows(p) || ownGalaxy(p.src)));
-  // a short note on the paper for every Polaroid, saying more than the picture can (Astra, 2026-10-29: "a note for every single
-  // Polaroid ... short notes that kind of tell more than what you can just see"), written in a top corner and pointing down
+  // a short note for every Polaroid, saying more than the picture can (Astra, 2026-10-29: "a note for every single Polaroid ...
+  // short notes that kind of tell more than what you can just see"), handwritten on its back: flip it over to read it (Astra,
+  // 2026-10-29: "if we flip the Polaroid, we could put notes, handwritten notes on there"; on the paper they fought the layout)
   const NOTES = {
     'astras-infinite-pole': ['fall forever', 'the phone booths call each other', 'however far down you are'],
     'piranesi-house': ['the tide really comes in', 'sit inside the colossus', 'find the developers’ easter egg'],
@@ -697,12 +698,23 @@
     let note2 = null;
     if (sticky) { note2 = el('div', 'sticky'); sticky(0, note2); frame.append(note2); }
     c.append(frame, info, sparkles(h, 12));
-    // a few words written on the paper under it, an arrow pointing up at it, saying a little more (Astra, 2026-10-29)
     if (scribble) {
-      // in the top left or top right corner, by its name, the arrow curving down at the Polaroid
-      const s = el('div', 'scribble ' + (h % 2 ? 'right' : 'left')); s.setAttribute('aria-hidden', 'true');
-      const arrow = svgEl('svg', { viewBox: '0 0 40 46' }); arrow.append(svgEl('path', { d: 'M8 2C30 8 34 24 22 42M22 42l-9-5M22 42l2-10' }));
-      s.append(...scribble.map((t) => el('span', null, t)), arrow); c.append(s); c.classList.add('scribbled');
+      // its back: the name and the note in the Polaroid hand; the same round button on the top right corner turns it over
+      // and back, with a quick half turn each way
+      const back = el('div', 'pback'); back.append(el('b', null, name), ...scribble.map((t) => el('span', null, t)));
+      const turn = el('button', 'pflip'); turn.type = 'button'; turn.title = 'flip it over'; turn.setAttribute('aria-label', 'turn ' + name + ' over to read its note');
+      turn.append(flipIcon()); frame.append(back, turn); frame.classList.add('has-back');
+      let busy = false;
+      turn.onclick = (e) => {
+        e.stopPropagation(); if (busy) return;
+        const over = () => { const on = frame.classList.toggle('turned'); turn.setAttribute('aria-pressed', String(on)); back.inert = !on; };
+        if (reduced) return over();
+        busy = true;
+        frame.animate([{ transform: 'rotateY(0deg)' }, { transform: 'rotateY(90deg)' }], { duration: 170, easing: 'ease-in' }).onfinish = () => {
+          over(); frame.animate([{ transform: 'rotateY(-90deg)' }, { transform: 'rotateY(0deg)' }], { duration: 190, easing: 'ease-out' }).onfinish = () => { busy = false; };
+        };
+      };
+      back.inert = true;
     }
     return c;
   }
