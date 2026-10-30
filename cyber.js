@@ -67,12 +67,14 @@
 
   // ---------- hero terminal ----------
   const term = $('term');
-  const line = (text, cls) => { const p = el('div', cls, text); term.append(p); return p; };
+  // the newest line always shows: on a phone the first words already fill the terminal (audit 2026-10-30)
+  const toEnd = () => (term.scrollTop = term.scrollHeight);
+  const line = (text, cls) => { const p = el('div', cls, text); term.append(p); toEnd(); return p; };
   const wait = (ms) => new Promise((r) => setTimeout(r, reduced ? 0 : ms));
   async function type(text, cls, speed = 12) {
     const p = line('', cls);
-    if (reduced) { p.textContent = text; return; }
-    for (const ch of text) { p.textContent += ch; await wait(speed); }
+    if (reduced) { p.textContent = text; toEnd(); return; }
+    for (const ch of text) { p.textContent += ch; toEnd(); await wait(speed); }
   }
   let unmasked = false;
   async function boot() {
@@ -87,6 +89,8 @@
   let masking = false;
   $('unmask').onclick = async () => {
     if (masking) return; masking = true;
+    // let the first words finish typing, so the two never run into each other (audit 2026-10-30)
+    await booting;
     if (!unmasked) {
       unmasked = true;
       await type('audra@findastra:~$ sudo unmask', 'ok');
@@ -96,7 +100,8 @@
       $('term-title').textContent = 'astra@findastra: ~';
       await type('astra', 'hot', 40);
       await type('noncorporeal dancer · reality-hacker · digital performer', '', 10);
-      await type(`${repos.length || ''} projects · ${pets.length} pets · worlds below. scroll.`, 'dim', 8);
+      // the same pet count as the PetOS line and the jar: the pets with a picture (audit 2026-10-30)
+      await type(`${repos.length || ''} projects · ${pets.filter(iconOf).length} pets · worlds below. scroll.`, 'dim', 8);
       $('unmask').textContent = 'sudo mask';
     } else {
       unmasked = false;
@@ -109,7 +114,7 @@
     }
     masking = false;
   };
-  boot();
+  const booting = boot();
   // the line to type into: a few commands, the rest answered like a real shell would (Astra, 2026-10-27)
   const SECTIONS = { vr: 'vr', discord: 'discord', web: 'web', petos: 'pets', pets: 'pets', arcade: 'arcade', contact: 'contact', top: 'top' };
   const who = () => (unmasked ? 'astra' : 'audra');
@@ -1039,7 +1044,7 @@
       drawnFor = null; fill(items);
     }
     jar.addEventListener('click', shake);
-    shakeBtn.addEventListener('click', () => { shake(); listenForPhoneShake(shake); });
+    shakeBtn.addEventListener('click', () => { shake(); listenForPhoneShake(shake, jar); });
     pourBtn.addEventListener('click', pour);
     // drag the jar side to side to shake it
     let drag = null;
@@ -1056,11 +1061,13 @@
   }
   // on a phone, shaking the phone shakes the jar (iPhone asks once, after the button)
   let listening = false, lastShake = 0;
-  async function listenForPhoneShake(shake) {
+  async function listenForPhoneShake(shake, jar) {
     if (listening || typeof DeviceMotionEvent === 'undefined' || !matchMedia('(pointer: coarse)').matches) return;
     try { if (typeof DeviceMotionEvent.requestPermission === 'function' && (await DeviceMotionEvent.requestPermission()) !== 'granted') return; } catch { return; }
     listening = true;
     addEventListener('devicemotion', (e) => {
+      // only while the jar is on screen, so a bump while reading Arcade or Contact does not pull the page back up (audit 2026-10-30)
+      const r = jar.getBoundingClientRect(); if (r.bottom < 0 || r.top > innerHeight) return;
       const g = e.acceleration || e.accelerationIncludingGravity; if (!g) return;
       const force = Math.hypot(g.x || 0, g.y || 0, g.z || 0) - (e.acceleration ? 0 : 9.8);
       if (force > 14 && Date.now() - lastShake > 1400) { lastShake = Date.now(); shake(); }
@@ -1311,7 +1318,7 @@
     } else pick = shuffle(pets.filter(iconOf)).slice(0, 6).map((p) => ({ key: p.number, src: iconOf(p), alt: p.pet }));
     const cards = shuffle([...pick, ...pick]);
     let open = [], found = 0, moves = 0, lock = false; const t0 = Date.now();
-    const stat = () => ($('mem-stat').textContent = `${who ? who + "'s moods · " : ''}moves ${moves} · pairs ${found}/6`);
+    const stat = () => ($('mem-stat').textContent = `${who ? who + (/s$/i.test(who) ? "'" : "'s") + ' moods · ' : ''}moves ${moves} · pairs ${found}/6`);
     $('board').replaceChildren(...cards.map((p) => {
       const t = el('div', 'tile'), b = el('button'); b.setAttribute('aria-label', 'card');
       const f2 = el('span', 'f f2'), im = el('img'); im.src = p.src; im.alt = p.alt; f2.append(im);
@@ -1397,7 +1404,8 @@
     const release = () => (asked = -1);
     addEventListener('wheel', release, { passive: true }); addEventListener('touchstart', release, { passive: true });
     addEventListener('keydown', (e) => { if (['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'Home', 'End', ' '].includes(e.key)) release(); });
-    addEventListener('pointerdown', (e) => { if (!e.target.closest('#pole')) release(); }, { passive: true });
+    // anything but a floor label, the pole's sparkle included, hands the lit floor back to the scroll (audit 2026-10-30)
+    addEventListener('pointerdown', (e) => { if (!e.target.closest('.floors a')) release(); }, { passive: true });
     addEventListener('scroll', onScroll, { passive: true }); addEventListener('resize', onScroll); onScroll();
   })();
 

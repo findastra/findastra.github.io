@@ -25,17 +25,19 @@
   // (Astra, 2026-10-27: "I liked it when I could enter them in and it was big and obvious")
   const POS = ['Style', 'Color', 'Acc 1', 'Acc 2', 'Acc 3', 'Rare?'];
   const boxes = POS.map((label, i) => {
-    const w = el('label', 'fz-digit'), inp = el('input'); inp.maxLength = 1; inp.inputMode = 'numeric'; inp.autocomplete = 'off'; inp.spellcheck = false; inp.setAttribute('aria-label', `Position ${i + 1}: ${label}`);
+    const w = el('label', 'fz-digit'), inp = el('input'); inp.inputMode = 'numeric'; inp.autocomplete = 'off'; inp.spellcheck = false; inp.setAttribute('aria-label', `Position ${i + 1}: ${label}`);
     w.append(inp, el('span', null, label)); $('fz-digits').append(w); return inp;
   });
   const codeIn = { get value() { return boxes.map((b) => b.value).join('').toUpperCase(); }, set value(v) { [...String(v).padEnd(6, ' ').slice(0, 6)].forEach((ch, i) => (boxes[i].value = ch.trim())); } };
   boxes.forEach((inp, i) => {
-    inp.addEventListener('input', async () => {
-      // numbers only (Astra, 2026-10-29)
-      inp.value = inp.value.replace(/[^0-9]/g, '').slice(-1);
+    inp.addEventListener('input', async (e) => {
+      // numbers only (Astra, 2026-10-29); the digit just typed wins, so typing over a filled box replaces it (audit 2026-10-30)
+      inp.value = /^[0-9]$/.test(e.data || '') ? e.data : inp.value.replace(/[^0-9]/g, '').slice(-1);
       if (inp.value && i < 5) { boxes[i + 1].focus(); boxes[i + 1].select(); }
       if (codeIn.value.length === 6) { await ready; make(codeIn.value); }
     });
+    // a tap on a filled box selects its digit, so the next one typed replaces it (audit 2026-10-30)
+    inp.addEventListener('focus', () => inp.select());
     inp.addEventListener('keydown', (e) => {
       if (e.key === 'Backspace' && !inp.value && i > 0) boxes[i - 1].focus();
       if (e.key === 'ArrowLeft' && i > 0) boxes[i - 1].focus();
@@ -453,7 +455,7 @@
       if (!drag) return;
       const { p, moved, sphere } = drag; drag = null;
       if (sphere) { for (const q of broken.pieces) if (!q.placed) tryPlace(q); return; }
-      if (!moved) p.rotTo = p.rot + Math.PI / 4;
+      if (!moved) p.rotTo += Math.PI / 4; // from where it is headed, so quick taps stay on the eighths
       tryPlace(p);
     };
     cv.addEventListener('pointerup', dropPiece); cv.addEventListener('pointercancel', dropPiece);
@@ -480,7 +482,8 @@
       count();
     });
     $('home-out').onclick = () => { if (outside().length) loose.home(); else if (folks.length) letOut(); };
-    $('home-clear').onclick = () => { loose.home(); folks.length = 0; picked = null; save(); };
+    // an empty dome starts over: no sparkles or collisions left from the last crowd (audit 2026-10-30)
+    $('home-clear').onclick = () => { loose.home(); folks.length = 0; picked = null; motes.length = 0; bits.length = 0; hits = 0; save(); };
     // the sphere: an outline, rings of latitude seen a little from above, and meridians that turn
     function globe() {
       const r = R(), ox = W / 2, oy = H / 2, tilt = .28;
