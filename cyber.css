@@ -429,6 +429,9 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 .card .win { position: absolute; left: 20.96%; width: 55.02%; top: 24%; height: 64%; display: grid; grid-template-rows: 68fr 32fr; row-gap: .6cqw; }
 /* the pet half as big, so its name, program and what it does fit under it (Astra, 2026-10-29) */
 .card .win { top: 25%; height: 66%; grid-template-rows: 34fr 66fr; }
+/* a little smaller and lower, clear of the star's edge (Astra, 2026-10-29: "sitting a little bit too close to the star"), with
+   room for five or six points */
+.card .win { top: 27%; height: 64%; grid-template-rows: 27fr 73fr; }
 .card .pet-big { position: relative; display: grid; place-items: center; min-height: 0; font: 400 9cqw/1 var(--mono); }
 .card .pet-big img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; filter: drop-shadow(0 3px 0 rgba(0, 0, 0, .35)); }
 /* a drawing cut to its paint: whole, a little in from the window's sides and top, standing on the window's bottom, so every
@@ -447,6 +450,12 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 .card .name { font: 800 4.2cqw/1.15 var(--mono); letter-spacing: -.02em; }
 .card .pet { font: 700 3.1cqw/1.25 var(--mono); }
 .card .does { align-self: center; margin: .8cqw 0 0; padding: 0; list-style: none; text-align: left; font: 600 2.7cqw/1.3 var(--mono); color: rgba(0, 0, 0, .8); }
+/* five or six points, lined up further left, each on one line (Astra, 2026-10-29) */
+.card .does { align-self: stretch; padding-left: 9%; font-size: 2.5cqw; line-height: 1.28; }
+.card .does li { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* a dark star (navy, dark blue) writes in white */
+.card.dark-star .name, .card.dark-star .pet, .card.dark-star .does, .card.dark-star .body a, .card.dark-star .tip.turn-btn { color: #fff; }
+.card.dark-star .spec { color: #fff; }
 .card .does li::before { content: "• "; }
 
 /* the chapters: read top to bottom like the GitHub profile README, a dashed rail down the left joining them (Astra, 2026-10-27) */
@@ -571,6 +580,9 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
    long for the square is drawn a little smaller to fit (fitLines in cyber.js), never wrapped */
 .polaroid .sticky.names { font-size: 10px; line-height: 1.15; gap: 3px; text-align: left; justify-items: start; }
 .polaroid .sticky.names > div { white-space: nowrap; }
+.polaroid .sticky.levels-note { gap: 2px; }
+.polaroid .sticky.levels-note > div { display: grid; grid-template-columns: auto auto 1fr; column-gap: 3px; width: 100%; white-space: normal; line-height: 1.1; }
+.polaroid .sticky.levels-note > div > span:last-child { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
 .polaroid .sticky::before { content: ""; position: absolute; left: 50%; top: -7px; width: 40px; height: 13px; translate: -50% 0; rotate: -4deg;
   background: color-mix(in srgb, var(--c) 72%, transparent); box-shadow: 0 0 8px var(--c); }
 .polaroid .sticky b { display: block; font: 700 9px var(--mono); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 3px; }
@@ -580,6 +592,15 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 .polaroid .badge { position: absolute; left: calc(var(--edge-w) - 4px); top: -9px; z-index: 2; font: 12px/1 "Permanent Marker", cursive; color: #fff; background: #111;
   padding: 4px 8px; rotate: -5deg; pointer-events: none; box-shadow: 2px 2px 0 rgba(0, 0, 0, .35); max-width: 70%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .polaroid .badge[hidden] { display: none; }
+/* a door's number: black tape at the photo's bottom left (Astra, 2026-10-29) */
+.photo .door-no { position: absolute; left: 3%; bottom: 3%; z-index: 2; font: 12px/1 "Permanent Marker", cursive; color: #fff; background: #111; padding: 4px 7px;
+  rotate: -4deg; box-shadow: 2px 2px 0 rgba(0, 0, 0, .35); pointer-events: none; }
+.photo .door-no[hidden] { display: none; }
+/* words written on the paper under a Polaroid, with an arrow up at it (Astra, 2026-10-29) */
+.polaroid.scribbled { margin-bottom: 96px; }
+.polaroid .scribble { position: absolute; left: 4%; right: -10%; top: calc(100% + 10px); display: grid; gap: 2px; justify-items: start; text-align: left;
+  font: 15px/1.15 "Permanent Marker", cursive; color: #d9d9d9; rotate: -3deg; pointer-events: none; padding-left: 40px; }
+.polaroid .scribble svg { position: absolute; left: 0; top: -14px; width: 32px; height: 38px; fill: none; stroke: #d9d9d9; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
 /* the sound button for a video, on the border at the top right, like the sticker on the left */
 .polaroid .sound { position: absolute; right: calc(var(--edge-w) - 4px); top: -11px; z-index: 2; width: 30px; height: 26px; padding: 0; border: 0; cursor: pointer;
   background: #111; color: #fff; font: 14px/26px system-ui, sans-serif; rotate: 4deg; box-shadow: 2px 2px 0 rgba(0, 0, 0, .35); }
