@@ -787,15 +787,22 @@
         try {
           const cv = document.createElement('canvas'); cv.width = cv.height = 32; const x = cv.getContext('2d', { willReadFrequently: true });
           x.drawImage(im, 0, 0, 32, 32); const d = x.getImageData(0, 0, 32, 32).data;
-          let sx = 0, sy = 0, wt = 0;
+          // its main color: the hue most of its colored paint has (twelve bins round the wheel, the fullest one and its two
+          // neighbors averaged), not the average of all of it, so a red and blue pet is red or blue, never purple between
+          const bins = Array.from({ length: 12 }, () => ({ x: 0, y: 0, w: 0 }));
+          let wt = 0, lit = 0;
           for (let i = 0; i < d.length; i += 4) {
             if (d[i + 3] < 128) continue;
             const r = d[i] / 255, g = d[i + 1] / 255, b = d[i + 2] / 255, mx = Math.max(r, g, b), mn = Math.min(r, g, b), s = mx ? (mx - mn) / mx : 0;
+            lit++;
             if (s < .35 || mx < .3) continue;
             const hue = mx === r ? ((g - b) / (mx - mn)) % 6 : mx === g ? (b - r) / (mx - mn) + 2 : (r - g) / (mx - mn) + 4;
-            const a = hue * Math.PI / 3, w = s * mx; sx += Math.cos(a) * w; sy += Math.sin(a) * w; wt += w;
+            const a = hue * Math.PI / 3, w = s * mx, k = (Math.floor(((hue + 6) % 6) * 2 + .5)) % 12;
+            bins[k].x += Math.cos(a) * w; bins[k].y += Math.sin(a) * w; bins[k].w += w; wt += w;
           }
-          ok({ hue: ((Math.atan2(sy, sx) * 180 / Math.PI) + 360) % 360, wt });
+          const top = bins.reduce((m, b, k) => (b.w > bins[m].w ? k : m), 0);
+          let sx = 0, sy = 0; for (const k of [top + 11, top, top + 1]) { sx += bins[k % 12].x; sy += bins[k % 12].y; }
+          ok({ hue: ((Math.atan2(sy, sx) * 180 / Math.PI) + 360) % 360, wt, share: lit ? wt / lit : 0 });
         } catch { ok(null); }
       };
       im.src = src;
@@ -808,10 +815,14 @@
     planFor = pets;
     const list = pets.filter(iconOf);
     return (plan = Promise.all(list.map((p) => petInk(iconOf(p)).then((ink) => ({ p, ink })))).then((all) => {
-      const colored = all.filter((e) => e.ink && e.ink.wt >= 6).sort((a, b) => a.ink.hue - b.ink.hue), whites = all.filter((e) => !(e.ink && e.ink.wt >= 6));
-      const m = new Map(), n = colored.length || 1, from = colored.length ? colored[0].ink.hue : 0;
-      colored.forEach((e, i) => m.set(e.p.number, { c: `hsl(${Math.round((from + (i * 360) / n) % 360)} 95% 58%)`, rank: i }));
-      whites.forEach((e, i) => m.set(e.p.number, { c: `hsl(${(i * 47) % 360} 40% ${86 + (i % 4) * 3}%)`, rank: n + i }));
+      // each star in its pet's own main color, the same every time (Astra, 2026-10-29: "pretty much matching ... make them
+      // what their main color is"); a pet with hardly any color, like the white rabbit or the ghost, gets a white star
+      // (white: under an eighth of its paint has any color; the white rabbit's is 1%, the ghost's 5%, Log Lynx's 38%)
+      const hasColor = (e) => e.ink && e.ink.wt >= 6 && e.ink.share >= .12;
+      const colored = all.filter(hasColor).sort((a, b) => a.ink.hue - b.ink.hue), whites = all.filter((e) => !hasColor(e));
+      const m = new Map(), n = colored.length || 1;
+      colored.forEach((e, i) => m.set(e.p.number, { c: `hsl(${Math.round(e.ink.hue)} 95% 58%)`, rank: i }));
+      whites.forEach((e, i) => m.set(e.p.number, { c: '#f4f4f4', rank: n + i }));
       return m;
     }));
   };
@@ -928,10 +939,15 @@
     // the pet, and under it the pet program it runs (Astra, 2026-10-29), both links (Astra, 2026-10-29: "both of those words
     // actually need to be a link"): the pet to its repo, the program to its pet program page; whichever one is missing (a
     // private repo, a page not made yet) uses the other, so no link leads to a page a visitor cannot open
-    const petLink = repoUrl || site, programLink = site || repoUrl;
-    const nameEl = petLink ? link(petLink, 'name', p.pet) : el('b', 'name', p.pet);
+    // then (Astra, 2026-10-29: "the log links doesn't need a hyperlink, but the log bin does ... that one goes to GitHub"):
+    // the pet's name plain, its program the link, to its GitHub repo (its page when the repo is private)
+    const programLink = repoUrl || site;
+    const nameEl = el('b', 'name', p.pet);
     const progEl = programLink && p.program ? link(programLink, 'pet', p.program) : el('div', 'pet', p.program || 'program not named yet');
+    // and under them two to four very short points, what it does (Astra, 2026-10-29), from star-tools-20261029.js
+    const points = (window.STAR_TOOLS || {})[p.pet] || [];
     body.append(nameEl, progEl);
+    if (points.length) { const ul = el('ul', 'does'); ul.append(...points.slice(0, 4).map((t) => el('li', null, t))); body.append(ul); }
     const win = el('div', 'win'); win.append(big, body);
     // the flip turns it over to another star (Astra, 2026-10-29), and that side is the technical one (Astra, 2026-10-29: "when
     // you flip the stars, technical stuff's on that side"): its number and program, the app it works on top of (L1), its
@@ -939,10 +955,15 @@
     const face = el('div', 'face'); face.append(shape('star', '-111 -116 229 220'), win, turnBtn);
     const back = el('div', 'back star-back');
     const backBtn = el('button', 'tip turn-btn'); backBtn.type = 'button'; backBtn.setAttribute('aria-label', 'flip back to ' + p.pet); backBtn.title = 'flip back'; backBtn.append(flipIcon());
+    // the back (Astra, 2026-10-29): its four levels in a white box, L1 its third-party apps (three at most), L2 its program,
+    // L3 the pet, L4 you; then its code and stage. The GitHub link stays on the front
+    const levels = el('dl', 'levels-box'), apps = String(L1[p.pet] || 'third-party apps').split(/\s*(?:&|,| and )\s*/).filter(Boolean).slice(0, 3);
+    const l1 = el('dd'); l1.append(...apps.map((a) => el('span', null, a)));
+    levels.append(el('dt', null, 'L1'), l1, el('dt', null, 'L2'), el('dd', null, p.program || '—'), el('dt', null, 'L3'), el('dd', null, p.pet), el('dt', null, 'L4'), el('dd', null, 'you'));
     const spec = el('dl', 'spec');
-    for (const [k, v] of [['no.', p.number ? '#' + p.number : '—'], ['L1', L1[p.pet] || 'third-party apps'], ['repo', p.repo || '—'],
-      ['code', (r && r.language) || (r ? '—' : 'private')], ['stage', p.stage || '—']]) spec.append(el('dt', null, k), el('dd', null, v));
-    back.append(shape('star', '-111 -116 229 220'), spec, backBtn);
+    for (const [k, v] of [['code', (r && r.language) || (r ? '—' : 'private')], ['stage', p.stage || '—']]) spec.append(el('dt', null, k), el('dd', null, v));
+    const sheet = el('div', 'sheet'); sheet.append(levels, spec);
+    back.append(shape('star', '-111 -116 229 220'), sheet, backBtn);
     const turn = el('div', 'turn'); turn.append(face, back);
     const flip = (on) => { c.classList.toggle('flipped', on); back.inert = !on; face.inert = on; };
     turnBtn.onclick = () => flip(true); backBtn.onclick = () => flip(false); back.inert = true;
@@ -1111,13 +1132,35 @@
         jar.classList.add('tipped');
         const flat = () => { const p = tip.effect.getComputedTiming().progress; if (p == null || p >= .26 * 90 / 93) dink(); else requestAnimationFrame(flat); };
         requestAnimationFrame(flat);
-        // the stars inside fall with it (Astra, 2026-10-29): as it goes over they slide down to what is now the bottom, its
-        // right-hand side, tumbling a little, and settle back when it stands up again
-        const IW = inside.clientWidth || 240;
-        for (const m of minis) {
-          const r0 = m.style.getPropertyValue('--r'), base = `translate(-50%, -50%) rotate(${r0})`, room = (1 - parseFloat(m.style.left) / 100) * IW * (.45 + Math.random() * .25);
-          const lying = `translate(calc(-50% + ${room}px), calc(-50% + ${Math.random() * 10 - 5}px)) rotate(calc(${r0} - ${40 + Math.random() * 80}deg))`;
-          m.animate([{ transform: base }, { transform: base, offset: .12 }, { transform: lying, offset: .3, easing: 'ease-out' }, { transform: lying, offset: .76 }, { transform: base, offset: .95, easing: 'ease-in-out' }, { transform: base }], { duration: T });
+        // the stars inside fall with it and tumble over each other (Astra, 2026-10-29: "like if they were to all fall on each
+        // other"): as it goes over, what was the right-hand wall becomes the floor, and they pile up against it, the nearest
+        // first, each rolling over and over on the way and landing on the ones already there with a little bounce; when it
+        // stands up they tumble back down into the pile they came from, the bottom ones first
+        const IW = inside.clientWidth || 240, IH = inside.clientHeight || 280;
+        const live = minis.filter((m) => !m.classList.contains('gone'));
+        const rad = (parseFloat(inside.style.getPropertyValue('--s')) || 24) / 2, reach = rad * 2 * .86;
+        const at = live.map((m) => ({ m, x: parseFloat(m.style.left) / 100 * IW, y: parseFloat(m.style.top) / 100 * IH }));
+        const heap = [];
+        for (const s of [...at].sort((a, b) => b.x - a.x)) {
+          let x = IW - rad;
+          for (const q of heap) { const dy = Math.abs(q.y - s.y); if (dy < reach) x = Math.min(x, q.lx - Math.sqrt(reach * reach - dy * dy)); }
+          s.lx = Math.max(rad, x); heap.push(s);
+        }
+        for (const s of at) {
+          const r0 = s.m.style.getPropertyValue('--r'), base = `translate(-50%, -50%) rotate(${r0})`, far = Math.max(0, s.lx - s.x) / IW;
+          // rolling: about a turn for the width of the jar, either way a little
+          const roll = Math.round((120 + far * 300) * (Math.random() < .8 ? 1 : -1)), bump = 3 + far * 8;
+          const pose = (dx, turn) => `translate(calc(-50% + ${dx.toFixed(1)}px), calc(-50% + ${(Math.random() * 4 - 2).toFixed(1)}px)) rotate(calc(${r0} + ${turn}deg))`;
+          const land = Math.min(.34, .17 + far * .16), back = Math.min(.97, .84 + (1 - s.y / IH) * .1);
+          const lying = pose(s.lx - s.x, roll);
+          s.m.animate([
+            { transform: base }, { transform: base, offset: .13 },
+            { transform: lying, offset: land, easing: 'cubic-bezier(.5, 0, .9, .6)' },
+            { transform: pose(s.lx - s.x - bump, roll + 8), offset: land + .025 }, { transform: lying, offset: land + .05 },
+            { transform: lying, offset: .78 },
+            { transform: base, offset: back, easing: 'cubic-bezier(.5, 0, .9, .6)' },
+            { transform: `translate(-50%, calc(-50% - ${bump.toFixed(1)}px)) rotate(calc(${r0} - 6deg))`, offset: Math.min(.99, back + .02) }, { transform: base },
+          ], { duration: T });
         }
         // where the mouth is while the jar lies on its side: the top middle, turned a quarter round the bottom right corner
         const M = { x: r.left + r.width * .5, y: r.top + r.height * .08 };
@@ -1486,7 +1529,7 @@
     });
   })();
   const shots = Object.values(IMG).filter((r) => r.screenshot || (r.pages || []).length || r.images.length).length;
-  const source = (live) => ($('project-source').textContent = [live ? 'live from GitHub' : 'snapshot', `${repos.length} public repos`, `${WORLDS.length} worlds`, `${pets.filter(iconOf).length} pets`, `${shots} with pictures so far`].join('\n'));
+  const source = (live) => ($('project-source').textContent = [`${repos.length} public repos`, ...(window.PRIVATE_REPOS ? [`${window.PRIVATE_REPOS} private repos`] : []), `${WORLDS.length} worlds`, `${pets.filter(iconOf).length} pets`].join('\n'));
   let liveRepos = false;
   const useRepos = (list, live) => {
     repos = list.filter((r) => r.name !== 'findastra.github.io'); byName = Object.fromEntries(repos.map((r) => [r.name, r]));
@@ -1575,7 +1618,14 @@
         const k = hash('c' + gx + ':' + gy), x = -6 + gx * 22.4 + (k % 100) / 100 * 16, y = -6 + gy * 22.4 + ((k >>> 7) % 100) / 100 * 16;
         cover.push(one(x, y, `hsl(${k % 360} 55% 80%)`, k));
       }
-      box.replaceChildren(...picked.map((sp) => one((sp.i % N + .5) / N * 100, (Math.floor(sp.i / N) + .5) / N * 100, sp.c, hash('p' + sp.i))), ...cover);
+      // and big ones at random over the picture (Astra, 2026-10-29: "more big sparkles randomly on the face"): 10 to 15px, in
+      // the colors of the spots they land on
+      const big = [];
+      for (let i = 0; i < 26; i++) {
+        const k = hash('big' + i), sp = spots[k % spots.length], x = (sp.i % N + .5) / N * 100, y = (Math.floor(sp.i / N) + .5) / N * 100;
+        const s = one(x, y, sp.c, k); s.style.setProperty('--s', 10 + (k >>> 9) % 6 + 'px'); big.push(s);
+      }
+      box.replaceChildren(...picked.map((sp) => one((sp.i % N + .5) / N * 100, (Math.floor(sp.i / N) + .5) / N * 100, sp.c, hash('p' + sp.i))), ...cover, ...big);
     };
     if (img.complete && img.naturalWidth) go(); else img.addEventListener('load', go, { once: true });
   })();

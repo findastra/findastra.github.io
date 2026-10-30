@@ -12,7 +12,9 @@
 
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; scroll-padding-top: 64px; }
-body { margin: 0; color: var(--ink); font: 17px/1.65 Inter, system-ui, sans-serif; overflow-x: hidden; }
+/* three fonts across the page (Astra, 2026-10-29: "font styling, like consistency"): JetBrains Mono for nearly all of it, Permanent
+   Marker for the Polaroids' handwriting, Inter only for the big titles */
+body { margin: 0; color: var(--ink); font: 15px/1.65 var(--mono); overflow-x: hidden; }
 /* the room for the pole scroll is inside main (and the header), so the banners can reach under the pole to the screen's edge */
 main { padding-left: var(--rail); }
 /* the frame (Astra, 2026-10-29): the pole on the left and the header are one black bezel around a screen where the code rain
@@ -214,8 +216,9 @@ main { position: relative; z-index: 1; }
 /* the user@findastra part shifts slowly through the neon colors (Astra, 2026-10-29: "noticeable, but not too fast"), and the
    path a step behind it */
 @keyframes ps-neon { 0%, 100% { color: #39ff88; } 17% { color: #39e6ff; } 33% { color: #4f7dff; } 50% { color: #b84dff; } 67% { color: #ff3fb4; } 83% { color: #ffe14d; } }
-.term .ps-user { animation: ps-neon 12s linear infinite; text-shadow: 0 0 6px currentColor; }
-.term .ps-path { animation: ps-neon 12s linear infinite -2s; }
+/* three times slower (Astra, 2026-10-29) */
+.term .ps-user { animation: ps-neon 36s linear infinite; text-shadow: 0 0 6px currentColor; }
+.term .ps-path { animation: ps-neon 36s linear infinite -6s; }
 @media (prefers-reduced-motion: reduce) { .term .ps-user, .term .ps-path { animation: none; } }
 /* the paired lights from the pet program pages' tool panels (astras-pet-os pet-program-page-20261018.css, Unity Stable):
    left ON/OFF (green, red), right checked and works or report issues (blue, yellow). A click moves a light to its next state
@@ -369,7 +372,14 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 .card .back { transform: rotateY(180deg); display: grid; place-content: center; justify-items: center; gap: 2.2cqw; }
 /* the back for now: the same star, empty */
 .card .back.star-back { display: block; }
-/* its spec sheet, in the middle of the star: small mono labels and values, in the star's own black */
+/* its spec sheet, in the middle of the star: the four levels in a white box, then code and stage */
+.card .sheet { position: absolute; left: 45.5%; top: 62%; transform: translate(-50%, -50%); width: 46%; display: grid; gap: 1.6cqw; }
+.card .levels-box { margin: 0; padding: 1.6cqw 2cqw; display: grid; grid-template-columns: auto 1fr; gap: .7cqw 2cqw; background: #fff; border: 2px solid #000;
+  box-shadow: 1cqw 1cqw 0 #000; font: 600 3cqw/1.2 var(--mono); color: #000; text-align: left; }
+.card .levels-box dt { font-weight: 800; }
+.card .levels-box dd { margin: 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.card .levels-box dd span { display: block; overflow: hidden; text-overflow: ellipsis; }
+.card .sheet .spec { position: static; transform: none; width: auto; }
 .card .spec { position: absolute; left: 50%; top: 56%; transform: translate(-50%, -50%); width: 52%; margin: 0; display: grid; grid-template-columns: auto 1fr;
   gap: .9cqw 2.4cqw; font: 600 3.3cqw/1.2 var(--mono); color: #000; text-align: left; }
 .card .spec dt { font-weight: 400; opacity: .7; }
@@ -413,11 +423,13 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 .card .s-shine { fill: none; stroke: rgba(255, 255, 255, .45); stroke-width: 3; transform: scale(.86); }
 .card .sparkles { inset: 2% 0 0; }
 /* a small star in the top point */
-.card .tip { position: absolute; left: 48.47%; top: 19.09%; width: 13.1%; aspect-ratio: 1; transform: translate(-50%, -50%); display: grid; place-items: center; font: 400 9cqw/1 VT323, monospace; }
+.card .tip { position: absolute; left: 48.47%; top: 19.09%; width: 13.1%; aspect-ratio: 1; transform: translate(-50%, -50%); display: grid; place-items: center; font: 400 7cqw/1 var(--mono); }
 /* the window: the pet, big, where the picture box was, then its name and the flip button */
 /* the pet a little bigger and lower now the flip button is up in the point, still well inside the star's pale edge */
 .card .win { position: absolute; left: 20.96%; width: 55.02%; top: 24%; height: 64%; display: grid; grid-template-rows: 68fr 32fr; row-gap: .6cqw; }
-.card .pet-big { position: relative; display: grid; place-items: center; min-height: 0; font: 400 11cqw/1 VT323, var(--mono); }
+/* the pet half as big, so its name, program and what it does fit under it (Astra, 2026-10-29) */
+.card .win { top: 25%; height: 66%; grid-template-rows: 34fr 66fr; }
+.card .pet-big { position: relative; display: grid; place-items: center; min-height: 0; font: 400 9cqw/1 var(--mono); }
 .card .pet-big img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; filter: drop-shadow(0 3px 0 rgba(0, 0, 0, .35)); }
 /* a drawing cut to its paint: whole, a little in from the window's sides and top, standing on the window's bottom, so every
    pet sits the same way above its name */
@@ -428,6 +440,14 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 .card .name { font: 900 5.2cqw/1.1 Inter, sans-serif; letter-spacing: -.01em; color: #000; max-width: 100%;
   display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 1; overflow: hidden; }
 .card .pet { font: 600 3.8cqw/1.25 Inter, sans-serif; color: rgba(0, 0, 0, .86); max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* nothing cut off: the name and program wrap onto a second line when they need to */
+.card .name, .card .pet { white-space: normal; -webkit-line-clamp: 2; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; }
+/* the front in the back's font (Astra, 2026-10-29: "I really like that"): the name and program centered, what it does
+   left-aligned under them */
+.card .name { font: 800 4.2cqw/1.15 var(--mono); letter-spacing: -.02em; }
+.card .pet { font: 700 3.1cqw/1.25 var(--mono); }
+.card .does { align-self: center; margin: .8cqw 0 0; padding: 0; list-style: none; text-align: left; font: 600 2.7cqw/1.3 var(--mono); color: rgba(0, 0, 0, .8); }
+.card .does li::before { content: "• "; }
 
 /* the chapters: read top to bottom like the GitHub profile README, a dashed rail down the left joining them (Astra, 2026-10-27) */
 .contents { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -603,6 +623,8 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
    out lays out all of them */
 .jar-stage { position: relative; display: grid; grid-template-columns: minmax(260px, 360px) 1fr; gap: 28px 40px; align-items: center; min-height: 480px; }
 .jar-all { grid-column: 1 / -1; }
+/* the column of stars that tip out, narrower: 260px instead of 420, about three fifths as wide on a computer; a phone is already that narrow (Astra, 2026-10-29: "like 1/2 to 2/3") */
+.jar-all .card, .jar-all .slot { max-width: 260px; }
 .jar-side { display: grid; justify-items: center; gap: 12px; }
 .jar-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
 /* the jar's name, on its lid */
@@ -741,7 +763,7 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 .tile button { position: relative; width: 100%; height: 100%; padding: 0; border: 0; background: none; cursor: pointer; transform-style: preserve-3d; transition: transform .35s; }
 .tile.open button, .tile.done button { transform: rotateY(180deg); }
 .tile .f { position: absolute; inset: 0; backface-visibility: hidden; display: grid; place-items: center; }
-.tile .f1 { background: repeating-conic-gradient(#1b1b1b 0 25%, #2b2b2b 0 50%) 0 0 / 12px 12px; border: 1px solid #4a4a4a; color: #c8c8c8; font: 22px VT323; }
+.tile .f1 { background: repeating-conic-gradient(#1b1b1b 0 25%, #2b2b2b 0 50%) 0 0 / 12px 12px; border: 1px solid #4a4a4a; color: #c8c8c8; font: 18px var(--mono); }
 .tile .f2 { background: #e9e9e9; transform: rotateY(180deg); }
 .tile .f2 img { width: 78%; height: 78%; object-fit: contain; object-position: 50% 50%; }
 .tile.done .f2 { box-shadow: 0 0 0 2px #fff, 0 0 0 4px #000; }
@@ -795,7 +817,7 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 /* the counter under the dome: how many are in, how many more until it breaks, and a bar filling toward 67 */
 .dome-meter { display: grid; gap: 10px; }
 .dome-meter .row { --fill: 0; display: grid; grid-template-columns: auto 1fr; align-items: baseline; gap: 4px 10px; font: 12px/1.3 var(--mono); color: #9a9a9a; }
-.dome-meter b { font: 900 1.7rem/1 Inter, sans-serif; color: #f2f2f2; min-width: 2.2ch; }
+.dome-meter b { font: 800 1.5rem/1 var(--mono); color: #f2f2f2; min-width: 2.2ch; }
 .dome-meter i { grid-column: 1 / -1; height: 8px; border: 1px solid #555; background: linear-gradient(90deg, #39ff14, #fff01f 50%, #ff2e4d) 0 0 / 100% 100%;
   clip-path: inset(0 calc((1 - var(--fill)) * 100%) 0 0); transition: clip-path .4s; }
 /* the sparkle meter fills in the page's pastels */

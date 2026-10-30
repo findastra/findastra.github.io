@@ -7,9 +7,13 @@ import { writeFileSync } from 'node:fs';
 
 const repos = JSON.parse(execFileSync('gh', ['api', 'users/findastra/repos?per_page=100&type=owner'], { encoding: 'utf8', maxBuffer: 64 << 20 }))
   .filter((r) => !r.fork && !r.private && !r.archived);
+// and how many private repos there are, for the stats under VR & VRChat (Astra, 2026-10-29: "public repos, private repos,
+// worlds, pets"); visitors cannot count those themselves
+const privateCount = JSON.parse(execFileSync('gh', ['repo', 'list', 'findastra', '--visibility', 'private', '--limit', '1000', '--json', 'name'], { encoding: 'utf8', maxBuffer: 64 << 20 })).length;
 const dates = Object.fromEntries(repos.map((r) => [r.name, r.created_at]).sort(([a], [b]) => a.localeCompare(b)));
 writeFileSync('repo-dates-data-20261029.js', `// Built by scripts/build-repo-dates-20261029.mjs on ${new Date().toISOString().slice(0, 10)}: the day each public repo
 // was made on GitHub. Run it again after making a new repo.
 window.REPO_CREATED = ${JSON.stringify(dates, null, 1)};
+window.PRIVATE_REPOS = ${privateCount};
 `);
-console.log(Object.keys(dates).length + ' repos');
+console.log(Object.keys(dates).length + ' public repos, ' + privateCount + ' private');
