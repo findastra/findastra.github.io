@@ -823,7 +823,8 @@
       bx.strokeStyle = 'rgba(255, 255, 255, .07)'; bx.lineWidth = 1;
       for (let i = 1; i < 4; i++) { bx.beginPath(); bx.moveTo(0, h * i / 4); bx.lineTo(w, h * i / 4); bx.stroke(); }
       if (on && --spawnIn <= 0) {
-        spawnIn = Math.max(16, 46 - score * .28);
+        // much faster (Astra, 2026-10-29: "as soon as you click one, another one spawns ... only how fast you can hit them")
+        spawnIn = Math.max(10, 30 - score * .2);
         const hs = hues();
         const hue = isRainbow() ? hs[nextHue++ % hs.length] : hs[(Math.random() * hs.length) | 0];
         // the first game's speed exactly, fast from the start, for tapping on a phone (Astra, 2026-10-29: "whatever mechanics we
@@ -861,7 +862,7 @@
       const r = bc.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
       const i = targets.findIndex((t) => Math.hypot(t.x - x, t.y - y) < 30);
       if (i < 0) { combo = 0; bC.textContent = 0; return; }
-      const [t] = targets.splice(i, 1);
+      const [t] = targets.splice(i, 1); spawnIn = 0;
       combo++; score += 10 + Math.min(40, combo * 2); bS.textContent = score; bC.textContent = combo;
       if (!reduced) for (let k = 0; k < 14; k++) { const a = k / 14 * 6.283; pops.push({ x: t.x, y: t.y, vx: Math.cos(a) * 2.4, vy: Math.sin(a) * 2.4, hue: t.hue, life: 1 }); }
     });
@@ -897,7 +898,7 @@
   const avPick=n=>Math.floor(Math.random()*n);
   const avNext=(old,n)=>(old+1+avPick(n-1))%n;
   const avPalette=()=>[...AV_PALETTES[avPick(AV_PALETTES.length)]];
-  const avState={group:'all',hairGroup:'girls',hair:0,bangs:0,hairColors:avPalette(),head:1,headColors:avPalette(),body:1,bodyColors:avPalette(),fit:0,fitColors:avPalette(),fx:0,fxColors:avPalette(),lashes:0,seed:347};
+  const avState={group:'all',hairGroup:'girls',hair:0,bangs:0,hairColors:avPalette(),head:1,headColors:avPalette(),body:1,bodyColors:avPalette(),fit:0,fitColors:avPalette(),fx:0,fxColors:avPalette(),lashes:0,seed:avPick(1e9)};
   const avPath=(d,c,s='',w=2)=>`<path d="${d}" fill="${c}"${s?` stroke="${s}" stroke-width="${w}"`:''}/>`;
   const avEllipse=(x,y,rx,ry,c,s='')=>`<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="${c}"${s?` stroke="${s}" stroke-width="2"`:''}/>`;
   const avLine=(d,c,w=2)=>avPath(d,'none',c,w);
@@ -968,6 +969,8 @@
   }
   // accessories that hang behind the body; drawn before the outfit so they tuck in behind it (2026-10-27)
   const AV_BEHIND=new Set([8,9,10,19]);
+  // head pieces that grow out of the head: drawn before the hair, so the hair covers their roots
+  const AV_UNDER_HAIR=new Set([1,3,7,8,9,18]);
   function avBody(behind=false){
    if(AV_BEHIND.has(avState.body)!==behind)return avState.body===8&&!behind?avLine('M88 128L80 160M112 128L120 160',avState.bodyColors[1],4):'';
    const [,a,b]=avState.bodyColors;
@@ -1000,7 +1003,7 @@
    const random=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296};
    for(let j=0;j<14;j++){
     let angle=j/14*Math.PI*2,x=100+Math.cos(angle)*80,y=109+Math.sin(angle)*92;
-    const size=2+random()*3,c=j%2?a:b;
+    const size=2.6+random()*3.4,c=`hsl(${Math.floor(random()*360)} 95% 72%)`;
     if(avState.fx===3||avState.fx===18){x=100+Math.cos(angle)*67;y=30+Math.sin(angle)*17;}
     else if(avState.fx===15){x=100+Math.cos(angle*2)*(42+j*3);y=105+Math.sin(angle*2)*(42+j*3);}
     else if(![9,16].includes(avState.fx)){x+=random()*10-5;y+=random()*10-5;}
@@ -1030,7 +1033,7 @@
   function drawLab(){
    const hair=avHair();
    const lashes=AV_LASH_D[avState.lashes]?avLine(AV_LASH_D[avState.lashes],'#2a1330',2.4):'';
-   labSvg.innerHTML=`<ellipse cx="100" cy="188" rx="52" ry="9" fill="#ff2e7e" opacity=".3"/>${hair.back}${avBody(true)}${avFit()}${avBody()}<circle cx="100" cy="88" r="42" fill="#f9d8c4"/>${hair.front}${avHead()}<g fill="#2a1330"><ellipse cx="85" cy="94" rx="6" ry="8"/><ellipse cx="115" cy="94" rx="6" ry="8"/></g>${lashes}<g fill="#fff"><circle cx="87" cy="91" r="2.3"/><circle cx="117" cy="91" r="2.3"/></g><ellipse cx="76" cy="106" rx="9" ry="5" fill="#ff8fd0" opacity=".55"/><ellipse cx="124" cy="106" rx="9" ry="5" fill="#ff8fd0" opacity=".55"/>${avLine('M95 108q5 5 10 0','#c4306b',2.4)}${avEffects()}`;
+   labSvg.innerHTML=`<ellipse cx="100" cy="188" rx="52" ry="9" fill="#ff2e7e" opacity=".3"/>${hair.back}${avBody(true)}${avFit()}${avBody()}<circle cx="100" cy="88" r="42" fill="#f9d8c4"/>${AV_UNDER_HAIR.has(avState.head)?avHead()+hair.front:hair.front+avHead()}<g fill="#2a1330"><ellipse cx="85" cy="94" rx="6" ry="8"/><ellipse cx="115" cy="94" rx="6" ry="8"/></g>${lashes}<g fill="#fff"><circle cx="87" cy="91" r="2.3"/><circle cx="117" cy="91" r="2.3"/></g><ellipse cx="76" cy="106" rx="9" ry="5" fill="#ff8fd0" opacity=".55"/><ellipse cx="124" cy="106" rx="9" ry="5" fill="#ff8fd0" opacity=".55"/>${avLine('M95 108q5 5 10 0','#c4306b',2.4)}${avEffects()}`;
    const labels={hair:AV_HAIR[avState.hairGroup][avState.hair][0],bangs:AV_BANGS[avState.bangs],hairColors:avState.hairColors[0],head:AV_HEAD[avState.head],body:AV_BODY[avState.body],fit:AV_FITS[avState.fit],fx:AV_FX[avState.fx],lashes:AV_LASHES[avState.lashes]};
    for(const [part,label] of Object.entries(labels))document.getElementById('lb-'+part).textContent=label;
    document.getElementById('labLashes').setAttribute('aria-pressed',String(avState.lashes!==3));
