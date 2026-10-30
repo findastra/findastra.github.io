@@ -181,10 +181,9 @@ h3 { display: inline-block; font: 700 12px var(--mono); text-transform: uppercas
 .ticker .item { display: inline-flex; align-items: baseline; gap: .55em; padding-right: 2.4em; }
 /* the words after a project name: a pale, almost white tint of its color (Astra, 2026-10-27) */
 .ticker .item > span:not([class]) { color: color-mix(in srgb, var(--c, #fff) 28%, #e6e6e6); }
-.ticker .item::after { content: "✦"; color: #5a5a5a; margin-left: 1.8em; }
+.ticker .item::after { content: "✦"; color: #9a9a9a; margin-left: 1.8em; }
 .ticker .repo { color: var(--c, #fff); font-weight: 700; text-decoration: none; }
 .ticker .repo:hover { background: var(--c, #fff); color: #000; }
-.ticker .item::before { content: ""; width: .6em; height: .6em; align-self: center; background: var(--c, #fff); box-shadow: 0 0 8px var(--c, #fff); }
 .ticker .when { color: #7a7a7a; }
 .ticker .pet { color: #9a9a9a; }
 @keyframes tick { to { transform: translateX(-50%); } }
@@ -440,7 +439,9 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 .levels { list-style: none; padding: 0; display: grid; gap: 4px; }
 .levels b { display: inline-block; min-width: 3ch; color: var(--ink); }
 .levels .all { margin-top: 6px; }
-#project-source { max-width: none; }
+#project-source { max-width: none; white-space: pre-line; line-height: 1.55; }
+/* a little smaller, so it fits on one line more often than not (Astra, 2026-10-29) */
+#discord .lede { font-size: .86em; }
 
 /* Polaroids: every project; what each one is, written in marker on the white border (Astra, 2026-10-27) */
 /* a short last row sits in the middle, not stacked to the left; each one pinned a little higher or lower than its neighbors,

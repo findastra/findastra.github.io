@@ -133,7 +133,7 @@
   const who = () => (unmasked ? 'astra' : 'audra');
   const go = (id) => $(id) && $(id).scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' });
   const COMMANDS = {
-    help: () => 'try: whoami · ls · cd <vr|discord|web|petos|arcade|contact> · find /astra · sudo unmask · rabbit · date · clear',
+    help: () => 'try: whoami · ls · /astra/<vr|discord|web|petos|arcade|contact> · find /astra · sudo unmask · rabbit · date · clear',
     whoami: () => who(),
     ls: () => 'vr/  discord/  web/  petos/  arcade/  contact/',
     pwd: () => '/home/' + who(),
@@ -145,6 +145,19 @@
     play: () => { go('arcade'); return 'cd arcade'; },
     clear: () => { term.replaceChildren(); return ''; },
   };
+  // a section's path, alone or after cd, ls, find or open, goes to that section and lists what is in it (Astra, 2026-10-29:
+  // "make sure these are actually taking you to the sections, or listing projects")
+  const inSection = (id) => [...new Set([...($(id) || document).querySelectorAll('.polaroid .title, .card .name, .cab h3')]
+    .map((t) => t.textContent.trim()).filter(Boolean))];
+  const visit = (cmd) => {
+    const m = cmd.match(/^(?:(cd|ls|find|open)\s+)?(?:~\/|\/?astra\/|\/)?([a-z]+)\/?$/);
+    const to = m && SECTIONS[m[2]];
+    if (!to || (!m[1] && !/\//.test(cmd))) return null;
+    go(to);
+    if (to === 'top') return '';
+    const names = inSection(to);
+    return names.length ? `/astra/${m[2]}: ${names.length} · ${names.slice(0, 14).join(' · ')}${names.length > 14 ? ' · …' : ''}` : `cd /astra/${m[2]}`;
+  };
   $('term-form').addEventListener('submit', (e) => {
     e.preventDefault();
     const raw = $('term-in').value.trim(); $('term-in').value = '';
@@ -153,7 +166,8 @@
     const cmd = raw.toLowerCase().replace(/\s+/g, ' ');
     let out;
     if (COMMANDS[cmd]) out = COMMANDS[cmd]();
-    else if (/^cd\s+/.test(cmd)) { const to = SECTIONS[cmd.slice(3).replace(/[\/.~]/g, '')]; out = to ? (go(to), '') : `cd: ${raw.slice(3)}: no such section`; }
+    else if ((out = visit(cmd)) !== null) {}
+    else if (/^cd\s+/.test(cmd)) out = `cd: ${raw.slice(3)}: no such section. try ls`;
     else if (/^echo\s+/.test(cmd)) out = raw.slice(5);
     else out = `${raw.split(' ')[0]}: command not found. try help`;
     if (out) line(out, 'dim');
@@ -1461,7 +1475,7 @@
     });
   })();
   const shots = Object.values(IMG).filter((r) => r.screenshot || (r.pages || []).length || r.images.length).length;
-  const source = (live) => ($('project-source').textContent = `${live ? 'live from GitHub' : 'snapshot'} · ${repos.length} public repos · ${WORLDS.length} worlds · ${pets.filter(iconOf).length} pets · ${shots} with pictures so far`);
+  const source = (live) => ($('project-source').textContent = [live ? 'live from GitHub' : 'snapshot', `${repos.length} public repos`, `${WORLDS.length} worlds`, `${pets.filter(iconOf).length} pets`, `${shots} with pictures so far`].join('\n'));
   let liveRepos = false;
   const useRepos = (list, live) => {
     repos = list.filter((r) => r.name !== 'findastra.github.io'); byName = Object.fromEntries(repos.map((r) => [r.name, r]));
@@ -1524,19 +1538,21 @@
       spots.sort((a, b) => (b.edge + b.sat * .25 + b.w * .1) - (a.edge + a.sat * .25 + a.w * .1));
       const picked = [];
       for (const sp of spots) {
-        if (picked.length >= 96) break;
+        if (picked.length >= 150) break;
         const x = sp.i % N, y = Math.floor(sp.i / N);
-        if (picked.every((q) => Math.hypot(q.i % N - x, Math.floor(q.i / N) - y) >= 3)) picked.push(sp);
+        if (picked.every((q) => Math.hypot(q.i % N - x, Math.floor(q.i / N) - y) >= 2.5)) picked.push(sp);
       }
       // and the first ones back too (Astra, 2026-10-29: keep these and "put those back on"): her most colorful, brightest
       // spots, with a little chance so they spread over the whole picture
-      const first = [...spots].sort((a, b) => (b.sat * .7 + b.light * .3 + b.w * .5) - (a.sat * .7 + a.light * .3 + a.w * .5)).slice(0, 100);
+      const first = [...spots].sort((a, b) => (b.sat * .7 + b.light * .3 + b.w * .5) - (a.sat * .7 + a.light * .3 + a.w * .5)).slice(0, 150);
       for (const sp of first) if (!picked.includes(sp)) picked.push(sp);
       // sizes vary, but small (Astra, 2026-10-29: "too big of sparkles on my face", then "shrink a lot of the sparkles"):
       // most 3 to 8px, one in four 8 to 12px; then smaller again (Astra, 2026-10-29: "a lot of those to be shrunk"): most 2 to
       // 5px, one in six 6 to 9px; then all back and more of them, none big (Astra, 2026-10-29: "put all of those sparkles back
       // on my face", "I don't need the bigger ones", "I just can't see them anymore"): every one 3 to 5px
-      const size = (k) => 3 + (k % 3);
+      // then more of them and a little bigger (Astra, 2026-10-29: "more sparkles on my face and a little bit bigger ones too"):
+      // 4 to 6px, one in seven 8px
+      const size = (k) => ((k >>> 4) % 7 ? 4 + (k % 3) : 8);
       const one = (x, y, c, k) => {
         const s = el('i');
         s.style.cssText = `--x:${x.toFixed(1)}%;--y:${y.toFixed(1)}%;--s:${size(k)}px;--d:${((k >>> 8) % 40) / 10}s;--c:${c};--dh:${[-150, -100, -50, 0, 50, 100, 150][(k >>> 12) % 7]};--l:0`;
