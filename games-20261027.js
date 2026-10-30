@@ -224,11 +224,13 @@
       } catch {}
     }
     function count() {
+      // while it is broken, a finger on the dome moves the pieces, not the page
+      const dome = $('home'); if (dome) dome.classList.toggle('mending', !!broken);
       const n = outside().length, k = inside().length;
       $('home-count').textContent = broken ? `the dome is broken · ${n} loose on the page` : n ? `${k} in the dome · ${n} loose on the page` : `${k} moved in`;
       $('home-out').disabled = !folks.length || !!broken; $('home-out').textContent = n ? 'call them all home' : 'let them out';
       $('home-clear').disabled = !folks.length;
-      $('home-pick').textContent = broken ? 'It broke! Drag each piece back where it goes. Tap a piece to turn it.' : crowded() ? `Too crowded! ${k} in there and they are furious. Let some out.` : n ? 'Catch one: grab it, drag it back over the dome and let go.' : picked ? `#${picked.code}` : folks.length ? 'Tap a Fuzzboi to see its code.' : 'Nobody lives here yet. Make a Fuzzboi above and send it in.';
+      $('home-pick').textContent = broken ? 'It broke! Drag each piece back where it goes; drop it close and it clicks in. Tap a piece to turn it.' : crowded() ? `Too crowded! ${k} in there and they are furious. Let some out.` : n ? 'Catch one: grab it, drag it back over the dome and let go.' : picked ? `#${picked.code}` : folks.length ? 'Tap a Fuzzboi to see its code.' : 'Nobody lives here yet. Make a Fuzzboi above and send it in.';
       // the counter: how many are in, how many more until it breaks (Astra, 2026-10-29)
       const meter = $('dome-meter');
       if (meter) {
@@ -558,9 +560,12 @@
     }
     const dropPiece = () => {
       if (!drag) return;
-      const { p, moved, sphere } = drag; drag = null;
+      const drag0 = drag, { p, moved, sphere } = drag; drag = null;
       if (sphere) { for (const q of broken.pieces) if (!q.placed) tryPlace(q); return; }
       if (!moved) p.rotTo = p.rot + Math.PI / 4;
+      // on a touch screen there is no wheel to turn it: dropped close to its own place, it turns itself the right way and clicks
+      // in (Astra, 2026-10-29: the touch controls "are kind of weird"; it used to spin by itself the whole time it was held)
+      else if (drag0.touch) { const home = homeOf(p, broken.spinTo); if (Math.hypot(p.x - home.x, p.y - home.y) < R() * .3) p.rotTo = broken.spinTo; }
       tryPlace(p);
     };
     cv.addEventListener('pointerup', dropPiece); cv.addEventListener('pointercancel', dropPiece);
@@ -578,20 +583,7 @@
         e.preventDefault();
         if (!p) { if (Math.hypot(x - W / 2, y - H / 2) < R() * 1.1) drag = { sphere: true, a: angleAt(x, y), sx: x, sy: y, moved: false }; return; }
         broken.pieces.splice(broken.pieces.indexOf(p), 1); broken.pieces.push(p); // to the top
-        drag = { p, dx: x - p.x, dy: y - p.y, sx: x, sy: y, moved: false };
-        // on a touch screen there is no wheel (Astra, 2026-10-29: "just automatically start doing it, and then I can line it
-        // up"): a held piece turns slowly by itself, and clicks in the moment it is both in its place and turned right
-        if (e.pointerType !== 'mouse') {
-          const held = drag; let last = performance.now();
-          const turn = (t) => {
-            if (drag !== held || !broken) return;
-            p.rotTo += Math.min(50, t - last) / 1000 * .5; last = t;
-            const home = homeOf(p, broken.spinTo);
-            if (Math.hypot(p.x - home.x, p.y - home.y) < R() * .22 && Math.abs(norm(p.rotTo - broken.spinTo)) < .12) { drag = null; tryPlace(p); return; }
-            requestAnimationFrame(turn);
-          };
-          requestAnimationFrame(turn);
-        }
+        drag = { p, dx: x - p.x, dy: y - p.y, sx: x, sy: y, moved: false, touch: e.pointerType !== 'mouse' };
         return;
       }
       const hit = inside().filter((f) => f.ss).sort((p, q) => q.z - p.z).find((f) => Math.hypot(f.sx - x, f.sy - y) < f.ss * .45);

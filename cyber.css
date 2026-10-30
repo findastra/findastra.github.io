@@ -844,6 +844,7 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 .fz-traits dt { font-size: 10px; }
 #fz-note { display: none; }
 .home { display: block; width: 100%; aspect-ratio: 1; cursor: pointer; touch-action: manipulation; }
+.home.mending { touch-action: none; }
 /* the Fuzzbois let out of the dome, loose over the whole screen; clicks go through to the page */
 .fuzz-loose { position: absolute; left: 0; top: 0; width: 100%; z-index: 55; pointer-events: none; overflow: hidden; }
 .fuzz-loose .fuzz { position: absolute; left: 0; top: 0; pointer-events: auto; cursor: grab; touch-action: none; will-change: transform; }

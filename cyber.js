@@ -1269,7 +1269,7 @@
       const card = all.querySelector(`.card:nth-last-child(${left().length ? 2 : 1})`) || all.lastElementChild;
       hint.innerHTML = left().length ? 'Tip it again for another star.<br>Will you get every single pet?' : 'You got every single pet!';
       count();
-      card.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'nearest' });
+      // the page stays where it is (Astra, 2026-10-29: "not have it like bring you down to every new star")
       shaking = false;
     }
     // a pastel sparkle let loose at a point in the jar's box: it drifts by (dx, dy), twinkles and fades
