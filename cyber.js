@@ -21,8 +21,12 @@
   const slug = (s) => String(s || '').toLowerCase().replace(/[’']/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
   // a pet's picture: its newest drawing (desktop art, the one its pet program page shows, then its mood and web frames),
   // found by art name, repo or pet name; else its repo's small app icon (Astra, 2026-10-27: "the stars need updated art")
+  // Fuzzboi Friend is a real Fuzzboi from the Fuzzboi art (Astra, 2026-10-29: "needs to be an actual Fuzzboy"): the blue one
+  // with glasses and a taco from the Fuzzboi Factory's banner
+  const OWN_ICON = { 'Fuzzboi Friend': 'https://findastra.github.io/fuzzboi-factory/art/banner/f0.png' };
   const iconOf = (p) => {
     if (!p) return null;
+    if (OWN_ICON[p.pet]) return OWN_ICON[p.pet];
     if (!hosted) return p.icon ? LATEST + p.icon : null;
     const names = [...new Set([artByRepo[p.repo], p.repo, slug(p.pet)].filter(Boolean))];
     // the newest drawing wins (Astra, 2026-10-29: "the butterfly looks like it's not up-to-date"): each art/latest path is
@@ -276,24 +280,30 @@
         { src: 'art/worlds/infinite-pole-spawn.jpg', cap: "Astra's Infinite Pole · the spawn" }] },
     { name: 'Piranesi House', kind: 'VRChat world · PC VR / desktop', text: "Inspired by Susanna Clarke's Piranesi: an endless labyrinth of marble statues on an island, with a tide that rises and falls, a colossus you can sit in, and a very special developers' easter egg.", repo: 'piranesi-house',
       // its labyrinth key, the Cross of the Four Winds map from Piranesi Nessi's key page (Astra, 2026-10-29)
-      local: [{ src: 'art/worlds/piranesi-house-labyrinth-key-20261029.png', cap: 'Piranesi House · the Cross of the Four Winds', fit: 'contain', bg: '#142225', size: 0.97, fill: '#142225', label: 'maze layout' },
+      local: [{ src: 'art/worlds/piranesi-house-labyrinth-key-20261029.png', cap: 'Piranesi House · the Cross of the Four Winds', fit: 'contain', bg: '#142225', size: 0.97, fill: '#142225', label: 'maze layout',
+        // a little lower in the square: centered, but the tape across the top made it look high (Astra, 2026-10-29)
+        nudge: '0 4%' },
         // then the real world (Astra, 2026-10-29): the hall of lilies under the round window, and the domes from above
         { src: 'art/worlds/piranesi-house-lily-hall-20261029.webp', cap: 'Piranesi House · the hall of lilies' },
         { src: 'art/worlds/piranesi-house-domes-closer-20261029.webp', cap: 'Piranesi House · the domes from above' }] },
     // the pictures each world has so far (Astra, 2026-10-27); proper captures from the worlds come later
     { name: 'Liminal Doors', kind: 'VRChat world · PC VR / desktop', text: 'Doors that open onto quiet in-between places: an empty pool after closing, a laundrette with a sky turning in one washer, a platform between trains. Every door hides a unique crystal animal.', repo: 'liminal-doors', local: [ // all of its floors, the hummingbird's first (Astra, 2026-10-27)
-      '09-hummingbird-upside-down-conservatory-20261015', '01-fox-pinkscape-20261020', '02-hare-faraway-field-20261015', '03-axolotl-pool-after-closing-20261015',
+      // (Astra, 2026-10-29) the pink door under the big moon first; no hare's field (02), cat motel (11) or manta ray (12); the
+      // phone booth in the clouds (01) later on; her flooded pool corridor where the lavender quarry (14) was
+      '10-ibex-salt-moon-20261015', '09-hummingbird-upside-down-conservatory-20261015', '03-axolotl-pool-after-closing-20261015',
       '04-raccoon-last-laundrette-20261015', '05-gecko-apricot-underpass-20261015', '06-crane-platform-between-trains-20261015', '07-moth-velvet-waiting-room-20261015',
-      '08-frog-rain-that-misses-you-20261015', '10-ibex-salt-moon-20261015', '11-cat-motel-without-rooms-20261015', '12-manta-ray-tidal-carpet-20261015',
-      '13-hedgehog-vending-machine-clearing-20261015', '14-lynx-lavender-quarry-20261015', '15-seahorse-empty-aquarium-20261015', '16-heron-blackwater-footbridge-20261015',
+      '08-frog-rain-that-misses-you-20261015',
+      '13-hedgehog-vending-machine-clearing-20261015', 'flooded-pool-corridor', '15-seahorse-empty-aquarium-20261015', '16-heron-blackwater-footbridge-20261015',
       '17-dragonfly-soft-staircase-20261015', '18-snow-leopard-snow-in-the-lobby-20261015', '19-raven-pearl-car-park-20261015', '20-octopus-room-beneath-the-ocean-20261015',
       '21-deer-wind-telephone-20261015', '22-firefly-sleeping-arcade-20261015', '23-kangaroo-low-gravity-court-20261015', '24-scarab-ribbon-dunes-20261015',
       '25-praying-mantis-frosted-office-20261015', '26-flamingo-red-sun-reservoir-20261015', '27-jellyfish-room-of-curtains-20261015', '28-butterfly-glass-orchard-20261015',
-      '29-red-panda-midnight-food-court-20261015', '30-swan-door-at-sunrise-20261015', '31-otter-steam-between-stars-20261015', '32-sandpiper-sunset-sandbar-20261015',
+      '29-red-panda-midnight-food-court-20261015', '30-swan-door-at-sunrise-20261015', '01-fox-pinkscape-20261020', '31-otter-steam-between-stars-20261015', '32-sandpiper-sunset-sandbar-20261015',
       '33-dolphin-aquaglass-concourse-20261015', '36-kingfisher-blue-sky-terminal-20261015']
-      .map((f, i) => ({ src: LD + f + '.png', label: 'concept art', cap: 'Liminal Doors · ' + f.replace(/^\d+-/, '').replace(/-\d{8}$/, '').replace(/-/g, ' '),
-        // the first, the hummingbird's conservatory, a little closer in on the greenhouse and its glass roof (Astra, 2026-10-29)
-        ...(i ? {} : { crop: [40, 0, 467, 427, 507, 508], cover: true }) })) },
+      .map((f) => f === 'flooded-pool-corridor'
+        ? { src: 'art/worlds/liminal-doors-flooded-pool-corridor-20261029.webp', cap: 'Liminal Doors · the flooded pool corridor', label: 'concept art' }
+        : { src: LD + f + '.png', label: 'concept art', cap: 'Liminal Doors · ' + f.replace(/^\d+-/, '').replace(/-\d{8}$/, '').replace(/-/g, ' '), no: f.slice(0, 2),
+          // the hummingbird's conservatory a little closer in on the greenhouse and its glass roof (Astra, 2026-10-29)
+          ...(f.startsWith('09-') ? { crop: [40, 0, 467, 427, 507, 508], cover: true } : {}) }) },
     { name: "Mommy's World", kind: 'VRChat world · PC VR / desktop', text: "The VRChat home of Mommy's Rave House, Dance & Avatar Academy.", repo: 'mommys-world',
       // first, "baby girl, I'm a star", playing on a loop with its sound off until you turn it on (Astra, 2026-10-29)
       // not the pink phone booth, which is not Mommy's World (Astra, 2026-10-29)
@@ -540,7 +550,33 @@
   const ownGalaxy = (src) => { const m = /findastra\/(anthropic|openai)-discord-presence\/main\/public\/galaxy\.png$/.exec(src); return m && GALAXY[m[1]]; };
   const glows = (p) => /^https:.*galaxy(-card)?\.(png|gif)$/.test(p.src) && !ownGalaxy(p.src);
   const clearOf = (p) => !!(p && (p.clear || glows(p) || ownGalaxy(p.src)));
-  function polaroid({ key, name, kind, date, text, pics, repo, site, siteLabel, shot, sticky, clear }) {
+  // a short note for every Polaroid, saying more than the picture can (Astra, 2026-10-29: "a note for every single Polaroid ...
+  // short notes that kind of tell more than what you can just see"), handwritten on its back: flip it over to read it (Astra,
+  // 2026-10-29: "if we flip the Polaroid, we could put notes, handwritten notes on there"; on the paper they fought the layout)
+  const NOTES = {
+    'astras-infinite-pole': ['fall forever', 'the phone booths call each other', 'however far down you are'],
+    'piranesi-house': ['the tide really comes in', 'sit inside the colossus', 'find the developers’ easter egg'],
+    'liminal-doors': ['every door hides', 'a crystal animal', 'find them all'],
+    'mommys-world': ['home of Mommy’s dance academy', 'still being built'],
+    'the-rainbow-maker': ['a real solar toy', 'tiny gears spin a crystal', 'rainbows fill the room'],
+    'the-cooling-tower': ['break into the stack', 'power up the plant with the power of music', 'one DJ per venue, 1 hour each', '3-hour event on vrc.tl'],
+    'ai-discord-presence': ['your Discord status shows', 'the AI model you’re using, live'],
+    'openai-discord-presence': ['Codex’s model on your profile', 'free Windows app'],
+    'anthropic-discord-presence': ['Claude Code’s model on your profile', 'free Windows app'],
+    'moodglass': ['photo chats as mosaics', 'behind your Discord messages'],
+    'fuzzboi-factory': ['six numbers make one Fuzzboi', 'try your birthday'],
+    'mommys-website': ['the website plan for', 'Mommy’s dance academy'],
+    'pocket-message-board': ['a scrolling LED sign', 'on any phone', 'hold it up at a rave'],
+    'astras-photostar': ['your photos in a fat neon star', 'download it'],
+    'iris-the-origin-story': ['a bedtime story', 'becoming a book'],
+    'paper-girl': ['real science, explained'],
+    'ghost-protocol': ['check your own security', 'one step at a time'],
+    'system-map': ['every pet, program and device', 'tap one to see what it touches'],
+    'meet-pets': ['each pet is an app with a job', 'its four levels on the note'],
+    'all-pets': ['every pet drawn so far', 'more hatching'],
+  };
+  function polaroid({ key, name, kind, date, text, pics, repo, site, siteLabel, shot, sticky, clear, scribble }) {
+    scribble = scribble || NOTES[key];
     const c = el('article', 'polaroid'); const h = paint(c, key);
     const photo = el(pics.length && !shot && !pics.some((p) => p.type === 'frame') ? 'button' : 'div', 'photo');
     photo.classList.toggle('clear', !!clear || clearOf(pics[0]));
@@ -575,6 +611,17 @@
           // size gives its picture more room (the System Map's sphere, Astra 2026-10-29)
           if (p.view) f.style.setProperty('--view', p.view);
           if (p.lift) f.style.height = `calc(var(--view, 2) * ${p.lift * 100}%)`;
+          // tidy: the System Map as Astra wants it in the Polaroid (2026-10-29: "I just want to see that and then show key. And
+          // then 2D, 3D ... and spin on the bottom right"): the key starts folded to the title and its Show key button, and the
+          // bottom bar keeps only Spin and 2D | 3D, at the bottom right, on phones too (the map hides those on touch screens).
+          // Like bare, it can only reach in on the live site
+          if (p.tidy) f.addEventListener('load', () => { try {
+            const d = f.contentDocument, st = d.createElement('style');
+            st.textContent = '#nZoomIn,#nZoomOut,#nReset,#petSpin{display:none!important}body .navpad .no-touch{display:inline-flex!important}' +
+              '.navpad{left:auto!important;right:14px!important;transform:none!important}';
+            d.head.append(st);
+            const fold = d.getElementById('hudMin'); if (fold && fold.getAttribute('aria-expanded') === 'true') fold.click();
+          } catch {} });
           if (p.bare) f.addEventListener('load', () => { try { const st = f.contentDocument.createElement('style'); st.textContent = '.panel{display:none!important}'; f.contentDocument.head.append(st); } catch {} });
           // says: messages the page's own message box takes in turn, typed in the way a visitor would. Like back, below, it
           // can only reach in on the live site, where the page shares this site's address
@@ -617,6 +664,10 @@
       // border by the title, so it covers none of the picture (Astra, 2026-10-29: it hid the System Map's key)
       badge = el('span', 'badge'); badge.hidden = !pics[0].label; badge.textContent = pics[0].label || '';
       let shown = media(pics[0]); photo.append(shown, ...(field ? [field] : []));
+      // a door's number as a strip of black tape at the photo's bottom left, like the concept art sticker (Astra, 2026-10-29),
+      // over the small number drawn into the concept art
+      const doorNo = el('span', 'door-no'), setNo = (p) => { doorNo.hidden = !p.no; doorNo.textContent = p.no || ''; };
+      setNo(pics[0]); photo.append(doorNo);
       // a live page can carry a plain link to open it on its own (the System Map, Astra 2026-10-29: "just give the link
       // straight up"), as a sticker on the white border with the rest, below
       const open = pics.find((p) => p.open);
@@ -628,7 +679,7 @@
       if (pics.length > 1) {
         // "1 of 3" (Astra, 2026-10-29)
         count = el('span', 'count', `1 of ${pics.length}`);
-        const go = (d) => { at = (at + d + pics.length) % pics.length; const next = media(pics[at]); shown.replaceWith(next); shown = next; photo.classList.toggle('clear', !!clear || clearOf(pics[at])); if (sound) sound.show(pics[at]); if (sticky) sticky(at, note2); badge.hidden = !pics[at].label; badge.textContent = pics[at].label || ''; count.textContent = `${at + 1} of ${pics.length}`; };
+        const go = (d) => { at = (at + d + pics.length) % pics.length; const next = media(pics[at]); shown.replaceWith(next); shown = next; photo.classList.toggle('clear', !!clear || clearOf(pics[at])); if (sound) sound.show(pics[at]); if (sticky) sticky(at, note2); setNo(pics[at]); badge.hidden = !pics[at].label; badge.textContent = pics[at].label || ''; count.textContent = `${at + 1} of ${pics.length}`; };
         flip = ['‹', '›'].map((t, i) => { const b = el('button', 'flip ' + (i ? 'next' : 'prev'), t); b.type = 'button'; b.setAttribute('aria-label', (i ? 'next' : 'previous') + ' picture of ' + name); b.onclick = () => go(i ? 1 : -1); return b; });
       }
     }
@@ -646,7 +697,26 @@
     if (text && SHOW_DESCRIPTIONS) { const p = el('p', null, text); p.title = text; info.append(p); }
     let note2 = null;
     if (sticky) { note2 = el('div', 'sticky'); sticky(0, note2); frame.append(note2); }
-    c.append(frame, info, sparkles(h, 12)); return c;
+    c.append(frame, info, sparkles(h, 12));
+    if (scribble) {
+      // its back: the name and the note in the Polaroid hand; the same round button on the top right corner turns it over
+      // and back, with a quick half turn each way
+      const back = el('div', 'pback'); back.append(el('b', null, name), ...scribble.map((t) => el('span', null, t)));
+      const turn = el('button', 'pflip'); turn.type = 'button'; turn.title = 'flip it over'; turn.setAttribute('aria-label', 'turn ' + name + ' over to read its note');
+      turn.append(flipIcon()); frame.append(back, turn); frame.classList.add('has-back');
+      let busy = false;
+      turn.onclick = (e) => {
+        e.stopPropagation(); if (busy) return;
+        const over = () => { const on = frame.classList.toggle('turned'); turn.setAttribute('aria-pressed', String(on)); back.inert = !on; };
+        if (reduced) return over();
+        busy = true;
+        frame.animate([{ transform: 'rotateY(0deg)' }, { transform: 'rotateY(90deg)' }], { duration: 170, easing: 'ease-in' }).onfinish = () => {
+          over(); frame.animate([{ transform: 'rotateY(-90deg)' }, { transform: 'rotateY(0deg)' }], { duration: 190, easing: 'ease-out' }).onfinish = () => { busy = false; };
+        };
+      };
+      back.inert = true;
+    }
+    return c;
   }
   const worldPics = (w) => [...w.local, ...(w.ownPicsOnly ? [] : picturesOf(w.repo)), ...(w.extra || []).flatMap(picturesOf)];
   // a world: its repo (when public) gives the link, date and description; the README's words when it is private
@@ -776,15 +846,22 @@
         try {
           const cv = document.createElement('canvas'); cv.width = cv.height = 32; const x = cv.getContext('2d', { willReadFrequently: true });
           x.drawImage(im, 0, 0, 32, 32); const d = x.getImageData(0, 0, 32, 32).data;
-          let sx = 0, sy = 0, wt = 0;
+          // its main color: the hue most of its colored paint has (twelve bins round the wheel, the fullest one and its two
+          // neighbors averaged), not the average of all of it, so a red and blue pet is red or blue, never purple between
+          const bins = Array.from({ length: 12 }, () => ({ x: 0, y: 0, w: 0 }));
+          let wt = 0, lit = 0;
           for (let i = 0; i < d.length; i += 4) {
             if (d[i + 3] < 128) continue;
             const r = d[i] / 255, g = d[i + 1] / 255, b = d[i + 2] / 255, mx = Math.max(r, g, b), mn = Math.min(r, g, b), s = mx ? (mx - mn) / mx : 0;
+            lit++;
             if (s < .35 || mx < .3) continue;
             const hue = mx === r ? ((g - b) / (mx - mn)) % 6 : mx === g ? (b - r) / (mx - mn) + 2 : (r - g) / (mx - mn) + 4;
-            const a = hue * Math.PI / 3, w = s * mx; sx += Math.cos(a) * w; sy += Math.sin(a) * w; wt += w;
+            const a = hue * Math.PI / 3, w = s * mx, k = (Math.floor(((hue + 6) % 6) * 2 + .5)) % 12;
+            bins[k].x += Math.cos(a) * w; bins[k].y += Math.sin(a) * w; bins[k].w += w; wt += w;
           }
-          ok({ hue: ((Math.atan2(sy, sx) * 180 / Math.PI) + 360) % 360, wt });
+          const top = bins.reduce((m, b, k) => (b.w > bins[m].w ? k : m), 0);
+          let sx = 0, sy = 0; for (const k of [top + 11, top, top + 1]) { sx += bins[k % 12].x; sy += bins[k % 12].y; }
+          ok({ hue: ((Math.atan2(sy, sx) * 180 / Math.PI) + 360) % 360, wt, share: lit ? wt / lit : 0 });
         } catch { ok(null); }
       };
       im.src = src;
@@ -797,15 +874,31 @@
     planFor = pets;
     const list = pets.filter(iconOf);
     return (plan = Promise.all(list.map((p) => petInk(iconOf(p)).then((ink) => ({ p, ink })))).then((all) => {
-      const colored = all.filter((e) => e.ink && e.ink.wt >= 6).sort((a, b) => a.ink.hue - b.ink.hue), whites = all.filter((e) => !(e.ink && e.ink.wt >= 6));
-      const m = new Map(), n = colored.length || 1, from = colored.length ? colored[0].ink.hue : 0;
-      colored.forEach((e, i) => m.set(e.p.number, { c: `hsl(${Math.round((from + (i * 360) / n) % 360)} 95% 58%)`, rank: i }));
-      whites.forEach((e, i) => m.set(e.p.number, { c: `hsl(${(i * 47) % 360} 40% ${86 + (i % 4) * 3}%)`, rank: n + i }));
+      // each star in its pet's own main color, the same every time (Astra, 2026-10-29: "pretty much matching ... make them
+      // what their main color is"); a pet with hardly any color, like the white rabbit or the ghost, gets a white star
+      // (white: under an eighth of its paint has any color; the white rabbit's is 1%, the ghost's 5%, Log Lynx's 38%)
+      const hasColor = (e) => e.ink && e.ink.wt >= 6 && e.ink.share >= .12;
+      const colored = all.filter(hasColor).sort((a, b) => a.ink.hue - b.ink.hue), whites = all.filter((e) => !hasColor(e));
+      const m = new Map(), n = colored.length || 1;
+      colored.forEach((e, i) => m.set(e.p.number, { c: `hsl(${Math.round(e.ink.hue)} 95% 58%)`, rank: i }));
+      whites.forEach((e, i) => m.set(e.p.number, { c: '#f4f4f4', rank: n + i }));
+      // then Astra's own picks (2026-10-29), where the drawing's main color is not the one she sees in it; dark ones get white
+      // writing
+      for (const e of all) { const own = STAR_OWN[e.p.pet]; if (own) m.set(e.p.number, { ...(m.get(e.p.number) || { rank: 999 }), ...own }); }
       return m;
     }));
   };
+  const STAR_OWN = {
+    'Astra Wisp': { c: '#ff5fc8' }, // pink, not white
+    'Skill Scout': { c: '#ffb8de' }, // the one in the sailor outfit: light pink
+    'Closet Cat': { c: '#1f3790', dark: true }, // navy, for the cat with the orange scarf
+    'Piranesi Nessi': { c: '#74f7c3' }, // mint green
+    'Discord Damsel': { c: '#1c3fc4', dark: true }, // dark blue
+    'Friendly Farmer': { c: '#1c3fc4', dark: true }, // dark blue
+    'GitHub Goldfish': { c: 'hsl(4 95% 56%)' }, // a little more red
+  };
   const colorFor = (p) => colorPlan().then((m) => m.get(p.number) || { c: colorOf('pet-' + p.number), rank: 999 });
-  const neonStar = (node, p) => colorFor(p).then((x) => node.style.setProperty('--c', x.c));
+  const neonStar = (node, p) => colorFor(p).then((x) => { node.style.setProperty('--c', x.c); node.classList.toggle('dark-star', !!x.dark); });
   // two arrows chasing each other round a circle, one turning down on the right and one up on the left: the usual "flip"
   const flipIcon = () => {
     const s = svgEl('svg', { viewBox: '0 0 24 24', 'aria-hidden': 'true', fill: 'none', stroke: 'currentColor', 'stroke-width': '2.4', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' });
@@ -917,21 +1010,41 @@
     // the pet, and under it the pet program it runs (Astra, 2026-10-29), both links (Astra, 2026-10-29: "both of those words
     // actually need to be a link"): the pet to its repo, the program to its pet program page; whichever one is missing (a
     // private repo, a page not made yet) uses the other, so no link leads to a page a visitor cannot open
-    const petLink = repoUrl || site, programLink = site || repoUrl;
-    const nameEl = petLink ? link(petLink, 'name', p.pet) : el('b', 'name', p.pet);
+    // then (Astra, 2026-10-29: "the log links doesn't need a hyperlink, but the log bin does ... that one goes to GitHub"):
+    // the pet's name plain, its program the link, to its GitHub repo (its page when the repo is private)
+    const programLink = repoUrl || site;
+    const nameEl = el('b', 'name', p.pet);
     const progEl = programLink && p.program ? link(programLink, 'pet', p.program) : el('div', 'pet', p.program || 'program not named yet');
+    // and under them two to four very short points, what it does (Astra, 2026-10-29), from star-tools-20261029.js
+    const points = (window.STAR_TOOLS || {})[p.pet] || [];
     body.append(nameEl, progEl);
+    if (points.length) { const ul = el('ul', 'does'); ul.append(...points.slice(0, 6).map((t) => el('li', null, t))); body.append(ul); }
     const win = el('div', 'win'); win.append(big, body);
     // the flip turns it over to another star (Astra, 2026-10-29), and that side is the technical one (Astra, 2026-10-29: "when
     // you flip the stars, technical stuff's on that side"): its number and program, the app it works on top of (L1), its
     // repo, its code and how far along it is, like a spec sheet
-    const face = el('div', 'face'); face.append(shape('star', '-111 -116 229 220'), win, turnBtn);
+    // two buttons only (Astra, 2026-10-29): the flip, and the pet on the System Map, with the rings mark from the pet program
+    // pages; it opens the map at the pet program's own node
+    const mapBtn = () => {
+      const a = el('a', 'tip map-btn'); a.href = 'https://findastra.github.io/astras-pet-os/system-map-20261012.html#node=' +
+        encodeURIComponent((window.STAR_MAP_NODE || {})[p.number] || 'program-' + p.number);
+      a.target = '_blank'; a.rel = 'noopener'; a.title = p.pet + ' on the System Map'; a.setAttribute('aria-label', 'open ' + p.pet + ' on the System Map');
+      const s = svgEl('svg', { viewBox: '-6 -6 132 132', 'aria-hidden': 'true' });
+      for (const [r, cls] of [[56], [40], [24], [8, 'core']]) s.append(svgEl('circle', { cx: 60, cy: 60, r, ...(cls ? { class: cls } : {}) }));
+      s.append(svgEl('circle', { cx: 116, cy: 60, r: 7, class: 'node' })); a.append(s); return a;
+    };
+    const face = el('div', 'face'); face.append(shape('star', '-111 -116 229 220'), win, turnBtn, mapBtn());
     const back = el('div', 'back star-back');
     const backBtn = el('button', 'tip turn-btn'); backBtn.type = 'button'; backBtn.setAttribute('aria-label', 'flip back to ' + p.pet); backBtn.title = 'flip back'; backBtn.append(flipIcon());
+    // the back (Astra, 2026-10-29): its four levels in a white box, L1 its third-party apps (three at most), L2 its program,
+    // L3 the pet, L4 you; then its code and stage. The GitHub link stays on the front
+    const levels = el('dl', 'levels-box'), apps = ((window.STAR_L1 || {})[p.pet] || String(L1[p.pet] || 'third-party apps').split(/\s*(?:&|,| and )\s*/).filter(Boolean)).slice(0, 3);
+    const l1 = el('dd'); l1.append(...apps.map((a) => el('span', null, a)));
+    levels.append(el('dt', null, 'L1'), l1, el('dt', null, 'L2'), el('dd', null, p.program || '—'), el('dt', null, 'L3'), el('dd', null, p.pet), el('dt', null, 'L4'), el('dd', null, 'you'));
     const spec = el('dl', 'spec');
-    for (const [k, v] of [['no.', p.number ? '#' + p.number : '—'], ['L1', L1[p.pet] || 'third-party apps'], ['repo', p.repo || '—'],
-      ['code', (r && r.language) || (r ? '—' : 'private')], ['stage', p.stage || '—']]) spec.append(el('dt', null, k), el('dd', null, v));
-    back.append(shape('star', '-111 -116 229 220'), spec, backBtn);
+    for (const [k, v] of [['code', (r && r.language) || (r ? '—' : 'private')], ['stage', p.stage || '—']]) spec.append(el('dt', null, k), el('dd', null, v));
+    const sheet = el('div', 'sheet'); sheet.append(levels, spec);
+    back.append(shape('star', '-111 -116 229 220'), sheet, backBtn);
     const turn = el('div', 'turn'); turn.append(face, back);
     const flip = (on) => { c.classList.toggle('flipped', on); back.inert = !on; face.inert = on; };
     turnBtn.onclick = () => flip(true); backBtn.onclick = () => flip(false); back.inert = true;
@@ -1100,13 +1213,35 @@
         jar.classList.add('tipped');
         const flat = () => { const p = tip.effect.getComputedTiming().progress; if (p == null || p >= .26 * 90 / 93) dink(); else requestAnimationFrame(flat); };
         requestAnimationFrame(flat);
-        // the stars inside fall with it (Astra, 2026-10-29): as it goes over they slide down to what is now the bottom, its
-        // right-hand side, tumbling a little, and settle back when it stands up again
-        const IW = inside.clientWidth || 240;
-        for (const m of minis) {
-          const r0 = m.style.getPropertyValue('--r'), base = `translate(-50%, -50%) rotate(${r0})`, room = (1 - parseFloat(m.style.left) / 100) * IW * (.45 + Math.random() * .25);
-          const lying = `translate(calc(-50% + ${room}px), calc(-50% + ${Math.random() * 10 - 5}px)) rotate(calc(${r0} - ${40 + Math.random() * 80}deg))`;
-          m.animate([{ transform: base }, { transform: base, offset: .12 }, { transform: lying, offset: .3, easing: 'ease-out' }, { transform: lying, offset: .76 }, { transform: base, offset: .95, easing: 'ease-in-out' }, { transform: base }], { duration: T });
+        // the stars inside fall with it and tumble over each other (Astra, 2026-10-29: "like if they were to all fall on each
+        // other"): as it goes over, what was the right-hand wall becomes the floor, and they pile up against it, the nearest
+        // first, each rolling over and over on the way and landing on the ones already there with a little bounce; when it
+        // stands up they tumble back down into the pile they came from, the bottom ones first
+        const IW = inside.clientWidth || 240, IH = inside.clientHeight || 280;
+        const live = minis.filter((m) => !m.classList.contains('gone'));
+        const rad = (parseFloat(inside.style.getPropertyValue('--s')) || 24) / 2, reach = rad * 2 * .86;
+        const at = live.map((m) => ({ m, x: parseFloat(m.style.left) / 100 * IW, y: parseFloat(m.style.top) / 100 * IH }));
+        const heap = [];
+        for (const s of [...at].sort((a, b) => b.x - a.x)) {
+          let x = IW - rad;
+          for (const q of heap) { const dy = Math.abs(q.y - s.y); if (dy < reach) x = Math.min(x, q.lx - Math.sqrt(reach * reach - dy * dy)); }
+          s.lx = Math.max(rad, x); heap.push(s);
+        }
+        for (const s of at) {
+          const r0 = s.m.style.getPropertyValue('--r'), base = `translate(-50%, -50%) rotate(${r0})`, far = Math.max(0, s.lx - s.x) / IW;
+          // rolling: about a turn for the width of the jar, either way a little
+          const roll = Math.round((120 + far * 300) * (Math.random() < .8 ? 1 : -1)), bump = 3 + far * 8;
+          const pose = (dx, turn) => `translate(calc(-50% + ${dx.toFixed(1)}px), calc(-50% + ${(Math.random() * 4 - 2).toFixed(1)}px)) rotate(calc(${r0} + ${turn}deg))`;
+          const land = Math.min(.34, .17 + far * .16), back = Math.min(.97, .84 + (1 - s.y / IH) * .1);
+          const lying = pose(s.lx - s.x, roll);
+          s.m.animate([
+            { transform: base }, { transform: base, offset: .13 },
+            { transform: lying, offset: land, easing: 'cubic-bezier(.5, 0, .9, .6)' },
+            { transform: pose(s.lx - s.x - bump, roll + 8), offset: land + .025 }, { transform: lying, offset: land + .05 },
+            { transform: lying, offset: .78 },
+            { transform: base, offset: back, easing: 'cubic-bezier(.5, 0, .9, .6)' },
+            { transform: `translate(-50%, calc(-50% - ${bump.toFixed(1)}px)) rotate(calc(${r0} - 6deg))`, offset: Math.min(.99, back + .02) }, { transform: base },
+          ], { duration: T });
         }
         // where the mouth is while the jar lies on its side: the top middle, turned a quarter round the bottom right corner
         const M = { x: r.left + r.width * .5, y: r.top + r.height * .08 };
@@ -1134,7 +1269,7 @@
       const card = all.querySelector(`.card:nth-last-child(${left().length ? 2 : 1})`) || all.lastElementChild;
       hint.innerHTML = left().length ? 'Tip it again for another star.<br>Will you get every single pet?' : 'You got every single pet!';
       count();
-      card.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'nearest' });
+      // the page stays where it is (Astra, 2026-10-29: "not have it like bring you down to every new star")
       shaking = false;
     }
     // a pastel sparkle let loose at a point in the jar's box: it drifts by (dx, dy), twinkles and fades
@@ -1305,9 +1440,11 @@
     // L1 the program underneath (the other people's program it looks after, else its own code, its repo), L2 its pet program,
     // L3 the pet itself, L4 the person it answers to, Astra
     const pet = p[at], lv = levels[pet.pet];
-    box.classList.add('names');
-    box.replaceChildren(...[`L1 – ${L1[pet.pet] || (lv && lv.others) || 'third-party apps'}`, `L2 – ${pet.program || '—'}`, `L3 – ${pet.pet}`, 'L4 – Astra'].map((t) => el('div', null, t)));
-    fitLines(box);
+    // two lines where a name needs them, never squeezed, its words set in to the right of the dash so L1 to L4 stand clear
+    // on the left (Astra, 2026-10-29: "the font's so squished. You can make it two lines")
+    box.classList.add('names', 'levels-note');
+    box.replaceChildren(...[['L1', L1[pet.pet] || (lv && lv.others) || 'third-party apps'], ['L2', pet.program || '—'], ['L3', pet.pet], ['L4', 'Astra']]
+      .map(([k, t]) => { const d = el('div'); d.append(el('span', 'lv', k), el('span', 'dash', '–'), el('span', null, t)); return d; }));
   };
   // each line of a note on one line (Astra, 2026-10-29: "I don't want to see them go a line lower"): a line wider than the
   // square is drawn smaller, just enough to fit; the others keep the note's own size
@@ -1328,7 +1465,7 @@
         // drawn at twice the photo's size, so its key in the top left is big enough to read (Astra, 2026-10-29)
         // (lift: drawn a little short of the photo's height, so the map's bottom bar, Spin and its 2D | 3D switch, sits up
         // where it can be seen)
-        pics: [{ src: HUB_PAGES + 'system-map-20261012.html', cap: 'The System Map', type: 'frame', label: 'live', view: 2, lift: .93, open: HUB_PAGES + 'system-map-20261012.html' }], repo: HUB_REPO }),
+        pics: [{ src: HUB_PAGES + 'system-map-20261012.html', cap: 'The System Map', type: 'frame', label: 'live', view: 1.6, lift: .93, tidy: true, open: HUB_PAGES + 'system-map-20261012.html' }], repo: HUB_REPO }),
       // the pets on the bare paper, and the one you flip to a little smaller (Astra, 2026-10-29); Meet every pet in the middle,
       // the pets grid on the right
       polaroid({ key: 'meet-pets', name: 'Meet every pet', kind: 'Pet gallery · ' + lang, date, repo: HUB_REPO, text: 'One at a time, no shaking needed.',
@@ -1475,7 +1612,7 @@
     });
   })();
   const shots = Object.values(IMG).filter((r) => r.screenshot || (r.pages || []).length || r.images.length).length;
-  const source = (live) => ($('project-source').textContent = [live ? 'live from GitHub' : 'snapshot', `${repos.length} public repos`, `${WORLDS.length} worlds`, `${pets.filter(iconOf).length} pets`, `${shots} with pictures so far`].join('\n'));
+  const source = (live) => ($('project-source').textContent = [`${repos.length} public repos`, ...(window.PRIVATE_REPOS ? [`${window.PRIVATE_REPOS} private repos`] : []), `${WORLDS.length} worlds`, `${pets.filter(iconOf).length} pets`].join('\n'));
   let liveRepos = false;
   const useRepos = (list, live) => {
     repos = list.filter((r) => r.name !== 'findastra.github.io'); byName = Object.fromEntries(repos.map((r) => [r.name, r]));
@@ -1564,7 +1701,14 @@
         const k = hash('c' + gx + ':' + gy), x = -6 + gx * 22.4 + (k % 100) / 100 * 16, y = -6 + gy * 22.4 + ((k >>> 7) % 100) / 100 * 16;
         cover.push(one(x, y, `hsl(${k % 360} 55% 80%)`, k));
       }
-      box.replaceChildren(...picked.map((sp) => one((sp.i % N + .5) / N * 100, (Math.floor(sp.i / N) + .5) / N * 100, sp.c, hash('p' + sp.i))), ...cover);
+      // and big ones at random over the picture (Astra, 2026-10-29: "more big sparkles randomly on the face"): 10 to 15px, in
+      // the colors of the spots they land on
+      const big = [];
+      for (let i = 0; i < 26; i++) {
+        const k = hash('big' + i), sp = spots[k % spots.length], x = (sp.i % N + .5) / N * 100, y = (Math.floor(sp.i / N) + .5) / N * 100;
+        const s = one(x, y, sp.c, k); s.style.setProperty('--s', 10 + (k >>> 9) % 6 + 'px'); big.push(s);
+      }
+      box.replaceChildren(...picked.map((sp) => one((sp.i % N + .5) / N * 100, (Math.floor(sp.i / N) + .5) / N * 100, sp.c, hash('p' + sp.i))), ...cover, ...big);
     };
     if (img.complete && img.naturalWidth) go(); else img.addEventListener('load', go, { once: true });
   })();

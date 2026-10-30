@@ -12,7 +12,9 @@
 
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; scroll-padding-top: 64px; }
-body { margin: 0; color: var(--ink); font: 17px/1.65 Inter, system-ui, sans-serif; overflow-x: hidden; }
+/* three fonts across the page (Astra, 2026-10-29: "font styling, like consistency"): JetBrains Mono for nearly all of it, Permanent
+   Marker for the Polaroids' handwriting, Inter only for the big titles */
+body { margin: 0; color: var(--ink); font: 15px/1.65 var(--mono); overflow-x: hidden; }
 /* the room for the pole scroll is inside main (and the header), so the banners can reach under the pole to the screen's edge */
 main { padding-left: var(--rail); }
 /* the frame (Astra, 2026-10-29): the pole on the left and the header are one black bezel around a screen where the code rain
@@ -214,8 +216,9 @@ main { position: relative; z-index: 1; }
 /* the user@findastra part shifts slowly through the neon colors (Astra, 2026-10-29: "noticeable, but not too fast"), and the
    path a step behind it */
 @keyframes ps-neon { 0%, 100% { color: #39ff88; } 17% { color: #39e6ff; } 33% { color: #4f7dff; } 50% { color: #b84dff; } 67% { color: #ff3fb4; } 83% { color: #ffe14d; } }
-.term .ps-user { animation: ps-neon 12s linear infinite; text-shadow: 0 0 6px currentColor; }
-.term .ps-path { animation: ps-neon 12s linear infinite -2s; }
+/* three times slower (Astra, 2026-10-29) */
+.term .ps-user { animation: ps-neon 36s linear infinite; text-shadow: 0 0 6px currentColor; }
+.term .ps-path { animation: ps-neon 36s linear infinite -6s; }
 @media (prefers-reduced-motion: reduce) { .term .ps-user, .term .ps-path { animation: none; } }
 /* the paired lights from the pet program pages' tool panels (astras-pet-os pet-program-page-20261018.css, Unity Stable):
    left ON/OFF (green, red), right checked and works or report issues (blue, yellow). A click moves a light to its next state
@@ -369,7 +372,14 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 .card .back { transform: rotateY(180deg); display: grid; place-content: center; justify-items: center; gap: 2.2cqw; }
 /* the back for now: the same star, empty */
 .card .back.star-back { display: block; }
-/* its spec sheet, in the middle of the star: small mono labels and values, in the star's own black */
+/* its spec sheet, in the middle of the star: the four levels in a white box, then code and stage */
+.card .sheet { position: absolute; left: 45.5%; top: 62%; transform: translate(-50%, -50%); width: 46%; display: grid; gap: 1.6cqw; }
+.card .levels-box { margin: 0; padding: 1.6cqw 2cqw; display: grid; grid-template-columns: auto 1fr; gap: .7cqw 2cqw; background: #fff; border: 2px solid #000;
+  box-shadow: 1cqw 1cqw 0 #000; font: 600 3cqw/1.2 var(--mono); color: #000; text-align: left; }
+.card .levels-box dt { font-weight: 800; }
+.card .levels-box dd { margin: 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.card .levels-box dd span { display: block; overflow: hidden; text-overflow: ellipsis; }
+.card .sheet .spec { position: static; transform: none; width: auto; }
 .card .spec { position: absolute; left: 50%; top: 56%; transform: translate(-50%, -50%); width: 52%; margin: 0; display: grid; grid-template-columns: auto 1fr;
   gap: .9cqw 2.4cqw; font: 600 3.3cqw/1.2 var(--mono); color: #000; text-align: left; }
 .card .spec dt { font-weight: 400; opacity: .7; }
@@ -402,6 +412,13 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 .card .back-links .turn-btn { display: grid; place-items: center; width: 8cqw; height: 8cqw; padding: 0; border-radius: 50%; }
 .card .back-links .turn-btn svg { width: 62%; height: 62%; }
 .card .tip.turn-btn:hover, .card .tip.turn-btn:focus-visible { background: none; color: #fff; outline: none; }
+/* the System Map button on the left arm, across from the flip (Astra, 2026-10-29) */
+.card .tip.map-btn { left: 23%; top: 46%; width: 7%; color: #000; z-index: 2; }
+.card .tip.map-btn svg { width: 100%; height: 100%; overflow: visible; }
+.card .tip.map-btn circle { fill: none; stroke: currentColor; stroke-width: 7; }
+.card .tip.map-btn circle.core, .card .tip.map-btn circle.node { fill: currentColor; stroke: none; }
+.card .tip.map-btn:hover, .card .tip.map-btn:focus-visible { color: #fff; outline: none; }
+.card.dark-star .tip.map-btn { color: #fff; }
 .card .shape { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
 /* thin strokes now, so the outline stays the Photostar's own rounded star, not puffed out by the stroke (Astra, 2026-10-29) */
 .card .s-shadow { fill: #000; stroke: #000; stroke-width: 12; transform: translate(7px, 7px); transition: transform .3s; }
@@ -413,11 +430,16 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 .card .s-shine { fill: none; stroke: rgba(255, 255, 255, .45); stroke-width: 3; transform: scale(.86); }
 .card .sparkles { inset: 2% 0 0; }
 /* a small star in the top point */
-.card .tip { position: absolute; left: 48.47%; top: 19.09%; width: 13.1%; aspect-ratio: 1; transform: translate(-50%, -50%); display: grid; place-items: center; font: 400 9cqw/1 VT323, monospace; }
+.card .tip { position: absolute; left: 48.47%; top: 19.09%; width: 13.1%; aspect-ratio: 1; transform: translate(-50%, -50%); display: grid; place-items: center; font: 400 7cqw/1 var(--mono); }
 /* the window: the pet, big, where the picture box was, then its name and the flip button */
 /* the pet a little bigger and lower now the flip button is up in the point, still well inside the star's pale edge */
 .card .win { position: absolute; left: 20.96%; width: 55.02%; top: 24%; height: 64%; display: grid; grid-template-rows: 68fr 32fr; row-gap: .6cqw; }
-.card .pet-big { position: relative; display: grid; place-items: center; min-height: 0; font: 400 11cqw/1 VT323, var(--mono); }
+/* the pet half as big, so its name, program and what it does fit under it (Astra, 2026-10-29) */
+.card .win { top: 25%; height: 66%; grid-template-rows: 34fr 66fr; }
+/* a little smaller and lower, clear of the star's edge (Astra, 2026-10-29: "sitting a little bit too close to the star"), with
+   room for five or six points */
+.card .win { top: 27%; height: 64%; grid-template-rows: 27fr 73fr; }
+.card .pet-big { position: relative; display: grid; place-items: center; min-height: 0; font: 400 9cqw/1 var(--mono); }
 .card .pet-big img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; filter: drop-shadow(0 3px 0 rgba(0, 0, 0, .35)); }
 /* a drawing cut to its paint: whole, a little in from the window's sides and top, standing on the window's bottom, so every
    pet sits the same way above its name */
@@ -428,6 +450,20 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 .card .name { font: 900 5.2cqw/1.1 Inter, sans-serif; letter-spacing: -.01em; color: #000; max-width: 100%;
   display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 1; overflow: hidden; }
 .card .pet { font: 600 3.8cqw/1.25 Inter, sans-serif; color: rgba(0, 0, 0, .86); max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* nothing cut off: the name and program wrap onto a second line when they need to */
+.card .name, .card .pet { white-space: normal; -webkit-line-clamp: 2; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; }
+/* the front in the back's font (Astra, 2026-10-29: "I really like that"): the name and program centered, what it does
+   left-aligned under them */
+.card .name { font: 800 4.2cqw/1.15 var(--mono); letter-spacing: -.02em; }
+.card .pet { font: 700 3.1cqw/1.25 var(--mono); }
+.card .does { align-self: center; margin: .8cqw 0 0; padding: 0; list-style: none; text-align: left; font: 600 2.7cqw/1.3 var(--mono); color: rgba(0, 0, 0, .8); }
+/* five or six points, lined up further left, each on one line (Astra, 2026-10-29) */
+.card .does { align-self: stretch; padding-left: 9%; font-size: 2.5cqw; line-height: 1.28; }
+.card .does li { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* a dark star (navy, dark blue) writes in white */
+.card.dark-star .name, .card.dark-star .pet, .card.dark-star .does, .card.dark-star .body a, .card.dark-star .tip.turn-btn { color: #fff; }
+.card.dark-star .spec { color: #fff; }
+.card .does li::before { content: "• "; }
 
 /* the chapters: read top to bottom like the GitHub profile README, a dashed rail down the left joining them (Astra, 2026-10-27) */
 .contents { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -439,7 +475,8 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 .chapter.empty { display: none; }
 .lede { max-width: 70ch; margin: -14px 0 26px; color: var(--muted); }
 /* Astra's PetOS: its four levels, one a line */
-.levels { list-style: none; padding: 0; display: grid; gap: 4px; }
+.levels-title { margin: -8px 0 10px; font: 700 15px var(--mono); letter-spacing: .04em; }
+.levels { list-style: none; padding: 0; display: grid; gap: 4px; margin-top: 0; }
 .levels b { display: inline-block; min-width: 3ch; color: var(--ink); }
 .levels .all { margin-top: 6px; }
 #project-source { max-width: none; white-space: pre-line; line-height: 1.55; }
@@ -550,6 +587,9 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
    long for the square is drawn a little smaller to fit (fitLines in cyber.js), never wrapped */
 .polaroid .sticky.names { font-size: 10px; line-height: 1.15; gap: 3px; text-align: left; justify-items: start; }
 .polaroid .sticky.names > div { white-space: nowrap; }
+.polaroid .sticky.levels-note { gap: 2px; }
+.polaroid .sticky.levels-note > div { display: grid; grid-template-columns: auto auto 1fr; column-gap: 3px; width: 100%; white-space: normal; line-height: 1.1; }
+.polaroid .sticky.levels-note > div > span:last-child { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
 .polaroid .sticky::before { content: ""; position: absolute; left: 50%; top: -7px; width: 40px; height: 13px; translate: -50% 0; rotate: -4deg;
   background: color-mix(in srgb, var(--c) 72%, transparent); box-shadow: 0 0 8px var(--c); }
 .polaroid .sticky b { display: block; font: 700 9px var(--mono); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 3px; }
@@ -559,6 +599,32 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 .polaroid .badge { position: absolute; left: calc(var(--edge-w) - 4px); top: -9px; z-index: 2; font: 12px/1 "Permanent Marker", cursive; color: #fff; background: #111;
   padding: 4px 8px; rotate: -5deg; pointer-events: none; box-shadow: 2px 2px 0 rgba(0, 0, 0, .35); max-width: 70%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .polaroid .badge[hidden] { display: none; }
+/* a door's number: black tape at the photo's bottom left (Astra, 2026-10-29) */
+.photo .door-no { position: absolute; left: 3%; bottom: 3%; z-index: 2; font: 12px/1 "Permanent Marker", cursive; color: #fff; background: #111; padding: 4px 7px;
+  rotate: -4deg; box-shadow: 2px 2px 0 rgba(0, 0, 0, .35); pointer-events: none; }
+.photo .door-no[hidden] { display: none; }
+/* the back of a Polaroid: its note, handwritten, on the same white paper (Astra, 2026-10-29) */
+.polaroid .pback { position: absolute; inset: 0; z-index: 3; display: none; align-content: center; justify-items: start; gap: 6px; padding: 26px 22px;
+  background: #f2f2f2; color: #1d1d1d; font: 17px/1.2 "Permanent Marker", cursive; text-align: left;
+  background-image: repeating-linear-gradient(transparent 0 31px, rgba(0, 0, 0, .07) 31px 32px); }
+.polaroid .pback b { font: 13px/1 var(--mono); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #6a6a6a; margin-bottom: 6px; }
+.polaroid .pback span { rotate: -1deg; }
+.polaroid .frame.turned .pback { display: grid; }
+.polaroid .frame.turned > :not(.pback):not(.pflip):not(.tape) { visibility: hidden; }
+/* the button that turns it over: a small black round sticker on the top right corner of the border */
+.polaroid .pflip { position: absolute; right: -10px; top: -10px; z-index: 4; display: grid; place-items: center; width: 30px; height: 30px; padding: 6px; border: 0;
+  border-radius: 50%; background: #111; color: #fff; cursor: pointer; box-shadow: 2px 2px 0 rgba(0, 0, 0, .35); }
+.polaroid .pflip svg { width: 100%; height: 100%; }
+.polaroid .pflip:hover, .polaroid .pflip:focus-visible { background: #000; box-shadow: 0 0 0 2px var(--c), 0 0 10px var(--c); outline: none; }
+/* a video's sound button moves over for it */
+.polaroid .frame.has-back .sound { right: calc(var(--edge-w) + 26px); }
+/* on a wide screen, the pet jar stands to the right of the PetOS Polaroids instead of under them (Astra, 2026-10-29) */
+@media (min-width: 1500px) {
+  #pets { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 48px; align-items: start; }
+  #pets > :not(#petos-list):not(#pet-jar) { grid-column: 1 / -1; justify-self: start; }
+  #pets > #petos-list { grid-column: 1; justify-content: flex-start; }
+  #pets > #pet-jar { grid-column: 2; }
+}
 /* the sound button for a video, on the border at the top right, like the sticker on the left */
 .polaroid .sound { position: absolute; right: calc(var(--edge-w) - 4px); top: -11px; z-index: 2; width: 30px; height: 26px; padding: 0; border: 0; cursor: pointer;
   background: #111; color: #fff; font: 14px/26px system-ui, sans-serif; rotate: 4deg; box-shadow: 2px 2px 0 rgba(0, 0, 0, .35); }
@@ -602,6 +668,8 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
    out lays out all of them */
 .jar-stage { position: relative; display: grid; grid-template-columns: minmax(260px, 360px) 1fr; gap: 28px 40px; align-items: center; min-height: 480px; }
 .jar-all { grid-column: 1 / -1; }
+/* the column of stars that tip out, narrower: 260px instead of 420, about three fifths as wide on a computer; a phone is already that narrow (Astra, 2026-10-29: "like 1/2 to 2/3") */
+.jar-all .card, .jar-all .slot { max-width: 260px; }
 .jar-side { display: grid; justify-items: center; gap: 12px; }
 .jar-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
 /* the jar's name, on its lid */
@@ -740,7 +808,7 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 .tile button { position: relative; width: 100%; height: 100%; padding: 0; border: 0; background: none; cursor: pointer; transform-style: preserve-3d; transition: transform .35s; }
 .tile.open button, .tile.done button { transform: rotateY(180deg); }
 .tile .f { position: absolute; inset: 0; backface-visibility: hidden; display: grid; place-items: center; }
-.tile .f1 { background: repeating-conic-gradient(#1b1b1b 0 25%, #2b2b2b 0 50%) 0 0 / 12px 12px; border: 1px solid #4a4a4a; color: #c8c8c8; font: 22px VT323; }
+.tile .f1 { background: repeating-conic-gradient(#1b1b1b 0 25%, #2b2b2b 0 50%) 0 0 / 12px 12px; border: 1px solid #4a4a4a; color: #c8c8c8; font: 18px var(--mono); }
 .tile .f2 { background: #e9e9e9; transform: rotateY(180deg); }
 .tile .f2 img { width: 78%; height: 78%; object-fit: contain; object-position: 50% 50%; }
 .tile.done .f2 { box-shadow: 0 0 0 2px #fff, 0 0 0 4px #000; }
@@ -776,6 +844,7 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 .fz-traits dt { font-size: 10px; }
 #fz-note { display: none; }
 .home { display: block; width: 100%; aspect-ratio: 1; cursor: pointer; touch-action: manipulation; }
+.home.mending { touch-action: none; }
 /* the Fuzzbois let out of the dome, loose over the whole screen; clicks go through to the page */
 .fuzz-loose { position: absolute; left: 0; top: 0; width: 100%; z-index: 55; pointer-events: none; overflow: hidden; }
 .fuzz-loose .fuzz { position: absolute; left: 0; top: 0; pointer-events: auto; cursor: grab; touch-action: none; will-change: transform; }
@@ -794,7 +863,7 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 /* the counter under the dome: how many are in, how many more until it breaks, and a bar filling toward 67 */
 .dome-meter { display: grid; gap: 10px; }
 .dome-meter .row { --fill: 0; display: grid; grid-template-columns: auto 1fr; align-items: baseline; gap: 4px 10px; font: 12px/1.3 var(--mono); color: #9a9a9a; }
-.dome-meter b { font: 900 1.7rem/1 Inter, sans-serif; color: #f2f2f2; min-width: 2.2ch; }
+.dome-meter b { font: 800 1.5rem/1 var(--mono); color: #f2f2f2; min-width: 2.2ch; }
 .dome-meter i { grid-column: 1 / -1; height: 8px; border: 1px solid #555; background: linear-gradient(90deg, #39ff14, #fff01f 50%, #ff2e4d) 0 0 / 100% 100%;
   clip-path: inset(0 calc((1 - var(--fill)) * 100%) 0 0); transition: clip-path .4s; }
 /* the sparkle meter fills in the page's pastels */
