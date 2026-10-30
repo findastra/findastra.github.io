@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&family=JetBrains+Mono:wght@400;700&family=VT323&family=Permanent+Marker&display=swap">
-<link rel="stylesheet" href="cyber.css?v=20261031zx">
+<link rel="stylesheet" href="cyber.css?v=20261031zz2">
 </head>
 <body>
 <!-- every star on the page is the Photostar's own outline (astras-star-window star-window.svg), scaled to this box (Astra, 2026-10-29) -->
@@ -155,8 +155,9 @@
     <h2>Arcade</h2>
     <div class="arcade">
       <div class="cab spread">
-        <!-- no words under the games' names: their buttons show how to play (Astra, 2026-10-29) -->
+        <!-- one short line under each game's name, so it is easy to read how to play (Astra, 2026-10-29) -->
         <h3>Hack the terminal</h3>
+        <p class="how">Guess the password. A wrong word shows how many letters are in the right place.</p>
         <!-- the game sits in a terminal window, like the one at the top of the page -->
         <div class="hack-term"><div class="term-bar"><span class="lights"><button type="button" class="light onoff" aria-label="hack the terminal: on" aria-pressed="true"></button><button type="button" class="light care" aria-label="hack the terminal: checked, works"></button></span><span>hack-the-terminal-tool</span></div><div id="hack"></div></div>
         <button class="btn" id="hack-new">new terminal</button>
@@ -172,6 +173,7 @@
            Fuzzboi made here can be sent into the Cyber Dome -->
       <div class="cab spread">
         <h3>Fuzzboi Factory</h3>
+        <p class="how">Type six numbers to make your Fuzzboi, or roll one.</p>
         <form class="fz-code" id="fz-form">
           <span class="fz-hash">#</span>
           <div class="fz-digits" id="fz-digits"></div>
@@ -185,6 +187,7 @@
       </div>
       <div class="cab spread">
         <div class="cab-head"><h3>Fuzzboi Cyber Dome</h3><p class="muted mono" id="home-count"></p></div>
+        <p class="how">Your Fuzzbois live here. Tap one for its code. Fill a meter and the dome breaks.</p>
         <canvas class="home" id="home" aria-label="The Fuzzboi Cyber Dome. Tap a Fuzzboi to see its code."></canvas>
         <!-- three meters: Fuzzbois in, sparkles collected, collisions; any one full breaks the dome -->
         <div class="dome-meter" id="dome-meter" aria-live="polite"><div class="row fuzz"><b>0</b><span></span><i></i></div><div class="row spark"><b>0</b><span></span><i></i></div><div class="row hits"><b>0</b><span></span><i></i></div></div>
@@ -196,6 +199,7 @@
       <!-- the two games from Mommy's website (findastra/mommys-website) -->
       <div class="cab">
         <h3>Sparkle catcher</h3>
+        <p class="how">Tap each sparkle as fast as you can. Three misses ends the set.</p>
         <div class="screen"><canvas id="beatC" aria-label="Sparkle catcher"></canvas></div>
         <div class="hud mono"><span>score <b id="bScore">0</b></span><span>combo <b id="bCombo">0</b></span><span>best <b id="bBest">0</b></span></div>
         <!-- high scores: the five best sets in this browser (Astra, 2026-10-29) -->
@@ -218,6 +222,7 @@
       </div>
       <div class="cab">
         <h3>Avatar lab</h3>
+        <p class="how">Tap a part to change it, or randomize.</p>
         <div class="labstage"><svg id="labSvg" viewBox="0 0 200 230" width="196" height="225" role="img" aria-label="Editable chibi avatar"></svg></div>
         <div class="labrow">
           <label class="lab-group" for="labHairGroup">Hairstyle collection<select id="labHairGroup"><option value="all">All 40 styles</option><option value="girls">Girls · 20 styles</option><option value="boys">Boys · 20 styles</option></select></label>
@@ -253,13 +258,14 @@
         <ul class="list">
           <li><a href="mailto:audrajvolk@icloud.com">audrajvolk@icloud.com</a></li>
           <li><a href="tel:+12064341199">(206) 434-1199</a></li>
+          <li><a href="https://www.linkedin.com/in/audra-volk-84865b90/" target="_blank" rel="noopener">LinkedIn</a></li>
         </ul>
       </article>
       <article class="contact vr">
         <b>Astra</b>
         <p class="role">VR Programmer, Dance Performer, &amp; Content Creator</p>
         <p class="pitch">VRChat worlds and avatars built in Unity, a farm of AI pets that run my tools, and pole dance on stage and on TikTok.</p>
-        <ul class="chips"><li>VRChat worlds</li><li>Unity &amp; C#</li><li>AI pets</li><li>Pole dance</li></ul>
+        <ul class="chips"><li>VRChat worlds</li><li>Unity &amp; C#</li><li>AI pets</li><li>Pole dance</li><li>Full body tracking</li><li>VR dancing</li></ul>
         <ul class="list">
           <li><a href="mailto:astraonvr@gmail.com">astraonvr@gmail.com</a></li>
           <!-- Astra's words, 2026-10-29 -->
@@ -294,7 +300,7 @@
 <script src="project-images.js?v=20261020a"></script>
 <script src="updates-data.js?v=20261018c"></script>
 <script src="repo-dates-data-20261029.js?v=20261029a"></script>
-<script src="cyber.js?v=20261031zw"></script>
-<script src="games-20261027.js?v=20261031m"></script>
+<script src="cyber.js?v=20261031zy"></script>
+<script src="games-20261027.js?v=20261031n"></script>
 </body>
 </html>
