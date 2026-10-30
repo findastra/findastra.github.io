@@ -30,10 +30,12 @@
   const factoryCv = $('fz-cv'), note = $('fz-note');
   // six big boxes, one per digit, each with what it decides written under it, as on the Fuzzboi Factory's own page
   // (Astra, 2026-10-27: "I liked it when I could enter them in and it was big and obvious")
-  const POS = ['Style', 'Color', 'Acc 1', 'Acc 2', 'Acc 3', 'Rare?'];
+  const POS = ['Style', 'Color', 'Acc 1', 'Acc 2', 'Acc 3', 'Rare?'], SHORT = ['S', 'C', 'A1', 'A2', 'A3', 'R?'];
   const boxes = POS.map((label, i) => {
     const w = el('label', 'fz-digit'), inp = el('input'); inp.inputMode = 'numeric'; inp.autocomplete = 'off'; inp.spellcheck = false; inp.setAttribute('aria-label', `Position ${i + 1}: ${label}`);
-    w.append(inp, el('span', null, label)); $('fz-digits').append(w); return inp;
+    // on a phone each column is too narrow for the word, so it shows the short one (Astra, 2026-10-30: "Short labels")
+    const tag = el('span', null, label); tag.dataset.short = SHORT[i];
+    w.append(inp, tag); $('fz-digits').append(w); return inp;
   });
   const codeIn = { get value() { return boxes.map((b) => b.value).join('').toUpperCase(); }, set value(v) { [...String(v).padEnd(6, ' ').slice(0, 6)].forEach((ch, i) => (boxes[i].value = ch.trim())); } };
   boxes.forEach((inp, i) => {

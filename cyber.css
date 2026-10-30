@@ -806,6 +806,9 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
   .term-actions .btn { font-size: 10.5px; padding: 4px 8px; box-shadow: 3px 3px 0 var(--muted); }
   .board { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .fz-digit input { font-size: 22px; }
+  /* the short labels (S, C, A1, A2, A3, R?): the full words ran into each other on a phone (Astra, 2026-10-30) */
+  .fz-digit span { font-size: 0; }
+  .fz-digit span::after { content: attr(data-short); font-size: 11px; }
   .lightbox figure { padding: 44px 12px 12px; }
   .grid { grid-template-columns: 1fr; }
   .polaroids { gap: 34px 10px; }
