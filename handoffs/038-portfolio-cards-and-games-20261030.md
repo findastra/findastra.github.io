@@ -1,5 +1,5 @@
-status: taken by Codex portfolio reviewers
-for: galaxy_assets and archived_galaxy_chat
+status: done (review version prepared)
+for: Astra / Portfolio Puffer
 from: OpenAI Codex (GPT-6), 2026-10-30
 needs: AGENTS.md, CLAUDE.md, changes/portfolio-cards-and-games-20261030.md
 ---
@@ -7,8 +7,8 @@ needs: AGENTS.md, CLAUDE.md, changes/portfolio-cards-and-games-20261030.md
 Prepare and independently review Astra's portfolio card, layout, feed and game corrections in PR 38.
 
 ## Ownership and state
-State: READY_FOR_REVIEW. Root released the bounded cyber.js expiry fix and AGENTS.md
-documentation update. All implementation files are released; root owns only the records.
+State: DONE for the requested review version. Implementation is released and independently
+approved. Live publication is not part of this delivery; the reviewed branch and preview are ready.
 Root owns only this handoff/change record during review. galaxy_assets reviews cyber.js, cyber.css,
 index.html and integrated interactions. archived_galaxy_chat reviews the gallery manifest/generator
 and publication assets. reference_motion released games and final gallery cleanup.
@@ -55,4 +55,14 @@ Those files are unchanged. The stale feed/green-chart documentation was updated 
 Site review found a stale-activity expiry gap during repeated network failures. Root added
 an independent expiry check; the reviewer's reproduction now resets correctly after 12 minutes
 even when fetching fails. Fresh/stale/inactive/recovery and rabbit lifecycle checks pass.
-Final review of the replacement cyber.js revision is pending its delivery commit.
+galaxy_assets received and approved final implementation commit
+c3df9cc6a31d4e6c1cf77916384639b5b8ea36d5 on 2026-10-30 America/Denver.
+Verified recorded hashes and clean worktree; expiry reproduction now returns the example after
+720001ms with rejected fetching. Fresh/stale/inactive/recovery, text clipping, rabbit pointer/
+keyboard catch, offscreen/hidden pause-resume and reduced-motion checks pass. Prior independent
+five-width geometry, map/Farmer/Pocket/Rainbow and unchanged game evidence remains valid.
+No open findings in the assigned scopes. Gallery/runtime hashes remain unchanged from their
+independent approvals. The commit recording this acceptance changes documentation only.
+
+Delivery: implementation and review receipt pushed to PR 38. PR is ready for Astra's review;
+no merge or live deployment is claimed. Local preview remains running for the owner.

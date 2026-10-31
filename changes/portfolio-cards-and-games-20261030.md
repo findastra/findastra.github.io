@@ -1,7 +1,7 @@
 # Portfolio cards, motion, games and complete Instagram gallery
 
 By Astra. OpenAI Codex (GPT-6), 2026-10-30.
-State: READY_FOR_REVIEW. Implementation ownership released.
+State: REVIEWED, ready for Astra. Implementation ownership released.
 
 ## Requested result
 
@@ -62,3 +62,4 @@ Branch: codex/portfolio-galaxy-cards-20261030
 Base: 39b8d5d4a5f23075555f5a07a89b7ae22e1a3b2d
 This is the requested review version; main/live publication is not included.
 Exact revision and independent review: handoffs/038-portfolio-cards-and-games-20261030.md.
+Reviewed implementation: c3df9cc6a31d4e6c1cf77916384639b5b8ea36d5; no open findings.
