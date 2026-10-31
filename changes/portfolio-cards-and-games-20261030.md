@@ -1,7 +1,7 @@
 # Portfolio cards, motion, games and complete Instagram gallery
 
 By Astra. OpenAI Codex (GPT-6), 2026-10-30.
-State: 2026-10-30 work reviewed; 2026-10-31 galaxy follow-up ready for independent review.
+State: both the 2026-10-30 work and 2026-10-31 galaxy follow-up are independently reviewed.
 
 ## Requested result
 
@@ -69,10 +69,13 @@ Reviewed implementation: c3df9cc6a31d4e6c1cf77916384639b5b8ea36d5; no open findi
 Astra requested that both official galaxies occupy the full photo square with genuinely
 transparent backgrounds. Remove the previous 20% inset and black fill; preserve approved
 star data, colors and motion. The opt-in transparent render path and its directly rendered
-fallback stills are under review. Discord's own compact card art keeps its black background.
+fallback stills have passed review. Discord's own compact card art keeps its black background.
 Implementation checks confirm exact original RGB on black, transparent outer borders and
 full-square photo bounds. Direct transparent PNG exports preserve 1024px detail. Resize,
 context restoration, reduced motion and no-WebGL fallback checks pass.
+Independent review approved c977353d59fc853a5c324394ba41051520fcc9e6 with no findings:
+48 renderer comparisons, exact original RGB, verified transparency, five-width full-square
+geometry, static fallbacks and context restoration. No live deployment is claimed.
 
 Astra also requested a button-placement proposal. Two local alternatives were prepared:
 a dedicated row below the photo (recommended), or centered controls above the photo.

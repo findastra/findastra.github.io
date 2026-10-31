@@ -1,5 +1,5 @@
-status: taken by Codex reference_motion reviewer
-for: Codex portfolio session
+status: done (review version prepared)
+for: Astra / Portfolio Puffer
 from: OpenAI Codex (GPT-6), 2026-10-30
 needs: AGENTS.md, CLAUDE.md, changes/portfolio-cards-and-games-20261030.md
 ---
@@ -7,7 +7,7 @@ needs: AGENTS.md, CLAUDE.md, changes/portfolio-cards-and-games-20261030.md
 Prepare and independently review Astra's portfolio card, layout, feed and game corrections in PR 38.
 
 ## Ownership and state
-2026-10-31 follow-up: READY_FOR_REVIEW. Astra requests both portfolio galaxies fill the
+2026-10-31 follow-up: REVIEWED. Astra requests both portfolio galaxies fill the
 whole square with transparent backgrounds. galaxy_assets completed and released cyber.js, cyber.css,
 index.html, art/projects/galaxies/official-galaxy-renderer-20261030.js, and new
 art/projects/galaxies/official-openai-galaxy-transparent-20261031.png and
@@ -32,6 +32,15 @@ canvas exports match within one RGB level when composited over black. Full-squar
 resize, context restoration, carousel detach/return, reduced motion and no-WebGL stills pass.
 A faithful public-network preview loads all fonts and compact Discord GIFs without page errors.
 Private reports and screenshots are available to the assigned reviewer. No writes during review.
+
+Final follow-up receipt and approval: reference_motion reviewed published commit
+c977353d59fc853a5c324394ba41051520fcc9e6 on 2026-10-31 America/Denver and matched
+all six delivered hashes. Independent 48 size/time/loop comparisons confirm unchanged
+opaque output, exact original RGB and alpha=maxRGB, zero-alpha borders and no GL errors.
+Both 1024px PNG fallbacks match alpha exactly and RGB within half a level out of 255 on black.
+Five viewport widths fill the square without inset. Context loss/still/restore, reduced motion
+and no-WebGL fallback pass. No open findings, page errors or changes to original data/art.
+The follow-up is ready in PR 38. This acceptance-record commit changes documentation only.
 
 Previous reviewed delivery:
 State: DONE for the requested review version. Implementation is released and independently
