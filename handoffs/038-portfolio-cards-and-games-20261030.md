@@ -1,5 +1,5 @@
-status: done (review version prepared)
-for: Astra / Portfolio Puffer
+status: taken by Codex galaxy_assets
+for: Codex portfolio session
 from: OpenAI Codex (GPT-6), 2026-10-30
 needs: AGENTS.md, CLAUDE.md, changes/portfolio-cards-and-games-20261030.md
 ---
@@ -7,6 +7,18 @@ needs: AGENTS.md, CLAUDE.md, changes/portfolio-cards-and-games-20261030.md
 Prepare and independently review Astra's portfolio card, layout, feed and game corrections in PR 38.
 
 ## Ownership and state
+2026-10-31 follow-up: IN_PROGRESS. Astra requests both portfolio galaxies fill the
+whole square with transparent backgrounds. galaxy_assets owns cyber.js, cyber.css,
+index.html, art/projects/galaxies/official-galaxy-renderer-20261030.js, and new
+art/projects/galaxies/official-openai-galaxy-transparent-20261031.png and
+art/projects/galaxies/official-anthropic-galaxy-transparent-20261031.png.
+The new stills are rendered from the existing star data and updated canvas; the
+approved opaque assets and Discord GIFs stay unchanged. Root owns this record.
+reference_motion will independently review the transparency and sizing changes.
+The separate button-placement request is a proposal only, prepared outside this
+repository; its source files remain unchanged pending Astra's design choice.
+
+Previous reviewed delivery:
 State: DONE for the requested review version. Implementation is released and independently
 approved. Live publication is not part of this delivery; the reviewed branch and preview are ready.
 Root owns only this handoff/change record during review. galaxy_assets reviews cyber.js, cyber.css,
