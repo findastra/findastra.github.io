@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>findastra</title>
 <meta name="description" content="Audra, a.k.a. Astra: worlds, projects, pets, and how to reach me.">
-<link rel="icon" href="https://raw.githubusercontent.com/findastra/astras-pet-os/main/art/latest/frames/portfolio-puffer/idle.png">
+<link rel="icon" href="https://raw.githubusercontent.com/findastra/astras-pet-os/main/art/latest/frames/portfolio-puffer/plain-idle.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&family=JetBrains+Mono:wght@400;700&family=VT323&family=Permanent+Marker&display=swap">
-<link rel="stylesheet" href="cyber.css?v=20261031i">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&family=Permanent+Marker&display=swap">
+<link rel="stylesheet" href="cyber.css?v=20261031k">
 </head>
 <body>
 <!-- every star on the page is the Photostar's own outline (astras-star-window star-window.svg), scaled to this box (Astra, 2026-10-29) -->
@@ -20,7 +20,8 @@
 <header class="top">
   <a class="brand" href="#top">find <span>/</span>astra <span>/</span></a>
   <!-- finds any words on the page (Astra, 2026-10-28); the pole on the left is the section menu -->
-  <input id="search" type="search" placeholder="search this page" aria-label="Search this page" autocomplete="off">
+  <input id="search" type="search" placeholder="search" aria-label="Search this page" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="search-list" aria-autocomplete="list">
+  <ul id="search-list" class="search-list" role="listbox" aria-label="Places on this page" hidden></ul>
 </header>
 
 <!-- the pole on the left, from Mommy's website (findastra/mommys-website, its "pole rail"): a floor label per section and a
@@ -74,13 +75,12 @@
            art/lettering/ are kept, so putting back the figure and the two script tags from git history brings it back -->
       <h1 class="sr-only">I'm Audra, a.k.a. Astra</h1>
     </div>
+    <div class="rabbit-lane" id="rabbit-lane"></div>
   </section>
 
   <!-- the projects worked on most recently: the same slim, straight strip as live updates, running the other way (Astra, 2026-10-28) -->
-  <!-- the white rabbit hops along the top edge of the working on bar (Astra, 2026-10-27) -->
-  <div class="rabbit-lane" id="rabbit-lane"></div>
   <div class="race-stripe" aria-hidden="true"></div>
-  <section class="ticker flip" id="tick-now" aria-label="Working on now">
+  <section class="ticker" id="tick-now" aria-label="Working on now">
     <span class="tick-label">working on</span>
     <div class="track"></div>
   </section>
@@ -111,7 +111,16 @@
   <section class="block weave chapter" id="pets">
     <p class="kicker">// 04 · astra's petos</p>
     <h2>Astra's PetOS</h2>
-    <p class="lede">Every project of mine gets a pet: a small app with a face, its own program, and a job. Together they are <a href="https://github.com/findastra/astras-pet-os">Astra's PetOS</a>. Portfolio Puffer keeps this page. Tip the jar and a pet falls out.</p>
+    <!-- the levels as a list, not a sentence, under their name (Astra, 2026-10-29: "app intelligence levels"), then how they
+         all work together -->
+    <h3 class="levels-title">App intelligence levels</h3>
+    <ul class="lede levels">
+      <li><b>L1</b> third-party programs</li>
+      <li><b>L2</b> your pet program</li>
+      <li><b>L3</b> your pet</li>
+      <li><b>L4</b> you</li>
+      <li class="all"><em>All pets work together. See how they function: <a href="https://github.com/findastra/astras-pet-os">Astra's PetOS</a></em></li>
+    </ul>
         <!-- Polaroids first (Astra, 2026-10-27): the System Map, what the pets look like, and every pet to flip through -->
         <div class="polaroids" id="petos-list"></div>
         <!-- the pet jar, filled to the top: shake it and a pet comes out; tip it out to see all of them -->
@@ -147,10 +156,11 @@
     <h2>Arcade</h2>
     <div class="arcade">
       <div class="cab spread">
+        <!-- one short line under each game's name, so it is easy to read how to play (Astra, 2026-10-29) -->
         <h3>Hack the terminal</h3>
-        <p class="muted">Pick the password. Likeness = letters in the right place. Four tries.</p>
+        <p class="how">Guess the password. A wrong word shows how many letters are in the right place.</p>
         <!-- the game sits in a terminal window, like the one at the top of the page -->
-        <div class="hack-term"><span class="panel-label"><i></i><i></i><i></i>hack-the-terminal-tool-panel</span><div id="hack"></div></div>
+        <div class="hack-term"><div class="term-bar"><span class="lights"><button type="button" class="light onoff" aria-label="hack the terminal: on" aria-pressed="true"></button><button type="button" class="light care" aria-label="hack the terminal: checked, works"></button></span><span>hack-the-terminal-tool</span></div><div id="hack"></div></div>
         <button class="btn" id="hack-new">new terminal</button>
       </div>
       <div class="cab spread">
@@ -158,13 +168,13 @@
         <p class="muted mono" id="mem-stat"></p>
         <div class="board" id="board"></div>
         <!-- easy: six pets; hard: one pet and six of its moods (Astra, 2026-10-27) -->
-        <div class="fz-row"><button class="btn" id="mem-new">new board</button><button class="btn" id="mem-hard" aria-pressed="false">hard: moods</button></div>
+        <div class="fz-row"><button class="btn" id="mem-new">new board</button><button class="btn" id="mem-hard" aria-pressed="false">hard: 6 moods</button></div>
       </div>
       <!-- the Fuzzboi Factory, same rules and art as findastra.github.io/fuzzboi-factory and the same six big code boxes; every
            Fuzzboi made here can be sent into the Cyber Dome -->
       <div class="cab spread">
         <h3>Fuzzboi Factory</h3>
-        <p class="muted">Type any six numbers (0–9). That exact Fuzzboi appears. Send it into the Cyber Dome below.</p>
+        <p class="how">Type six numbers to make your Fuzzboi, or roll one.</p>
         <form class="fz-code" id="fz-form">
           <span class="fz-hash">#</span>
           <div class="fz-digits" id="fz-digits"></div>
@@ -178,19 +188,23 @@
       </div>
       <div class="cab spread">
         <div class="cab-head"><h3>Fuzzboi Cyber Dome</h3><p class="muted mono" id="home-count"></p></div>
+        <p class="how">Your Fuzzbois live here. Tap one for its code. Fill a meter and the dome breaks.</p>
         <canvas class="home" id="home" aria-label="The Fuzzboi Cyber Dome. Tap a Fuzzboi to see its code."></canvas>
         <!-- three meters: Fuzzbois in, sparkles collected, collisions; any one full breaks the dome -->
         <div class="dome-meter" id="dome-meter" aria-live="polite"><div class="row fuzz"><b>0</b><span></span><i></i></div><div class="row spark"><b>0</b><span></span><i></i></div><div class="row hits"><b>0</b><span></span><i></i></div></div>
         <p class="dome-score mono" id="dome-score" aria-live="polite"></p>
         <p class="muted mono" id="home-pick" aria-live="polite"></p>
-        <div class="fz-row"><button class="btn" id="home-out" disabled>let them out</button><button class="btn" id="home-clear" disabled>empty the dome</button></div>
+        <!-- the warning one moves five random Fuzzbois in at once; five out on the page go for the pet jar (Astra, 2026-10-29) -->
+        <div class="fz-row"><button class="btn" id="home-five">⚠ add 5 random Fuzzbois to the Cyber Dome</button><button class="btn" id="home-out" disabled>let them out</button><button class="btn" id="home-clear" disabled>empty the dome</button></div>
       </div>
       <!-- the two games from Mommy's website (findastra/mommys-website) -->
       <div class="cab">
         <h3>Sparkle catcher</h3>
-        <p class="muted">From Mommy's. Tap the sparkles before they burn out. Miss three and the set ends.</p>
+        <p class="how">Tap each sparkle as fast as you can. Three misses ends the set.</p>
         <div class="screen"><canvas id="beatC" aria-label="Sparkle catcher"></canvas></div>
         <div class="hud mono"><span>score <b id="bScore">0</b></span><span>combo <b id="bCombo">0</b></span><span>best <b id="bBest">0</b></span></div>
+        <!-- high scores: the five best sets in this browser (Astra, 2026-10-29) -->
+        <div class="hiscores"><h4>High scores</h4><ol class="mono" id="bTop"></ol></div>
         <button class="btn" id="beatBtn">start set</button>
         <!-- the Sparkle Creator: design the sparkle, and the game above uses it (Astra, 2026-10-27) -->
         <div class="spark-lab">
@@ -209,22 +223,24 @@
       </div>
       <div class="cab">
         <h3>Avatar lab</h3>
-        <p class="muted">From Mommy's Avatar Academy. Build a look.</p>
+        <p class="how">Tap a part to change it, or randomize.</p>
         <div class="labstage"><svg id="labSvg" viewBox="0 0 200 230" width="196" height="225" role="img" aria-label="Editable chibi avatar"></svg></div>
         <div class="labrow">
           <label class="lab-group" for="labHairGroup">Hairstyle collection<select id="labHairGroup"><option value="all">All 40 styles</option><option value="girls">Girls · 20 styles</option><option value="boys">Boys · 20 styles</option></select></label>
           <button class="lab-b" data-avatar-part="hair">Hairstyle<small id="lb-hair">—</small></button>
           <button class="lab-b" data-avatar-part="bangs">Bangs<small id="lb-bangs">—</small></button>
+          <!-- its own block (Astra, 2026-10-29: "missing one block in the avatar lab for hair color"): a new pair of hair colors -->
+          <button class="lab-b" data-avatar-part="hairColors">Hair colors<small id="lb-hairColors">—</small></button>
           <button class="lab-b" data-avatar-part="head">Accessory 1 · Head<small id="lb-head">—</small></button>
           <button class="lab-b" data-avatar-part="body">Accessory 2 · Body<small id="lb-body">—</small></button>
           <button class="lab-b" data-avatar-part="fit">Outfit<small id="lb-fit">—</small></button>
           <button class="lab-b" data-avatar-part="fx">Sparkles<small id="lb-fx">—</small></button>
           <button class="lab-b" id="labLashes" data-avatar-part="lashes" aria-pressed="true">Lashes<small id="lb-lashes">Three flicks</small></button>
         </div>
-        <p class="muted mono">Click a part to shuffle its look and colors.</p>
         <p id="labPalette" class="muted mono" aria-live="polite"></p>
-        <div class="fz-row"><button class="btn hot" id="labRand">randomize</button><button class="btn" id="labSave">name this look</button></div>
+        <div class="fz-row"><button class="btn hot" id="labRand">randomize</button><button class="btn" id="labSave">save this look</button><button class="btn" id="labLibBtn" aria-expanded="false" aria-controls="labLib">library</button><button class="btn" id="labPng">save png</button></div>
         <p id="labName" class="lab-name"></p>
+        <div class="lab-lib" id="labLib" hidden></div>
       </div>
     </div>
   </section>
@@ -233,26 +249,41 @@
     <p class="kicker">// 06 · contact</p>
     <h2>Contact</h2>
     <div class="contacts">
-      <article class="contact">
+      <!-- spritzed up (Astra, 2026-10-29): chemical engineering, semiconductor manufacturing, agentic engineering, AI -->
+      <article class="contact eng">
         <b>Audra J. Volk</b>
-        <p class="role">Chemical Process Engineering</p>
-        <p class="muted">For chemical engineering opportunities.</p>
+        <p class="role">Chemical Process Engineer · Agentic Engineer</p>
+        <p class="pitch">Process engineering in semiconductor manufacturing, and agentic engineering: AI agents that build, check and run real work alongside me.</p>
+        <ul class="chips"><li>Chemical engineering</li><li>Semiconductor manufacturing</li><li>Agentic engineering</li><li>AI</li></ul>
+        <p class="muted">For chemical engineering and agentic engineering opportunities.</p>
         <ul class="list">
           <li><a href="mailto:audrajvolk@icloud.com">audrajvolk@icloud.com</a></li>
           <li><a href="tel:+12064341199">(206) 434-1199</a></li>
+          <li><a href="https://www.linkedin.com/in/audra-volk-84865b90/" target="_blank" rel="noopener">LinkedIn</a></li>
         </ul>
       </article>
-      <article class="contact">
+      <article class="contact vr">
         <b>Astra</b>
         <p class="role">VR Programmer, Dance Performer, &amp; Content Creator</p>
+        <p class="pitch">VRChat worlds and avatars built in Unity, a farm of AI pets that run my tools, and pole dance on stage and on TikTok.</p>
+        <ul class="chips"><li>VRChat worlds</li><li>Unity &amp; C#</li><li>AI pets</li><li>Pole dance</li><li>Full body tracking</li><li>VR dancing</li></ul>
         <ul class="list">
           <li><a href="mailto:astraonvr@gmail.com">astraonvr@gmail.com</a></li>
           <!-- Astra's words, 2026-10-29 -->
-          <li><a href="https://www.tiktok.com/@findastra" target="_blank" rel="noopener">Find Astra</a> on TikTok for VR</li>
-          <li><a href="https://www.tiktok.com/@astra_on_fire" target="_blank" rel="noopener">Astra on Fire</a> on TikTok for pole dance</li>
+          <li><a href="https://www.tiktok.com/@findastra" target="_blank" rel="noopener">@findastra</a> on TikTok for VR</li>
+          <li><a href="https://www.tiktok.com/@astra_on_fire" target="_blank" rel="noopener">@astra_on_fire</a> on TikTok for pole dance</li>
         </ul>
       </article>
     </div>
+    <!-- GitHub box (Astra, 2026-10-29): repo totals and the contribution chart, from github-stats.json -->
+    <div class="gh" id="ghStats">
+      <h3>GitHub</h3>
+      <ul class="gh-tiles"></ul>
+      <div class="gh-chart"></div>
+      <p class="gh-foot"><span class="gh-note"></span><span class="gh-legend" aria-hidden="true">less <i class="gh-l0"></i><i class="gh-l1"></i><i class="gh-l2"></i><i class="gh-l3"></i><i class="gh-l4"></i> more</span><a href="https://github.com/findastra" target="_blank" rel="noopener">github.com/findastra ↗</a></p>
+    </div>
+    <!-- her feeds in a Polaroid, one post at a time, going on by itself (Astra, 2026-10-29); feeds-20261029.js fills it -->
+    <div class="feeds" id="feeds" aria-label="Astra's TikTok and Instagram"></div>
   </section>
 
   <!-- the unified footer, the same as on every pet program page (hub apps/pet-programs, Astra 2026-10-20): By Astra, ✦, the
@@ -273,12 +304,20 @@
   <button class="lb-nav next" id="lb-next" aria-label="next picture">›</button>
 </dialog>
 
-<script src="profile-data.js?v=20261018c"></script>
-<script src="site-data.js?v=20261020a"></script>
+<script src="profile-data.js?v=20261029a"></script>
+<script src="site-data.js?v=20261029a"></script>
 <script src="pets-data.js?v=20261027c"></script>
 <script src="project-images.js?v=20261020a"></script>
 <script src="updates-data.js?v=20261018c"></script>
-<script src="cyber.js?v=20261031h"></script>
-<script src="games-20261027.js?v=20261031i"></script>
+<script src="repo-dates-data-20261029.js?v=20261029b"></script>
+<script src="star-tools-20261029.js?v=20261029c"></script>
+<script src="art/projects/galaxies/official-openai-galaxy-data-20261030.js?v=20261030a"></script>
+<script src="art/projects/galaxies/official-anthropic-galaxy-data-20261030.js?v=20261030a"></script>
+<script src="art/projects/galaxies/official-galaxy-renderer-20261030.js?v=20261031a"></script>
+<script src="cyber.js?v=20261031k"></script>
+<script src="games-20261027.js?v=20261031k"></script>
+<script src="feeds-data-20261029.js?v=20261030b"></script>
+<script src="feeds-20261029.js?v=20261030b"></script>
+<script src="github-stats-20261029.js?v=20261029a"></script>
 </body>
 </html>

@@ -1,0 +1,30 @@
+# Refreshes github-stats.json (the GitHub box in Contact) from Astra's GitHub profile. Astra, 2026-10-29.
+name: GitHub stats
+on:
+  schedule:
+    - cron: '23 */6 * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency: github-stats
+jobs:
+  stats:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Build github-stats.json
+        run: node scripts/build-github-stats-20261029.mjs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          STATS_TOKEN: ${{ secrets.STATS_TOKEN }}
+      - name: Commit if it changed
+        run: |
+          git diff --quiet -- github-stats.json && exit 0
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add github-stats.json
+          git commit -m "GitHub stats: refresh"
+          git push
