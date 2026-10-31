@@ -7,7 +7,9 @@ needs: AGENTS.md, CLAUDE.md, changes/portfolio-cards-and-games-20261030.md
 Prepare and independently review Astra's portfolio card, layout, feed and game corrections in PR 38.
 
 ## Ownership and state
-State: READY_FOR_REVIEW. All implementation writers have released their files.
+State: IN_PROGRESS for one review fix. Root reclaims cyber.js to expire stale activity
+independently of network success, and AGENTS.md for current feed/color documentation.
+Other implementation files remain released and unchanged.
 Root owns only this handoff/change record during review. galaxy_assets reviews cyber.js, cyber.css,
 index.html and integrated interactions. archived_galaxy_chat reviews the gallery manifest/generator
 and publication assets. reference_motion released games and final gallery cleanup.
@@ -45,4 +47,7 @@ Return exact revision receipt and findings to root for this card. Review is read
 ## Receipt and review
 Earlier game review by galaxy_assets passed the unchanged hash above.
 Earlier feed runtime review by reference_motion passed the unchanged hash above (14 checks).
-Final site and 93-photo generator/asset review await the published delivery commit.
+Both reviewers received published commit 8f571fd9ac9a532d2181a1fdc917e33ce6f6a3e3.
+The gallery reviewer found no implementation blockers. Site review found a stale-activity
+expiry gap during repeated network failures; root is addressing this bounded finding.
+Final review of the replacement cyber.js revision will follow.
