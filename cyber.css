@@ -23,7 +23,7 @@ main { padding-left: var(--rail); }
 /* the pole three quarters of what it was (Astra, 2026-10-29) */
 /* --float: the room between the paper and the pole, and the same on the right (Astra, 2026-10-29: "a little bit more space") */
 /* --rail: the pole's width, back to the 2026-10-28 chrome pole's (Astra, 2026-10-29) */
-:root { --rail: 52px; --frame: #050505; --edge: #3d3d3d; --now: #ff2e4d; --float: 20px; }
+:root { --rail: 36px; --frame: #050505; --edge: #3d3d3d; --now: #ff2e4d; --float: 20px; }
 /* the pole on the left, from Mommy's website: the chrome pole and a floor label per section */
 /* black, with the frame's gray line on its right; no code rain behind the pole scroll (Astra, 2026-10-29) */
 #pole { position: fixed; left: 0; top: 0; bottom: 0; z-index: 40; width: var(--rail); pointer-events: none; background: var(--frame); border-right: 2px solid var(--edge); border-left: 2px solid var(--edge); }
@@ -162,19 +162,11 @@ h3 { display: inline-block; font: 700 12px var(--mono); text-transform: uppercas
   border-block: 1px solid #262626; font: 500 13px/1.2 var(--mono); }
 .tick-label { position: absolute; z-index: 1; left: 0; top: 0; bottom: 0; display: grid; place-items: center; padding: 0 12px; background: #2a2a2a; color: #d6d6d6;
   font: 700 10px var(--mono); text-transform: uppercase; letter-spacing: .14em; box-shadow: 6px 0 10px #000; }
-/* the white rabbit hops along the top edge of the working on bar, in the hero's bottom padding; the lane clips him at its
-   edges, so running off the side never widens the page, and his hops never cover the bar's words */
-.rabbit-lane { position: relative; z-index: 3; height: 84px; margin-top: -84px; overflow: hidden; pointer-events: none; }
-.rabbit-lane .white-rabbit { pointer-events: auto; }
-.white-rabbit { position: absolute; z-index: 0; bottom: 0; left: -60px; display: none; width: 38px; height: 32px; padding: 4px; border: 0; background: none; color: var(--fur, #fff);
-  cursor: pointer; --glow: #fff; filter: drop-shadow(1.5px 0 0 #111) drop-shadow(-1.5px 0 0 #111) drop-shadow(0 1.5px 0 #111) drop-shadow(0 -1.5px 0 #111) drop-shadow(0 0 6px var(--glow)); }
-/* white with a dark outline (Astra, 2026-10-27); his glow is the color the rain turns when he is caught, every color before the rainbow */
-.white-rabbit.rainbow { animation: rabbit-rainbow 1.6s linear infinite; }
-@keyframes rabbit-rainbow { 0% { --glow: #ff2e4d; color: #ff2e4d; } 17% { --glow: #ff7a1a; color: #ff7a1a; } 33% { --glow: #fff01f; color: #fff01f; } 50% { --glow: #39ff14; color: #39ff14; } 67% { --glow: #1f8fff; color: #1f8fff; } 83% { --glow: #b14bff; color: #b14bff; } 100% { --glow: #ff2bd6; color: #ff2bd6; } }
-.white-rabbit.running { display: block; }
-.white-rabbit:hover, .white-rabbit:focus-visible { outline: none; scale: 1.15; }
-.white-rabbit svg { width: 30px; height: 24px; fill: currentColor; }
-.white-rabbit .eye { fill: #050505; }
+/* A stationary pixel matrix across the introduction; only its lit cells change. */
+.rabbit-lane { position: absolute; z-index: 3; left: 20px; right: 20px; bottom: 6px; height: 54px; overflow: hidden; }
+.rabbit-grid { display: block; width: 100%; height: 54px; padding: 0; border: 0; background: #080a0b; cursor: pointer; }
+.rabbit-grid canvas { display: block; width: 100%; height: 54px; image-rendering: pixelated; }
+.rabbit-grid:focus-visible { outline: 2px solid #e4e4e4; outline-offset: -2px; }
 .rabbit-burst-cv { position: fixed; z-index: 45; pointer-events: none; }
 .rabbit-burst { inset: auto; width: 52px; height: 52px; translate: -50% -50%; z-index: 3; }
 .ticker .track { display: inline-flex; animation: tick var(--dur, 90s) linear infinite; }
@@ -520,26 +512,21 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 /* a Discord profile's activity, slim like Discord draws it (Astra, 2026-10-29: "thinner and pancake-like"): "Playing" with
    the controller, then the app's own card art (its galaxy GIF, turning by itself as on Discord) beside its name, what it is
    using, what it is working on, and the elapsed time in green */
-/* the real Discord cards, one over the other on the bare paper */
+/* Discord activity previews, one over the other on the bare paper */
 .ai-real { position: absolute; inset: 0; display: grid; align-content: center; gap: 10px; padding: 6%; }
-/* only the card itself (Astra, 2026-10-29: the dark around it "needs to be actually completely transparent"): the GIF is
-   648 by 308 with the card from 24 to 623 across and 24 to 283 down, so the window is that 600 by 260 and the corners round
-   like the card's */
-.ai-real-card { display: block; aspect-ratio: 600 / 260; border-radius: 2% / 4.6%; overflow: hidden; }
-.ai-real-card img { display: block; width: 108%; height: auto; margin: -4% 0 0 -4%; max-width: none; }
+/* Proportions checked against the desktop client's 312 by 132 activity card. */
+.ai-real-card { display: block; min-width: 0; aspect-ratio: 312 / 132; border-radius: 3.2% / 7.6%; overflow: hidden; }
 .ai-real-card { position: relative; container-type: inline-size; }
-/* the live card, over the picture and drawn to its measures (the GIF's card is 600 across) */
-.ai-live { position: absolute; inset: 0; display: none; grid-template-columns: 21.3cqw 1fr; grid-template-rows: auto 1fr; column-gap: 3.7cqw; padding: 3.7cqw 4.3cqw 4.6cqw;
-  background: #1c1a1d; border: 1px solid #3a383c; border-radius: inherit; color: #fff; font-family: Inter, 'Segoe UI', sans-serif; text-align: left; }
-.ai-real-card.live .ai-live { display: grid; }
-.ai-live .ai-head { grid-column: 1 / -1; display: flex; justify-content: space-between; margin-bottom: 3cqw; font: 700 3.5cqw/1.2 Inter, 'Segoe UI', sans-serif; }
+.ai-live { position: absolute; inset: 0; display: grid; grid-template-columns: 22.4cqw minmax(0, 1fr); grid-template-rows: auto 1fr; column-gap: 3.2cqw; padding: 3.2cqw;
+  background: #212123; border-radius: inherit; color: #f2f3f5; font-family: 'Segoe UI', Arial, sans-serif; text-align: left; }
+.ai-live .ai-head { grid-column: 1 / -1; display: flex; justify-content: space-between; margin-bottom: 3.2cqw; font: 500 4.5cqw/1.3 'Segoe UI', Arial, sans-serif; }
 .ai-live .ai-head i { font-style: normal; color: #b5bac1; letter-spacing: .1em; }
-.ai-live .ai-art { width: 100%; aspect-ratio: 1; border-radius: 1.8cqw; object-fit: cover; background: #000; }
-.ai-live .ai-words { display: grid; align-content: center; gap: 1cqw; min-width: 0; font: 400 3.3cqw/1.3 Inter, 'Segoe UI', sans-serif; color: #f2f3f5; }
+.ai-live .ai-art { width: 100%; aspect-ratio: 1; border-radius: 2.5cqw; object-fit: cover; background: #000; }
+.ai-live .ai-words { display: grid; align-content: start; gap: .55cqw; min-width: 0; font: 400 4.15cqw/1.3 'Segoe UI', Arial, sans-serif; color: #f2f3f5; }
 .ai-live .ai-words > * { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.ai-live .ai-words b { font: 700 4.2cqw/1.25 Inter, 'Segoe UI', sans-serif; }
-.ai-live .ai-time { display: flex; align-items: center; gap: 1.2cqw; color: #3ba55d; font: 600 3.2cqw/1.3 ui-monospace, Consolas, monospace; }
-.ai-live .ai-time svg { width: 3.8cqw; height: 3.8cqw; fill: currentColor; flex: none; }
+.ai-live .ai-words b { font: 600 4.8cqw/1.25 'Segoe UI', Arial, sans-serif; }
+.ai-live .ai-time { display: flex; align-items: center; gap: 1.2cqw; color: #a5d4af; font: 400 4.15cqw/1.3 ui-monospace, Consolas, monospace; }
+.ai-live .ai-time svg { width: 4.3cqw; height: 4.3cqw; fill: currentColor; flex: none; }
 .polaroid:hover .frame { rotate: 0deg; transform: scale(1.03); }
 /* a strip of neon tape holds each one up */
 #vr .polaroid { --c: var(--c-vr) !important; }
@@ -559,10 +546,6 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 .polaroid .official-galaxy > canvas { visibility: hidden; }
 .polaroid .official-galaxy.official-galaxy-ready > canvas { visibility: visible; }
 .polaroid .official-galaxy.official-galaxy-ready > img { visibility: hidden; }
-.polaroid .galaxy-pause { display: none; margin-top: 6px; padding: 4px 8px; border: 1px solid #111; background: #111; color: #fff; font: 12px/1.3 "JetBrains Mono", monospace; cursor: pointer; }
-.polaroid:has(.official-galaxy-ready) .galaxy-pause { display: inline-block; }
-.polaroid .galaxy-pause[hidden] { display: none; }
-.polaroid .galaxy-pause:focus-visible { outline: 2px solid #111; outline-offset: 3px; }
 .polaroid .photo img[src$=".svg"] { object-fit: contain; background: #0b0b0b; }
 /* a see-through one has no backing at all (the Photostar was sitting on this dark square) */
 .polaroid .photo.clear img[src$=".svg"] { background: none; }
@@ -629,14 +612,14 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 .polaroid .pflip:hover, .polaroid .pflip:focus-visible { background: #000; box-shadow: 0 0 0 2px var(--c), 0 0 10px var(--c); outline: none; }
 /* on a wide screen, the pet jar stands to the right of the PetOS Polaroids instead of under them (Astra, 2026-10-29) */
 @media (min-width: 1500px) {
-  #pets { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 48px; align-items: start; }
+  #pets { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 48px; align-items: start; }
   #pets > :not(#petos-list):not(#pet-jar) { grid-column: 1 / -1; justify-self: start; }
-  #pets > #petos-list { grid-column: 1; justify-content: flex-start; }
+  #pets > #petos-list { grid-column: 1; min-width: 0; justify-content: flex-start; }
   #pets > #pet-jar { grid-column: 2; }
 }
 /* the sound button for a video, in the picture's bottom right corner (Astra, 2026-10-29: "in the corner of the picture
    panel ... not above the text"); it lives in the writing strip under the picture, pulled up into the corner */
-.polaroid .sound { position: absolute; right: calc(var(--edge-w) + 6px); top: -32px; z-index: 2; width: 30px; height: 26px; padding: 0; border: 0; cursor: pointer;
+.polaroid .sound { position: absolute; right: calc(var(--edge-w) + 6px); top: calc(var(--edge-w) + 6px); z-index: 2; width: 30px; height: 26px; padding: 0; border: 0; cursor: pointer;
   background: #111; color: #fff; font: 14px/26px system-ui, sans-serif; rotate: 4deg; box-shadow: 2px 2px 0 rgba(0, 0, 0, .35); }
 /* no colored square round it (Astra, 2026-10-29) */
 .polaroid .sound:hover, .polaroid .sound:focus, .polaroid .sound:focus-visible { background: #000; outline: none; }
@@ -751,7 +734,7 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 .contact .list { margin-top: 10px; }
 /* spritzed up (Astra, 2026-10-29): a neon edge across the top, the name glowing a little, what she does as neon chips */
 /* Audra J. Volk in yellow, Astra in white (Astra, 2026-10-29) */
-.contact { --n: #ffe94f; position: relative; border-top: 4px solid var(--n); }
+.contact { --n: #57e389; position: relative; border-top: 4px solid var(--n); }
 .contact.vr { --n: #f4f4f4; }
 .contact b { text-shadow: 0 0 14px color-mix(in srgb, var(--n) 55%, transparent); }
 .contact .role { color: color-mix(in oklab, var(--n) 60%, #f2f2f2); }
@@ -771,7 +754,7 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 .feed .shot iframe, .feed .shot img { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; object-fit: cover; }
 /* TikTok's player shown whole, like TikTok: her name at the top, likes, comments and shares down the side (Astra, 2026-10-29:
    "it can appear like an actual TikTok video") */
-.feed .shot iframe { pointer-events: none; }
+.feed .shot iframe { pointer-events: auto; }
 .feed .plays { position: absolute; left: 8px; bottom: 8px; z-index: 1; font: 700 11px/1 Inter, sans-serif; color: #fff;
   text-shadow: 0 1px 2px rgba(0, 0, 0, .8); pointer-events: none; }
 /* the saves, which TikTok's player leaves out, in its bookmark above its heart */
@@ -782,6 +765,12 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 /* the writing on the border is handwritten, like the other Polaroids (Astra, 2026-10-29: "it needs to be writing, not text"):
    her Instagram caption, then her name on the feed */
 .feed figcaption { display: grid; justify-items: center; gap: 4px; padding: 12px 0 4px; text-align: center; }
+.feed.instagram .feed-caption { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; height: 62px; overflow: hidden; }
+.feed .feed-recovery { position: absolute; inset: auto 8px 12px; z-index: 3; padding: 14px; background: #111e; color: #f2f2f2; font: 12px/1.5 var(--mono); text-align: center; }
+.feed .feed-recovery[data-mode="unavailable"] { inset: 0; display: grid; place-content: center; gap: 12px; padding: 24px; background: #101215; }
+.feed .feed-recovery[hidden] { display: none; }
+.feed-retry, .feed-watch { display: inline-block; padding: 7px 9px; margin: 4px; border: 1px solid #aaa; background: #222; color: #fff; font: inherit; text-decoration: none; cursor: pointer; }
+.feed-retry:focus-visible, .feed-watch:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 .feed .feed-caption { font: 18px/1.15 "Permanent Marker", cursive; color: #f2f2f2; rotate: -1.5deg; }
 .feed .feed-handle { font: 1.15rem/1.1 "Permanent Marker", cursive; color: #151515; text-decoration: none; rotate: -1.5deg; }
 .feed.instagram .feed-handle { font-size: 14px; color: #9a9a9a; }
@@ -793,21 +782,20 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 .feed.instagram .flip, .feed.instagram .count { color: #c8c8c8; }
 .feed .flip:hover, .feed .flip:focus-visible { text-shadow: 0 0 6px #ff4fd8, 0 0 12px #ff4fd8; outline: none; }
 .feed .count { font: 13px/1 "Permanent Marker", cursive; color: #6a6a6a; white-space: nowrap; rotate: -2deg; }
-/* the sound sticker, as on the Mommy's World Polaroid, in the picture's bottom left corner: TikToks start muted, and this
-   turns their sound on and off; the plays move over beside it */
-.feed .shot .plays { left: 46px; bottom: 13px; }
-.feed .sound { position: absolute; left: 6px; bottom: 6px; z-index: 2; width: 30px; height: 26px; padding: 0; border: 0; cursor: pointer; background: #111; color: #fff; font: 14px/26px system-ui, sans-serif;
+/* All sound stickers sit in the picture's top-right corner. TikToks start muted. */
+.feed .shot .plays { left: 8px; bottom: 13px; }
+.feed .sound { position: absolute; right: 6px; top: 6px; z-index: 4; width: 30px; height: 26px; padding: 0; border: 0; cursor: pointer; background: #111; color: #fff; font: 14px/26px system-ui, sans-serif;
   rotate: 4deg; box-shadow: 2px 2px 0 rgba(0, 0, 0, .35); -webkit-tap-highlight-color: transparent; }
 .feed .sound:hover, .feed .sound:focus, .feed .sound:focus-visible { background: #000; outline: none; }
 .feed.locked figcaption { padding-bottom: 16px; }
-/* a TikTok profile that only signed-in viewers see: a Polaroid that opens it on TikTok */
+/* An unavailable TikTok preview links to the profile without guessing its account settings. */
 .feed .feed-locked { position: absolute; inset: 0; display: grid; place-content: center; gap: 10px; padding: 20px; text-align: center;
   background: repeating-linear-gradient(135deg, #111 0 14px, #161616 14px 28px); color: #c8c8c8; text-decoration: none; font: 12px/1.4 var(--mono); }
 .feed .feed-locked b { font: 22px/1.1 "Permanent Marker", cursive; color: #f2f2f2; }
 .feed .feed-open { justify-self: center; padding: 6px 10px; border: 2px solid #f2f2f2; color: #f2f2f2; font-weight: 700; }
 
 /* arcade: black cabinets on white scanlines */
-.arcade { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 30px; }
+.arcade { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 30px; }
 /* a cabinet never wider than its column, so none runs off the paper on a phone (Astra, 2026-10-29) */
 .cab { min-width: 0; }
 .cab { --bg: #0c0c0c; --ink: #f2f2f2; --muted: #8c8c8c; background: var(--bg); color: var(--ink); border: 3px solid #000; padding: 20px; box-shadow: 10px 10px 0 #3a3a3a; }
@@ -849,8 +837,8 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 .tile .f2 img { width: 78%; height: 78%; object-fit: contain; object-position: 50% 50%; }
 .tile.done .f2 { box-shadow: 0 0 0 2px #fff, 0 0 0 4px #000; }
 /* the newer games (games-20261027.js): gray cabinets; the Fuzzbois, sparkles and avatars inside keep their own colors */
-/* cabinets that spread their game evenly down the square instead of bunching at the top (Astra, 2026-10-27) */
-.cab.spread { display: flex; flex-direction: column; justify-content: space-between; gap: 14px; }
+/* Keep controls close to their game, without stretching shorter cabinets to their neighbor. */
+.cab.spread { display: flex; flex-direction: column; justify-content: flex-start; gap: 14px; }
 .cab.spread > * { margin-block: 0; }
 .fz-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px; margin: 12px 0; }
 .fz-buttons { justify-content: center; }
@@ -939,6 +927,7 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 .hiscores li.none { list-style: none; margin-left: -22px; }
 /* the avatar library: every saved look, small, in a grid; tap to wear it, ✕ to let it go */
 .lab-lib { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 10px; margin-top: 12px; }
+.lab-lib[hidden] { display: none; }
 .lab-lib > p { grid-column: 1 / -1; margin: 0; }
 .lib-look { position: relative; }
 .lib-wear { display: grid; justify-items: center; gap: 4px; width: 100%; padding: 6px 4px 8px; border: 1px solid #3a3a3a; background: #0c0c0c; color: #f2f2f2; cursor: pointer; font: 11px/1.2 var(--mono); }
@@ -1075,18 +1064,18 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
   #rain { display: none; }
 }
 
-/* the GitHub box at the bottom of Contact (Astra, 2026-10-29): repo totals and her contribution chart, in grays */
-.gh { margin-top: 34px; background: #111; border: 3px solid #000; padding: 20px 24px 16px; box-shadow: 10px 10px 0 #000; }
+/* GitHub totals and contribution chart, green at Astra's request (2026-10-30). */
+.gh { margin-top: 34px; background: #101a14; border: 3px solid #000; border-top: 4px solid #57e389; padding: 20px 24px 16px; box-shadow: 10px 10px 0 #000; }
 .gh h3 { margin-top: 0; }
 .gh-tiles { list-style: none; display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 6px 0 18px; padding: 0; }
 .gh-tiles li { border: 2px solid var(--line, #000); background: #1a1a1a; padding: 8px 10px; }
-.gh-tiles b { display: block; font: 900 1.6rem/1.1 Inter, sans-serif; }
+.gh-tiles b { display: block; font: 900 1.6rem/1.1 Inter, sans-serif; color: #8cf2ad; }
 .gh-tiles span { display: block; font: 12px/1.3 var(--mono); color: #9a9a9a; }
 .gh-chart { overflow-x: auto; }
 .gh-chart svg { display: block; width: 100%; min-width: 640px; height: auto; }
 .gh-lab { font: 9px var(--mono); fill: #8a8a8a; }
-.gh-l0 { fill: #1e1e1e; background: #1e1e1e; } .gh-l1 { fill: #4a4a4a; background: #4a4a4a; } .gh-l2 { fill: #7a7a7a; background: #7a7a7a; }
-.gh-l3 { fill: #b4b4b4; background: #b4b4b4; } .gh-l4 { fill: #f2f2f2; background: #f2f2f2; }
+.gh-l0 { fill: #1e2922; background: #1e2922; } .gh-l1 { fill: #0e4429; background: #0e4429; } .gh-l2 { fill: #006d32; background: #006d32; }
+.gh-l3 { fill: #26a641; background: #26a641; } .gh-l4 { fill: #39d353; background: #39d353; }
 .gh-chart rect.gh-l0 { stroke: #2c2c2c; stroke-width: 1; }
 .gh-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; margin: 10px 0 0; font: 12px var(--mono); color: #9a9a9a; }
 .gh-legend { display: inline-flex; align-items: center; gap: 3px; margin-left: auto; }

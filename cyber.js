@@ -142,7 +142,7 @@
     ls: () => 'vr/  discord/  web/  petos/  arcade/  contact/',
     pwd: () => '/home/' + who(),
     date: () => new Date().toString(),
-    rabbit: () => 'follow the white rabbit. it hops along the bar below. catch it.',
+    rabbit: () => 'follow the pixel rabbit in the grid below. catch it to change the rain.',
     'find /astra': () => '/astra/vr  /astra/discord  /astra/web  /astra/petos  /astra/arcade  · found ' + (repos.length || 'many') + ' projects',
     'sudo unmask': () => { if (unmasked) return 'already unmasked. try: sudo mask'; $('unmask').click(); return ''; },
     'sudo mask': () => { if (!unmasked) return 'already masked.'; $('unmask').click(); return ''; },
@@ -281,8 +281,8 @@
     { name: 'Piranesi House', kind: 'VRChat world · PC VR / desktop', text: "Inspired by Susanna Clarke's Piranesi: an endless labyrinth of marble statues on an island, with a tide that rises and falls, a colossus you can sit in, and a very special developers' easter egg.", repo: 'piranesi-house',
       // its labyrinth key, the Cross of the Four Winds map from Piranesi Nessi's key page (Astra, 2026-10-29)
       local: [{ src: 'art/worlds/piranesi-house-labyrinth-key-20261029.png', cap: 'Piranesi House · the Cross of the Four Winds', fit: 'contain', bg: '#142225', size: 0.97, fill: '#142225', label: 'maze layout',
-        // a little lower in the square: centered, but the tape across the top made it look high (Astra, 2026-10-29)
-        nudge: '0 4%' },
+        // Center the maze between the colored tape above and the black label below.
+        nudge: '0 -1%' },
         // then the real world (Astra, 2026-10-29): the hall of lilies under the round window, and the domes from above
         { src: 'art/worlds/piranesi-house-lily-hall-20261029.webp', cap: 'Piranesi House · the hall of lilies' },
         { src: 'art/worlds/piranesi-house-domes-closer-20261029.webp', cap: 'Piranesi House · the domes from above' }] },
@@ -308,9 +308,11 @@
       // first, "baby girl, I'm a star", playing on a loop with its sound off until you turn it on (Astra, 2026-10-29)
       // not the pink phone booth, which is not Mommy's World (Astra, 2026-10-29)
       local: [{ src: 'art/worlds/mommys-world-baby-girl-im-a-star-20261029.mp4', cap: "Mommy's World · baby girl, I'm a star", type: 'video', sound: true, label: 'world coming soon' }], extra: ['mommys', 'role-fairy'] },
-    // Reflective stained-glass model mounted on a window, approved by Astra, 2026-10-30.
+    // Restore the approved transparent turning model and the sparkles it throws across the page.
     { name: 'The Rainbow Maker', ownPicsOnly: true, kind: 'VRChat world · PC VR / desktop', text: 'Reflective stained-glass gears and sparkling crystals turning on a sunlit glass window.', repo: 'the-rainbow-maker', local: [
-      { src: 'art/worlds/rainbow-maker-window-20261030.mp4', poster: 'art/worlds/rainbow-maker-window-20261030.png', cap: 'The Rainbow Maker · stained glass on a window', type: 'video', fit: 'cover', toggle: true }] },
+      { src: RM + 'rainbow-maker-preview-20261022.mp4', cap: 'The Rainbow Maker · turning stained glass', type: 'video', key: [69, 69, 74], clear: true, size: .94,
+        orbits: [[44,79,17,12,8,5],[54,68,16,11,8,6],[50,52,44,40,14,16,[5,8]],[50,56,34,24,10,-11,[4,6]]],
+        still: [[46,30],[56,40]], spray: [[44,79,18,13],[54,68,17,12]] }] },
     { name: 'The Cooling Tower', siteLabel: 'see full mini model ↗', kind: 'VRChat world · PC VR / desktop', text: "A rave world inside a nuclear plant's cooling tower: break into the facility and power it up with music. The Stack, the Turbine Hall, then the Reactor Hall.", repo: 'the-cooling-tower', local: [{ src: 'https://findastra.github.io/the-cooling-tower/mini-model/the-cooling-tower-mini-model-20261024.html', cap: 'The Cooling Tower · Mini Model', type: 'frame', label: 'concept model', bare: true, back: 7 }] },
   ];
   // vrchat-ai-astra was renamed the-astral-plane (2026-10-18); the pet list may still use the old name
@@ -379,7 +381,7 @@
     } catch {} };
     probe.src = im.src;
   };
-  const centerByInk = (im, scale = 1) => {
+  const centerByInk = (im, scale = 1, maxInkHeight = Infinity) => {
     const probe = new Image(); probe.crossOrigin = 'anonymous';
     probe.onload = () => { try {
       const n = 64, cv = document.createElement('canvas'); cv.width = cv.height = n; const x = cv.getContext('2d', { willReadFrequently: true });
@@ -390,7 +392,12 @@
       if (r < l) return;
       const dx = ((n - 1) / 2 - (l + r) / 2) / n, dy = ((n - 1) / 2 - (t + b) / 2) / n;
       // in a box that is not square the drawing fills its shorter side, so the offset is a share of that
-      const place = () => { const bw = im.clientWidth, bh = im.clientHeight, m = Math.min(bw, bh); im.style.translate = bw && bh && bw !== bh ? `${dx * m * scale}px ${dy * m * scale}px` : `${dx * 100 * scale}% ${dy * 100 * scale}%`; };
+      const place = () => {
+        const bw = im.clientWidth, bh = im.clientHeight, m = Math.min(bw, bh);
+        const fitted = m ? Math.min(scale, maxInkHeight / (m * (b - t + 1) / n)) : scale;
+        if (Number.isFinite(maxInkHeight)) im.style.scale = fitted;
+        im.style.translate = bw && bh && bw !== bh ? `${dx * m * fitted}px ${dy * m * fitted}px` : `${dx * 100 * fitted}% ${dy * 100 * fitted}%`;
+      };
       place(); new ResizeObserver(place).observe(im);
     } catch {} };
     probe.src = im.src;
@@ -418,12 +425,13 @@
   // screen. The video comes from the world's own repo, which allows this (it is fetched with CORS)
   const keyedVideo = (p) => {
     const box = el('div', 'keyed'), v = el('video'), cv = el('canvas'), x = cv.getContext('2d', { willReadFrequently: true });
+    if (p.size) box.style.scale = p.size;
     Object.assign(v, { muted: true, loop: true, autoplay: !reduced, playsInline: true, preload: 'auto', crossOrigin: 'anonymous', src: p.src });
     box.append(v, cv);
     const [kr, kg, kb] = p.key, near = 12, far = 26;
     let on = false, raf = 0;
     const draw = () => {
-      raf = on ? requestAnimationFrame(draw) : 0;
+      raf = on && !reduced ? requestAnimationFrame(draw) : 0;
       if (v.readyState < 2) return;
       const w = 270, hgt = Math.round(w * (v.videoHeight / v.videoWidth || 1.78));
       if (cv.width !== w) { cv.width = w; cv.height = hgt; }
@@ -436,7 +444,8 @@
       }
       x.putImageData(img, 0, 0);
     };
-    new IntersectionObserver((seen) => { on = seen.some((e) => e.isIntersecting); if (on) { v.play().catch(() => {}); if (!raf) raf = requestAnimationFrame(draw); } else v.pause(); }).observe(box);
+    v.addEventListener('loadeddata', () => { if (reduced) draw(); });
+    new IntersectionObserver((seen) => { on = seen.some((e) => e.isIntersecting); if (on) { if (!reduced) v.play().catch(() => {}); if (!raf) raf = requestAnimationFrame(draw); } else v.pause(); }).observe(box);
     return box;
   };
   // sparkles that a picture throws out over the whole page while it is on screen (Astra, 2026-10-29: the Rainbow Maker
@@ -581,15 +590,7 @@
     const spraying = pics.find((p) => p.spray); if (spraying) rainbowSpray(photo, spraying.spray);
     if (shot) photo.append(shot);
     else if (!pics.length) photo.append(el('span', 'developing', 'still developing…'));
-    let flip = null, count = null, badge = null, sound = null, look = null, galaxyPause = null;
-    if (pics.some((p) => p.galaxy)) {
-      const paused = window.OfficialGalaxy ? window.OfficialGalaxy.state.paused : reduced;
-      galaxyPause = el('button', 'galaxy-pause', paused ? 'Play stars' : 'Pause stars');
-      galaxyPause.type = 'button'; galaxyPause.dataset.galaxyPause = '';
-      galaxyPause.setAttribute('aria-pressed', String(paused));
-      galaxyPause.setAttribute('aria-description', 'Controls both galaxy animations');
-      galaxyPause.hidden = !pics[0].galaxy;
-    }
+    let flip = null, count = null, badge = null, sound = null, look = null;
     // a video with sound (Mommy's World): it plays muted, and a small button on the white border turns its sound on and off
     if (pics.some((p) => p.sound)) {
       let on = false;
@@ -622,17 +623,16 @@
           if (p.tidy) f.addEventListener('load', () => { try {
             const d = f.contentDocument, st = d.createElement('style');
             st.textContent = '#nZoomIn,#nZoomOut,#nReset,#petSpin{display:none!important}body .navpad .no-touch{display:inline-flex!important}' +
-              '.navpad{left:auto!important;right:14px!important;transform:none!important}';
+              '.navpad{left:auto!important;right:14px!important;transform:none!important}' +
+              '#stage,#labels{transform:translateY(4vh)}';
             d.head.append(st);
             const fold = d.getElementById('hudMin'); if (fold && fold.getAttribute('aria-expanded') === 'true') fold.click();
           } catch {} });
           if (p.bare) f.addEventListener('load', () => { try { const st = f.contentDocument.createElement('style'); st.textContent = '.panel{display:none!important}'; f.contentDocument.head.append(st); } catch {} });
-          // says: messages the page's own message box takes in turn, typed in the way a visitor would. Like back, below, it
-          // can only reach in on the live site, where the page shares this site's address
-          if (p.says) f.addEventListener('load', () => { try {
-            const box = f.contentDocument.getElementById('msg'); if (!box) return; let n = 0;
-            const say = () => { if (!f.isConnected) return; box.value = p.says[n++ % p.says.length]; box.dispatchEvent(new (f.contentWindow.Event)('input', { bubbles: true })); setTimeout(say, 9000); };
-            say();
+          // Set the demo message once. Repeated input events restart its scrolling position.
+          if (p.message) f.addEventListener('load', () => { try {
+            const box = f.contentDocument.getElementById('msg'); if (!box || box.value === p.message) return;
+            box.value = p.message; box.dispatchEvent(new (f.contentWindow.Event)('input', { bubbles: true }));
           } catch {} });
           // back: a few turns of the scroll wheel once it has drawn, to start a little zoomed out (the Cooling Tower's stack
           // top, Astra 2026-10-29). It can only reach in where the page shares this site's address, so on the live site
@@ -649,7 +649,7 @@
         if (p.nudge) im.style.translate = p.nudge;
         // center: the drawing itself centered in the frame, not just its square (Astra, 2026-10-29: the Farmer sat to one
         // side), from where its painted pixels actually are
-        if (p.center) centerByInk(im, p.size || 1);
+        if (p.center) centerByInk(im, p.size || 1, p.nativeSize);
         // crop: [left, top, right, bottom] of the picture's [width, height] that the frame shows, fitted whole (or filling the
         // frame, with cover), so a page screenshot can show just its best part bigger (Astra, 2026-10-29: Mommy's stars and
         // windows without the pole; more of the Liminal Doors greenhouse)
@@ -684,7 +684,7 @@
       if (pics.length > 1) {
         // "1 of 3" (Astra, 2026-10-29)
         count = el('span', 'count', `1 of ${pics.length}`);
-        const go = (d) => { at = (at + d + pics.length) % pics.length; const next = media(pics[at]); shown.replaceWith(next); shown = next; photo.classList.toggle('clear', !!clear || clearOf(pics[at])); if (galaxyPause) galaxyPause.hidden = !pics[at].galaxy; if (sound) sound.show(pics[at]); if (sticky) sticky(at, note2); setNo(pics[at]); badge.hidden = !pics[at].label; badge.textContent = pics[at].label || ''; count.textContent = `${at + 1} of ${pics.length}`; };
+        const go = (d) => { at = (at + d + pics.length) % pics.length; const next = media(pics[at]); shown.replaceWith(next); shown = next; photo.classList.toggle('clear', !!clear || clearOf(pics[at])); if (sound) sound.show(pics[at]); if (sticky) sticky(at, note2); setNo(pics[at]); badge.hidden = !pics[at].label; badge.textContent = pics[at].label || ''; count.textContent = `${at + 1} of ${pics.length}`; };
         flip = ['‹', '›'].map((t, i) => { const b = el('button', 'flip ' + (i ? 'next' : 'prev'), t); b.type = 'button'; b.setAttribute('aria-label', (i ? 'next' : 'previous') + ' picture of ' + name); b.onclick = () => go(i ? 1 : -1); return b; });
       }
     }
@@ -694,10 +694,10 @@
     const note = el('div', 'note');
     // every note the same four parts (Astra, 2026-10-29): the title, what kind of thing it is · the language it is written in,
     // then the date on its own line
-    note.append(title, ...(kind ? [el('span', 'kind', kind)] : []), ...(date ? [el('span', 'kind date', date)] : []), ...(badge ? [badge] : []), ...(sound ? [sound.b] : []), ...(look ? [look] : []), ...(galaxyPause ? [galaxyPause] : []));
+    note.append(title, ...(kind ? [el('span', 'kind', kind)] : []), ...(date ? [el('span', 'kind date', date)] : []), ...(badge ? [badge] : []), ...(look ? [look] : []));
     if (sound) sound.show(pics[0]);
     // "1 of 3" sits on the bottom edge between the arrows, level with them (Astra, 2026-10-29)
-    const frame = el('div', flip ? 'frame flips' : 'frame'); frame.append(el('i', 'tape'), photo, note, ...(flip || []), ...(count ? [count] : []));
+    const frame = el('div', flip ? 'frame flips' : 'frame'); frame.append(el('i', 'tape'), photo, note, ...(flip || []), ...(count ? [count] : []), ...(sound ? [sound.b] : []));
     const info = el('div', 'info');
     if (text && SHOW_DESCRIPTIONS) { const p = el('p', null, text); p.title = text; info.append(p); }
     let note2 = null;
@@ -753,8 +753,8 @@
     'astras-photostar': [{ src: 'https://findastra.github.io/astras-star-window/star-window.svg', cap: "Astra's Photostar", fit: 'contain', size: 0.94, clear: true, inline: true }],
     // the live sign, saying what it is (its ?message= link option is a Pocket Message Board change waiting for Astra's OK)
     // the sign takes turns saying these (Astra, 2026-10-29)
-    'pocket-message-board': [{ src: 'https://findastra.github.io/pocket-message-board/?message=' + encodeURIComponent('This is a Pocket Message Board. Check it out!') + '&size=1', cap: 'Pocket Message Board', type: 'frame',
-      says: ['Testing 1, 2, 3', 'Astra was here', 'I love Devilish', 'I love Dev 69'] }],
+    'pocket-message-board': [{ src: 'https://findastra.github.io/pocket-message-board/', cap: 'Pocket Message Board', type: 'frame',
+      message: 'Astro is here · I love DEV69' }],
     // the four angels under the rainbow sky, Iris's picture (Astra, 2026-10-29)
     'iris-the-origin-story': [{ src: 'art/projects/iris-the-origin-story-cover-20261029.webp', cap: 'Iris: the origin story', bg: '#2a1530' }],
   };
@@ -765,12 +765,12 @@
   const NAMES = { 'astras-photostar': "Astra's Photostar" };
   // and "Iris: the origin story" (Astra, 2026-10-29), whatever its repo is called
   const nameOf = (repo) => NAMES[repo] || (/^iris/i.test(repo) ? 'Iris: the origin story' : repo.replace(/-/g, ' '));
-  // the real cards instead (Astra, 2026-10-29: "you still have those wrong ... go open the actual program"): the two card GIFs
-  // the apps' own README shows, recorded from Discord, OpenAI over Anthropic, each linking to its app
+  // Match the compact activity card observed in Discord: Playing, square art, four text lines.
+  // Render text directly so it remains crisp at every photo size. These are previews, not Discord captures.
   const PRESENCE_REPO = 'https://raw.githubusercontent.com/findastra/ai-discord-presence/main/';
   // live (Astra, 2026-10-29: "hook them up to actual usage", then "make it"): on Astra's PC each app copies the card it shows
-  // on Discord into this public gist; while that copy is fresh the real card picture gives way to it, timer and all. Without
-  // a card, or once the copy is older than 12 minutes (the apps re-write a live card every 5), the picture stays
+  // on Discord into this public gist. Fresh data replaces the example text, timer and all; after 12 minutes the
+  // example returns (the apps re-write a live card every 5). Only the already-published fields are read.
   const LIVE_GIST = 'ac8f1fed8d511b51096187a7ec71edc1', LIVE_STALE_MS = 12 * 60 * 1000;
   const padIcon = () => {
     const pad = svgEl('svg', { viewBox: '0 0 24 24', 'aria-hidden': 'true' });
@@ -782,15 +782,17 @@
     const box = el('div', 'ai-real'), cards = [];
     for (const [who, what] of [['openai', 'OpenAI'], ['anthropic', 'Anthropic']]) {
       const a = link('https://github.com/findastra/ai-discord-presence/tree/main/' + who + '-discord-presence', 'ai-real-card');
-      const im = el('img'); im.src = PRESENCE_REPO + 'docs/images/' + who + '-card-20261030.gif'; im.alt = what + ' Discord Presence card on a Discord profile'; im.loading = 'lazy';
-      // the live card, drawn like the picture: "Playing", the official star animation, its name, its two lines, the time in green
+      const example = { name: what, details: who === 'openai' ? 'Using GPT-6 Astra on Ultra' : 'Using Claude Opus 5.5 on Extra High', state: 'Working on Astra’s Infinite Pole' };
+      a.setAttribute('aria-label', what + ' Discord presence preview · open app repository');
+      // Keep the official animated artwork inside the same square Discord gives it.
       const live = el('span', 'ai-live'), head = el('span', 'ai-head'), art = el('img', 'ai-art');
       head.append('Playing', el('i', null, '•••'));
-      art.src = PRESENCE_REPO + who + '-discord-presence/public/galaxy-card.gif?v=9'; art.alt = ''; art.loading = 'lazy';
+      art.src = reduced ? GALAXY[who] : PRESENCE_REPO + who + '-discord-presence/public/galaxy-card.gif?v=9'; art.alt = ''; art.loading = 'lazy';
       const name = el('b'), details = el('span'), state = el('span'), time = el('span', 'ai-time');
       const words = el('span', 'ai-words'); words.append(name, details, state, time);
-      live.append(head, art, words); a.append(im, live); box.append(a);
-      cards.push({ who, a, name, details, state, time, start: 0 });
+      const reset = () => { name.textContent = example.name; details.textContent = example.details; state.textContent = example.state; time.replaceChildren(padIcon(), '42:00'); };
+      reset(); live.append(head, art, words); a.append(live); box.append(a);
+      cards.push({ who, a, name, details, state, time, reset, start: 0 });
     }
     const pull = () => fetch('https://api.github.com/gists/' + LIVE_GIST, { cache: 'no-store' }).then((r) => (r.ok ? r.json() : null)).then((g) => {
       for (const c of cards) {
@@ -798,7 +800,7 @@
         try { d = JSON.parse(g.files[c.who + '.json'].content); } catch { /* no copy yet */ }
         const on = !!(d && d.active && Date.now() - d.updatedAt < LIVE_STALE_MS);
         c.a.classList.toggle('live', on);
-        if (!on) { c.start = 0; continue; }
+        if (!on) { c.start = 0; c.reset(); continue; }
         c.name.textContent = d.name || ''; c.details.textContent = d.details || ''; c.state.textContent = d.state || '';
         c.start = (d.startedAt || 0) * 1000;
       }
@@ -1471,11 +1473,12 @@
         // drawn at twice the photo's size, so its key in the top left is big enough to read (Astra, 2026-10-29)
         // (lift: drawn a little short of the photo's height, so the map's bottom bar, Spin and its 2D | 3D switch, sits up
         // where it can be seen)
-        pics: [{ src: HUB_PAGES + 'system-map-20261012.html', cap: 'The System Map', type: 'frame', label: 'live', view: 1.6, lift: .93, tidy: true, open: HUB_PAGES + 'system-map-20261012.html' }], repo: HUB_REPO }),
+        pics: [{ src: HUB_PAGES + 'system-map-20261012.html', cap: 'The System Map', type: 'frame', label: 'live', view: 1.6, tidy: true, open: HUB_PAGES + 'system-map-20261012.html' }], repo: HUB_REPO }),
       // the pets on the bare paper, and the one you flip to a little smaller (Astra, 2026-10-29); Meet every pet in the middle,
       // the pets grid on the right
       polaroid({ key: 'meet-pets', name: 'Meet every pet', kind: 'Pet gallery · ' + lang, date, repo: HUB_REPO, text: 'One at a time, no shaking needed.',
-        pics: drawn.map((p) => ({ src: iconOf(p), cap: p.pet, label: p.pet, fit: 'contain', size: 0.78, clear: true, center: true })), sticky: levelNote(drawn) }),
+        pics: drawn.map((p) => ({ src: iconOf(p), cap: p.pet, label: p.pet, fit: 'contain', size: 0.78, clear: true, center: true,
+          ...(p.repo === 'astras-pet-os' ? { nativeSize: 52.875 } : {}) })), sticky: levelNote(drawn) }),
       polaroid({ key: 'all-pets', name: 'The pets', kind: 'Pet gallery · ' + lang, date, text: 'What they all look like. Each one is a small app with a face and a job.', pics: [], shot: petsShot(drawn), clear: true, repo: HUB_REPO,
         // its own sticky note (Astra, 2026-10-29): how far along all of them are, most done first, by the hub's stages
         // (registered is done; pipeline is on GitHub; seed has its name and no repo yet; roadmap is still a plan), then how
@@ -1931,73 +1934,61 @@
     addEventListener('scroll', place, { passive: true }); addEventListener('resize', place); new ResizeObserver(place).observe(document.body); place();
   })();
 
-  // ---------- the white rabbit: hops across the live updates ticker now and then; catch it and the rain changes color ----------
-  // Astra (2026-10-27) asked for "the rabbit from Data Dealer"; the hopping white rabbit lives in Gone Ghost's page
-  // (findastra/ghost-protocol): the same four 8-bit frames (15 x 12 pixels), the same hop. It hops along the top edge of the
-  // working on bar, never over its words.
+  // ---------- the rabbit: fixed pixels light up across the introduction ----------
   (() => {
-    const lane = $('rabbit-lane'); if (!lane || reduced) return;
-    // each frame: [x, y, w, h] pixels, the eye last; and how high it is in the hop (0 to 1)
+    const lane = $('rabbit-lane'); if (!lane) return;
     const FRAMES = [
       { pose: 'crouch', lift: 0, px: [[9,0,1,1],[11,0,1,1],[9,1,2,1],[11,1,2,1],[9,2,5,1],[8,3,6,1],[1,3,1,1],[1,4,1,1],[2,4,13,1],[1,5,13,1],[1,6,12,1],[2,7,10,1],[2,8,3,1],[9,8,3,1],[2,9,2,1],[9,9,2,1]], eye: [12,3] },
       { pose: 'rise', lift: .55, px: [[10,0,1,1],[12,0,1,1],[10,1,2,1],[12,1,2,1],[10,2,4,1],[9,3,6,1],[1,3,1,1],[1,4,1,1],[2,4,12,1],[1,5,12,1],[1,6,10,1],[2,7,8,1],[0,8,2,1],[9,8,2,1],[0,9,2,1]], eye: [13,3] },
       { pose: 'peak', lift: 1, px: [[11,0,1,1],[13,0,1,1],[11,1,2,1],[13,1,2,1],[11,2,3,1],[10,3,5,1],[2,3,1,1],[2,4,1,1],[3,4,11,1],[2,5,11,1],[1,6,9,1],[12,7,3,1],[0,7,3,1]], eye: [14,3] },
       { pose: 'land', lift: .35, px: [[9,0,1,1],[11,0,1,1],[9,1,2,1],[11,1,2,1],[9,2,5,1],[8,3,6,1],[1,3,1,1],[1,4,1,1],[2,4,13,1],[1,5,13,1],[1,6,11,1],[2,7,9,1],[10,8,2,1],[11,9,2,1],[2,8,2,1]], eye: [12,3] },
     ];
-    const bun = el('button', 'white-rabbit'); bun.type = 'button'; bun.setAttribute('aria-label', 'A white rabbit. Catch it.'); bun.title = 'catch me';
-    const sprites = FRAMES.map((f) => {
-      const svg = svgEl('svg', { viewBox: '0 0 15 12', 'shape-rendering': 'crispEdges', 'aria-hidden': 'true' });
-      for (const [x, y, w, h] of f.px) svg.append(svgEl('rect', { x, y, width: w, height: h }));
-      const [ex, ey] = f.eye; svg.append(svgEl('rect', { x: ex, y: ey, width: 1, height: 1, class: 'eye' }));
-      bun.append(svg); return svg;
-    });
-    lane.append(bun);
-    let running = false, timer = 0, raf = 0;
-    const later = (ms) => { clearTimeout(timer); timer = setTimeout(run, ms); };
-    // half as often as before (Astra, 2026-10-29: "run across a little bit less often, like twice as slow")
-    function stop() { running = false; cancelAnimationFrame(raf); bun.classList.remove('running'); later(50000 + Math.random() * 70000); }
-    // a hop, then a pause, then a hop (Astra, 2026-10-29: "hops once and pauses, and then hops once and pauses"): each hop is a
-    // quick arc through the rise, peak and land frames, moving forward as it goes; then he sits crouched a moment before the next
-    const pose = (i, y) => { sprites.forEach((s, n) => (s.style.display = n === i ? 'block' : 'none')); bun.style.transform = `translateY(${-Math.round(y)}px)`; };
-    function run() {
-      if (document.hidden) return later(5000);
-      const x0 = -40, x1 = lane.clientWidth + 10;
-      const hopMs = 380 + Math.random() * 60, restMs = 480 + Math.random() * 160, hop = 12 + Math.random() * 3;
-      const hops = Math.max(6, Math.round((x1 - x0) / 46)), step = (x1 - x0) / hops, cycle = hopMs + restMs;
-      // he wears the color the rain turns when he is caught (Astra, 2026-10-27); a colored rabbit now, not only a glow (Astra,
-      // 2026-10-29: "I want you to do like a colored rabbit")
-      const next = PALETTES[(palette + 1) % PALETTES.length];
-      bun.classList.toggle('rainbow', next.span === 360);
-      bun.style.setProperty('--glow', next.span === 360 ? '#fff' : furOf(next)); bun.style.setProperty('--fur', next.span === 360 ? '#fff' : furOf(next));
-      running = true; bun.classList.add('running'); bun.style.left = x0 + 'px'; pose(0, 0);
-      const t0 = performance.now() + 600;
-      raf = requestAnimationFrame(function tick(now) {
-        if (!running) return;
-        const e = Math.max(0, now - t0), n = Math.floor(e / cycle), u = (e % cycle) / hopMs;
-        if (n >= hops) return stop();
-        if (u < 1) {
-          // in the air: forward smoothly, up and down in an arc
-          bun.style.left = Math.round(x0 + (n + u) * step) + 'px';
-          pose(u < .3 ? 1 : u < .72 ? 2 : 3, Math.sin(Math.PI * u) * hop);
-        } else { bun.style.left = Math.round(x0 + (n + 1) * step) + 'px'; pose(0, 0); }
-        raf = requestAnimationFrame(tick);
-      });
-    }
-    // caught: a burst of sparkles where it was, the rain moves to its next colors, and the rabbit is gone until next time
-    bun.addEventListener('click', () => {
+    const button = el('button', 'rabbit-grid'), cv = el('canvas');
+    button.type = 'button'; button.setAttribute('aria-label', 'Catch the pixel rabbit to change the rain colors');
+    cv.setAttribute('aria-hidden', 'true'); button.append(cv); lane.append(button);
+    const ctx = cv.getContext('2d'), CELL = 3, ROWS = 18;
+    let cols = 1, x = 0, y = 5, frame = 0, running = reduced, visible = false, timer = 0, raf = 0, last = 0, elapsedRun = 0;
+    const draw = () => {
+      ctx.fillStyle = '#080a0b'; ctx.fillRect(0, 0, cv.width, cv.height);
+      ctx.fillStyle = '#192023';
+      for (let row = 0; row < ROWS; row++) for (let col = 0; col < cols; col++) ctx.fillRect(col * CELL, row * CELL, CELL - 1, CELL - 1);
       if (!running) return;
-      palette = (palette + 1) % PALETTES.length;
-      const b = bun.getBoundingClientRect(), r = lane.getBoundingClientRect();
-      // just a small ring of the page's own pastel sparkles, about a seventh the size it was (Astra, 2026-10-29: the big burst
-      // was "obnoxious and way too big")
-      {
-        const burst = el('span', 'sparkles rabbit-burst'); burst.setAttribute('aria-hidden', 'true');
-        burst.style.cssText = `left:${b.left - r.left + b.width / 2}px;top:${b.top - r.top + b.height / 2}px`;
-        for (let i = 0; i < 8; i++) { const k = hash('bun' + i + Date.now()), a = (i / 8) * Math.PI * 2; burst.append(sparkle(k, (50 + 42 * Math.cos(a)).toFixed(1), (50 + 42 * Math.sin(a)).toFixed(1), 5 + (k % 5))); }
-        lane.append(burst); setTimeout(() => burst.remove(), 2400);
+      const f = FRAMES[frame], next = PALETTES[(palette + 1) % PALETTES.length];
+      for (const [px, py, w, h] of f.px) for (let dy = 0; dy < h; dy++) for (let dx = 0; dx < w; dx++) {
+        if (px + dx === f.eye[0] && py + dy === f.eye[1]) continue;
+        const col = x + px + dx, row = y + py + dy;
+        if (col < 0 || col >= cols || row < 0 || row >= ROWS) continue;
+        ctx.fillStyle = next.span === 360 ? 'hsl(' + ((col * 9 + row * 12) % 360) + ' 90% 70%)' : furOf(next);
+        ctx.fillRect(col * CELL, row * CELL, CELL - 1, CELL - 1);
       }
-      stop();
+    };
+    const fit = () => { cols = Math.max(16, Math.floor(lane.clientWidth / CELL)); cv.width = cols * CELL; cv.height = ROWS * CELL; if (reduced) x = Math.floor(cols * .25); draw(); };
+    new ResizeObserver(fit).observe(lane); fit();
+    const schedule = (ms) => { clearTimeout(timer); timer = setTimeout(run, ms); };
+    const stop = () => { running = false; cancelAnimationFrame(raf); raf = 0; draw(); if (!reduced) schedule(50000 + Math.random() * 70000); };
+    function tick(now) {
+      raf = 0;
+      if (!running || !visible || document.hidden || reduced) { last = 0; return; }
+      elapsedRun += last ? Math.min(80, now - last) : 0; last = now;
+      // Whole grid cells only: no element translation, sliding image or subpixel motion.
+      x = -15 + Math.floor(elapsedRun / 48);
+      frame = Math.floor(elapsedRun / 120) % FRAMES.length;
+      y = 5 - Math.round(FRAMES[frame].lift * 2);
+      if (x >= cols) return stop();
+      draw(); raf = requestAnimationFrame(tick);
+    }
+    function run() { if (!visible || document.hidden) return schedule(1000); running = true; elapsedRun = 0; last = 0; x = -15; if (!raf) raf = requestAnimationFrame(tick); }
+    new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; if (visible && running && !raf && !reduced) raf = requestAnimationFrame(tick); }).observe(lane);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden && visible && running && !raf && !reduced) raf = requestAnimationFrame(tick); });
+    button.addEventListener('click', (event) => {
+      if (!running) return;
+      if (event.detail) {
+        const r = cv.getBoundingClientRect(), col = (event.clientX - r.left) / r.width * cols, row = (event.clientY - r.top) / r.height * ROWS;
+        if (col < x - 2 || col > x + 17 || row < y - 2 || row > y + 12) return;
+      }
+      palette = (palette + 1) % PALETTES.length;
+      if (reduced) draw(); else stop();
     });
-    later(8000);
+    if (!reduced) schedule(1200);
   })();
 })();
