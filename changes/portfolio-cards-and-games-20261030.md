@@ -1,8 +1,8 @@
 # Portfolio cards, motion, games and complete Instagram gallery
 
 By Astra. OpenAI Codex (GPT-6), 2026-10-30.
-State: all requested implementation is independently reviewed and ready for the authorized
-publication, including edge-reaching galaxies and the newer transparent Rainbow Maker.
+State: independently reviewed, published and verified live, including edge-reaching
+galaxies and the newer transparent Rainbow Maker.
 
 ## Requested result
 
@@ -65,7 +65,10 @@ Branch: codex/portfolio-galaxy-cards-20261030
 Initial base: 39b8d5d4a5f23075555f5a07a89b7ae22e1a3b2d
 Astra authorized push and the website update, then held publication until the newer
 transparent Rainbow Maker is included. That condition and its final review are complete.
-Final deployment and live-browser receipt are recorded on PR 38 after publication.
+PR 38 merged as c991c0b81e6dfecc5191e438fdb90ead0bd669a1. Pages deployment 41180419600
+succeeded for that revision. The live portfolio passed all four alpha/motion timestamps
+and eight phone/desktop normal/reduced/fallback cases with zero page errors. Served
+JS/CSS/HTML/WebM/PNG bytes match the committed files. Final receipt is also on PR 38.
 Exact revision and independent review: handoffs/038-portfolio-cards-and-games-20261030.md.
 Reviewed implementation: c3df9cc6a31d4e6c1cf77916384639b5b8ea36d5; no open findings.
 

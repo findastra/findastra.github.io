@@ -1,4 +1,4 @@
-status: taken by Codex portfolio session
+status: done
 for: Codex portfolio session and reviewers
 from: OpenAI Codex (GPT-6), 2026-10-30
 needs: AGENTS.md, CLAUDE.md, changes/portfolio-cards-and-games-20261030.md
@@ -7,16 +7,17 @@ needs: AGENTS.md, CLAUDE.md, changes/portfolio-cards-and-games-20261030.md
 Prepare and independently review Astra's portfolio card, layout, feed and game corrections in PR 38.
 
 ## Ownership and state
-Latest 2026-10-31 correction: REVIEWED, ready for authorized publication. Astra asks for visibly larger galaxies
+Latest 2026-10-31 correction: DONE, published and verified. Astra asks for visibly larger galaxies
 whose spiral arms touch the edges, then says WAIT to include the newer Rainbow
-Maker with no surrounding background. Root owns cyber.css and index.html for
-centered galaxy zoom and this record. reference_motion diagnoses/reviews read-only.
-galaxy_assets owns cyber.js plus new art/worlds/rainbow-maker-glass-transparent-20261031.webm
+Maker with no surrounding background. Root owned cyber.css and index.html for
+centered galaxy zoom and this record. reference_motion reviewed read-only.
+galaxy_assets owned cyber.js plus new art/worlds/rainbow-maker-glass-transparent-20261031.webm
 and art/worlds/rainbow-maker-glass-transparent-20261031.png. It renders the verified
 newer October 30 scene read-only with scenery hidden, preserving model/materials/motion.
 Its scratch render/export scripts remain outside the repository. Root retains exclusive
-cyber.css/index.html ownership; no shared writes. Hold all pushes until both fixes are
-ready, per Astra's latest instruction. This local claim will publish with the result.
+cyber.css/index.html ownership during implementation; no shared writes occurred.
+Pushes were held until both fixes were ready, per Astra's latest instruction. All
+implementation ownership is now released; no remaining action is assigned.
 
 Galaxy sizing diagnosis recommends 160% centered overscan on both canvas and fallback;
 substantial spiral bands reach all four edges, retaining the center and transparency.
@@ -51,9 +52,15 @@ zero portfolio or embedded-page errors. All 42 orbit/still sparkles remain; emit
 sparkles draw normally and stop for reduced motion. True alpha, zero-alpha borders,
 crystal highlights, advancing frames, transparent fallback and both 1.6x galaxies
 pass. Reviewer inspected screenshots and matched all delivered hashes. No findings.
-Root will push and publish under Astra's existing website-update authorization and
-latest "AND PUSH" instruction; the Rainbow condition is now satisfied. Final Pages
-deployment and live-browser receipt will be recorded on PR 38 after publication.
+Root pushed and published under Astra's existing website-update authorization and
+latest "AND PUSH" instruction after the Rainbow condition was satisfied.
+PR 38 merged as c991c0b81e6dfecc5191e438fdb90ead0bd669a1. Pages run 41180419600
+succeeded for that exact revision: https://github.com/findastra/findastra.github.io/actions/runs/41180419600.
+The live portfolio passed the same four timestamp and eight phone/desktop browser
+cases with zero page or embedded-frame errors. Its JS, CSS, HTML, WebM and PNG bytes
+match the committed Git blobs exactly. The live evidence is recorded on PR 38;
+private detailed reports are available from the owner. This post-deployment receipt
+changes documentation on the delivery branch only; published implementation is unchanged.
 Release-readiness receipt: archived_galaxy_chat read PR 38 at b440027 and main at
 5e829be0cebc5c30b536985646c7c7759665e29b. Pages serves main from the repository root;
 its latest deployment for that main revision succeeded. No PR CI or required checks
