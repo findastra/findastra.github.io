@@ -8,11 +8,14 @@ Prepare the requested portfolio card, layout, feed and game corrections in PR 38
 
 ## Ownership and state
 State: IN_PROGRESS.
-Root owns cyber.js, cyber.css, index.html, feed source/data and its generator,
-this handoff and the change record. reference_motion owns games-20261027.js for
+Root owns cyber.js, cyber.css, index.html, feed data, this handoff and the change
+record. galaxy_assets owns feeds-20261029.js and scripts/build-feeds-20261029.mjs
+for error recovery and accurate fallback copy. reference_motion owns games-20261027.js for
 the released Fuzzbois and sparkle catcher; receipt acknowledged. galaxy_assets
 reviews read-only. archived_galaxy_chat diagnoses layout and photo sources.
-No overlapping writers. Live publication remains pending review.
+No overlapping writers. Live publication remains pending review. Root also handles
+the fixed pixel-grid rabbit in the introduction and requested Piranesi, Rainbow
+Maker and Discord framing. Photo-source clarification is pending.
 
 ## What I did
 Branched from main 39b8d5d4a5f23075555f5a07a89b7ae22e1a3b2d and published the
