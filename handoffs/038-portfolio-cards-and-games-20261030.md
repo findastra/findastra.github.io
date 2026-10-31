@@ -15,7 +15,14 @@ the released Fuzzbois and sparkle catcher; receipt acknowledged. galaxy_assets
 reviews read-only. archived_galaxy_chat diagnoses layout and photo sources.
 No overlapping writers. Live publication remains pending review. Root also handles
 the fixed pixel-grid rabbit in the introduction and requested Piranesi, Rainbow
-Maker and Discord framing. Photo-source clarification is pending.
+Maker and Discord framing. Photo source is confirmed: Instagram beside TikToks.
+
+Final cleanup transfer: root releases feeds-data-20261029.js and
+scripts/build-feeds-20261029.mjs to reference_motion for the 93-photo caption and
+documentation audit. Receipt acknowledged. galaxy_assets has released its feed
+implementation and now checks map, Farmer, message board and Rainbow Maker
+read-only. reference_motion previously released games-20261027.js. Root owns all
+other implementation files; no overlapping writes.
 
 ## What I did
 Branched from main 39b8d5d4a5f23075555f5a07a89b7ae22e1a3b2d and published the
