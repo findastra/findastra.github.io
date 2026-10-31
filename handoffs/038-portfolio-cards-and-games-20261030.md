@@ -1,4 +1,4 @@
-status: taken by Codex galaxy_assets
+status: taken by Codex reference_motion reviewer
 for: Codex portfolio session
 from: OpenAI Codex (GPT-6), 2026-10-30
 needs: AGENTS.md, CLAUDE.md, changes/portfolio-cards-and-games-20261030.md
@@ -7,16 +7,31 @@ needs: AGENTS.md, CLAUDE.md, changes/portfolio-cards-and-games-20261030.md
 Prepare and independently review Astra's portfolio card, layout, feed and game corrections in PR 38.
 
 ## Ownership and state
-2026-10-31 follow-up: IN_PROGRESS. Astra requests both portfolio galaxies fill the
-whole square with transparent backgrounds. galaxy_assets owns cyber.js, cyber.css,
+2026-10-31 follow-up: READY_FOR_REVIEW. Astra requests both portfolio galaxies fill the
+whole square with transparent backgrounds. galaxy_assets completed and released cyber.js, cyber.css,
 index.html, art/projects/galaxies/official-galaxy-renderer-20261030.js, and new
 art/projects/galaxies/official-openai-galaxy-transparent-20261031.png and
 art/projects/galaxies/official-anthropic-galaxy-transparent-20261031.png.
 The new stills are rendered from the existing star data and updated canvas; the
 approved opaque assets and Discord GIFs stay unchanged. Root owns this record.
-reference_motion will independently review the transparency and sizing changes.
+reference_motion independently reviews the transparency and sizing changes, read-only.
 The separate button-placement request is a proposal only, prepared outside this
 repository; its source files remain unchanged pending Astra's design choice.
+
+Delivered follow-up SHA256:
+- cyber.js: e4aafcf6b0147ee16647b18267f7a7dfdca7f0b0673074e8792c0950980c3585
+- cyber.css: 24abf079ada3df75c681a41b3622ee456429fe81beb9ef052eabe407236abb5c
+- index.html: eac91218a35eb8fc937521d667b31c59d789eacb53c6209a16db23a1761519da
+- renderer: 49029cfb05ae3c9b1f36a81c89ad8f81f5c814ba863b8703d89c06639d384444
+- OpenAI transparent PNG: 14afa367cf9aa6f6cf5b2367ca7277cb0626ee07d329c3e86a8d4be2bf2bd555
+- Anthropic transparent PNG: 76ec6bd336548daf6260ae986fd8c65ee5f90e2413936f18f8c0f6a38de08c90
+
+Implementer verification: exact RGB matches against the previous renderer at 128/512/1024px
+and two timestamps for both brands; transparent borders have alpha zero. Direct 1024px
+canvas exports match within one RGB level when composited over black. Full-square bounds,
+resize, context restoration, carousel detach/return, reduced motion and no-WebGL stills pass.
+A faithful public-network preview loads all fonts and compact Discord GIFs without page errors.
+Private reports and screenshots are available to the assigned reviewer. No writes during review.
 
 Previous reviewed delivery:
 State: DONE for the requested review version. Implementation is released and independently

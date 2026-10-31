@@ -540,9 +540,9 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
   background: radial-gradient(circle at 30% 25%, color-mix(in srgb, var(--c) 55%, #000), #0b0b0b 72%); }
 /* every picture fills the square exactly, so a tall or wide one never spills out and gets cut (Astra, 2026-10-27) */
 .polaroid .photo > img, .polaroid .photo > video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .4s; }
-/* Official galaxy artwork: individual stars move in the shared app renderer, inside a black frame. */
-.polaroid .official-galaxy { position: absolute; inset: 0; display: block; background: #000; }
-.polaroid .official-galaxy > img, .polaroid .official-galaxy > canvas { position: absolute; inset: var(--galaxy-inset, 0); width: calc(100% - var(--galaxy-inset, 0%) * 2); height: calc(100% - var(--galaxy-inset, 0%) * 2); object-fit: contain; }
+/* Official stars fill the photo; their unlit background is genuinely transparent. */
+.polaroid .official-galaxy { position: absolute; inset: 0; display: block; background: transparent; }
+.polaroid .official-galaxy > img, .polaroid .official-galaxy > canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
 .polaroid .official-galaxy > canvas { visibility: hidden; }
 .polaroid .official-galaxy.official-galaxy-ready > canvas { visibility: visible; }
 .polaroid .official-galaxy.official-galaxy-ready > img { visibility: hidden; }

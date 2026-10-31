@@ -541,16 +541,17 @@
   // the GitHub descriptions under the Polaroids are off for now (Astra, 2026-10-27: "just get rid of those descriptions ... I might
   // want to bring them back"); true brings them back
   const SHOW_DESCRIPTIONS = false;
-  // The official galaxies keep their original colors and fade into black (Astra, 2026-10-30).
+  // The official galaxies keep their original colors on transparent paper (Astra, 2026-10-31).
   // Their shared app renderer moves each star; the matching still remains when WebGL is unavailable.
   const GALAXY = Object.fromEntries(['openai', 'anthropic'].map((brand) => [brand, `art/projects/galaxies/official-${brand}-galaxy-20261030.png`]));
+  const TRANSPARENT_GALAXY = Object.fromEntries(['openai', 'anthropic'].map((brand) => [brand, `art/projects/galaxies/official-${brand}-galaxy-transparent-20261031.png`]));
   const glows = (p) => !p.galaxy && /^https:.*galaxy(-card)?\.(png|gif)$/.test(p.src);
   const clearOf = (p) => !!(p && (p.clear || glows(p)));
   const officialGalaxy = (p) => {
     const box = el('span', 'official-galaxy'), still = el('img'), canvas = el('canvas');
-    box.style.setProperty('--galaxy-inset', ((1 - (p.size || 1)) * 50) + '%');
     still.src = p.src; still.alt = ''; still.loading = 'lazy';
     canvas.dataset.officialGalaxy = p.galaxy; canvas.setAttribute('aria-hidden', 'true');
+    canvas.dataset.galaxyTransparent = String(!!p.transparent);
     box.append(still, canvas);
     return box;
   };
@@ -818,13 +819,13 @@
   };
   const SHOTS = { 'ai-discord-presence': realCardsShot };
   // the two presence apps show two pictures each (Astra, 2026-10-29: "should only be two on each of those"): first the
-  // individually moving stars, a little smaller so the whole spiral fits, then the app
+  // individually moving stars across the transparent square, then the app
   const TWO = new Set(['openai-discord-presence', 'anthropic-discord-presence']);
   const picsOf = (name) => {
     const all = [...(SITE_PICS[name] || []), ...picturesOf(name)];
     if (!TWO.has(name)) return all;
     const brand = name.split('-')[0];
-    return [{ src: GALAXY[brand], cap: (brand === 'openai' ? 'OpenAI' : 'Anthropic') + ' official galaxy artwork', galaxy: brand, size: .8, fill: '#000' }, all[0]].filter(Boolean);
+    return [{ src: TRANSPARENT_GALAXY[brand], cap: (brand === 'openai' ? 'OpenAI' : 'Anthropic') + ' official galaxy artwork', galaxy: brand, transparent: true, clear: true }, all[0]].filter(Boolean);
   };
   // what kind of thing each one is, for the line under its title (Astra, 2026-10-29: "title, type of software, language, date")
   const TYPES = { 'ai-discord-presence': 'Discord app', 'openai-discord-presence': 'Discord app', 'anthropic-discord-presence': 'Discord app', moodglass: 'Discord plugin' };
