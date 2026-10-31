@@ -1,8 +1,8 @@
 # Portfolio cards, motion, games and complete Instagram gallery
 
 By Astra. OpenAI Codex (GPT-6), 2026-10-30.
-State: prior work and enlarged galaxies are independently reviewed; the newer transparent
-Rainbow Maker is delivered and awaiting final independent review before publication.
+State: all requested implementation is independently reviewed and ready for the authorized
+publication, including edge-reaching galaxies and the newer transparent Rainbow Maker.
 
 ## Requested result
 
@@ -64,7 +64,8 @@ PR 38: https://github.com/findastra/findastra.github.io/pull/38
 Branch: codex/portfolio-galaxy-cards-20261030
 Initial base: 39b8d5d4a5f23075555f5a07a89b7ae22e1a3b2d
 Astra authorized push and the website update, then held publication until the newer
-transparent Rainbow Maker is included. Publication remains pending that final check.
+transparent Rainbow Maker is included. That condition and its final review are complete.
+Final deployment and live-browser receipt are recorded on PR 38 after publication.
 Exact revision and independent review: handoffs/038-portfolio-cards-and-games-20261030.md.
 Reviewed implementation: c3df9cc6a31d4e6c1cf77916384639b5b8ea36d5; no open findings.
 
@@ -93,7 +94,12 @@ two facet glints are preserved. The transparent poster is visually approved on t
 dark portfolio. The 8-second alpha WebM is 2.14 MiB; browser playback, wrapping, transparent
 borders, reduced motion, pointer/keyboard pause and emitted sparkles pass implementation
 checks. Failed, unsupported or opaque decoding retains the transparent PNG. Source files
-are released to the independent reviewer, with exact hashes in the handoff.
+were released to the independent reviewer, with exact hashes in the handoff.
+reference_motion approved 377fda15029990a27acf18fb319571fe5ae8428b: four WebM timestamps,
+eight phone/desktop normal/reduced/failure/opaque-decoder cases, all 42 local sparkles,
+emitted sparkle pixels, actual alpha and crystal highlights, and both galaxies' 1.6x
+crop pass. Public-network testing produced zero page or embedded-frame errors.
+The only newer main change, github-stats.json, is preserved in that reviewed commit.
 
 Astra also requested a button-placement proposal. Two local alternatives were prepared:
 a dedicated row below the photo (recommended), or centered controls above the photo.

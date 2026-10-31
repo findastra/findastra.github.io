@@ -7,7 +7,7 @@ needs: AGENTS.md, CLAUDE.md, changes/portfolio-cards-and-games-20261030.md
 Prepare and independently review Astra's portfolio card, layout, feed and game corrections in PR 38.
 
 ## Ownership and state
-Latest 2026-10-31 correction: READY_FOR_REVIEW. Astra asks for visibly larger galaxies
+Latest 2026-10-31 correction: REVIEWED, ready for authorized publication. Astra asks for visibly larger galaxies
 whose spiral arms touch the edges, then says WAIT to include the newer Rainbow
 Maker with no surrounding background. Root owns cyber.css and index.html for
 centered galaxy zoom and this record. reference_motion diagnoses/reviews read-only.
@@ -43,7 +43,17 @@ Implementer browser checks passed real-time playback and wrapping, zero-alpha bo
 reduced motion, pointer/keyboard pause, emitted sparkle changes, and failed/unsupported/
 opaque-decoder fallback to the transparent PNG. The source scene remains unchanged.
 reference_motion received these exact hashes for independent browser review. No source
-writes continue during review. Final acceptance and publication remain pending.
+writes continued during review. reference_motion received and approved commit
+377fda15029990a27acf18fb319571fe5ae8428b, including the stats-only main merge,
+on 2026-10-31. A faithful public-network browser run passed all eight 390/1280px
+normal/reduced/failed-video/opaque-decoder cases and four WebM timestamps, with
+zero portfolio or embedded-page errors. All 42 orbit/still sparkles remain; emitted
+sparkles draw normally and stop for reduced motion. True alpha, zero-alpha borders,
+crystal highlights, advancing frames, transparent fallback and both 1.6x galaxies
+pass. Reviewer inspected screenshots and matched all delivered hashes. No findings.
+Root will push and publish under Astra's existing website-update authorization and
+latest "AND PUSH" instruction; the Rainbow condition is now satisfied. Final Pages
+deployment and live-browser receipt will be recorded on PR 38 after publication.
 Release-readiness receipt: archived_galaxy_chat read PR 38 at b440027 and main at
 5e829be0cebc5c30b536985646c7c7759665e29b. Pages serves main from the repository root;
 its latest deployment for that main revision succeeded. No PR CI or required checks
