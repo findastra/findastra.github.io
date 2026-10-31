@@ -47,8 +47,8 @@ void main(){vec2 d=(gl_PointCoord-.5)*spriteSize;float radius2=dot(d,d);
  outColor=vec4(starColor*(light+halo+sparkle*cross)*edge,1.);
 }`;
   const decode = s => new Float32Array(Uint8Array.from(atob(s), c => c.charCodeAt(0)).buffer);
-  function mount(canvas, entry) {
-    const gl = canvas.getContext('webgl2', {alpha:false, antialias:false, premultipliedAlpha:false});
+  function mount(canvas, entry, {transparent=false}={}) {
+    const gl = canvas.getContext('webgl2', {alpha:transparent, antialias:false, premultipliedAlpha:transparent});
     if (!gl) throw new Error('WebGL 2 unavailable');
     const shaders = [], program = gl.createProgram();
     for (const [type, source] of [[gl.VERTEX_SHADER, vertex], [gl.FRAGMENT_SHADER, fragment]]) {
@@ -66,16 +66,53 @@ void main(){vec2 d=(gl_PointCoord-.5)*spriteSize;float radius2=dot(d,d);
     const uniforms=Object.fromEntries(['time','pixels','loopSeconds','lifeOffset','path','maxPoint','palette'].map(n=>[n,gl.getUniformLocation(program,n)]));
     gl.uniform3fv(uniforms.palette,entry.brand==='openai'?[.86,.98,1.12]:[1,1,1]);
     gl.uniform1i(uniforms.path,0);gl.uniform1f(uniforms.maxPoint,gl.getParameter(gl.ALIASED_POINT_SIZE_RANGE)[1]);
-    gl.enable(gl.BLEND);gl.blendFunc(gl.ONE,gl.ONE);gl.disable(gl.DEPTH_TEST);gl.clearColor(0,0,0,1);
+    // Preserve the original additive RGB in an offscreen target. Alpha comes from
+    // the finished light, never from the rectangular bounds of an individual star.
+    let composite=null, target=null, radiance=null, targetWidth=0, targetHeight=0;
+    if(transparent){
+      composite=gl.createProgram();
+      const sources=[`#version 300 es
+void main(){vec2 p=vec2((gl_VertexID<<1)&2,gl_VertexID&2);gl_Position=vec4(p*2.-1.,0.,1.);}`,
+        `#version 300 es
+precision highp float;uniform sampler2D radiance;out vec4 outColor;
+void main(){vec3 light=texelFetch(radiance,ivec2(gl_FragCoord.xy),0).rgb;
+ float alpha=max(light.r,max(light.g,light.b));outColor=vec4(light,alpha);}`];
+      for(const [i,type] of [gl.VERTEX_SHADER,gl.FRAGMENT_SHADER].entries()){
+        const sh=gl.createShader(type);shaders.push(sh);gl.shaderSource(sh,sources[i]);gl.compileShader(sh);
+        if(!gl.getShaderParameter(sh,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(sh));
+        gl.attachShader(composite,sh);
+      }
+      gl.linkProgram(composite);if(!gl.getProgramParameter(composite,gl.LINK_STATUS))throw new Error(gl.getProgramInfoLog(composite));
+      gl.useProgram(composite);gl.uniform1i(gl.getUniformLocation(composite,'radiance'),0);
+      target=gl.createFramebuffer();radiance=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,radiance);
+      gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.NEAREST);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.NEAREST);
+      gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+    }
+    const fitTarget=()=>{
+      if(!transparent)return;
+      gl.bindFramebuffer(gl.FRAMEBUFFER,target);
+      if(targetWidth===canvas.width&&targetHeight===canvas.height)return;
+      targetWidth=canvas.width;targetHeight=canvas.height;gl.bindTexture(gl.TEXTURE_2D,radiance);
+      gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA8,targetWidth,targetHeight,0,gl.RGBA,gl.UNSIGNED_BYTE,null);
+      gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,radiance,0);
+      if(gl.checkFramebufferStatus(gl.FRAMEBUFFER)!==gl.FRAMEBUFFER_COMPLETE)throw new Error('Galaxy framebuffer unavailable');
+    };
+    gl.disable(gl.DEPTH_TEST);gl.clearColor(0,0,0,transparent?0:1);fitTarget();gl.bindFramebuffer(gl.FRAMEBUFFER,null);
     return {
       draw(time, {loopSeconds=0}={}) {
+        fitTarget();gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,texture);
+        gl.enable(gl.BLEND);gl.blendFunc(gl.ONE,gl.ONE);
         gl.useProgram(program);gl.viewport(0,0,canvas.width,canvas.height);
         gl.uniform1f(uniforms.time,time);gl.uniform1f(uniforms.pixels,canvas.width);gl.uniform1f(uniforms.loopSeconds,loopSeconds);
         gl.clear(gl.COLOR_BUFFER_BIT);gl.uniform1f(uniforms.lifeOffset,0);gl.drawArrays(gl.POINTS,0,entry.count);
         if(loopSeconds>0){gl.uniform1f(uniforms.lifeOffset,.5);gl.drawArrays(gl.POINTS,0,entry.count);}
+        if(transparent){
+          gl.bindFramebuffer(gl.FRAMEBUFFER,null);gl.disable(gl.BLEND);gl.useProgram(composite);
+          gl.bindTexture(gl.TEXTURE_2D,radiance);gl.drawArrays(gl.TRIANGLES,0,3);
+        }
       },
       readPixels(){const rgba=new Uint8Array(canvas.width*canvas.height*4);gl.readPixels(0,0,canvas.width,canvas.height,gl.RGBA,gl.UNSIGNED_BYTE,rgba);return rgba;},
-      dispose(){gl.deleteBuffer(buffer);gl.deleteTexture(texture);gl.deleteProgram(program);shaders.forEach(sh=>gl.deleteShader(sh));}
+      dispose(){gl.deleteBuffer(buffer);gl.deleteTexture(texture);gl.deleteProgram(program);shaders.forEach(sh=>gl.deleteShader(sh));if(composite)gl.deleteProgram(composite);if(target)gl.deleteFramebuffer(target);if(radiance)gl.deleteTexture(radiance);}
     };
   }
   // Visibility and reduced motion apply to every host, including dynamically added cards.
@@ -85,7 +122,7 @@ void main(){vec2 d=(gl_PointCoord-.5)*spriteSize;float radius2=dot(d,d);
     if(active.has(canvas))return;
     const entry=window.officialGalaxyData?.[canvas.dataset.officialGalaxy];if(!entry)return;
     try {
-      const renderer=mount(canvas,entry),state={renderer,visible:true,dirty:true,lost:false};active.set(canvas,state);
+      const renderer=mount(canvas,entry,{transparent:canvas.dataset.galaxyTransparent==='true'}),state={renderer,visible:true,dirty:true,lost:false};active.set(canvas,state);
       const resize=new ResizeObserver(()=>{const size=Math.max(1,Math.round(canvas.getBoundingClientRect().width*Math.min(devicePixelRatio||1,2)));if(canvas.width!==size){canvas.width=canvas.height=size;state.dirty=true;}});resize.observe(canvas);
       const visible=new IntersectionObserver(entries=>{state.visible=entries[0].isIntersecting;state.dirty=true;});visible.observe(canvas);
       const onLost=event=>{event.preventDefault();state.lost=true;canvas.classList.remove('official-galaxy-ready');canvas.parentElement?.classList.remove('official-galaxy-ready');};

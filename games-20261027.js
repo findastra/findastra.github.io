@@ -279,11 +279,14 @@
       const r = cv.getBoundingClientRect(), tx = r.left + r.width / 2 + scrollX, ty = r.top + r.height / 2 + scrollY, s = bodySize(), node = f.node;
       f.sinking = true;
       node.animate([{ transform: node.style.transform }, { transform: `translate(${tx - s / 2}px, ${ty - s / 2}px) scale(.25)`, opacity: .4 }], { duration: reduced ? 1 : 520, easing: 'ease-in' })
-        .finished.then(() => { f.sinking = false; goHome(f); });
+        .finished.then(() => { if (f.node !== node) return; f.sinking = false; goHome(f); });
     }
     function free(f, x, y, vx, vy) {
       const c2 = document.createElement('canvas'); c2.width = c2.height = 160; c2.className = 'fuzz';
-      Object.assign(f, { out: true, node: c2, px: x, py: y, pvx: vx, pvy: vy, psq: 0, pspin: 0 });
+      // Every escape begins at the dome, including a Fuzzboi recalled from the jar or Avatar Lab.
+      // Give the visible launch its own first hop interval before the crew starts climbing.
+      Object.assign(f, { out: true, node: c2, px: x, py: y, pvx: vx, pvy: vy, psq: 0, pspin: 0,
+        goal: null, orbit: null, stuck: false, sinking: false, lastHop: performance.now() });
       c2.addEventListener('pointerdown', (e) => { held = f; f.orbit = null; f.stuck = false; lastPt = { x: e.clientX, y: e.clientY, t: performance.now(), vx: 0, vy: 0 }; c2.setPointerCapture(e.pointerId); c2.classList.add('held'); e.preventDefault(); });
       c2.addEventListener('pointermove', (e) => {
         if (held !== f) return;
@@ -464,6 +467,9 @@
     const showScore = (got) => { const s = $('dome-score'); if (s) s.textContent = got == null ? (best ? `best: ${best} sparkles saved` : 'Let them out before it breaks to keep the sparkles.') : `${got} sparkles saved${got >= best && got ? ' · a new best!' : ''} · best ${best}`; };
     function letOut(broke) {
       if (!broke && motes.length) { const got = motes.length; if (got > best) { best = got; store.set(SCORE_KEY, best); } showScore(got); }
+      // The release control can be visible while the tall dome is above the viewport.
+      // Show the manual escape at its origin; an automatic break never moves the page.
+      if (!broke) cv.scrollIntoView({ behavior: 'instant', block: 'center' });
       const box = cv.getBoundingClientRect(), ox = box.left + box.width / 2 + scrollX, oy = box.top + box.height / 2 + scrollY;
       if (!layer.isConnected) document.body.append(layer);
       for (const f of inside()) {
@@ -784,7 +790,7 @@
     }
     // the white rabbit's burst throws this same sparkle (Astra, 2026-10-29)
     window.findastraSparkle = { draw: drawSpark, hues, tint };
-    let targets = [], pops = [], score = 0, combo = 0, best = store.get('findastra-beat-best', 0) || 0, miss = 0, on = false, spawnIn = 0;
+    let targets = [], pops = [], score = 0, combo = 0, best = store.get('findastra-beat-best', 0) || 0, miss = 0, on = false;
     const bS = $('bScore'), bC = $('bCombo'), bB = $('bBest'); bB.textContent = best;
     let w = 0, h = 0;
     const size = () => { const r = fit(bc); w = r.width; h = r.height; };
@@ -803,7 +809,14 @@
     document.querySelectorAll('[data-spark]').forEach((b) => (b.onclick = () => { const k = b.dataset.spark; spark[k] = (spark[k] + 1) % SPARK[k].length; showSpark(); }));
     $('sparkRand').onclick = () => { for (const k of Object.keys(SPARK)) spark[k] = Math.floor(Math.random() * SPARK[k].length); showSpark(); };
     showSpark();
-    function start() { targets = []; score = 0; combo = 0; miss = 0; on = true; spawnIn = 0; bS.textContent = 0; bC.textContent = 0; $('beatBtn').textContent = 'playing…'; }
+    function nextTarget(now = performance.now()) {
+      const hs = hues(), hue = isRainbow() ? hs[nextHue++ % hs.length] : hs[(Math.random() * hs.length) | 0];
+      // Original 2026-10-27 deadline curve: 100 frames down to 41.7 at 60 Hz.
+      // Measure time directly so a high-refresh screen does not shorten the player's deadline.
+      const lifeMs = 1000 / (60 * (.010 + Math.min(.014, score * .00013)));
+      targets.push({ x: 24 + Math.random() * (w - 48), y: 24 + Math.random() * (h - 48), t: 1, hue, born: now, lifeMs });
+    }
+    function start() { targets = []; pops = []; score = 0; combo = 0; miss = 0; on = true; nextTarget(); bS.textContent = 0; bC.textContent = 0; $('beatBtn').textContent = 'playing…'; }
     // the high scores (Astra, 2026-10-29): the five best sets in this browser, with the day each was played
     const TOP_KEY = 'findastra-beat-top';
     let top = store.get(TOP_KEY, null) || (best ? [{ s: best, d: '' }] : []);
@@ -811,26 +824,21 @@
       : [el('li', 'none', 'no sets yet')]));
     showTop();
     function end() {
-      on = false; $('beatBtn').textContent = 'start set'; if (score > best) { best = score; bB.textContent = best; store.set('findastra-beat-best', best); }
+      on = false; targets = []; $('beatBtn').textContent = 'start set'; if (score > best) { best = score; bB.textContent = best; store.set('findastra-beat-best', best); }
       if (score) { const t = { s: score, d: new Date().toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) }; top = [...top, t].sort((a, b) => b.s - a.s).slice(0, 5); store.set(TOP_KEY, top); showTop(t); }
     }
-    function loop() {
+    function loop(now = performance.now()) {
       requestAnimationFrame(loop);
+      if (on && targets.some((t) => now >= t.born + t.lifeMs)) {
+        targets = []; miss++; combo = 0; bC.textContent = 0;
+        if (miss >= 3) end(); else nextTarget(now);
+      }
       bx.fillStyle = '#060606'; bx.fillRect(0, 0, w, h);
       bx.strokeStyle = 'rgba(255, 255, 255, .07)'; bx.lineWidth = 1;
       for (let i = 1; i < 4; i++) { bx.beginPath(); bx.moveTo(0, h * i / 4); bx.lineTo(w, h * i / 4); bx.stroke(); }
-      if (on && --spawnIn <= 0) {
-        // much faster (Astra, 2026-10-29: "as soon as you click one, another one spawns ... only how fast you can hit them")
-        spawnIn = Math.max(10, 30 - score * .2);
-        const hs = hues();
-        const hue = isRainbow() ? hs[nextHue++ % hs.length] : hs[(Math.random() * hs.length) | 0];
-        // the first game's speed exactly, fast from the start, for tapping on a phone (Astra, 2026-10-29: "whatever mechanics we
-        // changed about it, like as far as the speed, reverse"); the longer-lasting sparkles are gone again
-        targets.push({ x: 24 + Math.random() * (w - 48), y: 24 + Math.random() * (h - 48), t: 1, hue, sp: .010 + Math.min(.014, score * .00013) });
-      }
       bx.save(); bx.globalCompositeOperation = 'lighter';
       for (const t of targets) {
-        t.t -= t.sp;
+        t.t = Math.max(0, 1 - (now - t.born) / t.lifeMs);
         const R = 10 + (1 - t.t) * 16, a = Math.max(0, t.t);
         bx.strokeStyle = tint(t.hue, 72, a); bx.lineWidth = 3;
         bx.beginPath(); bx.arc(t.x, t.y, R + 12 * t.t, 0, 6.283); bx.stroke();
@@ -843,9 +851,6 @@
       }
       bx.restore();
       pops = pops.filter((p) => p.life > 0);
-      const dead = targets.filter((t) => t.t <= 0);
-      if (dead.length && on) { miss += dead.length; combo = 0; bC.textContent = 0; if (miss >= 3) end(); }
-      targets = targets.filter((t) => t.t > 0);
       if (!on) {
         bx.fillStyle = 'rgba(6, 6, 6, .72)'; bx.fillRect(0, 0, w, h);
         bx.fillStyle = '#f2f2f2'; bx.textAlign = 'center';
@@ -857,10 +862,12 @@
     bc.addEventListener('pointerdown', (e) => {
       if (!on) return;
       const r = bc.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
-      const i = targets.findIndex((t) => Math.hypot(t.x - x, t.y - y) < 30);
+      const now = performance.now();
+      const i = targets.findIndex((t) => now < t.born + t.lifeMs && Math.hypot(t.x - x, t.y - y) < 30);
       if (i < 0) { combo = 0; bC.textContent = 0; return; }
-      const [t] = targets.splice(i, 1); spawnIn = 0;
+      const [t] = targets.splice(i, 1);
       combo++; score += 10 + Math.min(40, combo * 2); bS.textContent = score; bC.textContent = combo;
+      nextTarget(now);
       if (!reduced) for (let k = 0; k < 14; k++) { const a = k / 14 * 6.283; pops.push({ x: t.x, y: t.y, vx: Math.cos(a) * 2.4, vy: Math.sin(a) * 2.4, hue: t.hue, life: 1 }); }
     });
     $('beatBtn').onclick = () => { if (!on) start(); };
