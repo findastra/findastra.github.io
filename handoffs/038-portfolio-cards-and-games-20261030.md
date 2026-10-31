@@ -1,5 +1,5 @@
-status: done (review version prepared)
-for: Astra / Portfolio Puffer
+status: taken by Codex portfolio session
+for: Codex portfolio session and reviewers
 from: OpenAI Codex (GPT-6), 2026-10-30
 needs: AGENTS.md, CLAUDE.md, changes/portfolio-cards-and-games-20261030.md
 ---
@@ -7,6 +7,50 @@ needs: AGENTS.md, CLAUDE.md, changes/portfolio-cards-and-games-20261030.md
 Prepare and independently review Astra's portfolio card, layout, feed and game corrections in PR 38.
 
 ## Ownership and state
+Latest 2026-10-31 correction: READY_FOR_REVIEW. Astra asks for visibly larger galaxies
+whose spiral arms touch the edges, then says WAIT to include the newer Rainbow
+Maker with no surrounding background. Root owns cyber.css and index.html for
+centered galaxy zoom and this record. reference_motion diagnoses/reviews read-only.
+galaxy_assets owns cyber.js plus new art/worlds/rainbow-maker-glass-transparent-20261031.webm
+and art/worlds/rainbow-maker-glass-transparent-20261031.png. It renders the verified
+newer October 30 scene read-only with scenery hidden, preserving model/materials/motion.
+Its scratch render/export scripts remain outside the repository. Root retains exclusive
+cyber.css/index.html ownership; no shared writes. Hold all pushes until both fixes are
+ready, per Astra's latest instruction. This local claim will publish with the result.
+
+Galaxy sizing diagnosis recommends 160% centered overscan on both canvas and fallback;
+substantial spiral bands reach all four edges, retaining the center and transparency.
+reference_motion received and approved the zoom on 2026-10-31: actual page checks at
+390/1280/1920px confirm identical centered 1.6x canvas/fallback bounds, edge-reaching arms,
+transparent clipping, stable hover and reduced-motion behavior, with no page errors.
+Approved SHA256: cyber.css ed6eaa30d0a55e6d24cb7f7631bfc182852e183b7b9cace207f9d56c7cc16337;
+index.html 8c400555b8a4598a0b5f0459ad48a98bd6b83d20bbd0113a5b7c05399d4e2153.
+Root releases these implementation files during final review. reference_motion is the
+read-only Rainbow reviewer; archived_galaxy_chat checks release readiness without writes.
+The newer Rainbow source is rainbow-maker-window-20261030.blend, SHA256
+0ca10a32d37be983803e384fc94ec821b4a5a61bedfd0b7cb325505eafc3d6f4.
+Camera-hidden scenery and transparent film retain its original glass reflections,
+materials, geometry and 24fps motion; two facet glints remain. The reviewed poster
+shows the newer copper coil, colored gears and two faceted hanging crystals clearly.
+galaxy_assets released all three files on 2026-10-31. Root received the delivery,
+matched its hashes, and passed node --check cyber.js and git diff --check.
+Delivered SHA256:
+- cyber.js: 03feb5c13ecf204257ce5408c4bee9ff17495e5fe09712a492ce08587c27aecd
+- transparent WebM: 1ee3ff4d91990b1fe222dbab2a79f4972ba178a3072071163d4b1db7f81f00a0
+- transparent PNG: b09f8529574c4cb89a93dd40bcb24d5ecb68830a1f9c905c55f7646b8105e3b0
+The WebM contains 192 frames at 720x960, 24fps, 8 seconds and 2,248,885 bytes.
+Implementer browser checks passed real-time playback and wrapping, zero-alpha borders,
+reduced motion, pointer/keyboard pause, emitted sparkle changes, and failed/unsupported/
+opaque-decoder fallback to the transparent PNG. The source scene remains unchanged.
+reference_motion received these exact hashes for independent browser review. No source
+writes continue during review. Final acceptance and publication remain pending.
+Release-readiness receipt: archived_galaxy_chat read PR 38 at b440027 and main at
+5e829be0cebc5c30b536985646c7c7759665e29b. Pages serves main from the repository root;
+its latest deployment for that main revision succeeded. No PR CI or required checks
+are configured. The only newer main change is github-stats.json and must be retained
+when integrating main before publication. Final browser review is the release gate;
+verify a successful Pages deployment and the public assets after the authorized merge.
+
 2026-10-31 follow-up: REVIEWED. Astra requests both portfolio galaxies fill the
 whole square with transparent backgrounds. galaxy_assets completed and released cyber.js, cyber.css,
 index.html, art/projects/galaxies/official-galaxy-renderer-20261030.js, and new

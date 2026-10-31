@@ -267,7 +267,6 @@
   // VR & VRChat: her six worlds, in the profile README's words (findastra/findastra README). DETOUR into VR is in the
   // README's VR group but is not a world, so it is left out here (Astra: "there should be only like 6 worlds").
   const LD = 'https://raw.githubusercontent.com/findastra/liminal-doors/main/concept-art/floors/';
-  const RM = 'https://raw.githubusercontent.com/findastra/the-rainbow-maker/main/Art/rainbow-maker/';
   const WORLDS = [
     { name: "Astra's Infinite Pole", ownPicsOnly: true, kind: 'VRChat world · PC VR / desktop', text: 'An infinite pole, a spiral staircase, phone booths that can talk to each other no matter how far down you fall, and tons of glitter too.', repo: 'astras-infinite-pole',
       // looking down past her feet first, her hand on the pole, the pole and its stairs from far off, the duck, the squishy
@@ -308,9 +307,10 @@
       // first, "baby girl, I'm a star", playing on a loop with its sound off until you turn it on (Astra, 2026-10-29)
       // not the pink phone booth, which is not Mommy's World (Astra, 2026-10-29)
       local: [{ src: 'art/worlds/mommys-world-baby-girl-im-a-star-20261029.mp4', cap: "Mommy's World · baby girl, I'm a star", type: 'video', sound: true, label: 'world coming soon' }], extra: ['mommys', 'role-fairy'] },
-    // Restore the approved transparent turning model and the sparkles it throws across the page.
+    // The approved newer glass model, rendered with camera-invisible surroundings.
+    // Its own facet glints and the page's emitted sparkles both remain.
     { name: 'The Rainbow Maker', ownPicsOnly: true, kind: 'VRChat world · PC VR / desktop', text: 'Reflective stained-glass gears and sparkling crystals turning on a sunlit glass window.', repo: 'the-rainbow-maker', local: [
-      { src: RM + 'rainbow-maker-preview-20261022.mp4', cap: 'The Rainbow Maker · turning stained glass', type: 'video', key: [69, 69, 74], clear: true, size: .94,
+      { src: 'art/worlds/rainbow-maker-glass-transparent-20261031.webm', poster: 'art/worlds/rainbow-maker-glass-transparent-20261031.png', cap: 'The Rainbow Maker · turning stained glass', type: 'video', fit: 'contain', clear: true, transparentVideo: true, toggle: true,
         orbits: [[44,79,17,12,8,5],[54,68,16,11,8,6],[50,52,44,40,14,16,[5,8]],[50,56,34,24,10,-11,[4,6]]],
         still: [[46,30],[56,40]], spray: [[44,79,18,13],[54,68,17,12]] }] },
     { name: 'The Cooling Tower', siteLabel: 'see full mini model ↗', kind: 'VRChat world · PC VR / desktop', text: "A rave world inside a nuclear plant's cooling tower: break into the facility and power it up with music. The Stack, the Turbine Hall, then the Reactor Hall.", repo: 'the-cooling-tower', local: [{ src: 'https://findastra.github.io/the-cooling-tower/mini-model/the-cooling-tower-mini-model-20261024.html', cap: 'The Cooling Tower · Mini Model', type: 'frame', label: 'concept model', bare: true, back: 7 }] },
@@ -607,7 +607,24 @@
         if (p.galaxy) return officialGalaxy(p);
         if (p.type === 'video' && p.key) return keyedVideo(p);
         if (p.inline) return inlineSvg(p);
-        if (p.type === 'video') { const v = el('video'); Object.assign(v, { src: p.src, muted: true, loop: true, autoplay: !reduced, playsInline: true, preload: 'metadata' }); if (p.poster) v.poster = p.poster; if (p.fit) v.style.objectFit = p.fit; if (p.bg) v.style.background = p.bg; return v; }
+        if (p.type === 'video') {
+          const v = el('video'); Object.assign(v, { src: p.src, muted: true, loop: true, autoplay: !reduced, playsInline: true, preload: 'metadata' });
+          if (p.poster) v.poster = p.poster; if (p.fit) v.style.objectFit = p.fit; if (p.bg) v.style.background = p.bg;
+          if (p.transparentVideo) {
+            v.dataset.transparentVideo = 'true';
+            const usePoster = () => { v.dataset.alphaFallback = 'true'; v.pause(); v.removeAttribute('src'); v.load(); };
+            // Some decoders accept VP9 but discard its alpha plane. Never show an
+            // opaque rectangle in that case; the directly rendered PNG stays clear.
+            v.addEventListener('error', usePoster, { once: true });
+            v.addEventListener('loadeddata', () => { try {
+              const probe = document.createElement('canvas'); probe.width = probe.height = 1;
+              const x = probe.getContext('2d', { willReadFrequently: true }); x.drawImage(v, 0, 0, 1, 1, 0, 0, 1, 1);
+              if (x.getImageData(0, 0, 1, 1).data[3] !== 0) usePoster(); else v.dataset.alphaChecked = 'true';
+            } catch { usePoster(); } }, { once: true });
+            if (!v.canPlayType('video/webm; codecs="vp9"')) usePoster();
+          }
+          return v;
+        }
         // a live page starts once the Polaroid scrolls near (the browser's own lazy loading never starts it inside the scaled frame)
         // a bare page is cropped to its picture (Astra, 2026-10-27: the Mini Model without its title and key); on the live site it
         // shares this site's address, so its panel is hidden outright too
@@ -680,7 +697,7 @@
       const still = () => !pics[at].type;
       photo.setAttribute('aria-label', 'open pictures of ' + name);
       if (pics[at].toggle) photo.setAttribute('aria-label', 'play or pause ' + name);
-      photo.onclick = (e) => { if (pics[at].toggle) { const v = photo.querySelector('video'); if (v) { if (v.paused) v.play().catch(() => {}); else v.pause(); } return; } if (still()) openGallery(pics.filter((p) => !p.type), pics.filter((p) => !p.type).indexOf(pics[at])); };
+      photo.onclick = (e) => { if (pics[at].toggle) { const v = photo.querySelector('video'); if (v && !v.dataset.alphaFallback) { if (v.paused) v.play().catch(() => {}); else v.pause(); } return; } if (still()) openGallery(pics.filter((p) => !p.type), pics.filter((p) => !p.type).indexOf(pics[at])); };
       // more than one picture: two small arrows in the white border's bottom corners flip through them (Astra, 2026-10-27)
       if (pics.length > 1) {
         // "1 of 3" (Astra, 2026-10-29)

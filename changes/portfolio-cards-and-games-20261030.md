@@ -1,11 +1,13 @@
 # Portfolio cards, motion, games and complete Instagram gallery
 
 By Astra. OpenAI Codex (GPT-6), 2026-10-30.
-State: both the 2026-10-30 work and 2026-10-31 galaxy follow-up are independently reviewed.
+State: prior work and enlarged galaxies are independently reviewed; the newer transparent
+Rainbow Maker is delivered and awaiting final independent review before publication.
 
 ## Requested result
 
-- Retain official blue/gold galaxies; remove Play/Pause stars buttons.
+- Enlarge official blue/gold galaxies until their arms touch the square's edges, with
+  transparent backgrounds; remove Play/Pause stars buttons.
 - Stop PetOS card/jar drift by bounding both grid columns; remove stretched game-cabinet gaps.
 - Keep one continuous Pocket message: "Astro is here · I love DEV69".
 - Keep released Fuzzbois visible, including repeat release/recall and stale saved motion.
@@ -14,7 +16,8 @@ State: both the 2026-10-30 work and 2026-10-31 galaxy follow-up are independentl
 - Load all 93 Instagram photos, initially the last/oldest and proceeding toward newer photos.
 - Make GitHub totals/contributions and the engineering contact card green.
 - Draw the rabbit by changing cells on a fixed pixel grid in the top introduction.
-- Move Piranesi's maze up; restore the transparent Rainbow Maker and its emitted sparkles.
+- Move Piranesi's maze up; use the newer Rainbow Maker with no surrounding scenery,
+  keeping its glass, colored gears, moving crystals and emitted sparkles.
 - Put every sound button at the picture's top right; preserve flip-button positions.
 - Narrow the desktop scroll rail from 52px to 36px.
 - Move only the System Map globe/blue field down 4vh; retain the key position and full-height frame.
@@ -31,8 +34,8 @@ are 14px; sound buttons resolve to top/right; the hidden Avatar Library stays hi
 
 Map keys toggle in place, its globe/labels move 4vh and no bottom strip remains. Farmer's visible
 alpha bounds measure 52.8749px at phone and desktop sizes. The Pocket message remains exact after
-10.5 seconds. Rainbow video advances; its keyed canvas is about 79.5% transparent, with changing
-visible pixels in the separate sparkle layer.
+10.5 seconds. The earlier keyed Rainbow video and sparkle layer passed; that older model is
+superseded by the October 31 correction below.
 
 Game checks cover consecutive targets, elapsed-time deadlines, saved-state resets, repeated
 release/recall, visible release and no automatic scrolling on dome breakout. Feed review passes
@@ -59,8 +62,9 @@ Contact wording, employer content and official galaxy files remain unchanged.
 
 PR 38: https://github.com/findastra/findastra.github.io/pull/38
 Branch: codex/portfolio-galaxy-cards-20261030
-Base: 39b8d5d4a5f23075555f5a07a89b7ae22e1a3b2d
-This is the requested review version; main/live publication is not included.
+Initial base: 39b8d5d4a5f23075555f5a07a89b7ae22e1a3b2d
+Astra authorized push and the website update, then held publication until the newer
+transparent Rainbow Maker is included. Publication remains pending that final check.
 Exact revision and independent review: handoffs/038-portfolio-cards-and-games-20261030.md.
 Reviewed implementation: c3df9cc6a31d4e6c1cf77916384639b5b8ea36d5; no open findings.
 
@@ -76,6 +80,20 @@ context restoration, reduced motion and no-WebGL fallback checks pass.
 Independent review approved c977353d59fc853a5c324394ba41051520fcc9e6 with no findings:
 48 renderer comparisons, exact original RGB, verified transparency, five-width full-square
 geometry, static fallbacks and context restoration. No live deployment is claimed.
+
+The next correction enlarges both canvas and PNG fallback to a centered 160%, making
+the visible spiral arms reach all four edges. An explicit max-width override keeps
+the fallback's crop identical. Independent actual-page checks at 390/1280/1920px
+approve the geometry, transparency, hover and reduced-motion behavior without errors.
+
+The newer Rainbow Maker is rendered directly from its approved October 30 Blender scene
+at the original 720x960, 24fps and 32 samples. Window, sill and outdoor scenery become
+invisible to the camera; original lighting/reflections, materials, geometry, animation and
+two facet glints are preserved. The transparent poster is visually approved on the actual
+dark portfolio. The 8-second alpha WebM is 2.14 MiB; browser playback, wrapping, transparent
+borders, reduced motion, pointer/keyboard pause and emitted sparkles pass implementation
+checks. Failed, unsupported or opaque decoding retains the transparent PNG. Source files
+are released to the independent reviewer, with exact hashes in the handoff.
 
 Astra also requested a button-placement proposal. Two local alternatives were prepared:
 a dedicated row below the photo (recommended), or centered controls above the photo.
