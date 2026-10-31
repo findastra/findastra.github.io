@@ -792,7 +792,7 @@
       const words = el('span', 'ai-words'); words.append(name, details, state, time);
       const reset = () => { name.textContent = example.name; details.textContent = example.details; state.textContent = example.state; time.replaceChildren(padIcon(), '42:00'); };
       reset(); live.append(head, art, words); a.append(live); box.append(a);
-      cards.push({ who, a, name, details, state, time, reset, start: 0 });
+      cards.push({ who, a, name, details, state, time, reset, start: 0, expiresAt: 0 });
     }
     const pull = () => fetch('https://api.github.com/gists/' + LIVE_GIST, { cache: 'no-store' }).then((r) => (r.ok ? r.json() : null)).then((g) => {
       for (const c of cards) {
@@ -800,14 +800,20 @@
         try { d = JSON.parse(g.files[c.who + '.json'].content); } catch { /* no copy yet */ }
         const on = !!(d && d.active && Date.now() - d.updatedAt < LIVE_STALE_MS);
         c.a.classList.toggle('live', on);
-        if (!on) { c.start = 0; c.reset(); continue; }
+        if (!on) { c.start = c.expiresAt = 0; c.reset(); continue; }
         c.name.textContent = d.name || ''; c.details.textContent = d.details || ''; c.state.textContent = d.state || '';
         c.start = (d.startedAt || 0) * 1000;
+        c.expiresAt = Number(d.updatedAt) + LIVE_STALE_MS;
+        c.time.replaceChildren(padIcon(), elapsed(c.start ? Date.now() - c.start : 0));
       }
     }).catch(() => {});
     // GitHub lets each visitor read it 60 times an hour; every 2 minutes, only while the page is in view
     pull(); setInterval(() => { if (!document.hidden) pull(); }, 120000);
-    setInterval(() => { for (const c of cards) if (c.start) c.time.replaceChildren(padIcon(), elapsed(Date.now() - c.start)); }, 1000);
+    // Expire even when the network is unavailable; a failed fetch cannot keep an old activity alive.
+    setInterval(() => { for (const c of cards) {
+      if (c.expiresAt && Date.now() >= c.expiresAt) { c.a.classList.remove('live'); c.start = c.expiresAt = 0; c.reset(); }
+      if (c.start) c.time.replaceChildren(padIcon(), elapsed(Date.now() - c.start));
+    } }, 1000);
     return box;
   };
   const SHOTS = { 'ai-discord-presence': realCardsShot };

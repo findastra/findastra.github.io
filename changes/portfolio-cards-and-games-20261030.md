@@ -39,6 +39,8 @@ release/recall, visible release and no automatic scrolling on dome breakout. Fee
 14 playback/recovery/visibility checks. All 93 JPEGs decode; regeneration preserves identical
 photos/captions; runtime visits 93 unique images oldest-to-newest before wrapping.
 Discord previews fit at 390/1280/1920px and use static official art for reduced motion.
+Live Discord text expires after 12 minutes even during a network outage; fresh, stale, inactive
+and recovered data checks pass. Rabbit click/keyboard, visibility and reduced-motion checks pass.
 All 81 added photos follow the owner's lowercase dated filename convention.
 
 Private local scripts, screenshots and reports are available to the assigned reviewers, not published.

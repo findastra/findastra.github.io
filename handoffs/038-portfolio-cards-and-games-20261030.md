@@ -7,9 +7,8 @@ needs: AGENTS.md, CLAUDE.md, changes/portfolio-cards-and-games-20261030.md
 Prepare and independently review Astra's portfolio card, layout, feed and game corrections in PR 38.
 
 ## Ownership and state
-State: IN_PROGRESS for one review fix. Root reclaims cyber.js to expire stale activity
-independently of network success, and AGENTS.md for current feed/color documentation.
-Other implementation files remain released and unchanged.
+State: READY_FOR_REVIEW. Root released the bounded cyber.js expiry fix and AGENTS.md
+documentation update. All implementation files are released; root owns only the records.
 Root owns only this handoff/change record during review. galaxy_assets reviews cyber.js, cyber.css,
 index.html and integrated interactions. archived_galaxy_chat reviews the gallery manifest/generator
 and publication assets. reference_motion released games and final gallery cleanup.
@@ -28,7 +27,8 @@ See the change record for checks and known limits. Private local test reports/sc
 are available to these reviewers. Local preview is running; live publication is pending.
 
 Delivered artifact: portfolio-polish-20261030. SHA256:
-- cyber.js: e0e09fd69f526ea5439ee4b61f98ff4ecc349618ac5583246ea716c84673188c
+- cyber.js: 927654c05c90cea90fe86957db2944633256c86d687111cd45a8ca371a2347ff
+- AGENTS.md: 54f077b1a5db0219945c05035a5d0db6fb6e8e0fa8260fe52bf6cffa87ce33ba
 - cyber.css: 1a3319f31752ad7ea18b90d7bcc2519e97dfde2f3551670f3f61ebc643e704d7
 - index.html: c0d64fd5d48b42a1a1ed1c0cd1121ce9afc0fa8c5c06ee1fdd051ae9b4375715
 - games-20261027.js: 52e7cf6fabddaed03b280f2b1f5c515f4229dee74ed689daf162936a860a9d59
@@ -48,6 +48,11 @@ Return exact revision receipt and findings to root for this card. Review is read
 Earlier game review by galaxy_assets passed the unchanged hash above.
 Earlier feed runtime review by reference_motion passed the unchanged hash above (14 checks).
 Both reviewers received published commit 8f571fd9ac9a532d2181a1fdc917e33ce6f6a3e3.
-The gallery reviewer found no implementation blockers. Site review found a stale-activity
-expiry gap during repeated network failures; root is addressing this bounded finding.
-Final review of the replacement cyber.js revision will follow.
+archived_galaxy_chat approved gallery scope at 8f571fd on 2026-10-30 23:56 America/Denver:
+93 matching posts/captions, 81 correctly named additions, distinct JPEGs with no EXIF,
+no private paths/contact additions/tokens, and complete playback/regeneration evidence.
+Those files are unchanged. The stale feed/green-chart documentation was updated separately.
+Site review found a stale-activity expiry gap during repeated network failures. Root added
+an independent expiry check; the reviewer's reproduction now resets correctly after 12 minutes
+even when fetching fails. Fresh/stale/inactive/recovery and rabbit lifecycle checks pass.
+Final review of the replacement cyber.js revision is pending its delivery commit.
