@@ -743,6 +743,13 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 .contact .chips li { font: 700 11px/1 var(--mono); letter-spacing: .04em; text-transform: lowercase; padding: 6px 9px; color: #f2f2f2; background: #000;
   border: 1.5px solid var(--n); border-radius: 99px; box-shadow: 0 0 8px color-mix(in srgb, var(--n) 45%, transparent); white-space: nowrap; }
 
+/* Audra J. Volk's professional headshot in her card's top right corner (Astra, 2026-11-10): gray like everything outside
+   the projects, framed like the hero portrait; the words wrap round it, and it sits above them on a narrow phone */
+.contact .headshot { float: right; width: clamp(96px, 30%, 150px); height: auto; aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 20%;
+  margin: 2px 0 12px 18px; border: 3px solid #000; box-shadow: 6px 6px 0 #000, 0 0 0 1px var(--n); filter: grayscale(1) contrast(1.05); }
+.contact .chips, .contact .list { clear: none; }
+.contact::after { content: ""; display: block; clear: both; }
+
 /* feeds: her three feeds as Polaroids side by side, Instagram in the middle, stacked on a phone; each one post at a time,
    going on by itself (Astra, 2026-10-29). A TikTok is tall, so its Polaroid is a longer one; the TikToks white, Instagram dark */
 .feeds { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 40px 34px; margin: 44px auto 0; }
