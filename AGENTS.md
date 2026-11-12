@@ -80,3 +80,6 @@ search that finds any words on the page (the old project search and the header l
 bigger pole labels by a Claude Opus 5.5 session, 2026-10-28.
 The GitHub box in Contact (repo totals and the contribution chart, refreshed by a workflow) by a Claude Opus 5.5 session, 2026-10-29.
 The `spoonfed/` web app copy by a Claude Opus 5.5 session, 2026-11-04.
+The pixel bunny redrawn (Astra, 2026-11-12): no grid of dots behind it, 6 px cells, and real hops (sit, ear twitch, blink, crouch,
+arc, land; every hop a different length and height, uneven waits) by a Claude Fable 5.2 session. Its lane lets clicks through; the page
+listens for a click on the bunny itself.

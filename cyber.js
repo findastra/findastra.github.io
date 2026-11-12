@@ -1958,61 +1958,92 @@
     addEventListener('scroll', place, { passive: true }); addEventListener('resize', place); new ResizeObserver(place).observe(document.body); place();
   })();
 
-  // ---------- the rabbit: fixed pixels light up across the introduction ----------
+  // ---------- the rabbit: a chunky pixel bunny that hops along the bottom of the introduction ----------
+  // Astra, 2026-11-12: no grid of dots behind it, bigger pixels, and it hops like a bunny: it sits, twitches an ear, blinks,
+  // crouches, jumps in an arc and lands, each hop a different length and height, the waits between them uneven.
   (() => {
     const lane = $('rabbit-lane'); if (!lane) return;
-    const FRAMES = [
-      { pose: 'crouch', lift: 0, px: [[9,0,1,1],[11,0,1,1],[9,1,2,1],[11,1,2,1],[9,2,5,1],[8,3,6,1],[1,3,1,1],[1,4,1,1],[2,4,13,1],[1,5,13,1],[1,6,12,1],[2,7,10,1],[2,8,3,1],[9,8,3,1],[2,9,2,1],[9,9,2,1]], eye: [12,3] },
-      { pose: 'rise', lift: .55, px: [[10,0,1,1],[12,0,1,1],[10,1,2,1],[12,1,2,1],[10,2,4,1],[9,3,6,1],[1,3,1,1],[1,4,1,1],[2,4,12,1],[1,5,12,1],[1,6,10,1],[2,7,8,1],[0,8,2,1],[9,8,2,1],[0,9,2,1]], eye: [13,3] },
-      { pose: 'peak', lift: 1, px: [[11,0,1,1],[13,0,1,1],[11,1,2,1],[13,1,2,1],[11,2,3,1],[10,3,5,1],[2,3,1,1],[2,4,1,1],[3,4,11,1],[2,5,11,1],[1,6,9,1],[12,7,3,1],[0,7,3,1]], eye: [14,3] },
-      { pose: 'land', lift: .35, px: [[9,0,1,1],[11,0,1,1],[9,1,2,1],[11,1,2,1],[9,2,5,1],[8,3,6,1],[1,3,1,1],[1,4,1,1],[2,4,13,1],[1,5,13,1],[1,6,11,1],[2,7,9,1],[10,8,2,1],[11,9,2,1],[2,8,2,1]], eye: [12,3] },
-    ];
+    // 12 x 10 cells each, facing right; # fur, o the eye
+    const sprite = (rows) => { const px = []; let eye = null; rows.forEach((line, r) => [...line].forEach((ch, c) => { if (ch === '#') px.push([c, r]); else if (ch === 'o') eye = [c, r]; })); return { px, eye }; };
+    const POSES = {
+      sit: sprite(['........#.#.', '........#.#.', '........#.#.', '.......#####', '..###..##o##', '.#####.#####', '###########.', '###########.', '.##########.', '..###...##..']),
+      ear: sprite(['........#...', '........#...', '........#.#.', '.......#####', '..###..##o##', '.#####.#####', '###########.', '###########.', '.##########.', '..###...##..']),
+      crouch: sprite(['............', '............', '......##....', '.......###..', '.......#####', '.####..##o##', '############', '############', '############', '.###....###.']),
+      rise: sprite(['........##..', '.........###', '........####', '.......##o##', '.....#######', '...########.', '..#######.#.', '.######.....', '###.........', '#...........']),
+      peak: sprite(['............', '............', '.......##...', '........####', '........##o#', '.###########', '############', '.########.#.', '#.........#.', '............']),
+      fall: sprite(['............', '##....##....', '.###...###..', '..#########.', '...######o##', '....########', '.....######.', '......#..##.', '.........##.', '..........#.']),
+    };
+    const W = 12, H = 10;
     const button = el('button', 'rabbit-grid'), cv = el('canvas');
     button.type = 'button'; button.setAttribute('aria-label', 'Catch the pixel rabbit to change the rain colors');
     cv.setAttribute('aria-hidden', 'true'); button.append(cv); lane.append(button);
-    const ctx = cv.getContext('2d'), CELL = 3, ROWS = 18;
-    let cols = 1, x = 0, y = 5, frame = 0, running = reduced, visible = false, timer = 0, raf = 0, last = 0, elapsedRun = 0;
+    const ctx = cv.getContext('2d'), CELL = 6, ROWS = 14, STEP = 90;
+    let cols = 1, x = 0, lift = 0, pose = POSES.sit, blink = 0, running = reduced, visible = false, timer = 0, raf = 0, last = 0, acc = 0;
+    let state = 'sit', n = 0, wait = 3, hop = null;
+    const rnd = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+    const top = () => ROWS - H - lift;
     const draw = () => {
-      ctx.fillStyle = '#080a0b'; ctx.fillRect(0, 0, cv.width, cv.height);
-      ctx.fillStyle = '#192023';
-      for (let row = 0; row < ROWS; row++) for (let col = 0; col < cols; col++) ctx.fillRect(col * CELL, row * CELL, CELL - 1, CELL - 1);
+      ctx.clearRect(0, 0, cv.width, cv.height);
       if (!running) return;
-      const f = FRAMES[frame], next = PALETTES[(palette + 1) % PALETTES.length];
-      for (const [px, py, w, h] of f.px) for (let dy = 0; dy < h; dy++) for (let dx = 0; dx < w; dx++) {
-        if (px + dx === f.eye[0] && py + dy === f.eye[1]) continue;
-        const col = x + px + dx, row = y + py + dy;
-        if (col < 0 || col >= cols || row < 0 || row >= ROWS) continue;
-        ctx.fillStyle = next.span === 360 ? 'hsl(' + ((col * 9 + row * 12) % 360) + ' 90% 70%)' : furOf(next);
-        ctx.fillRect(col * CELL, row * CELL, CELL - 1, CELL - 1);
-      }
+      const next = PALETTES[(palette + 1) % PALETTES.length], y = top();
+      const cell = (c, r, color) => { const col = x + c, row = y + r; if (col < 0 || col >= cols || row < 0 || row >= ROWS) return; ctx.fillStyle = color; ctx.fillRect(col * CELL, row * CELL, CELL - 1, CELL - 1); };
+      for (const [c, r] of pose.px) cell(c, r, next.span === 360 ? 'hsl(' + (((x + c) * 14 + (y + r) * 18) % 360) + ' 90% 70%)' : furOf(next));
+      // the eye: dark, and for a blink the fur closes over it
+      if (pose.eye) cell(pose.eye[0], pose.eye[1], blink ? (next.span === 360 ? 'hsl(' + (((x + pose.eye[0]) * 14) % 360) + ' 90% 70%)' : furOf(next)) : '#060708');
     };
-    const fit = () => { cols = Math.max(16, Math.floor(lane.clientWidth / CELL)); cv.width = cols * CELL; cv.height = ROWS * CELL; if (reduced) x = Math.floor(cols * .25); draw(); };
+    const fit = () => { cols = Math.max(16, Math.floor(lane.clientWidth / CELL)); cv.width = cols * CELL; cv.height = ROWS * CELL; cv.style.width = cols * CELL + 'px'; if (reduced) x = Math.floor(cols * .25); draw(); };
     new ResizeObserver(fit).observe(lane); fit();
     const schedule = (ms) => { clearTimeout(timer); timer = setTimeout(run, ms); };
     const stop = () => { running = false; cancelAnimationFrame(raf); raf = 0; draw(); if (!reduced) schedule(50000 + Math.random() * 70000); };
+    // One beat of the bunny, every STEP ms, in whole cells only, so it moves in steps like pixel art and never slides.
+    const startHop = () => {
+      const d = rnd(5, 12), big = d > 8;                    // how far this hop goes, in cells: never the same twice in a row
+      hop = { from: x, d, air: big ? rnd(5, 6) : rnd(3, 5), h: big ? rnd(3, 4) : rnd(2, 3), crouch: rnd(1, 2) };
+      state = 'hop'; n = 0;
+    };
+    const beat = () => {
+      n++; blink = 0;
+      if (state === 'sit') {
+        lift = 0; pose = POSES.sit;
+        if (wait > 8) { const m = n % 9; if (m === 4 || m === 5) pose = POSES.ear; if (n % 11 === 7) blink = 1; }   // a long sit: an ear twitches, it blinks
+        if (n >= wait) startHop();
+        return;
+      }
+      const k = n - hop.crouch;
+      if (k <= 0) { pose = POSES.crouch; lift = 0; return; }                       // gathers itself
+      if (k <= hop.air) {                                                           // in the air, along an arc
+        const t = k / (hop.air + 1);
+        x = hop.from + Math.round(hop.d * t); lift = Math.round(hop.h * 4 * t * (1 - t));
+        pose = t < .4 ? POSES.rise : t < .65 ? POSES.peak : POSES.fall; return;
+      }
+      if (k === hop.air + 1) { x = hop.from + hop.d; lift = 0; pose = POSES.crouch; return; }   // lands and squashes
+      state = 'sit'; n = 0; pose = POSES.sit;
+      // then: straight into another hop, a short breather, or a long look around
+      const roll = Math.random(); wait = roll < .38 ? rnd(1, 2) : roll < .82 ? rnd(4, 11) : rnd(16, 28);
+    };
     function tick(now) {
       raf = 0;
       if (!running || !visible || document.hidden || reduced) { last = 0; return; }
-      elapsedRun += last ? Math.min(80, now - last) : 0; last = now;
-      // Whole grid cells only: no element translation, sliding image or subpixel motion.
-      x = -15 + Math.floor(elapsedRun / 48);
-      frame = Math.floor(elapsedRun / 120) % FRAMES.length;
-      y = 5 - Math.round(FRAMES[frame].lift * 2);
+      acc += last ? Math.min(200, now - last) : 0; last = now;
+      let moved = false;
+      while (acc >= STEP) { acc -= STEP; beat(); moved = true; }
       if (x >= cols) return stop();
-      draw(); raf = requestAnimationFrame(tick);
+      if (moved) draw();
+      raf = requestAnimationFrame(tick);
     }
-    function run() { if (!visible || document.hidden) return schedule(1000); running = true; elapsedRun = 0; last = 0; x = -15; if (!raf) raf = requestAnimationFrame(tick); }
+    function run() { if (!visible || document.hidden) return schedule(1000); running = true; acc = 0; last = 0; x = -W; lift = 0; pose = POSES.sit; state = 'sit'; n = 0; wait = 1; if (!raf) raf = requestAnimationFrame(tick); }
     new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; if (visible && running && !raf && !reduced) raf = requestAnimationFrame(tick); }).observe(lane);
     document.addEventListener('visibilitychange', () => { if (!document.hidden && visible && running && !raf && !reduced) raf = requestAnimationFrame(tick); });
-    button.addEventListener('click', (event) => {
-      if (!running) return;
-      if (event.detail) {
-        const r = cv.getBoundingClientRect(), col = (event.clientX - r.left) / r.width * cols, row = (event.clientY - r.top) / r.height * ROWS;
-        if (col < x - 2 || col > x + 17 || row < y - 2 || row > y + 12) return;
-      }
-      palette = (palette + 1) % PALETTES.length;
-      if (reduced) draw(); else stop();
-    });
+    // Catching it: the lane lies over the bottom of the terminal and the portrait, so it lets clicks through and the page
+    // listens instead; only a click on the bunny itself counts. The button stays for the keyboard (Enter or Space).
+    const caught = () => { palette = (palette + 1) % PALETTES.length; if (reduced) draw(); else stop(); };
+    button.addEventListener('click', (event) => { if (running && !event.detail) caught(); });
+    document.addEventListener('click', (event) => {
+      if (!running || !event.detail) return;
+      const r = cv.getBoundingClientRect(), col = (event.clientX - r.left) / CELL, row = (event.clientY - r.top) / CELL;
+      if (col < x - 1 || col > x + W + 1 || row < top() - 1 || row > top() + H + 1) return;
+      event.preventDefault(); caught();
+    }, true);
     if (!reduced) schedule(1200);
   })();
 })();
