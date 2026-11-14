@@ -2,7 +2,7 @@
 # 2026-11-13: real restaurants on findastra.github.io/spoonfed): Spoonfed's Google browser key goes into
 # spoonfed/index.html as the site is deployed, from this repo's Actions secret SPOONFED_GOOGLE_MAPS_BROWSER_KEY, so the
 # key is never in a file in this repo. Like every Google web-map key it is readable in the served page; Google only
-# answers it on findastra.github.io/spoonfed/* (and the preview on Astra's PC), for the Maps JavaScript API and Places
+# answers it on findastra.github.io/* (browsers send Google only the site, not /spoonfed/) and the preview on Astra's PC, for the Maps JavaScript API and Places
 # API (New). Without the secret the page keeps its made-up spots.
 # Runs on every push to main, after each GitHub stats refresh (that workflow's own push can't start this one), and by hand.
 name: Pages
