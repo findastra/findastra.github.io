@@ -556,6 +556,39 @@
     box.append(still, canvas);
     return box;
   };
+  // The Ableton card's 8×8 pads, drawn on a see-through square from art/projects/ableton-live-discord-presence-pads-data-
+  // 20261113.js: every pad's face and rim color in each of the GIF's frames, blended between frames at the screen's own
+  // rate, so the drum pattern glides instead of stepping. Only draws while on screen; one still frame for less motion.
+  const abletonPads = () => {
+    const P = window.ABLETON_PADS, cv = el('canvas', 'pads'); cv.setAttribute('aria-hidden', 'true');
+    if (!P) return cv;
+    const S = 480, k = S / P.size, w = P.pad * k, bytes = Uint8Array.from(atob(P.rgb), (ch) => ch.charCodeAt(0));
+    cv.width = cv.height = S;
+    const ctx = cv.getContext('2d'), mix = (f0, f1, u, i, o) => bytes[(f0 * 64 + i) * 6 + o] * (1 - u) + bytes[(f1 * 64 + i) * 6 + o] * u;
+    const rgb = (r, g, b, m = 1) => `rgb(${Math.round(r * m)} ${Math.round(g * m)} ${Math.round(b * m)})`;
+    const draw = (t) => {
+      const pos = (t / P.ms) % P.frames, f0 = Math.floor(pos), f1 = (f0 + 1) % P.frames, u = pos - f0;
+      ctx.clearRect(0, 0, S, S);
+      for (let i = 0; i < 64; i++) {
+        const x = P.x0[i & 7] * k, y = P.x0[i >> 3] * k;
+        const [fr, fg, fb, rr, rg, rb] = [0, 1, 2, 3, 4, 5].map((o) => mix(f0, f1, u, i, o));
+        const lit = Math.max(fr, fg, fb) / 255;
+        // a lit pad glows in its own color
+        ctx.shadowColor = rgb(rr, rg, rb); ctx.shadowBlur = lit > .45 ? (lit - .45) * 2 * 9 * k : 0;
+        const g = ctx.createRadialGradient(x + w / 2, y + w / 2, 0, x + w / 2, y + w / 2, w * .7);
+        g.addColorStop(0, rgb(fr, fg, fb)); g.addColorStop(1, rgb(rr, rg, rb, .55));
+        ctx.fillStyle = g; ctx.beginPath(); ctx.roundRect(x, y, w, w, 2 * k); ctx.fill();
+        ctx.shadowBlur = 0; ctx.lineWidth = 1.2 * k; ctx.strokeStyle = rgb(rr, rg, rb);
+        ctx.beginPath(); ctx.roundRect(x + .6 * k, y + .6 * k, w - 1.2 * k, w - 1.2 * k, 1.6 * k); ctx.stroke();
+      }
+    };
+    if (reduced) { draw(0); return cv; }
+    let seen = false, raf = 0;
+    const loop = (t) => { raf = 0; if (!seen || !cv.isConnected) return; draw(t); raf = requestAnimationFrame(loop); };
+    new IntersectionObserver(([e]) => { seen = e.isIntersecting; if (seen && !raf) raf = requestAnimationFrame(loop); }).observe(cv);
+    draw(0);
+    return cv;
+  };
   // a short note for every Polaroid, saying more than the picture can (Astra, 2026-10-29: "a note for every single Polaroid ...
   // short notes that kind of tell more than what you can just see"), handwritten on its back: flip it over to read it (Astra,
   // 2026-10-29: "if we flip the Polaroid, we could put notes, handwritten notes on there"; on the paper they fought the layout)
@@ -607,6 +640,7 @@
       let at = 0;
       // each picture can also be a video (plays by itself, muted, on a loop) or a live page you can move around in
       const media = (p) => {
+        if (p.type === 'pads') return abletonPads();
         if (p.galaxy) return officialGalaxy(p);
         if (p.type === 'video' && p.key) return keyedVideo(p);
         if (p.inline) return inlineSvg(p);
@@ -709,13 +743,19 @@
         flip = ['‹', '›'].map((t, i) => { const b = el('button', 'flip ' + (i ? 'next' : 'prev'), t); b.type = 'button'; b.setAttribute('aria-label', (i ? 'next' : 'previous') + ' picture of ' + name); b.onclick = () => go(i ? 1 : -1); return b; });
       }
     }
-    // the writing on the border is always the same three things (Astra, 2026-10-29): the name, which always links to the
-    // GitHub repo, then its code, then the date; no site tags
-    const title = repo ? link(repo, 'title', name) : el('b', 'title', name);
+    // the writing on the border is always the same three things (Astra, 2026-10-29): the name, then its code, then the date.
+    // Two links, kept apart (Astra, 2026-11-13: "one link for GitHub and one link for the website"): the name opens the
+    // project's own website when it has one, and a black GitHub sticker on the border opens its repo
+    const title = site ? link(site, 'title', name) : el('b', 'title', name);
+    if (site) title.setAttribute('aria-label', 'open the ' + name + ' website');
+    let gh = null;
+    if (repo) { gh = link(repo, 'ghlink'); gh.title = name + ' on GitHub'; gh.setAttribute('aria-label', 'open ' + name + ' on GitHub'); gh.append(githubIcon()); }
     const note = el('div', 'note');
     // every note the same four parts (Astra, 2026-10-29): the title, what kind of thing it is · the language it is written in,
     // then the date on its own line
-    note.append(title, ...(kind ? [el('span', 'kind', kind)] : []), ...(date ? [el('span', 'kind date', date)] : []), ...(badge ? [badge] : []), ...(look ? [look] : []));
+    // the stickers at the border's top right, in this order: the map's link, GitHub, the flip
+    const stickers = el('span', 'stickers'); stickers.append(...(look ? [look] : []), ...(gh ? [gh] : []));
+    note.append(title, ...(kind ? [el('span', 'kind', kind)] : []), ...(date ? [el('span', 'kind date', date)] : []), ...(badge ? [badge] : []), stickers);
     if (sound) sound.show(pics[0]);
     // "1 of 3" sits on the bottom edge between the arrows, level with them (Astra, 2026-10-29)
     const frame = el('div', flip ? 'frame flips' : 'frame'); frame.append(el('i', 'tape'), photo, note, ...(flip || []), ...(count ? [count] : []), ...(sound ? [sound.b] : []));
@@ -730,7 +770,7 @@
       const back = el('div', 'pback'); back.append(el('b', null, name), ...scribble.map((t) => el('span', null, t)));
       const turn = el('button', 'pflip'); turn.type = 'button'; turn.title = 'flip it over'; turn.setAttribute('aria-label', 'turn ' + name + ' over to read its note');
       turn.append(flipIcon()); frame.append(back); frame.classList.add('has-back');
-      if (look) { const stickers = el('span', 'stickers'); look.replaceWith(stickers); stickers.append(look, turn); } else note.append(turn);
+      stickers.append(turn);
       let busy = false;
       turn.onclick = (e) => {
         e.stopPropagation(); if (busy) return;
@@ -752,7 +792,7 @@
     // every world says what it is (Astra, 2026-10-29: "all the stuff that is a VRChat world needs to say VRChat world"), then
     // its one most common language, GitHub's own pick (UdonSharp counts as C#)
     return polaroid({ key: w.repo, name: w.name, kind: 'VRChat world' + (r && r.language ? ' · ' + r.language : ''), date: r ? when(made(r)) : '', text: cleanText((r && r.description) || w.text), pics: worldPics(w),
-      repo: r ? 'https://github.com/findastra/' + w.repo : null });
+      repo: r ? 'https://github.com/findastra/' + w.repo : null, site: websiteOf(r) });
   };
   // Discord and Web & More: the repo name, written out with spaces, and its language
   // what each website looks like (Astra, 2026-10-27): its own page, shown first on its Polaroid
@@ -762,7 +802,9 @@
     // then one panel the way Moodglass lays it out, in rows with crisp borders, of Liminal Doors' doorspaces as built, none of
     // the concept art the Liminal Doors Polaroid shows (Astra, 2026-10-29: "just do one panel", "non-blurred borders",
     // "put doors on there that you don't see in the other one")
-    moodglass: [{ src: 'art/projects/moodglass-liminal-doors-rows-20261029.webp', cap: 'Moodglass: Liminal Doors doorspaces behind a chat' }],
+    // ...then the two plants-chat collages from Moodglass's own README, the ones that look like it does on Discord (Astra,
+    // 2026-11-13: "not even close to what it looks like on Discord ... use photos for that one there")
+    moodglass: ['b', 'c'].map((x) => ({ src: `https://raw.githubusercontent.com/findastra/moodglass/main/docs/images/moodglass-plants-collage-${x}-20261029.jpg`, cap: 'Moodglass: a plants chat as a mosaic' })),
     // a little smaller, so its green banner sits clear of the tape (Astra, 2026-10-29)
     // and the border round it filled with its own blue, not see-through (Astra, 2026-10-29)
     'fuzzboi-factory': [{ src: 'art/projects/fuzzboi-factory-site-20261027.jpg', cap: 'The Fuzzboi Factory', fit: 'contain', bg: '#121a6b', size: 0.88, fill: '#121a6b' }],
@@ -783,10 +825,10 @@
   for (const [who, what] of [['openai', 'OpenAI'], ['anthropic', 'Anthropic']])
     SITE_PICS[who + '-discord-presence'] = [{ src: `https://raw.githubusercontent.com/findastra/ai-discord-presence/main/docs/images/${who}-app-20261030.png`, cap: what + ' Discord Presence · the app', fit: 'contain', bg: '#02050a', fill: '#02050a' }];
   // Ableton Live Discord Presence, like the other two (Astra, 2026-11-13): first its card art on see-through paper, its 8×8
-  // pads lighting up in a drum pattern (the repo's pad-grid-card GIF with its black made clear), then the app's own page
+  // pads lighting up in a drum pattern, then the app's own page. The pads are drawn live from the colors read out of the
+  // repo's pad-grid-card GIF, blended between its frames, so they move smoothly (Astra, 2026-11-13: the GIF "very glitchy")
   SITE_PICS['ableton-live-discord-presence'] = [
-    // (a still of its first frame for anyone who asks for less motion)
-    { src: 'art/projects/ableton-live-discord-presence-pads-transparent-20261113.' + (reduced ? 'png' : 'webp'), cap: 'Ableton Live Discord Presence · the pads', fit: 'contain', size: 0.9, clear: true },
+    { type: 'pads', src: '', cap: 'Ableton Live Discord Presence · the pads', clear: true },
     { src: 'art/projects/ableton-live-discord-presence-app-20261113.png', cap: 'Ableton Live Discord Presence · the app', fit: 'contain', bg: '#02050a', fill: '#02050a' },
   ];
   // Spoonfed: the app itself, from its README (Astra, 2026-11-13: it goes in Web & More where Ableton was)
@@ -851,7 +893,7 @@
   // individually moving stars across the transparent square, then the app
   const TWO = new Set(['openai-discord-presence', 'anthropic-discord-presence']);
   // only their own pictures above, none from the project-pictures list
-  const OWN_ONLY = new Set(['ableton-live-discord-presence', 'spoonfed']);
+  const OWN_ONLY = new Set(['ableton-live-discord-presence', 'spoonfed', 'moodglass']);
   const picsOf = (name) => {
     if (OWN_ONLY.has(name)) return SITE_PICS[name] || [];
     const all = [...(SITE_PICS[name] || []), ...picturesOf(name)];
@@ -870,9 +912,10 @@
   const SPOONFED = { name: 'spoonfed', created_at: '2026-10-11T19:28:44Z', language: 'TypeScript', description: 'Feed me: picks a real place to eat near you.',
     link: 'https://findastra.github.io/spoonfed/', slot: '2026-11-03T03:47:32Z' };
   const extraCard = (r) => {
-    const repoUrl = r.link || 'https://github.com/findastra/' + r.name, shot = SHOTS[r.name];
+    // r.link: a project whose repo is private (Spoonfed): its website only, no GitHub sticker
+    const repoUrl = r.link ? null : 'https://github.com/findastra/' + r.name, site = r.link || websiteOf(r), shot = SHOTS[r.name];
     return polaroid({ key: r.name, shot: shot ? shot() : null, clear: r.name === 'ai-discord-presence', name: nameOf(r.name), kind: [typeOf(r), r.language || LANGS[r.name]].filter(Boolean).join(' · '), date: when(made(r)),
-      text: cleanText(r.description || 'No description yet.'), pics: picsOf(r.name), repo: repoUrl });
+      text: cleanText(r.description || 'No description yet.'), pics: picsOf(r.name), repo: repoUrl, site });
   };
 
   // ---------- stars: every pet, with its hosted icon, and its repo's pictures and links when the repo is public ----------
@@ -956,6 +999,16 @@
     for (const d of ['M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8', 'M21 3v5h-5', 'M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16', 'M8 16H3v5']) s.append(svgEl('path', { d }));
     return s;
   };
+  // GitHub's own mark, white on the black sticker that opens a Polaroid's repo
+  const githubIcon = () => {
+    const s = svgEl('svg', { viewBox: '0 0 16 16', 'aria-hidden': 'true', fill: 'currentColor' });
+    s.append(svgEl('path', { d: 'M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z' }));
+    return s;
+  };
+  // a repo's own website, if it has one: its homepage, or its GitHub Pages site; a homepage that is only a GitHub page is not one
+  // (OpenAI Discord Presence's Pages site only says the app moved into AI Discord Presence)
+  const NO_WEBSITE = new Set(['openai-discord-presence']);
+  const websiteOf = (r) => (r && r.homepage && !NO_WEBSITE.has(r.name) && !/^https?:\/\/github\.com\//i.test(r.homepage) ? r.homepage : null);
   // L1, the third-party app each pet works on top of, the most used one (Astra, 2026-10-29: "just pick the most commonly
   // used third-party app at the top for it"; the Farmer's is "third-party apps", since he looks after all of them)
   const L1 = {
@@ -1516,7 +1569,8 @@
         // drawn at twice the photo's size, so its key in the top left is big enough to read (Astra, 2026-10-29)
         // (lift: drawn a little short of the photo's height, so the map's bottom bar, Spin and its 2D | 3D switch, sits up
         // where it can be seen)
-        pics: [{ src: HUB_PAGES + 'system-map-20261012.html', cap: 'The System Map', type: 'frame', label: 'live', view: 1.6, tidy: true, open: HUB_PAGES + 'system-map-20261012.html' }], repo: HUB_REPO }),
+        pics: [{ src: HUB_PAGES + 'system-map-20261012.html', cap: 'The System Map', type: 'frame', label: 'live', view: 1.6, tidy: true, open: HUB_PAGES + 'system-map-20261012.html' }], repo: HUB_REPO,
+        site: HUB_PAGES + 'system-map-20261012.html' }),
       // the pets on the bare paper, and the one you flip to a little smaller (Astra, 2026-10-29); Meet every pet in the middle,
       // the pets grid on the right
       polaroid({ key: 'meet-pets', name: 'Meet every pet', kind: 'Pet gallery · ' + lang, date, repo: HUB_REPO, text: 'One at a time, no shaking needed.',
@@ -1982,9 +2036,10 @@
   })();
 
   // ---------- the rabbit: a small pixel bunny that hops along the bottom of the introduction ----------
-  // Astra, 2026-11-12: no grid of dots behind it, and it hops like a bunny. Astra, 2026-11-13: no dots at all, only the
-  // rabbit (its pixels are solid, no gaps between them), half the size, and less smooth: quick hops (crouch, jump, land)
-  // with real stops between them, where it sits still, twitches an ear and blinks before the next one.
+  // Astra, 2026-11-12: no grid of dots behind it, and it hops like a bunny. Astra, 2026-11-13: half the size; then "the whole
+  // point of making the grid was that the bunny would appear as just dots ... a pixel that's moving across": the bunny is
+  // drawn in dots (a gap round every cell) with no grid behind it, about as fast as the first one, and jerky and hard to
+  // catch: quick hops with tiny hitches between them, a dash of long low hops now and then, and only a short freeze.
   (() => {
     const lane = $('rabbit-lane'); if (!lane) return;
     // 12 x 10 cells each, facing right; # fur, o the eye, t the white tail
@@ -2001,8 +2056,9 @@
     const button = el('button', 'rabbit-grid'), cv = el('canvas');
     button.type = 'button'; button.setAttribute('aria-label', 'Catch the pixel rabbit to change the rain colors');
     cv.setAttribute('aria-hidden', 'true'); button.append(cv); lane.append(button);
-    // 3 px cells: half the size it was (Astra, 2026-11-13)
-    const ctx = cv.getContext('2d'), CELL = 3, ROWS = 14, STEP = 80;
+    // 3 px cells, each a 2 px dot (Astra, 2026-11-13); a beat every 25 ms, so it crosses the screen in a few seconds
+    // (Astra, 2026-11-13: "much faster across the screen ... he's hard to catch")
+    const ctx = cv.getContext('2d'), CELL = 3, ROWS = 14, STEP = 25;
     let cols = 1, x = 0, lift = 0, pose = POSES.sit, blink = 0, running = reduced, visible = false, timer = 0, raf = 0, last = 0, acc = 0;
     let state = 'sit', n = 0, wait = 3, hop = null;
     const rnd = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
@@ -2011,28 +2067,36 @@
       ctx.clearRect(0, 0, cv.width, cv.height);
       if (!running) return;
       const next = PALETTES[(palette + 1) % PALETTES.length], y = top();
-      const cell = (c, r, color) => { const col = x + c, row = y + r; if (col < 0 || col >= cols || row < 0 || row >= ROWS) return; ctx.fillStyle = color; ctx.fillRect(col * CELL, row * CELL, CELL, CELL); };
-      for (const [c, r] of pose.px) cell(c, r, next.span === 360 ? 'hsl(' + (((x + c) * 14 + (y + r) * 18) % 360) + ' 90% 70%)' : furOf(next));
-      if (pose.tail) cell(pose.tail[0], pose.tail[1], '#f4f4f4');
+      const cell = (c, r, color) => { const col = x + c, row = y + r; if (col < 0 || col >= cols || row < 0 || row >= ROWS) return; ctx.fillStyle = color; ctx.fillRect(col * CELL, row * CELL, CELL - 1, CELL - 1); };
+      // a white rabbit (Astra, 2026-11-13: "supposed to be white"), its dots just barely glowing in the color the rain turns
+      // when it is caught (the rainbow's glow drifts round the hues)
+      const glow = next.white ? 'rgba(255 255 255 / .45)' : next.span === 360 ? `hsl(${(x * 9) % 360} 100% 60% / .5)` : `hsl(${(next.from + next.span / 2) % 360} 100% 55% / .5)`;
+      ctx.shadowColor = glow; ctx.shadowBlur = 4;
+      for (const [c, r] of pose.px) cell(c, r, '#ffffff');
+      if (pose.tail) cell(pose.tail[0], pose.tail[1], '#ffffff');
+      ctx.shadowBlur = 0;
       // the eye: dark, and for a blink the fur closes over it
-      if (pose.eye) cell(pose.eye[0], pose.eye[1], blink ? (next.span === 360 ? 'hsl(' + (((x + pose.eye[0]) * 14) % 360) + ' 90% 70%)' : furOf(next)) : '#060708');
+      if (pose.eye) cell(pose.eye[0], pose.eye[1], blink ? '#ffffff' : '#060708');
     };
     const fit = () => { cols = Math.max(16, Math.floor(lane.clientWidth / CELL)); cv.width = cols * CELL; cv.height = ROWS * CELL; cv.style.width = cols * CELL + 'px'; if (reduced) x = Math.floor(cols * .25); draw(); };
     new ResizeObserver(fit).observe(lane); fit();
     const schedule = (ms) => { clearTimeout(timer); timer = setTimeout(run, ms); };
     const stop = () => { running = false; cancelAnimationFrame(raf); raf = 0; draw(); if (!reduced) schedule(50000 + Math.random() * 70000); };
     // One beat of the bunny, every STEP ms, in whole cells only, so it moves in steps like pixel art and never slides.
+    let dash = 0;                                          // hops left in a dash
     const startHop = () => {
-      // quick and springy: a short crouch, three or four beats in the air, never a glide
-      const d = rnd(6, 11), big = d > 8;                    // how far this hop goes, in cells
-      hop = { from: x, d, air: big ? 4 : 3, h: big ? rnd(3, 4) : rnd(2, 3), crouch: rnd(1, 2) };
+      // quick and springy: one beat crouched, three or four in the air, never a glide; in a dash, long and low
+      if (!dash && Math.random() < .2) dash = rnd(3, 7);
+      const d = dash ? rnd(14, 20) : rnd(8, 14), big = d > 11;
+      hop = { from: x, d, air: big ? 4 : 3, h: dash ? rnd(1, 2) : big ? rnd(3, 4) : rnd(2, 3), crouch: dash ? 0 : 1 };
+      if (dash) dash--;
       state = 'hop'; n = 0;
     };
     const beat = () => {
       n++; blink = 0;
       if (state === 'sit') {
         lift = 0; pose = POSES.sit;
-        if (wait > 6) { const m = n % 9; if (m === 4 || m === 5) pose = POSES.ear; if (n % 11 === 7) blink = 1; }   // a real stop: an ear twitches, it blinks
+        if (wait >= 10) { const m = n % 9; if (m === 4 || m === 5) pose = POSES.ear; if (n % 11 === 7) blink = 1; }   // a freeze: an ear twitches, it blinks
         if (n >= wait) startHop();
         return;
       }
@@ -2045,8 +2109,8 @@
       }
       if (k === hop.air + 1) { x = hop.from + hop.d; lift = 0; pose = POSES.crouch; return; }   // lands and squashes
       state = 'sit'; n = 0; pose = POSES.sit;
-      // then it stops every time: now and then a quick second hop, mostly a pause, sometimes a long look around
-      const roll = Math.random(); wait = roll < .15 ? rnd(2, 3) : roll < .75 ? rnd(7, 14) : rnd(20, 34);
+      // then: in a dash, straight on; mostly a tiny hitch; now and then a quick freeze (a quarter to half a second)
+      const roll = Math.random(); wait = dash ? 1 : roll < .8 ? rnd(1, 3) : rnd(10, 20);
     };
     function tick(now) {
       raf = 0;
