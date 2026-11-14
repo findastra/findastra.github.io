@@ -162,11 +162,12 @@ h3 { display: inline-block; font: 700 12px var(--mono); text-transform: uppercas
   border-block: 1px solid #262626; font: 500 13px/1.2 var(--mono); }
 .tick-label { position: absolute; z-index: 1; left: 0; top: 0; bottom: 0; display: grid; place-items: center; padding: 0 12px; background: #2a2a2a; color: #d6d6d6;
   font: 700 10px var(--mono); text-transform: uppercase; letter-spacing: .14em; box-shadow: 6px 0 10px #000; }
-/* The pixel bunny's lane along the bottom of the introduction: see-through, no grid of dots; only the bunny's own big
-   pixels show (Astra, 2026-11-12). 14 rows of 6 px cells; cyber.js sets the canvas width in whole cells so none stretch. */
-.rabbit-lane { position: absolute; z-index: 3; left: 20px; right: 20px; bottom: 2px; height: 84px; overflow: hidden; pointer-events: none; }
-.rabbit-grid { display: block; width: 100%; height: 84px; padding: 0; border: 0; background: none; pointer-events: none; }
-.rabbit-grid canvas { display: block; height: 84px; image-rendering: pixelated; }
+/* The pixel bunny's lane along the bottom of the introduction: see-through, no grid of dots; only the bunny shows
+   (Astra, 2026-11-12), half the size (Astra, 2026-11-13). 14 rows of 3 px cells; cyber.js sets the canvas width in whole
+   cells so none stretch. */
+.rabbit-lane { position: absolute; z-index: 3; left: 20px; right: 20px; bottom: 4px; height: 42px; overflow: hidden; pointer-events: none; }
+.rabbit-grid { display: block; width: 100%; height: 42px; padding: 0; border: 0; background: none; pointer-events: none; }
+.rabbit-grid canvas { display: block; height: 42px; image-rendering: pixelated; }
 .rabbit-grid:focus-visible { outline: 2px solid #e4e4e4; outline-offset: -2px; }
 .rabbit-burst-cv { position: fixed; z-index: 45; pointer-events: none; }
 .rabbit-burst { inset: auto; width: 52px; height: 52px; translate: -50% -50%; z-index: 3; }
