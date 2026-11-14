@@ -1,4 +1,4 @@
-# Spoonfed: no Yelp, food type with the facts, a row arrow, one screen
+# Spoonfed: no Yelp, food type with the facts, a row arrow, one screen, photo background, one map
 
 Astra, 2026-11-13, after Spoonfed went live (`spoonfed-real-spots-20261113.md`):
 
@@ -8,8 +8,10 @@ Astra, 2026-11-13, after Spoonfed went live (`spoonfed-real-spots-20261113.md`):
 - "this isnt fittin gon one screen. i should never see a scroll bar."
 - "there are also black borders on the sparklles in the footer make sure those are all gone across the board too"
 - "also the star shouldnt be a link. ever."
+- "the map should have no buttons, and should start in real life view (not map view) and there should be two locations, you, and the restaruant. scrolling zooms, get rid of the link. i thought we already did this work."
+- "looks like the entire background is brown, just need to make sure the pictures are the background"
 
-Replaced `spoonfed/` with a new web build of `findastra/spoonfed` at 9be628b (draft spoonfed#13). Changes since the last build:
+Replaced `spoonfed/` with a new web build of `findastra/spoonfed` at `main` 6bdbfd4 (spoonfed#13, merged 2026-11-13 with Astra's "just fix this, then publish"). Changes since the last build:
 
 - **No Yelp.** Every spot shows Google's stars only.
 - **The food type** sits on the facts line of every card, so a name has its whole line.
@@ -18,6 +20,8 @@ Replaced `spoonfed/` with a new web build of `findastra/spoonfed` at 9be628b (dr
   - Its cards fill it exactly, lined up with the two big panels above.
 - **One screen on a computer.** The zoom counts the row once it shows, and a short window draws the page smaller (down to 70%) instead of scrolling.
 - **Footer:** the sparkles have no black outline, and the star is a picture, not a link.
+- **Pictures as the background** ("looks like the entire background is brown, just need to make sure the pictures are the background"): a light neutral shade over the blurred food photo instead of the 80% chocolate one.
+- **One map for every spot** ("the map should have no buttons, and should start in real life view (not map view) and there should be two locations, you, and the restaruant. scrolling zooms, get rid of the link"): made-up spots get Google's own map like real ones, satellite first with the spot and you; the old embedded map with its pins, buttons and links is gone.
 - **Row buttons:** the two tabs and the arrow all wear the panels' cream ring; the dark fill marks the tab that's on ("need to see a yellow ring around all three buttons").
 
 Also in this PR: the Pages workflow's comment now says the key works on `findastra.github.io/*`. Google refused `/spoonfed/*` only, because browsers send Google just the site, so the key's website rule was widened in Google Cloud on 2026-11-13 (Astra: "Yes, change it").
