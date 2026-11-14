@@ -323,7 +323,8 @@
   const WORLD_REPOS = new Set(['astras-infinite-pole', 'piranesi-house', 'liminal-doors', 'mommys-world', 'the-rainbow-maker', 'the-cooling-tower', 'detour-into-vr', 'role-fairy', 'poppy', 'dubstep-armory']);
   const PETOS_REPOS = new Set(['astras-pet-os', 'startup-star', 'the-kennel', 'the-shed', 'vet-clinic', 'the-police-station', 'iron-gates', 'the-recovery-room', 'ai-doghouse', 'findastra']);
   // The rest, in the profile README's groups: Discord by name, Web & More is everything else
-  const DISCORD = new Set(['moodglass', 'ai-discord-presence', 'openai-discord-presence', 'anthropic-discord-presence']);
+  // Ableton Live Discord Presence is a Discord app too (Astra, 2026-11-13: it goes under Discord, not Web & More)
+  const DISCORD = new Set(['moodglass', 'ai-discord-presence', 'openai-discord-presence', 'anthropic-discord-presence', 'ableton-live-discord-presence']);
   // the Star Window is the Photo Star now, so only the Photo Star gets a Polaroid (Astra, 2026-10-27)
   const HIDDEN = new Set(['astras-star-window']);
   const isOther = (r) => !/^pet-program-\d+$/.test(r.name) && !WORLD_REPOS.has(r.name) && !PETOS_REPOS.has(r.name) && !petByRepo[r.name] && !HIDDEN.has(r.name);
@@ -568,7 +569,9 @@
     'ai-discord-presence': ['your Discord status shows', 'the AI model you’re using, live'],
     'openai-discord-presence': ['Codex’s model on your profile', 'free Windows app'],
     'anthropic-discord-presence': ['Claude Code’s model on your profile', 'free Windows app'],
+    'ableton-live-discord-presence': ['your Discord shows when', 'you’re on the drums in Ableton Live', 'free Windows app'],
     'moodglass': ['photo chats as mosaics', 'behind your Discord messages'],
+    'spoonfed': ['can’t pick where to eat?', 'tap Feed me', 'it picks a real spot near you'],
     'fuzzboi-factory': ['six numbers make one Fuzzboi', 'try your birthday'],
     'mommys-website': ['the website plan for', 'Mommy’s dance academy'],
     'pocket-message-board': ['a scrolling LED sign', 'on any phone', 'hold it up at a rave'],
@@ -779,6 +782,15 @@
   // each presence app's own page first (Astra, 2026-10-29: what the actual program looks like), from its repo
   for (const [who, what] of [['openai', 'OpenAI'], ['anthropic', 'Anthropic']])
     SITE_PICS[who + '-discord-presence'] = [{ src: `https://raw.githubusercontent.com/findastra/ai-discord-presence/main/docs/images/${who}-app-20261030.png`, cap: what + ' Discord Presence · the app', fit: 'contain', bg: '#02050a', fill: '#02050a' }];
+  // Ableton Live Discord Presence, like the other two (Astra, 2026-11-13): first its card art on see-through paper, its 8×8
+  // pads lighting up in a drum pattern (the repo's pad-grid-card GIF with its black made clear), then the app's own page
+  SITE_PICS['ableton-live-discord-presence'] = [
+    // (a still of its first frame for anyone who asks for less motion)
+    { src: 'art/projects/ableton-live-discord-presence-pads-transparent-20261113.' + (reduced ? 'png' : 'webp'), cap: 'Ableton Live Discord Presence · the pads', fit: 'contain', size: 0.9, clear: true },
+    { src: 'art/projects/ableton-live-discord-presence-app-20261113.png', cap: 'Ableton Live Discord Presence · the app', fit: 'contain', bg: '#02050a', fill: '#02050a' },
+  ];
+  // Spoonfed: the app itself, from its README (Astra, 2026-11-13: it goes in Web & More where Ableton was)
+  SITE_PICS.spoonfed = [{ src: 'art/projects/spoonfed-page-20261113.png', cap: 'Spoonfed: Feed me', fit: 'contain', bg: '#2a2018', fill: '#2a2018' }];
   // Photostar is one word (Astra, 2026-10-29)
   const NAMES = { 'astras-photostar': "Astra's Photostar" };
   // and "Iris: the origin story" (Astra, 2026-10-29), whatever its repo is called
@@ -838,20 +850,27 @@
   // the two presence apps show two pictures each (Astra, 2026-10-29: "should only be two on each of those"): first the
   // individually moving stars across the transparent square, then the app
   const TWO = new Set(['openai-discord-presence', 'anthropic-discord-presence']);
+  // only their own pictures above, none from the project-pictures list
+  const OWN_ONLY = new Set(['ableton-live-discord-presence', 'spoonfed']);
   const picsOf = (name) => {
+    if (OWN_ONLY.has(name)) return SITE_PICS[name] || [];
     const all = [...(SITE_PICS[name] || []), ...picturesOf(name)];
     if (!TWO.has(name)) return all;
     const brand = name.split('-')[0];
     return [{ src: TRANSPARENT_GALAXY[brand], cap: (brand === 'openai' ? 'OpenAI' : 'Anthropic') + ' official galaxy artwork', galaxy: brand, transparent: true, clear: true }, all[0]].filter(Boolean);
   };
   // what kind of thing each one is, for the line under its title (Astra, 2026-10-29: "title, type of software, language, date")
-  const TYPES = { 'ai-discord-presence': 'Discord app', 'openai-discord-presence': 'Discord app', 'anthropic-discord-presence': 'Discord app', moodglass: 'Discord plugin' };
+  const TYPES = { 'ai-discord-presence': 'Discord app', 'openai-discord-presence': 'Discord app', 'anthropic-discord-presence': 'Discord app', 'ableton-live-discord-presence': 'Discord app', moodglass: 'Discord plugin', spoonfed: 'Web app' };
   // Iris is autofiction: half real, half made up, written as the person is being made (Astra, 2026-10-29)
   const typeOf = (r) => TYPES[r.name] || (/^iris/i.test(r.name) ? 'Autofiction' : 'Website');
   // the two presence apps' code lives in ai-discord-presence now, so GitHub gives their own repos no language
-  const LANGS = { 'openai-discord-presence': 'JavaScript', 'anthropic-discord-presence': 'JavaScript' };
+  const LANGS = { 'openai-discord-presence': 'JavaScript', 'anthropic-discord-presence': 'JavaScript', 'ableton-live-discord-presence': 'JavaScript' };
+  // Spoonfed's own repo is private: its made date, language and the live app to link, written here; slot is where it sorts
+  // (Ableton Live Discord Presence's made date, the place that Polaroid had in Web & More)
+  const SPOONFED = { name: 'spoonfed', created_at: '2026-10-11T19:28:44Z', language: 'TypeScript', description: 'Feed me: picks a real place to eat near you.',
+    link: 'https://findastra.github.io/spoonfed/', slot: '2026-11-03T03:47:32Z' };
   const extraCard = (r) => {
-    const repoUrl = 'https://github.com/findastra/' + r.name, shot = SHOTS[r.name];
+    const repoUrl = r.link || 'https://github.com/findastra/' + r.name, shot = SHOTS[r.name];
     return polaroid({ key: r.name, shot: shot ? shot() : null, clear: r.name === 'ai-discord-presence', name: nameOf(r.name), kind: [typeOf(r), r.language || LANGS[r.name]].filter(Boolean).join(' · '), date: when(made(r)),
       text: cleanText(r.description || 'No description yet.'), pics: picsOf(r.name), repo: repoUrl });
   };
@@ -1526,7 +1545,11 @@
     petJar.fill(pets.filter(iconOf).map(petEntry).filter(({ p, r }) => shown(`${p.pet} ${p.program} ${p.text} ${p.repo} ${(r && r.description) || ''}`))
       .sort((a, b) => (b.pics.length > 0) - (a.pics.length > 0) || (b.r ? 1 : 0) - (a.r ? 1 : 0) || a.p.number - b.p.number));
     // Discord and Web & More, newest first
-    const others = repos.filter(isOther).filter((r) => shown(`${r.name} ${r.description}`)).sort((a, b) => String(made(a)).localeCompare(String(made(b)))); // oldest first, so the newest (Iris) is last
+    // Spoonfed is a pet with a private repo, so GitHub's public list leaves it out; it gets its own Polaroid in Web & More,
+    // in the place Ableton Live's had before it moved to Discord (Astra, 2026-11-13), its name linking to the app itself
+    const extras = [SPOONFED].filter((r) => shown(`${r.name} ${r.description}`));
+    const slot = (r) => String(r.slot || made(r));
+    const others = [...repos.filter(isOther), ...extras].filter((r) => shown(`${r.name} ${r.description}`)).sort((a, b) => slot(a).localeCompare(slot(b))); // oldest first, so the newest (Iris) is last
     // AI Discord Presence first, then the rest in the order they were made (Astra, 2026-10-29)
     $('discord-list').replaceChildren(...others.filter((r) => DISCORD.has(r.name)).sort((a, b) => (b.name === 'ai-discord-presence') - (a.name === 'ai-discord-presence')).map(extraCard));
     $('web-list').replaceChildren(...others.filter((r) => !DISCORD.has(r.name)).map(extraCard));
@@ -1958,61 +1981,96 @@
     addEventListener('scroll', place, { passive: true }); addEventListener('resize', place); new ResizeObserver(place).observe(document.body); place();
   })();
 
-  // ---------- the rabbit: fixed pixels light up across the introduction ----------
+  // ---------- the rabbit: a small pixel bunny that hops along the bottom of the introduction ----------
+  // Astra, 2026-11-12: no grid of dots behind it, and it hops like a bunny. Astra, 2026-11-13: no dots at all, only the
+  // rabbit (its pixels are solid, no gaps between them), half the size, and less smooth: quick hops (crouch, jump, land)
+  // with real stops between them, where it sits still, twitches an ear and blinks before the next one.
   (() => {
     const lane = $('rabbit-lane'); if (!lane) return;
-    const FRAMES = [
-      { pose: 'crouch', lift: 0, px: [[9,0,1,1],[11,0,1,1],[9,1,2,1],[11,1,2,1],[9,2,5,1],[8,3,6,1],[1,3,1,1],[1,4,1,1],[2,4,13,1],[1,5,13,1],[1,6,12,1],[2,7,10,1],[2,8,3,1],[9,8,3,1],[2,9,2,1],[9,9,2,1]], eye: [12,3] },
-      { pose: 'rise', lift: .55, px: [[10,0,1,1],[12,0,1,1],[10,1,2,1],[12,1,2,1],[10,2,4,1],[9,3,6,1],[1,3,1,1],[1,4,1,1],[2,4,12,1],[1,5,12,1],[1,6,10,1],[2,7,8,1],[0,8,2,1],[9,8,2,1],[0,9,2,1]], eye: [13,3] },
-      { pose: 'peak', lift: 1, px: [[11,0,1,1],[13,0,1,1],[11,1,2,1],[13,1,2,1],[11,2,3,1],[10,3,5,1],[2,3,1,1],[2,4,1,1],[3,4,11,1],[2,5,11,1],[1,6,9,1],[12,7,3,1],[0,7,3,1]], eye: [14,3] },
-      { pose: 'land', lift: .35, px: [[9,0,1,1],[11,0,1,1],[9,1,2,1],[11,1,2,1],[9,2,5,1],[8,3,6,1],[1,3,1,1],[1,4,1,1],[2,4,13,1],[1,5,13,1],[1,6,11,1],[2,7,9,1],[10,8,2,1],[11,9,2,1],[2,8,2,1]], eye: [12,3] },
-    ];
+    // 12 x 10 cells each, facing right; # fur, o the eye, t the white tail
+    const sprite = (rows) => { const px = []; let eye = null, tail = null; rows.forEach((line, r) => [...line].forEach((ch, c) => { if (ch === '#') px.push([c, r]); else if (ch === 'o') eye = [c, r]; else if (ch === 't') tail = [c, r]; })); return { px, eye, tail }; };
+    const POSES = {
+      sit: sprite(['........#.#.', '........#.#.', '........#.#.', '.......#####', '..###..##o##', '.#####.#####', 't##########.', '###########.', '.##########.', '..###...##..']),
+      ear: sprite(['........#...', '........#...', '........#.#.', '.......#####', '..###..##o##', '.#####.#####', 't##########.', '###########.', '.##########.', '..###...##..']),
+      crouch: sprite(['............', '............', '......##....', '.......###..', '.......#####', '.####..##o##', 't###########', '############', '############', '.###....###.']),
+      rise: sprite(['........##..', '.........###', '........####', '.......##o##', '.....#######', '...########.', '..#######.#.', '.t####.#....', '###.........', '#...........']),
+      peak: sprite(['............', '............', '.......##...', '........####', '........##o#', 't###########', '############', '.########.#.', '#.........#.', '............']),
+      fall: sprite(['............', '##....##....', '.###...###..', '..#########.', '..t######o##', '....########', '.....######.', '......#..##.', '.........##.', '..........#.']),
+    };
+    const W = 12, H = 10;
     const button = el('button', 'rabbit-grid'), cv = el('canvas');
     button.type = 'button'; button.setAttribute('aria-label', 'Catch the pixel rabbit to change the rain colors');
     cv.setAttribute('aria-hidden', 'true'); button.append(cv); lane.append(button);
-    const ctx = cv.getContext('2d'), CELL = 3, ROWS = 18;
-    let cols = 1, x = 0, y = 5, frame = 0, running = reduced, visible = false, timer = 0, raf = 0, last = 0, elapsedRun = 0;
+    // 3 px cells: half the size it was (Astra, 2026-11-13)
+    const ctx = cv.getContext('2d'), CELL = 3, ROWS = 14, STEP = 80;
+    let cols = 1, x = 0, lift = 0, pose = POSES.sit, blink = 0, running = reduced, visible = false, timer = 0, raf = 0, last = 0, acc = 0;
+    let state = 'sit', n = 0, wait = 3, hop = null;
+    const rnd = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+    const top = () => ROWS - H - lift;
     const draw = () => {
-      ctx.fillStyle = '#080a0b'; ctx.fillRect(0, 0, cv.width, cv.height);
-      ctx.fillStyle = '#192023';
-      for (let row = 0; row < ROWS; row++) for (let col = 0; col < cols; col++) ctx.fillRect(col * CELL, row * CELL, CELL - 1, CELL - 1);
+      ctx.clearRect(0, 0, cv.width, cv.height);
       if (!running) return;
-      const f = FRAMES[frame], next = PALETTES[(palette + 1) % PALETTES.length];
-      for (const [px, py, w, h] of f.px) for (let dy = 0; dy < h; dy++) for (let dx = 0; dx < w; dx++) {
-        if (px + dx === f.eye[0] && py + dy === f.eye[1]) continue;
-        const col = x + px + dx, row = y + py + dy;
-        if (col < 0 || col >= cols || row < 0 || row >= ROWS) continue;
-        ctx.fillStyle = next.span === 360 ? 'hsl(' + ((col * 9 + row * 12) % 360) + ' 90% 70%)' : furOf(next);
-        ctx.fillRect(col * CELL, row * CELL, CELL - 1, CELL - 1);
-      }
+      const next = PALETTES[(palette + 1) % PALETTES.length], y = top();
+      const cell = (c, r, color) => { const col = x + c, row = y + r; if (col < 0 || col >= cols || row < 0 || row >= ROWS) return; ctx.fillStyle = color; ctx.fillRect(col * CELL, row * CELL, CELL, CELL); };
+      for (const [c, r] of pose.px) cell(c, r, next.span === 360 ? 'hsl(' + (((x + c) * 14 + (y + r) * 18) % 360) + ' 90% 70%)' : furOf(next));
+      if (pose.tail) cell(pose.tail[0], pose.tail[1], '#f4f4f4');
+      // the eye: dark, and for a blink the fur closes over it
+      if (pose.eye) cell(pose.eye[0], pose.eye[1], blink ? (next.span === 360 ? 'hsl(' + (((x + pose.eye[0]) * 14) % 360) + ' 90% 70%)' : furOf(next)) : '#060708');
     };
-    const fit = () => { cols = Math.max(16, Math.floor(lane.clientWidth / CELL)); cv.width = cols * CELL; cv.height = ROWS * CELL; if (reduced) x = Math.floor(cols * .25); draw(); };
+    const fit = () => { cols = Math.max(16, Math.floor(lane.clientWidth / CELL)); cv.width = cols * CELL; cv.height = ROWS * CELL; cv.style.width = cols * CELL + 'px'; if (reduced) x = Math.floor(cols * .25); draw(); };
     new ResizeObserver(fit).observe(lane); fit();
     const schedule = (ms) => { clearTimeout(timer); timer = setTimeout(run, ms); };
     const stop = () => { running = false; cancelAnimationFrame(raf); raf = 0; draw(); if (!reduced) schedule(50000 + Math.random() * 70000); };
+    // One beat of the bunny, every STEP ms, in whole cells only, so it moves in steps like pixel art and never slides.
+    const startHop = () => {
+      // quick and springy: a short crouch, three or four beats in the air, never a glide
+      const d = rnd(6, 11), big = d > 8;                    // how far this hop goes, in cells
+      hop = { from: x, d, air: big ? 4 : 3, h: big ? rnd(3, 4) : rnd(2, 3), crouch: rnd(1, 2) };
+      state = 'hop'; n = 0;
+    };
+    const beat = () => {
+      n++; blink = 0;
+      if (state === 'sit') {
+        lift = 0; pose = POSES.sit;
+        if (wait > 6) { const m = n % 9; if (m === 4 || m === 5) pose = POSES.ear; if (n % 11 === 7) blink = 1; }   // a real stop: an ear twitches, it blinks
+        if (n >= wait) startHop();
+        return;
+      }
+      const k = n - hop.crouch;
+      if (k <= 0) { pose = POSES.crouch; lift = 0; return; }                       // gathers itself
+      if (k <= hop.air) {                                                           // in the air, along an arc
+        const t = k / (hop.air + 1);
+        x = hop.from + Math.round(hop.d * t); lift = Math.round(hop.h * 4 * t * (1 - t));
+        pose = t < .4 ? POSES.rise : t < .65 ? POSES.peak : POSES.fall; return;
+      }
+      if (k === hop.air + 1) { x = hop.from + hop.d; lift = 0; pose = POSES.crouch; return; }   // lands and squashes
+      state = 'sit'; n = 0; pose = POSES.sit;
+      // then it stops every time: now and then a quick second hop, mostly a pause, sometimes a long look around
+      const roll = Math.random(); wait = roll < .15 ? rnd(2, 3) : roll < .75 ? rnd(7, 14) : rnd(20, 34);
+    };
     function tick(now) {
       raf = 0;
       if (!running || !visible || document.hidden || reduced) { last = 0; return; }
-      elapsedRun += last ? Math.min(80, now - last) : 0; last = now;
-      // Whole grid cells only: no element translation, sliding image or subpixel motion.
-      x = -15 + Math.floor(elapsedRun / 48);
-      frame = Math.floor(elapsedRun / 120) % FRAMES.length;
-      y = 5 - Math.round(FRAMES[frame].lift * 2);
+      acc += last ? Math.min(200, now - last) : 0; last = now;
+      let moved = false;
+      while (acc >= STEP) { acc -= STEP; beat(); moved = true; }
       if (x >= cols) return stop();
-      draw(); raf = requestAnimationFrame(tick);
+      if (moved) draw();
+      raf = requestAnimationFrame(tick);
     }
-    function run() { if (!visible || document.hidden) return schedule(1000); running = true; elapsedRun = 0; last = 0; x = -15; if (!raf) raf = requestAnimationFrame(tick); }
+    function run() { if (!visible || document.hidden) return schedule(1000); running = true; acc = 0; last = 0; x = -W; lift = 0; pose = POSES.sit; state = 'sit'; n = 0; wait = 1; if (!raf) raf = requestAnimationFrame(tick); }
     new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; if (visible && running && !raf && !reduced) raf = requestAnimationFrame(tick); }).observe(lane);
     document.addEventListener('visibilitychange', () => { if (!document.hidden && visible && running && !raf && !reduced) raf = requestAnimationFrame(tick); });
-    button.addEventListener('click', (event) => {
-      if (!running) return;
-      if (event.detail) {
-        const r = cv.getBoundingClientRect(), col = (event.clientX - r.left) / r.width * cols, row = (event.clientY - r.top) / r.height * ROWS;
-        if (col < x - 2 || col > x + 17 || row < y - 2 || row > y + 12) return;
-      }
-      palette = (palette + 1) % PALETTES.length;
-      if (reduced) draw(); else stop();
-    });
+    // Catching it: the lane lies over the bottom of the terminal and the portrait, so it lets clicks through and the page
+    // listens instead; only a click on the bunny itself counts. The button stays for the keyboard (Enter or Space).
+    const caught = () => { palette = (palette + 1) % PALETTES.length; if (reduced) draw(); else stop(); };
+    button.addEventListener('click', (event) => { if (running && !event.detail) caught(); });
+    document.addEventListener('click', (event) => {
+      if (!running || !event.detail) return;
+      const r = cv.getBoundingClientRect(), col = (event.clientX - r.left) / CELL, row = (event.clientY - r.top) / CELL;
+      if (col < x - 1 || col > x + W + 1 || row < top() - 1 || row > top() + H + 1) return;
+      event.preventDefault(); caught();
+    }, true);
     if (!reduced) schedule(1200);
   })();
 })();
