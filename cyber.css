@@ -992,7 +992,6 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 .footer-icons a:hover, .footer-icons a:focus-visible { background: rgba(255, 255, 255, .12); }
 .footer-icons svg { width: 22px; height: 22px; fill: currentColor; }
 .footer-star { display: block; line-height: 0; }
-.footer-star:hover { background: none; }
 .footer-star img { width: 48px; height: 48px; }
 
 @media (max-width: 900px) {
