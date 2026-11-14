@@ -4,6 +4,14 @@ window.SITE = {
  "snapshot": "2026-10-29",
  "repos": [
   {
+   "name": "ableton-live-discord-presence",
+   "description": "Shows on Discord when Astra is playing drums or making music in Ableton Live. One small Windows app.",
+   "language": "JavaScript",
+   "pushed_at": "2026-11-14T01:17:54Z",
+   "created_at": "2026-11-03T03:47:32Z",
+   "homepage": ""
+  },
+  {
    "name": "ai-discord-presence",
    "description": "Show the exact AI model you're using on your Discord profile. Two free Windows downloads: OpenAI Discord Presence and Anthropic Discord Presence, plus a guide to add more models.",
    "language": "JavaScript",
