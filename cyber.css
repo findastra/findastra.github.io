@@ -612,6 +612,14 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 /* the map's link and the flip button side by side there */
 .polaroid .stickers { position: absolute; right: calc(var(--edge-w) - 4px); top: -11px; z-index: 4; display: flex; align-items: center; gap: 6px; visibility: visible; }
 .polaroid .stickers .look, .polaroid .stickers .pflip { position: static; }
+.polaroid .stickers:empty { display: none; }
+/* the GitHub sticker: a square of black tape with GitHub's white mark, opening the repo; the name opens the website
+   (Astra, 2026-11-13: "a GitHub icon ... with a black square that takes you to the GitHub repository") */
+.polaroid .ghlink { display: grid; place-items: center; width: 26px; height: 26px; padding: 5px; background: #111; color: #fff; rotate: -3deg;
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, .35); text-decoration: none; }
+.polaroid .ghlink svg { width: 100%; height: 100%; }
+.polaroid .ghlink:hover, .polaroid .ghlink:focus-visible { background: #000; box-shadow: 0 0 0 2px var(--c), 0 0 10px var(--c); outline: none; }
+.polaroid a.title:hover, .polaroid a.title:focus-visible { text-decoration: underline; text-decoration-color: var(--c); text-decoration-thickness: 3px; }
 .polaroid .frame.turned .stickers .look { visibility: hidden; }
 .polaroid .pflip:hover, .polaroid .pflip:focus-visible { background: #000; box-shadow: 0 0 0 2px var(--c), 0 0 10px var(--c); outline: none; }
 /* on a wide screen, the pet jar stands to the right of the PetOS Polaroids instead of under them (Astra, 2026-10-29) */

@@ -743,13 +743,19 @@
         flip = ['‹', '›'].map((t, i) => { const b = el('button', 'flip ' + (i ? 'next' : 'prev'), t); b.type = 'button'; b.setAttribute('aria-label', (i ? 'next' : 'previous') + ' picture of ' + name); b.onclick = () => go(i ? 1 : -1); return b; });
       }
     }
-    // the writing on the border is always the same three things (Astra, 2026-10-29): the name, which always links to the
-    // GitHub repo, then its code, then the date; no site tags
-    const title = repo ? link(repo, 'title', name) : el('b', 'title', name);
+    // the writing on the border is always the same three things (Astra, 2026-10-29): the name, then its code, then the date.
+    // Two links, kept apart (Astra, 2026-11-13: "one link for GitHub and one link for the website"): the name opens the
+    // project's own website when it has one, and a black GitHub sticker on the border opens its repo
+    const title = site ? link(site, 'title', name) : el('b', 'title', name);
+    if (site) title.setAttribute('aria-label', 'open the ' + name + ' website');
+    let gh = null;
+    if (repo) { gh = link(repo, 'ghlink'); gh.title = name + ' on GitHub'; gh.setAttribute('aria-label', 'open ' + name + ' on GitHub'); gh.append(githubIcon()); }
     const note = el('div', 'note');
     // every note the same four parts (Astra, 2026-10-29): the title, what kind of thing it is · the language it is written in,
     // then the date on its own line
-    note.append(title, ...(kind ? [el('span', 'kind', kind)] : []), ...(date ? [el('span', 'kind date', date)] : []), ...(badge ? [badge] : []), ...(look ? [look] : []));
+    // the stickers at the border's top right, in this order: the map's link, GitHub, the flip
+    const stickers = el('span', 'stickers'); stickers.append(...(look ? [look] : []), ...(gh ? [gh] : []));
+    note.append(title, ...(kind ? [el('span', 'kind', kind)] : []), ...(date ? [el('span', 'kind date', date)] : []), ...(badge ? [badge] : []), stickers);
     if (sound) sound.show(pics[0]);
     // "1 of 3" sits on the bottom edge between the arrows, level with them (Astra, 2026-10-29)
     const frame = el('div', flip ? 'frame flips' : 'frame'); frame.append(el('i', 'tape'), photo, note, ...(flip || []), ...(count ? [count] : []), ...(sound ? [sound.b] : []));
@@ -764,7 +770,7 @@
       const back = el('div', 'pback'); back.append(el('b', null, name), ...scribble.map((t) => el('span', null, t)));
       const turn = el('button', 'pflip'); turn.type = 'button'; turn.title = 'flip it over'; turn.setAttribute('aria-label', 'turn ' + name + ' over to read its note');
       turn.append(flipIcon()); frame.append(back); frame.classList.add('has-back');
-      if (look) { const stickers = el('span', 'stickers'); look.replaceWith(stickers); stickers.append(look, turn); } else note.append(turn);
+      stickers.append(turn);
       let busy = false;
       turn.onclick = (e) => {
         e.stopPropagation(); if (busy) return;
@@ -786,7 +792,7 @@
     // every world says what it is (Astra, 2026-10-29: "all the stuff that is a VRChat world needs to say VRChat world"), then
     // its one most common language, GitHub's own pick (UdonSharp counts as C#)
     return polaroid({ key: w.repo, name: w.name, kind: 'VRChat world' + (r && r.language ? ' · ' + r.language : ''), date: r ? when(made(r)) : '', text: cleanText((r && r.description) || w.text), pics: worldPics(w),
-      repo: r ? 'https://github.com/findastra/' + w.repo : null });
+      repo: r ? 'https://github.com/findastra/' + w.repo : null, site: websiteOf(r) });
   };
   // Discord and Web & More: the repo name, written out with spaces, and its language
   // what each website looks like (Astra, 2026-10-27): its own page, shown first on its Polaroid
@@ -796,7 +802,9 @@
     // then one panel the way Moodglass lays it out, in rows with crisp borders, of Liminal Doors' doorspaces as built, none of
     // the concept art the Liminal Doors Polaroid shows (Astra, 2026-10-29: "just do one panel", "non-blurred borders",
     // "put doors on there that you don't see in the other one")
-    moodglass: [{ src: 'art/projects/moodglass-liminal-doors-rows-20261029.webp', cap: 'Moodglass: Liminal Doors doorspaces behind a chat' }],
+    // ...then the two plants-chat collages from Moodglass's own README, the ones that look like it does on Discord (Astra,
+    // 2026-11-13: "not even close to what it looks like on Discord ... use photos for that one there")
+    moodglass: ['b', 'c'].map((x) => ({ src: `https://raw.githubusercontent.com/findastra/moodglass/main/docs/images/moodglass-plants-collage-${x}-20261029.jpg`, cap: 'Moodglass: a plants chat as a mosaic' })),
     // a little smaller, so its green banner sits clear of the tape (Astra, 2026-10-29)
     // and the border round it filled with its own blue, not see-through (Astra, 2026-10-29)
     'fuzzboi-factory': [{ src: 'art/projects/fuzzboi-factory-site-20261027.jpg', cap: 'The Fuzzboi Factory', fit: 'contain', bg: '#121a6b', size: 0.88, fill: '#121a6b' }],
@@ -885,7 +893,7 @@
   // individually moving stars across the transparent square, then the app
   const TWO = new Set(['openai-discord-presence', 'anthropic-discord-presence']);
   // only their own pictures above, none from the project-pictures list
-  const OWN_ONLY = new Set(['ableton-live-discord-presence', 'spoonfed']);
+  const OWN_ONLY = new Set(['ableton-live-discord-presence', 'spoonfed', 'moodglass']);
   const picsOf = (name) => {
     if (OWN_ONLY.has(name)) return SITE_PICS[name] || [];
     const all = [...(SITE_PICS[name] || []), ...picturesOf(name)];
@@ -904,9 +912,10 @@
   const SPOONFED = { name: 'spoonfed', created_at: '2026-10-11T19:28:44Z', language: 'TypeScript', description: 'Feed me: picks a real place to eat near you.',
     link: 'https://findastra.github.io/spoonfed/', slot: '2026-11-03T03:47:32Z' };
   const extraCard = (r) => {
-    const repoUrl = r.link || 'https://github.com/findastra/' + r.name, shot = SHOTS[r.name];
+    // r.link: a project whose repo is private (Spoonfed): its website only, no GitHub sticker
+    const repoUrl = r.link ? null : 'https://github.com/findastra/' + r.name, site = r.link || websiteOf(r), shot = SHOTS[r.name];
     return polaroid({ key: r.name, shot: shot ? shot() : null, clear: r.name === 'ai-discord-presence', name: nameOf(r.name), kind: [typeOf(r), r.language || LANGS[r.name]].filter(Boolean).join(' · '), date: when(made(r)),
-      text: cleanText(r.description || 'No description yet.'), pics: picsOf(r.name), repo: repoUrl });
+      text: cleanText(r.description || 'No description yet.'), pics: picsOf(r.name), repo: repoUrl, site });
   };
 
   // ---------- stars: every pet, with its hosted icon, and its repo's pictures and links when the repo is public ----------
@@ -990,6 +999,16 @@
     for (const d of ['M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8', 'M21 3v5h-5', 'M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16', 'M8 16H3v5']) s.append(svgEl('path', { d }));
     return s;
   };
+  // GitHub's own mark, white on the black sticker that opens a Polaroid's repo
+  const githubIcon = () => {
+    const s = svgEl('svg', { viewBox: '0 0 16 16', 'aria-hidden': 'true', fill: 'currentColor' });
+    s.append(svgEl('path', { d: 'M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z' }));
+    return s;
+  };
+  // a repo's own website, if it has one: its homepage, or its GitHub Pages site; a homepage that is only a GitHub page is not one
+  // (OpenAI Discord Presence's Pages site only says the app moved into AI Discord Presence)
+  const NO_WEBSITE = new Set(['openai-discord-presence']);
+  const websiteOf = (r) => (r && r.homepage && !NO_WEBSITE.has(r.name) && !/^https?:\/\/github\.com\//i.test(r.homepage) ? r.homepage : null);
   // L1, the third-party app each pet works on top of, the most used one (Astra, 2026-10-29: "just pick the most commonly
   // used third-party app at the top for it"; the Farmer's is "third-party apps", since he looks after all of them)
   const L1 = {
@@ -1550,7 +1569,8 @@
         // drawn at twice the photo's size, so its key in the top left is big enough to read (Astra, 2026-10-29)
         // (lift: drawn a little short of the photo's height, so the map's bottom bar, Spin and its 2D | 3D switch, sits up
         // where it can be seen)
-        pics: [{ src: HUB_PAGES + 'system-map-20261012.html', cap: 'The System Map', type: 'frame', label: 'live', view: 1.6, tidy: true, open: HUB_PAGES + 'system-map-20261012.html' }], repo: HUB_REPO }),
+        pics: [{ src: HUB_PAGES + 'system-map-20261012.html', cap: 'The System Map', type: 'frame', label: 'live', view: 1.6, tidy: true, open: HUB_PAGES + 'system-map-20261012.html' }], repo: HUB_REPO,
+        site: HUB_PAGES + 'system-map-20261012.html' }),
       // the pets on the bare paper, and the one you flip to a little smaller (Astra, 2026-10-29); Meet every pet in the middle,
       // the pets grid on the right
       polaroid({ key: 'meet-pets', name: 'Meet every pet', kind: 'Pet gallery · ' + lang, date, repo: HUB_REPO, text: 'One at a time, no shaking needed.',
@@ -2048,10 +2068,15 @@
       if (!running) return;
       const next = PALETTES[(palette + 1) % PALETTES.length], y = top();
       const cell = (c, r, color) => { const col = x + c, row = y + r; if (col < 0 || col >= cols || row < 0 || row >= ROWS) return; ctx.fillStyle = color; ctx.fillRect(col * CELL, row * CELL, CELL - 1, CELL - 1); };
-      for (const [c, r] of pose.px) cell(c, r, next.span === 360 ? 'hsl(' + (((x + c) * 14 + (y + r) * 18) % 360) + ' 90% 70%)' : furOf(next));
-      if (pose.tail) cell(pose.tail[0], pose.tail[1], '#f4f4f4');
+      // a white rabbit (Astra, 2026-11-13: "supposed to be white"), its dots just barely glowing in the color the rain turns
+      // when it is caught (the rainbow's glow drifts round the hues)
+      const glow = next.white ? 'rgba(255 255 255 / .45)' : next.span === 360 ? `hsl(${(x * 9) % 360} 100% 60% / .5)` : `hsl(${(next.from + next.span / 2) % 360} 100% 55% / .5)`;
+      ctx.shadowColor = glow; ctx.shadowBlur = 4;
+      for (const [c, r] of pose.px) cell(c, r, '#ffffff');
+      if (pose.tail) cell(pose.tail[0], pose.tail[1], '#ffffff');
+      ctx.shadowBlur = 0;
       // the eye: dark, and for a blink the fur closes over it
-      if (pose.eye) cell(pose.eye[0], pose.eye[1], blink ? (next.span === 360 ? 'hsl(' + (((x + pose.eye[0]) * 14) % 360) + ' 90% 70%)' : furOf(next)) : '#060708');
+      if (pose.eye) cell(pose.eye[0], pose.eye[1], blink ? '#ffffff' : '#060708');
     };
     const fit = () => { cols = Math.max(16, Math.floor(lane.clientWidth / CELL)); cv.width = cols * CELL; cv.height = ROWS * CELL; cv.style.width = cols * CELL + 'px'; if (reduced) x = Math.floor(cols * .25); draw(); };
     new ResizeObserver(fit).observe(lane); fit();
