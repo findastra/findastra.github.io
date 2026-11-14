@@ -556,6 +556,39 @@
     box.append(still, canvas);
     return box;
   };
+  // The Ableton card's 8×8 pads, drawn on a see-through square from art/projects/ableton-live-discord-presence-pads-data-
+  // 20261113.js: every pad's face and rim color in each of the GIF's frames, blended between frames at the screen's own
+  // rate, so the drum pattern glides instead of stepping. Only draws while on screen; one still frame for less motion.
+  const abletonPads = () => {
+    const P = window.ABLETON_PADS, cv = el('canvas', 'pads'); cv.setAttribute('aria-hidden', 'true');
+    if (!P) return cv;
+    const S = 480, k = S / P.size, w = P.pad * k, bytes = Uint8Array.from(atob(P.rgb), (ch) => ch.charCodeAt(0));
+    cv.width = cv.height = S;
+    const ctx = cv.getContext('2d'), mix = (f0, f1, u, i, o) => bytes[(f0 * 64 + i) * 6 + o] * (1 - u) + bytes[(f1 * 64 + i) * 6 + o] * u;
+    const rgb = (r, g, b, m = 1) => `rgb(${Math.round(r * m)} ${Math.round(g * m)} ${Math.round(b * m)})`;
+    const draw = (t) => {
+      const pos = (t / P.ms) % P.frames, f0 = Math.floor(pos), f1 = (f0 + 1) % P.frames, u = pos - f0;
+      ctx.clearRect(0, 0, S, S);
+      for (let i = 0; i < 64; i++) {
+        const x = P.x0[i & 7] * k, y = P.x0[i >> 3] * k;
+        const [fr, fg, fb, rr, rg, rb] = [0, 1, 2, 3, 4, 5].map((o) => mix(f0, f1, u, i, o));
+        const lit = Math.max(fr, fg, fb) / 255;
+        // a lit pad glows in its own color
+        ctx.shadowColor = rgb(rr, rg, rb); ctx.shadowBlur = lit > .45 ? (lit - .45) * 2 * 9 * k : 0;
+        const g = ctx.createRadialGradient(x + w / 2, y + w / 2, 0, x + w / 2, y + w / 2, w * .7);
+        g.addColorStop(0, rgb(fr, fg, fb)); g.addColorStop(1, rgb(rr, rg, rb, .55));
+        ctx.fillStyle = g; ctx.beginPath(); ctx.roundRect(x, y, w, w, 2 * k); ctx.fill();
+        ctx.shadowBlur = 0; ctx.lineWidth = 1.2 * k; ctx.strokeStyle = rgb(rr, rg, rb);
+        ctx.beginPath(); ctx.roundRect(x + .6 * k, y + .6 * k, w - 1.2 * k, w - 1.2 * k, 1.6 * k); ctx.stroke();
+      }
+    };
+    if (reduced) { draw(0); return cv; }
+    let seen = false, raf = 0;
+    const loop = (t) => { raf = 0; if (!seen || !cv.isConnected) return; draw(t); raf = requestAnimationFrame(loop); };
+    new IntersectionObserver(([e]) => { seen = e.isIntersecting; if (seen && !raf) raf = requestAnimationFrame(loop); }).observe(cv);
+    draw(0);
+    return cv;
+  };
   // a short note for every Polaroid, saying more than the picture can (Astra, 2026-10-29: "a note for every single Polaroid ...
   // short notes that kind of tell more than what you can just see"), handwritten on its back: flip it over to read it (Astra,
   // 2026-10-29: "if we flip the Polaroid, we could put notes, handwritten notes on there"; on the paper they fought the layout)
@@ -607,6 +640,7 @@
       let at = 0;
       // each picture can also be a video (plays by itself, muted, on a loop) or a live page you can move around in
       const media = (p) => {
+        if (p.type === 'pads') return abletonPads();
         if (p.galaxy) return officialGalaxy(p);
         if (p.type === 'video' && p.key) return keyedVideo(p);
         if (p.inline) return inlineSvg(p);
@@ -783,10 +817,10 @@
   for (const [who, what] of [['openai', 'OpenAI'], ['anthropic', 'Anthropic']])
     SITE_PICS[who + '-discord-presence'] = [{ src: `https://raw.githubusercontent.com/findastra/ai-discord-presence/main/docs/images/${who}-app-20261030.png`, cap: what + ' Discord Presence · the app', fit: 'contain', bg: '#02050a', fill: '#02050a' }];
   // Ableton Live Discord Presence, like the other two (Astra, 2026-11-13): first its card art on see-through paper, its 8×8
-  // pads lighting up in a drum pattern (the repo's pad-grid-card GIF with its black made clear), then the app's own page
+  // pads lighting up in a drum pattern, then the app's own page. The pads are drawn live from the colors read out of the
+  // repo's pad-grid-card GIF, blended between its frames, so they move smoothly (Astra, 2026-11-13: the GIF "very glitchy")
   SITE_PICS['ableton-live-discord-presence'] = [
-    // (a still of its first frame for anyone who asks for less motion)
-    { src: 'art/projects/ableton-live-discord-presence-pads-transparent-20261113.' + (reduced ? 'png' : 'webp'), cap: 'Ableton Live Discord Presence · the pads', fit: 'contain', size: 0.9, clear: true },
+    { type: 'pads', src: '', cap: 'Ableton Live Discord Presence · the pads', clear: true },
     { src: 'art/projects/ableton-live-discord-presence-app-20261113.png', cap: 'Ableton Live Discord Presence · the app', fit: 'contain', bg: '#02050a', fill: '#02050a' },
   ];
   // Spoonfed: the app itself, from its README (Astra, 2026-11-13: it goes in Web & More where Ableton was)
@@ -2002,8 +2036,9 @@
     const button = el('button', 'rabbit-grid'), cv = el('canvas');
     button.type = 'button'; button.setAttribute('aria-label', 'Catch the pixel rabbit to change the rain colors');
     cv.setAttribute('aria-hidden', 'true'); button.append(cv); lane.append(button);
-    // 3 px cells, each a 2 px dot (Astra, 2026-11-13); a beat every 40 ms
-    const ctx = cv.getContext('2d'), CELL = 3, ROWS = 14, STEP = 40;
+    // 3 px cells, each a 2 px dot (Astra, 2026-11-13); a beat every 25 ms, so it crosses the screen in a few seconds
+    // (Astra, 2026-11-13: "much faster across the screen ... he's hard to catch")
+    const ctx = cv.getContext('2d'), CELL = 3, ROWS = 14, STEP = 25;
     let cols = 1, x = 0, lift = 0, pose = POSES.sit, blink = 0, running = reduced, visible = false, timer = 0, raf = 0, last = 0, acc = 0;
     let state = 'sit', n = 0, wait = 3, hop = null;
     const rnd = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
@@ -2026,8 +2061,8 @@
     let dash = 0;                                          // hops left in a dash
     const startHop = () => {
       // quick and springy: one beat crouched, three or four in the air, never a glide; in a dash, long and low
-      if (!dash && Math.random() < .14) dash = rnd(3, 6);
-      const d = dash ? rnd(10, 15) : rnd(5, 10), big = d > 8;
+      if (!dash && Math.random() < .2) dash = rnd(3, 7);
+      const d = dash ? rnd(14, 20) : rnd(8, 14), big = d > 11;
       hop = { from: x, d, air: big ? 4 : 3, h: dash ? rnd(1, 2) : big ? rnd(3, 4) : rnd(2, 3), crouch: dash ? 0 : 1 };
       if (dash) dash--;
       state = 'hop'; n = 0;
@@ -2036,7 +2071,7 @@
       n++; blink = 0;
       if (state === 'sit') {
         lift = 0; pose = POSES.sit;
-        if (wait >= 8) { const m = n % 9; if (m === 4 || m === 5) pose = POSES.ear; if (n % 11 === 7) blink = 1; }   // a freeze: an ear twitches, it blinks
+        if (wait >= 10) { const m = n % 9; if (m === 4 || m === 5) pose = POSES.ear; if (n % 11 === 7) blink = 1; }   // a freeze: an ear twitches, it blinks
         if (n >= wait) startHop();
         return;
       }
@@ -2049,8 +2084,8 @@
       }
       if (k === hop.air + 1) { x = hop.from + hop.d; lift = 0; pose = POSES.crouch; return; }   // lands and squashes
       state = 'sit'; n = 0; pose = POSES.sit;
-      // then: in a dash, straight on; mostly a tiny hitch; now and then a short freeze (under a second)
-      const roll = Math.random(); wait = dash ? 1 : roll < .7 ? rnd(1, 4) : roll < .92 ? rnd(8, 14) : rnd(16, 22);
+      // then: in a dash, straight on; mostly a tiny hitch; now and then a quick freeze (a quarter to half a second)
+      const roll = Math.random(); wait = dash ? 1 : roll < .8 ? rnd(1, 3) : rnd(10, 20);
     };
     function tick(now) {
       raf = 0;
