@@ -9,7 +9,7 @@ Astra, 2026-11-13, after Spoonfed went live (`spoonfed-real-spots-20261113.md`):
 - "there are also black borders on the sparklles in the footer make sure those are all gone across the board too"
 - "also the star shouldnt be a link. ever."
 
-Replaced `spoonfed/` with a new web build of `findastra/spoonfed` at 02765e9 (draft spoonfed#13). Changes since the last build:
+Replaced `spoonfed/` with a new web build of `findastra/spoonfed` at 9be628b (draft spoonfed#13). Changes since the last build:
 
 - **No Yelp.** Every spot shows Google's stars only.
 - **The food type** sits on the facts line of every card, so a name has its whole line.
@@ -18,6 +18,7 @@ Replaced `spoonfed/` with a new web build of `findastra/spoonfed` at 02765e9 (dr
   - Its cards fill it exactly, lined up with the two big panels above.
 - **One screen on a computer.** The zoom counts the row once it shows, and a short window draws the page smaller (down to 70%) instead of scrolling.
 - **Footer:** the sparkles have no black outline, and the star is a picture, not a link.
+- **Row buttons:** the two tabs and the arrow all wear the panels' cream ring; the dark fill marks the tab that's on ("need to see a yellow ring around all three buttons").
 
 Also in this PR: the Pages workflow's comment now says the key works on `findastra.github.io/*`. Google refused `/spoonfed/*` only, because browsers send Google just the site, so the key's website rule was widened in Google Cloud on 2026-11-13 (Astra: "Yes, change it").
 
