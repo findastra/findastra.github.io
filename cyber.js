@@ -1982,9 +1982,10 @@
   })();
 
   // ---------- the rabbit: a small pixel bunny that hops along the bottom of the introduction ----------
-  // Astra, 2026-11-12: no grid of dots behind it, and it hops like a bunny. Astra, 2026-11-13: no dots at all, only the
-  // rabbit (its pixels are solid, no gaps between them), half the size, and less smooth: quick hops (crouch, jump, land)
-  // with real stops between them, where it sits still, twitches an ear and blinks before the next one.
+  // Astra, 2026-11-12: no grid of dots behind it, and it hops like a bunny. Astra, 2026-11-13: half the size; then "the whole
+  // point of making the grid was that the bunny would appear as just dots ... a pixel that's moving across": the bunny is
+  // drawn in dots (a gap round every cell) with no grid behind it, about as fast as the first one, and jerky and hard to
+  // catch: quick hops with tiny hitches between them, a dash of long low hops now and then, and only a short freeze.
   (() => {
     const lane = $('rabbit-lane'); if (!lane) return;
     // 12 x 10 cells each, facing right; # fur, o the eye, t the white tail
@@ -2001,8 +2002,8 @@
     const button = el('button', 'rabbit-grid'), cv = el('canvas');
     button.type = 'button'; button.setAttribute('aria-label', 'Catch the pixel rabbit to change the rain colors');
     cv.setAttribute('aria-hidden', 'true'); button.append(cv); lane.append(button);
-    // 3 px cells: half the size it was (Astra, 2026-11-13)
-    const ctx = cv.getContext('2d'), CELL = 3, ROWS = 14, STEP = 80;
+    // 3 px cells, each a 2 px dot (Astra, 2026-11-13); a beat every 40 ms
+    const ctx = cv.getContext('2d'), CELL = 3, ROWS = 14, STEP = 40;
     let cols = 1, x = 0, lift = 0, pose = POSES.sit, blink = 0, running = reduced, visible = false, timer = 0, raf = 0, last = 0, acc = 0;
     let state = 'sit', n = 0, wait = 3, hop = null;
     const rnd = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
@@ -2011,7 +2012,7 @@
       ctx.clearRect(0, 0, cv.width, cv.height);
       if (!running) return;
       const next = PALETTES[(palette + 1) % PALETTES.length], y = top();
-      const cell = (c, r, color) => { const col = x + c, row = y + r; if (col < 0 || col >= cols || row < 0 || row >= ROWS) return; ctx.fillStyle = color; ctx.fillRect(col * CELL, row * CELL, CELL, CELL); };
+      const cell = (c, r, color) => { const col = x + c, row = y + r; if (col < 0 || col >= cols || row < 0 || row >= ROWS) return; ctx.fillStyle = color; ctx.fillRect(col * CELL, row * CELL, CELL - 1, CELL - 1); };
       for (const [c, r] of pose.px) cell(c, r, next.span === 360 ? 'hsl(' + (((x + c) * 14 + (y + r) * 18) % 360) + ' 90% 70%)' : furOf(next));
       if (pose.tail) cell(pose.tail[0], pose.tail[1], '#f4f4f4');
       // the eye: dark, and for a blink the fur closes over it
@@ -2022,17 +2023,20 @@
     const schedule = (ms) => { clearTimeout(timer); timer = setTimeout(run, ms); };
     const stop = () => { running = false; cancelAnimationFrame(raf); raf = 0; draw(); if (!reduced) schedule(50000 + Math.random() * 70000); };
     // One beat of the bunny, every STEP ms, in whole cells only, so it moves in steps like pixel art and never slides.
+    let dash = 0;                                          // hops left in a dash
     const startHop = () => {
-      // quick and springy: a short crouch, three or four beats in the air, never a glide
-      const d = rnd(6, 11), big = d > 8;                    // how far this hop goes, in cells
-      hop = { from: x, d, air: big ? 4 : 3, h: big ? rnd(3, 4) : rnd(2, 3), crouch: rnd(1, 2) };
+      // quick and springy: one beat crouched, three or four in the air, never a glide; in a dash, long and low
+      if (!dash && Math.random() < .14) dash = rnd(3, 6);
+      const d = dash ? rnd(10, 15) : rnd(5, 10), big = d > 8;
+      hop = { from: x, d, air: big ? 4 : 3, h: dash ? rnd(1, 2) : big ? rnd(3, 4) : rnd(2, 3), crouch: dash ? 0 : 1 };
+      if (dash) dash--;
       state = 'hop'; n = 0;
     };
     const beat = () => {
       n++; blink = 0;
       if (state === 'sit') {
         lift = 0; pose = POSES.sit;
-        if (wait > 6) { const m = n % 9; if (m === 4 || m === 5) pose = POSES.ear; if (n % 11 === 7) blink = 1; }   // a real stop: an ear twitches, it blinks
+        if (wait >= 8) { const m = n % 9; if (m === 4 || m === 5) pose = POSES.ear; if (n % 11 === 7) blink = 1; }   // a freeze: an ear twitches, it blinks
         if (n >= wait) startHop();
         return;
       }
@@ -2045,8 +2049,8 @@
       }
       if (k === hop.air + 1) { x = hop.from + hop.d; lift = 0; pose = POSES.crouch; return; }   // lands and squashes
       state = 'sit'; n = 0; pose = POSES.sit;
-      // then it stops every time: now and then a quick second hop, mostly a pause, sometimes a long look around
-      const roll = Math.random(); wait = roll < .15 ? rnd(2, 3) : roll < .75 ? rnd(7, 14) : rnd(20, 34);
+      // then: in a dash, straight on; mostly a tiny hitch; now and then a short freeze (under a second)
+      const roll = Math.random(); wait = dash ? 1 : roll < .7 ? rnd(1, 4) : roll < .92 ? rnd(8, 14) : rnd(16, 22);
     };
     function tick(now) {
       raf = 0;
