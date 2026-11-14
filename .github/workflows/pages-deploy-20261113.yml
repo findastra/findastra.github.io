@@ -1,0 +1,52 @@
+# Publishes the site to GitHub Pages as it is on main, the way "Deploy from a branch" did, with one addition (Astra,
+# 2026-11-13: real restaurants on findastra.github.io/spoonfed): Spoonfed's Google browser key goes into
+# spoonfed/index.html as the site is deployed, from this repo's Actions secret SPOONFED_GOOGLE_MAPS_BROWSER_KEY, so the
+# key is never in a file in this repo. Like every Google web-map key it is readable in the served page; Google only
+# answers it on findastra.github.io/spoonfed/* (and the preview on Astra's PC), for the Maps JavaScript API and Places
+# API (New). Without the secret the page keeps its made-up spots.
+# Runs on every push to main, after each GitHub stats refresh (that workflow's own push can't start this one), and by hand.
+name: Pages
+on:
+  push:
+    branches: [main]
+  workflow_run:
+    workflows: [GitHub stats]
+    types: [completed]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: false
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+      - name: Spoonfed's key into its page, as it is deployed
+        env:
+          SPOONFED_KEY: ${{ secrets.SPOONFED_GOOGLE_MAPS_BROWSER_KEY }}
+        run: |
+          node -e '
+            const fs = require("fs");
+            const key = (process.env.SPOONFED_KEY || "").trim();
+            if (!/^[A-Za-z0-9_-]{30,}$/.test(key)) { console.log("No Spoonfed key: its page keeps the made-up spots."); process.exit(0); }
+            const file = "spoonfed/index.html";
+            const html = fs.readFileSync(file, "utf8");
+            if (!/<\/head>/i.test(html)) { console.error(file + " has no </head>."); process.exit(1); }
+            fs.writeFileSync(file, html.replace(/<\/head>/i, "<meta name=\"spoonfed-google-maps-key\" content=\"" + key + "\"></head>"));
+            console.log("Spoonfed key added to the deployed page.");
+          '
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: .
+      - id: deployment
+        uses: actions/deploy-pages@v5
