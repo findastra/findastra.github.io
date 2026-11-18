@@ -1,20 +1,20 @@
-// Built by scripts/build-star-tools-20261029.mjs on 2026-10-29: what each pet does, five or six points on its star (its tools
+// Built by scripts/build-star-tools-20261029.mjs on 2026-11-17: what each pet does, five or six points on its star (its tools
 // from the hub's registry first, then points from its description), and its L1 apps (the third-party programs the registry
 // says work today, three at most). Run it again after the hub's registry changes.
 window.STAR_TOOLS = {
  "Friendly Farmer": [
   "Astra’s PetOS System Map",
-  "GitHub profile",
   "How to Take Care of Your Farm!",
   "Startup Star",
+  "Astras pet os mcp",
   "Pet status and moods",
   "The roster"
  ],
  "GitHub Goldfish": [
   "Pets Board",
+  "Being checked or drafts",
   "Blatant checker",
-  "Document control checker",
-  "Flash audit",
+  "Branch sweeper",
   "Reads public GitHub",
   "Document-control errors"
  ],
@@ -50,12 +50,12 @@ window.STAR_TOOLS = {
   "Output drills"
  ],
  "Astra Wisp": [
-  "VRChat connector",
+  "Face Codec",
+  "Face recorder",
+  "Quantum coin",
+  "Reaction learner",
   "AI Astra health",
-  "Live checks",
-  "Offline checks",
-  "Early warnings",
-  "Session prep"
+  "Live checks"
  ],
  "Health Hummy": [
   "Lifting by body group",
@@ -87,35 +87,36 @@ window.STAR_TOOLS = {
   "Free to read"
  ],
  "File Master": [
-  "New-programs watch",
-  "Repo catcher",
+  "Claude chat repointer",
+  "Cleanup plan",
   "Everything search",
-  "Mass delete",
+  "File scan",
   "Organizes files",
   "Finds systemic errors"
  ],
  "Discord Damsel": [
+  "Ableton Live Discord Presence",
   "Anthropic Discord Presence",
+  "Anthropic IPO Countdown",
   "OpenAI Discord Presence",
-  "CLI Proxy API manager",
-  "Sticker Manager",
   "Discord presence",
   "OpenAI card"
  ],
  "Portfolio Puffer": [
+  "findastra.github.io",
+  "GitHub profile",
+  "Portfolio Review Desk",
   "Astra's Window Star",
   "Portfolio drafts",
-  "Tracks updates",
-  "GitHub (planned)",
-  "LinkedIn (planned)",
-  "Manual publishing"
+  "Tracks updates"
  ],
  "Drum Dog": [
+  "Apc64 drum kit tool",
+  "Learn apc64 tool",
+  "Use my apc64 tool",
   "Saves samples",
   "Ableton Live",
-  "Album plans",
-  "DJ mixes",
-  "Where each is hosted"
+  "Album plans"
  ],
  "VSCode Angel": [
   "Code-review findings",
@@ -140,11 +141,11 @@ window.STAR_TOOLS = {
  ],
  "Voicemeeter Bug": [
   "Keep Voicemeeter open",
+  "Listen for robotic sound",
   "Restarts Voicemeeter",
   "Audio repair",
   "Status window",
-  "Desktop pet",
-  "Start menu"
+  "Desktop pet"
  ],
  "Spoonfed Sugarcube": [
   "Restaurant spinner",
@@ -159,11 +160,12 @@ window.STAR_TOOLS = {
   "Desktop face"
  ],
  "RGBee": [
+  "Light hive helper",
+  "Rainforest storm tool",
+  "Sync my lights tool",
   "Lighting scenes",
   "Room lights",
-  "Mouse pad and mouse",
-  "PC and keyboard",
-  "Scene previews"
+  "Mouse pad and mouse"
  ],
  "Mine Mole": [
   "Crypto mining",
@@ -243,18 +245,18 @@ window.STAR_TOOLS = {
   "Each Pi tracked"
  ],
  "Chat Rat": [
+  "Model folders tool",
   "Save missing",
+  "Saved conversations tool",
   "Ask chat rat",
-  "Save chats",
   "Saves AI chats",
-  "Imported exports",
-  "By model"
+  "Imported exports"
  ],
  "Platform Platypus": [
   "Device shots",
   "Fit any screen",
   "Fit check",
-  "Make a page fit any screen",
+  "Page check",
   "Every device at once",
   "Page checks"
  ],
@@ -277,11 +279,12 @@ window.STAR_TOOLS = {
   "Brush sets"
  ],
  "Skill Scout": [
+  "Skill catalog",
+  "Public snapshot",
+  "Skill census",
+  "Skill diff",
   "Agent files",
-  "Skill files",
-  "What changed",
-  "Who changed it",
-  "Why"
+  "Skill files"
  ],
  "OSC Sealion": [
   "OSC packets",
@@ -438,14 +441,10 @@ window.STAR_TOOLS = {
   "Capacity"
  ],
  "White Hat Weasel": [
+  "Port check tool",
   "Security assessment",
-  "Remediation",
+  "Port checks",
   "Authorized only"
- ],
- "Port Spider": [
-  "Open ports",
-  "Exposed services",
-  "Authorized checks"
  ],
  "Cipher Owl": [
   "Encryption",
@@ -527,11 +526,12 @@ window.STAR_TOOLS = {
   "Shares findings"
  ],
  "Door Dormouse": [
+  "Found floors",
+  "Liminal Doors (world)",
+  "Liminal Doors Concept Atlas",
+  "Agent queue runner",
   "Liminal Doors",
-  "Floors",
-  "Build choices",
-  "Unity metadata",
-  "Preview site"
+  "Floors"
  ],
  "Role Fairy": [
   "PetOS feedback (ask-astra-bot)",
@@ -548,6 +548,10 @@ window.STAR_TOOLS = {
   "PencilKit markup",
   "Handwritten notes",
   "Image return"
+ ],
+ "PC Master": [
+  "Learn computer organization tool",
+  "PC look tool"
  ]
 };
 window.STAR_L1 = {
@@ -568,6 +572,11 @@ window.STAR_L1 = {
  "Paper Patty": [
   "GitHub"
  ],
+ "File Master": [
+  "ES (Everything’s command line)",
+  "Everything",
+  "Git for Windows"
+ ],
  "Discord Damsel": [
   "BetterDiscord",
   "CLI Proxy API",
@@ -576,12 +585,20 @@ window.STAR_L1 = {
  "Portfolio Puffer": [
   "GitHub"
  ],
+ "Drum Dog": [
+  "Ableton USB Audio Driver",
+  "Razer Synapse",
+  "Voicemeeter"
+ ],
  "Gone Ghost": [
   "GitHub"
  ],
  "Voicemeeter Bug": [
   "Steam Streaming audio",
   "Voicemeeter"
+ ],
+ "RGBee": [
+  "Razer Chroma App"
  ],
  "Rift Rabbit": [
   "DoubleHip DoubleChest Tracker",
@@ -591,12 +608,35 @@ window.STAR_L1 = {
  "Fuzzboi Friend": [
   "GitHub"
  ],
+ "Chat Rat": [
+  "ChatGPT website",
+  "Claude app",
+  "Claude website"
+ ],
  "Platform Platypus": [
   "Node.js",
   "Web browser (WebGL)"
  ],
  "Pole Puff": [
   "VRChat"
+ ],
+ "Skill Scout": [
+  "Git for Windows",
+  "GitHub CLI",
+  "Node.js"
+ ],
+ "White Hat Weasel": [
+  "Wireshark"
+ ],
+ "Door Dormouse": [
+  "Blender",
+  "Unity",
+  "Unity Hub"
+ ],
+ "PC Master": [
+  "Autoruns",
+  "Coreinfo",
+  "CPU-Z"
  ]
 };
 // each pet program number's node on the System Map
@@ -614,6 +654,6 @@ window.STAR_MAP_NODE = {
  "27": "gif-maker",
  "30": "fuzz-factory",
  "37": "dubstep-gunsmith",
- "78": "the-police-station",
+ "78": "program-78",
  "80": "the-recovery-room"
 };

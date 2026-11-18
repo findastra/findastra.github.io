@@ -1079,7 +1079,6 @@
     "Cluster Crab": "Kubernetes",
     "Storage Stoat": "TrueNAS",
     "White Hat Weasel": "Kali Linux",
-    "Port Spider": "Nmap",
     "Cipher Owl": "OpenSSL",
     "Forensic Ferret": "Windows Event Viewer",
     "Llama Librarian": "Ollama",

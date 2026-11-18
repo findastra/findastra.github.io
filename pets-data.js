@@ -692,15 +692,6 @@ window.PETS = [
   "text": "Authorized security assessment and remediation."
  },
  {
-  "number": 68,
-  "pet": "Port Spider",
-  "program": "Port Web",
-  "stage": "roadmap",
-  "repo": "port-web",
-  "repo_exists": true,
-  "text": "Authorized port and service exposure checks."
- },
- {
   "number": 69,
   "pet": "Cipher Owl",
   "program": "Cipher Hollow",
