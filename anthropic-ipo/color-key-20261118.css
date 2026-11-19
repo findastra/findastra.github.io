@@ -171,7 +171,7 @@ body .simval.px { font-size: 16px; }
 /* Keep the projection copy anchored to its chart rather than floating mid-column. */
 .two { column-gap: 18px; }
 .two > .col:last-child { align-self: start; }
-.two > .col:last-child > .p { text-align: left; }
+.two > .col:last-child > .p { text-align: right; }
 .two .ch { margin-top: 24px; }
 
 /* Compare all three purchase methods side by side. */
@@ -238,3 +238,17 @@ body .simval.px { font-size: 16px; }
 .did .dcol .plan.dob, .apr .ac, .apr .ac.pick, .ordc, .ordc.hit { position: relative; border: 2px solid transparent !important; box-shadow: none !important; }
 .day-outline { position: absolute; inset: -2px; width: calc(100% + 4px); height: calc(100% + 4px); pointer-events: none; overflow: visible; }
 .day-outline rect { fill: none; stroke: #ff3fd0; stroke-width: 3; stroke-linecap: round; stroke-dasharray: .1 10; }
+
+/* Astra 2026-11-18: every number neon pink, sub-headings like the main headings */
+.sec > .n, .h .subn, .steps > li::before, .apr .at .an { color: #ff3fd0 !important; }
+.two .col > .sh2, .two .col:first-child > .sh2:first-child { color: var(--lav) !important; }
+/* Astra's Numbers: room between the two columns; right column ends where the Fidelity boxes end */
+.two { width: 848px !important; max-width: none !important; grid-template-columns: 1fr 1fr !important; column-gap: 56px !important; }
+/* the full tagline (our wording) fits the page width */
+.tagline { font-size: 15.2px !important; }
+/* every chart dot pink (DCA buys too) */
+.sim.big .simchart .buy, .sim.big .simchart .dr, .sim.big .simchart .d0 { fill: #ff5fd8 !important; }
+.simleg .buy-dot { background: #ff5fd8 !important; border-color: #ff5fd8 !important; }
+/* order 1/2/3 cards: plain faded line, not the dotted border of the card they sit in */
+.ordc .day-outline { display: none !important; }
+.ordc, .ordc.hit { border: 1.5px solid rgba(255,63,208,.35) !important; }
