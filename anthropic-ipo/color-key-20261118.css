@@ -73,7 +73,7 @@ body .simval.px { font-size: 16px; }
 .simleg .ll { border-top: 2px dashed var(--price-border); }
 .simleg .filled { border-top: 2px solid var(--price-border); }
 .maxp b { color: var(--price); }
-.tl.row .ev .pb .px.live.dn::before { border-bottom-color: var(--price-border); }
+.tl.row :is(.ev,.nowev) .pb .px.live.dn::before { border-bottom-color: var(--price-border); }
 /* Date and time colors follow the existing Tuesday / Wednesday / Thursday key. */
 .dt { color: var(--mut); font-family: SM, monospace; font-weight: 400; }
 .dt.d0 { color: var(--lav); }
