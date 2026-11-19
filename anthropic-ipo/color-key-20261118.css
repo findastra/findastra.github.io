@@ -515,3 +515,5 @@ body .shq > .sx { margin-right: 6px !important; }
 /* live Boise clock under the LIVE box (Astra 2026-11-19) */
 .tagline .livewrap { position: relative; display: inline-block; vertical-align: middle; }
 .tagline .liveclock { position: absolute; top: calc(100% + 5px); left: 0; font-family: SM, monospace; font-size: 12px; letter-spacing: .3px; color: #ff7a8a; white-space: nowrap; font-variant-numeric: tabular-nums; }
+/* date under each projection bar (Astra 2026-11-19) */
+.two .lbs.lbs4 .lb .lbd { display: block; margin-bottom: 6px; font-family: SM, monospace; font-size: 12px; line-height: 1.25; color: var(--ink); }
