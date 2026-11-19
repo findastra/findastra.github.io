@@ -1,0 +1,240 @@
+/* Semantic key: values keep their meaning inside every card and heading. */
+:root {
+  --price: #8dffb8;
+  --price-border: #3ddc84;
+  --shares: #ffc2a6;
+  --shares-border: #d97757;
+  --market-cap: #cfdcff;
+  --market-cap-border: #5b8cff;
+  --expected: #f8ffa6;
+  --negative: #ff6b7a;
+  --day-of: #ff5fd8;
+}
+/* One numeric face, weight, and size within each context, not the heading face. */
+body .px, body .sx, body .mc {
+  display: inline-block;
+  font-family: SM, monospace;
+  font-weight: 700;
+  font-size: 1em;
+  font-style: normal;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+  text-shadow: none;
+  -webkit-text-stroke: 0;
+  -webkit-text-fill-color: currentColor;
+  border-width: 1.5px;
+  border-radius: 6px;
+  padding: 0 5px 1px !important;
+  line-height: 1.3 !important;
+}
+body .px, body .px.live.dn { color: var(--price) !important; border-color: var(--price-border); background: rgba(61,220,132,.16); }
+body .sx { color: var(--shares) !important; border-color: var(--shares-border); background: rgba(217,119,87,.18); }
+body .mc { color: var(--market-cap) !important; border-color: var(--market-cap-border); background: rgba(70,110,255,.22); }
+/* Nested emphasis and rolling digits must not inherit card-label colors. */
+body :is(.px,.sx,.mc) :is(span,b,strong,em) { color: inherit !important; font: inherit; text-shadow: none; -webkit-text-fill-color: currentColor; }
+body .dc .sx { font-size: 13px; }
+body .h :is(.px,.sx,.mc), body .ph :is(.px,.sx,.mc), body .ot :is(.px,.sx,.mc) { font-size: 13px; }
+body .lb .ps2 .px, body .tiers .px, body .rung .px { font-size: 12.5px; }
+body .simval.px { font-size: 16px; }
+/* .lot was also a stroked display word; it must never stroke a whole plan. */
+.plan.lot { -webkit-text-stroke: 0; }
+.did .dcol .plan.lot .ph { -webkit-text-fill-color: currentColor; }
+.did .dcol .plan.lot.dim, .plan.lc.fid { opacity: 1; }
+.plan .pr > b.exp3 { color: var(--ink); }
+.did .plan .ph i.exp, .plan .ph i.exp { color: var(--expected); border-color: var(--expected); border-style: dashed; }
+.dc .miss, .plan .ph i.missc, .did .plan .ph i.missc, .lc .ph i.missc { color: var(--negative); border-color: var(--negative); }
+.dc .miss.hit, .lc .ph i.hitc { color: var(--price); border-color: var(--price-border); }
+.lc .hotr { background: rgba(248,255,166,.08); }
+.apr .apick { color: var(--expected); border-color: var(--expected); }
+/* Broker identity is confined to its name; a total is not a share price. */
+.lt4 .sfh, .lt4 .sfv, .sfc .v { color: var(--ink); }
+.sfc i { background: var(--lav); }
+.lt4 .hd { color: var(--lav); }
+.lt4 .sfh .k-sofi { color: #29b6d8; }
+.brokers .bv { font-family: SM, monospace; font-weight: 700; font-size: 16px; color: var(--ink); line-height: 1.45; }
+.brokers .bn { font-size: 24px; }
+.brokers .bl { font-size: 12px; }
+.brokers .take { color: var(--lav); }
+/* Prices stay green in inputs, chart axes, lines, and output cards. */
+.siminp input.b, .siminp input.n { color: var(--ink); border-color: #3a4680; }
+.siminp input.l { color: var(--price); border-color: var(--price-border); }
+.siminp input { position: static; display: block; margin: 0; box-shadow: none; }
+.sim.big .simchart .lm.on { stroke-dasharray: none; }
+.sim.big .simchart .ip { stroke-dasharray: 2 5; }
+.sim.big .simchart .lm { stroke-dasharray: 8 5; }
+.ordc { opacity: 1; }
+.ordc.hit { border-color: var(--price-border); box-shadow: none; background: rgba(61,220,132,.06); }
+.ordc .ok { color: var(--price); }
+.ordc .no { color: var(--negative); }
+.simtot strong { font: 700 15px SM, monospace; color: var(--ink); }
+.simleg { font-size: 12px; line-height: 1.5; margin-top: 8px; }
+.simleg .lp { border-top: 3px solid var(--price-border); }
+.simleg .li { border-top: 2px dotted var(--price-border); }
+.simleg .ll { border-top: 2px dashed var(--price-border); }
+.simleg .filled { border-top: 2px solid var(--price-border); }
+.maxp b { color: var(--price); }
+.tl.row .ev .pb .px.live.dn::before { border-bottom-color: var(--price-border); }
+/* Date and time colors follow the existing Tuesday / Wednesday / Thursday key. */
+.dt { color: var(--mut); font-family: SM, monospace; font-weight: 400; }
+.dt.d0 { color: var(--lav); }
+.dt.d1 { color: var(--mint); }
+.dt.d2 { color: var(--day-of); }
+@media (prefers-reduced-motion: reduce) { .tl .tlband, .tbd { animation: none; } }
+
+/* Lottery terminology follows the mint lottery panels, not share-count orange. */
+.h .lot, .lotw { color: var(--mint); -webkit-text-stroke: 0; }
+.two .sh2 { color: var(--lav); }
+.two .col:first-child > .sh2:first-child { color: var(--mint); }
+/* Projection scenarios retain their distinct annotation and bar colors. */
+.ch .c:nth-child(1) { --scenario: #d97757; }
+.ch .c:nth-child(2) { --scenario: var(--mint); }
+.ch .c:nth-child(3) { --scenario: #ff3fd0; }
+.c i.h1, .c i.h5, .c i.h10 { --bc: var(--scenario); }
+.note.n1, .note.n5, .note.n10, .ch .c .v { color: var(--scenario); }
+.note .ao { color: inherit; }
+.c .v, .sfc .v { font: 700 13px SM, monospace; color: var(--ink); }
+.hitfn, .lo-fn, .simdrag { font-size: 12px; }
+.lt4 .hd { font-size: 12px; }
+
+.sim.big[data-mode="dca"] .simchart :is(.dr,.d0) { fill: var(--bg); stroke: var(--price-border); stroke-width: 2; }
+.sim.big[data-mode="dca"] .simchart .buy { fill: var(--price); }
+.simleg .buy-dot { width: 8px; height: 8px; background: var(--price); border-radius: 50%; }
+
+/* Step three and the illustration share a row. */
+.step-three-layout { display: grid; grid-template-columns: minmax(0,1fr) 280px; gap: 28px; align-items: start; }
+.ns .nsrow .step-three .mbot { grid-column: auto !important; grid-row: auto !important; margin: 145px 0 0 !important; width: 280px; }
+.ex b.day-label { color: var(--lav); font-family: Blk; font-weight: 400; letter-spacing: .5px; }
+/* Shared tracks align every broker and its investment cards exactly. */
+.brokers, .did { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.did .dcol { min-width: 0; }
+.did .dc, .did .plan { width: 100%; min-width: 0; }
+.did .dc { padding-inline: 12px; }
+.dc .miss { font-size: 11.5px; }
+/* Dates remain white and underlined; event times retain their day colors. */
+.dt, .dt.d0, .dt.d1, .dt.d2 { color: #f4f4ff; text-decoration: underline; }
+/* Restore the original chart distinction: pink path, dashed buy limits. */
+.sim.big .simchart .pl { stroke: #ff5fd8; }
+.sim.big .simchart .ip { stroke: var(--peach); stroke-dasharray: 7 5; }
+.sim.big .simchart .lm { stroke: var(--expected); stroke-dasharray: 7 5; }
+.sim.big .simchart .lm.on { stroke: var(--price); stroke-dasharray: 7 5; }
+.sim.big .simchart .ll { fill: var(--expected); }
+.sim.big .simchart .ll.on { fill: var(--price); }
+.sim.big .simchart .price-axis, .sim.big .simchart .ipo-label { fill: var(--mut); }
+.sim.big .simchart .dr, .sim.big .simchart .d0 { fill: #ff5fd8; }
+.sim.big[data-mode="dca"] .simchart :is(.dr,.d0) { fill: var(--bg); stroke: #ff5fd8; }
+.sim.big[data-mode="dca"] .simchart .buy { fill: var(--price); stroke: var(--bg); }
+.simleg .lp { border-top: 3px solid #ff5fd8; }
+.simleg .li { border-top: 2px dashed var(--peach); }
+.simleg .ll { border-top: 2px dashed var(--expected); }
+.simleg .filled { border-top: 2px dashed var(--price); }
+
+/* Shared content rows keep headings level despite different amounts of copy. */
+.brokers { row-gap: 0; }
+.brokers > .b { display: grid; grid-row: span 8; grid-template-rows: subgrid; align-items: start; row-gap: 0; }
+.brokers .bn { padding-bottom: 6px; }
+.brokers .bl { margin-top: 16px; margin-bottom: 5px; }
+.brokers .bv, .brokers .pen { margin: 0; }
+.brokers .take { align-self: end; margin-top: 20px; }
+/* Match the two investment stacks, including the bottoms of their result blocks. */
+.did { grid-template-rows: repeat(4, auto); row-gap: 10px; align-items: stretch; }
+.did > div:not(.dcol) { display: none; }
+.did > .dcol { display: grid; grid-template-rows: subgrid; grid-row: 1 / span 4; gap: 10px; }
+.did > .dcol:first-child { grid-column: 1; }
+.did > .dcol:last-child { grid-column: 4; }
+.did .plan { padding: 12px; }
+.did .plan .ph { margin-bottom: 10px; }
+.did .plan .pr { display: grid; grid-template-columns: 5ch minmax(0, 1fr); column-gap: 6px; align-items: baseline; padding-block: 3px; line-height: 1.5; }
+.did .plan .pr > span { text-align: left; }
+.did .plan .pr > b { text-align: right; min-width: 0; font-variant-numeric: tabular-nums; }
+.did .plan .pr .px, .did .plan .pr .sx { margin-right: 0; }
+.did .plan.dob { display: flex; flex-direction: column; }
+.did .plan-results { margin-top: auto; padding-top: 10px; }
+.did .plan .fill-row { border-top: 1px solid rgba(255,95,216,.35); margin-top: 7px; padding-top: 9px; }
+.did .plan .rung { margin-top: 8px; }
+.did .plan .rung li { padding-block: 3px; }
+
+/* Section numbers use precisely the same type metrics as their titles. */
+.sec > .n, .sec > div > .h { font-family: Blk; font-size: 19px; font-weight: 400; line-height: 1.4; letter-spacing: .5px; }
+.sec > .n { align-self: start; color: #ff3fd0; }
+.h .subn, .apr .at .an { font: inherit; letter-spacing: inherit; vertical-align: baseline; }
+
+.tl .broker-line { display: block; white-space: nowrap; }
+
+/* Times use the same display type as the guide subtitle, everywhere. */
+.tl .ev .t, body .tm { font-family: Blk; font-size: 14.5px; font-weight: 400; font-style: normal; letter-spacing: .5px; line-height: 1.3; }
+
+.tagline { font-size: 19px; font-weight: 400; line-height: 1.4; letter-spacing: .5px; }
+.tagline .pk { font-weight: 400; }
+
+.tagline i { margin-inline: 7px; }
+
+/* Keep the projection copy anchored to its chart rather than floating mid-column. */
+.two { column-gap: 18px; }
+.two > .col:last-child { align-self: start; }
+.two > .col:last-child > .p { text-align: right; }
+.two .ch { margin-top: 24px; }
+
+/* Compare all three purchase methods side by side. */
+.apr { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 14px; align-items: start; }
+.apr .ac { min-width: 0; padding: 12px; }
+.ac .sim.big .siminp { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.ac .siminp input { min-width: 0; }
+.ac .simrow { flex-wrap: wrap; gap: 6px; }
+.ac .simrow label { flex-basis: 100%; }
+.ac .simrow input { min-width: 0; width: 0; }
+.ac .ordcards { grid-template-columns: 1fr; gap: 8px; }
+.ac .ordc { padding: 8px; }
+.ac .simleg { gap: 4px 10px; }
+.ac .simtot, .ac .simtot strong { font-size: 13px; }
+
+/* Compact the numbers section around its actual table and chart content. */
+.two { grid-template-columns: minmax(0, 365fr) minmax(0, 340fr); max-width: 729px; column-gap: 24px; }
+.two > .col { min-width: 0; }
+.locards .lc { padding: 10px; }
+.lc .pr { grid-template-columns: minmax(0, 1fr) 4ch 5.5ch 8ch; column-gap: 4px; }
+.two .ch { height: 270px; margin-top: 16px; }
+.two .sfb { height: 90px; }
+.two .lt4 { column-gap: 6px; }
+
+/* Reserve the same control rows so the three charts share a horizontal baseline. */
+.apr .at { min-height: 40px; }
+.apr .ad { min-height: 61px; }
+.ac .sim.big .siminp { min-height: 130px; align-content: start; }
+.ac .simrow { min-height: 53px; }
+.ac .simdrag { min-height: 36px; }
+
+/* One pink family; border patterns identify the purchase stage. */
+.did .dc { border: 2px solid #ff3fd0; }
+.did .dcol .plan.lot, .plan.lc.sofi, .plan.lc.fid {
+  position: relative; border: 2px solid transparent !important;
+  background: rgba(255,63,208,.07) !important;
+  box-shadow: 0 0 12px rgba(255,63,208,.3) !important;
+}
+.lottery-outline { position: absolute; inset: -2px; width: calc(100% + 4px); height: calc(100% + 4px); pointer-events: none; overflow: visible; }
+.lottery-outline rect { fill: none; stroke: #ff3fd0; stroke-width: 2; stroke-dasharray: 20 8; }
+.did .dcol .plan.lot .ph, .plan.lc.sofi .ph, .plan.lc.fid .ph { color: #ff3fd0 !important; -webkit-text-fill-color: currentColor; }
+.h .lot, .lotw, .two .col:first-child > .sh2:first-child { color: #ff3fd0; }
+.locards .lc .ph { height: auto; min-height: 22px; align-items: start; gap: 8px; }
+.did .dcol .plan.dob, .apr .ac, .apr .ac.pick, .ordc, .ordc.hit { border: 2px dotted #ff3fd0 !important; }
+.did .dcol .plan.dob .ph, .apr .at, .ordc .ot { color: #ff3fd0 !important; }
+/* Both bar charts rise from their baseline with matching diagonal hatching. */
+.sfc i { width: 62%; margin-inline: auto; border: 2px solid #f4f4ff; border-bottom: 0; border-radius: 0; background: repeating-linear-gradient(135deg,#f4f4ff 0 3px,transparent 3px 9px); }
+.sfc .v { color: #f4f4ff; }
+
+.sfb { grid-template-rows: minmax(0, 1fr); }
+.sfc { min-height: 0; }
+
+/* The 52px number column is shared by every level of numbered heading. */
+.h:has(> .subn) { display: grid; grid-template-columns: 52px minmax(0,1fr); align-items: baseline; }
+.apr .at { display: grid; grid-template-columns: 52px minmax(0,1fr); align-items: baseline; align-content: start; min-height: 40px; }
+.apr .at .an { margin: 0; }
+.apr .at .apick { grid-column: 2; justify-self: start; }
+.ns .steps { margin-left: 52px; }
+.steps > li { position: relative; }
+.steps > li::marker { content: ''; }
+.steps > li::before { content: counter(list-item,decimal-leading-zero); position: absolute; left: -52px; width: 52px; font-family: Blk; font-weight: 400; color: var(--expected); }
+.request-count { display: block; margin-top: 4px; font: 700 12px/1.5 SM,monospace; }
+/* Large, separated dots remain visible when the page is scaled down. */
+.did .dcol .plan.dob, .apr .ac, .apr .ac.pick, .ordc, .ordc.hit { position: relative; border: 2px solid transparent !important; box-shadow: none !important; }
+.day-outline { position: absolute; inset: -2px; width: calc(100% + 4px); height: calc(100% + 4px); pointer-events: none; overflow: visible; }
+.day-outline rect { fill: none; stroke: #ff3fd0; stroke-width: 3; stroke-linecap: round; stroke-dasharray: .1 10; }
