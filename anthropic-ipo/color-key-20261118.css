@@ -398,3 +398,13 @@ sup { vertical-align: .45em !important; line-height: 0 !important; }
 /* "cap" sits to the right of each market-cap chip */
 .two .lb .x { flex-direction: row !important; align-items: baseline !important; justify-content: center; gap: 5px !important; }
 .two .lb .x .mcl { color: var(--mut); }
+/* 05.02: bars sit at the left of their columns; value, cap chip and $/share chip line up on each bar's left edge */
+.two .ch .c { align-items: flex-start !important; }
+.two .ch .c i { margin: 0 !important; }
+.two .ch .c .v { width: 62%; text-align: center; }
+.two .ch .note { left: 31% !important; }
+.two .lbs { column-gap: 16px !important; gap: 16px !important; }
+.two .lb { align-items: flex-start !important; text-align: left !important; }
+.two .lb .x { justify-content: flex-start !important; }
+.two .lb .ps2 { white-space: nowrap !important; }
+.two .ch { column-gap: 8px !important; gap: 8px !important; } .two .lbs { column-gap: 8px !important; gap: 8px !important; }
