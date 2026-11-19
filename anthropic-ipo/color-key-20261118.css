@@ -253,7 +253,6 @@ body .simval.px { font-size: 16px; }
 .ordc .day-outline { display: none !important; }
 .ordc, .ordc.hit { border: 1.5px solid rgba(255,63,208,.35) !important; }
 /* link arrow in each broker box's bottom-right corner (Take Me removed) */
-.brokers .b { padding-bottom: 44px; }
 .brokers .b .lnk { position: absolute; right: 14px; bottom: 10px; font-family: SM, monospace; font-weight: 700; font-size: 26px; line-height: 1; color: var(--lav); }
 /* Astra 2026-11-18: less space under broker names; $3K/$25K same size as the names; all of them glow */
 .brokers .bn { padding-bottom: 0 !important; line-height: 1.1; }
@@ -264,7 +263,6 @@ body .simval.px { font-size: 16px; }
 .did .plan .ph i.hitc { color: rgb(141,255,184) !important; border-color: rgb(61,220,132) !important; }
 .did .plan .ph i.missc { color: rgb(255,107,122) !important; border-color: rgb(255,107,122) !important; }
 /* link arrows: broker's own color, twice the size, glowing, underlined */
-.brokers .b { padding-bottom: 72px !important; }
 .brokers .b .lnk { font-size: 52px !important; right: 12px !important; bottom: 8px !important; text-decoration: underline; text-decoration-thickness: 4px; text-underline-offset: 6px; text-shadow: 0 0 9px color-mix(in srgb, currentColor 65%, transparent); }
 .brokers .b:nth-child(1) .lnk { color: #29b6d8 !important; }
 .brokers .b:nth-child(2) .lnk { color: #ccff00 !important; }
@@ -277,3 +275,22 @@ body .simval.px { font-size: 16px; }
 /* market-cap chips: closer to the axis, clear space above the $/share row */
 .two .lbs { margin-top: 12px !important; }
 .two .lb .x { margin-bottom: 8px; line-height: 1.2; }
+/* "$1.5 trillion market cap", styled like the "/share" row below it */
+.two .lb .x { white-space: nowrap; }
+.two .lb .x .mcl { font-family: SM, monospace; font-size: 11px; color: var(--mut); margin-left: 3px; }
+.two .lb .x { display: flex; flex-direction: column; align-items: center; gap: 2px; margin-bottom: 6px !important; }
+.two .lb .x .mcl { margin-left: 0; }
+/* Astra's boxes: labels right-aligned, values left-aligned, one shared dividing line in every box */
+.did .plan .pr { display: grid !important; grid-template-columns: 6ch 1fr !important; column-gap: 8px !important; justify-content: start !important; }
+.did .plan .pr > span { text-align: right !important; }
+.did .plan .pr > b { text-align: left !important; justify-self: start !important; }
+/* broker arrows removed: boxes end after the penalty text */
+.brokers .b { padding-bottom: 16px !important; }
+.brokers .pen { flex: 0 !important; }
+.did .plan .pr { grid-template-columns: 47px 1fr !important; }
+/* T1-T3: their own small table, centered in the box */
+.did .plan .rung { display: grid !important; grid-template-columns: repeat(3, max-content); justify-content: center; column-gap: 8px; row-gap: 3px; margin: 8px 0 !important; }
+.did .plan .rung li { display: contents !important; }
+.did .plan .rung li > b { text-align: right; }
+.did .plan .rung .tn { text-align: left !important; white-space: nowrap; }
+.did .plan .pr { column-gap: 6px !important; }
