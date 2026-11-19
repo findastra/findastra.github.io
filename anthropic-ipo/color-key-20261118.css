@@ -508,3 +508,7 @@ body .shq > .sx { margin-right: 6px !important; }
 
 /* lottery badges stay on one line (MISSED BUY IN) */
 .lc .ph i { white-space: nowrap; flex-shrink: 0; }
+/* small frowny face to the right of the SoFi 0 AWARDED badge */
+.lc .ph .frown { margin-left: 5px; font-family: "Segoe UI Symbol", sans-serif; font-size: 15px; line-height: 1; color: #ff7a8a; flex-shrink: 0; }
+.lc .ph:has(.frown) { justify-content: flex-start; }
+.lc .ph:has(.frown) i { margin-left: auto; }
