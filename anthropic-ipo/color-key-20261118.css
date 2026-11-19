@@ -303,6 +303,27 @@ body .simval.px { font-size: 16px; }
 .apr .at .atk { display: block; color: #ff3fd0; }
 .apr .at .method-name { display: block; color: var(--lav) !important; margin-top: 2px; }
 /* sub-sections: number hangs to the left like the main section numbers, so body text starts under the heading words */
-.two .col > .sh2 { margin-left: -52px !important; }
-.two { column-gap: 72px !important; }
 .lt4 > span:not(.hd) { white-space: nowrap; }
+/* sub-sections: number starts under the section heading; body text starts under the sub-heading words */
+.two { column-gap: 48px !important; }
+.two .col > :not(.sh2) { margin-left: 52px !important; }
+.two .col > :not(.sh2) { width: auto !important; max-width: calc(100% - 52px) !important; box-sizing: border-box; }
+.lc .ph, .lc .ph > span:first-child { font-size: 14px !important; letter-spacing: .5px !important; }
+.two .lbs { column-gap: 6px !important; gap: 6px !important; } .two .lb .mc { font-size: 12px !important; padding: 0 4px !important; }
+/* IPO lottery box titles: white dot between */
+.lc .ph .dotw { color: #fff; }
+/* calculator number boxes: no native white spinners; neon up/down arrows in the box's own border color */
+.siminp input.b, .siminp input.n { border-color: #7c86e0 !important; }
+.siminp input[type=number] { -moz-appearance: textfield; appearance: textfield; padding-right: 26px !important; }
+.siminp input[type=number]::-webkit-inner-spin-button, .siminp input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+.siminp .spin { position: relative; display: block; }
+.siminp .spin .sp { position: absolute; right: 6px; width: 16px; height: 14px; padding: 0; border: 0; background: none; font-size: 10px; line-height: 14px; cursor: pointer; opacity: 0; transition: opacity .15s; }
+.siminp .spin .sp.up { top: calc(50% - 15px); } .siminp .spin .sp.dn { top: calc(50% + 1px); }
+.siminp .spin:hover .sp, .siminp .spin:focus-within .sp { opacity: 1; }
+.siminp .spin:has(input.b) .sp, .siminp .spin:has(input.n) .sp { color: #7c86e0; text-shadow: 0 0 6px rgba(124,134,224,.8); }
+.siminp .spin:has(input.l) .sp { color: var(--price-border); text-shadow: 0 0 6px var(--price-border); }
+/* 05.02 text left-aligned inside the right-hand column */
+.two > .col:last-child > .p { text-align: left !important; }
+.siminp .spin .sp { width: 20px !important; height: 16px !important; font-size: 14px !important; line-height: 16px !important; right: 5px !important; }
+.siminp .spin .sp.up { top: calc(50% - 17px) !important; } .siminp .spin .sp.dn { top: calc(50% + 1px) !important; }
+.siminp input[type=number] { padding-right: 28px !important; }
