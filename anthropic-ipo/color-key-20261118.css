@@ -510,3 +510,8 @@ body .shq > .sx { margin-right: 6px !important; }
 
 /* lottery badges stay on one line (MISSED BUY IN) */
 .lc .ph i { white-space: nowrap; flex-shrink: 0; }
+/* "cap" sits right after the market cap box, four columns still fit (Astra 2026-11-19) */
+.two .lbs.lbs4 { column-gap: 4px !important; }
+.two .lbs.lbs4 .lb .x { flex-direction: row !important; align-items: baseline !important; gap: 3px !important; }
+.two .lbs.lbs4 .lb .mc { padding: 0 3px !important; font-size: 12.5px !important; }
+.two .lbs.lbs4 .lb .x .mcl { font-size: 10.5px; }
