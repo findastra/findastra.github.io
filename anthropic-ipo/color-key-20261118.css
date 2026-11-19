@@ -440,3 +440,6 @@ sup { vertical-align: .45em !important; line-height: 0 !important; }
 .apr .ac { display: flex !important; flex-direction: column; }
 .apr .ac .ap { margin-top: auto !important; padding-top: 10px; }
 .apr .ad { min-height: 0; }
+/* 05.02: "cap", "/share" and the values above the bars in the white body text */
+.two .lb .x .mcl, .two .lb .ps2 { color: var(--ink) !important; }
+.two .ch .c .v { font-family: SM, monospace !important; font-size: 15.5px !important; font-weight: 400 !important; color: var(--ink) !important; letter-spacing: normal !important; text-shadow: none !important; }
