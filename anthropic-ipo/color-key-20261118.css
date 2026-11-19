@@ -422,3 +422,21 @@ sup { vertical-align: .45em !important; line-height: 0 !important; }
 .ordc .ot { display: flex; align-items: baseline; gap: 6px; margin-bottom: 1px; }
 .ordc .ot .ok, .ordc .ot .no { margin-left: auto; font-family: SM, monospace; font-size: 15.5px; font-weight: 400; letter-spacing: 0; text-transform: none; }
 .ordc .ot { white-space: nowrap !important; }
+/* option cards: Budget full width; the second row is three equal boxes (ladder: Order 1 / 2 / 3; single limit and DCA use one box of that same size) */
+.apr .siminp { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; column-gap: 8px !important; }
+.apr .siminp > div:first-child { grid-column: 1 / -1; }
+.apr .siminp label { overflow: visible; }
+.apr .siminp > div:not(:first-child) label { width: 0; }
+.apr .siminp input[type=number] { padding-left: 6px !important; padding-right: 20px !important; }
+.apr .siminp .spin .sp { right: 2px !important; width: 16px !important; }
+/* section 04 to 05: same 22px gap as 03 to 04 */
+.did .dcol { gap: 0 !important; }
+.did .dcol > :not(.dc) { display: none !important; }
+.did { margin-bottom: 22px !important; }
+.did { grid-template-rows: auto !important; row-gap: 0 !important; }
+.did .dcol { display: block !important; grid-row: auto !important; grid-template-rows: none !important; }
+/* day-of buy cards: all the same height; pros/cons sit at the bottom of each */
+.apr { align-items: stretch !important; }
+.apr .ac { display: flex !important; flex-direction: column; }
+.apr .ac .ap { margin-top: auto !important; padding-top: 10px; }
+.apr .ad { min-height: 0; }
