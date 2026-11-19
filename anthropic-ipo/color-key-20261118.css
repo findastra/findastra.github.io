@@ -507,3 +507,6 @@ body .shq > .sx { margin-right: 6px !important; }
 .two .lbs.lbs4 .lb .x { gap: 3px !important; }
 .two .lbs.lbs4 .lb .ps2 { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
 .two .lbs.lbs4 .lb .x { flex-direction: column !important; align-items: flex-start !important; gap: 2px !important; }
+
+/* lottery badges stay on one line (MISSED BUY IN) */
+.lc .ph i { white-space: nowrap; flex-shrink: 0; }
