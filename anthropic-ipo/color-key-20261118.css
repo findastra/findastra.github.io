@@ -367,3 +367,8 @@ html { scrollbar-width: none; } html::-webkit-scrollbar { display: none; }
 #cscroll { position: fixed; right: 6px; top: 4px; width: 28px; height: 28px; z-index: 60; cursor: grab; touch-action: none; background: url(claude-spark.png) center / contain no-repeat; filter: drop-shadow(0 0 4px rgba(217,119,87,.6)); }
 #cscroll.on { cursor: grabbing; }
 @media print { #cscroll { display: none; } }
+/* 05.01: money put toward the IPO lottery, above the fills */
+.lc .pr.inv { display: grid !important; grid-template-columns: 1fr auto !important; margin: 2px 0 6px; padding-bottom: 6px; border-bottom: 1px solid rgba(255,63,208,.25); }
+.lc .pr.inv > b { text-align: right !important; }
+/* more room between the shares column and the money column */
+.lc .pr:not(.inv) { grid-template-columns: 1fr 5ch 7ch 11.5ch !important; column-gap: 6px !important; }
