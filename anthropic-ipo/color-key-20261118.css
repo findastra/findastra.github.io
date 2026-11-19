@@ -453,3 +453,7 @@ sup { vertical-align: .45em !important; line-height: 0 !important; }
 .tl.row .tlline { background: linear-gradient(90deg, var(--lav) 0 19.328%, var(--mint) 19.328% 59.664%, #ff3fd0 59.664% 100%) !important; }
 /* speech bubble text matches the body paragraphs (Astra, 2026-11-18); bottom stays where it was */
 .mbot .bub, .ns .mbot .bub { font-family: SM, monospace !important; font-weight: 400 !important; font-size: 15.5px !important; line-height: 1.55 !important; color: var(--ink) !important; padding: 12px 14px !important; top: auto !important; bottom: calc(100% + 29px); }
+/* girl and bubble start level with the step-three text next to them (Astra, 2026-11-18): bubble in the flow, girl + Claude orb under it */
+.ns .nsrow .step-three .mbot { margin: 0 !important; }
+.mbot .mfig { position: relative; }
+.mbot .bub, .ns .mbot .bub { position: relative !important; top: auto !important; bottom: auto !important; left: auto !important; margin: 0 auto 34px !important; }
