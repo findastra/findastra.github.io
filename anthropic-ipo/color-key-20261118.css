@@ -395,3 +395,6 @@ sup { vertical-align: .45em !important; line-height: 0 !important; }
 .sim.big .simchart svg text, .ladchart svg text { font-size: 20.5px !important; }
 .siminp .spin .sp.up, .siminp .spin .sp.dn { font-size: 15.5px !important; }
 .lc .ph > span:first-child, .lc .ph > span:first-child * { font-size: 15.5px !important; }
+/* "cap" sits to the right of each market-cap chip */
+.two .lb .x { flex-direction: row !important; align-items: baseline !important; justify-content: center; gap: 5px !important; }
+.two .lb .x .mcl { color: var(--mut); }
