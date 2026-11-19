@@ -487,3 +487,5 @@ sup { vertical-align: .45em !important; line-height: 0 !important; }
 /* space under the girl matches the space under the ANTHROPIC IPO title (Astra, 2026-11-19) */
 .sec.ns, .sec.ns .steps > li.step-three { margin-bottom: 0 !important; }
 .sec.ns + .slogan { margin-top: 21px !important; }
+/* share pill to the word "shares": the same 7px as 05 › 01 (Astra, 2026-11-19) */
+.ordc .sx, .simtot .sx { margin-right: 8px !important; }
