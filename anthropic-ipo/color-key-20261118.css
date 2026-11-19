@@ -294,3 +294,7 @@ body .simval.px { font-size: 16px; }
 .did .plan .rung li > b { text-align: right; }
 .did .plan .rung .tn { text-align: left !important; white-space: nowrap; }
 .did .plan .pr { column-gap: 6px !important; }
+/* Astra 2026-11-18 (later): labels left-aligned, values right-aligned */
+.did .plan .pr { grid-template-columns: auto 1fr !important; column-gap: 8px !important; }
+.did .plan .pr > span { text-align: left !important; }
+.did .plan .pr > b { text-align: right !important; justify-self: end !important; }
