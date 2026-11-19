@@ -484,3 +484,6 @@ sup { vertical-align: .45em !important; line-height: 0 !important; }
 .apr .ac .sim.big .siminp label.grp-h { display: block !important; visibility: visible !important; }
 .apr .ac .sim.big .siminp > div:not(:first-child) label { width: auto !important; overflow: visible !important; }
 .apr .ac .sim.big .siminp { margin-bottom: 0 !important; }
+/* space under the girl matches the space under the ANTHROPIC IPO title (Astra, 2026-11-19) */
+.sec.ns, .sec.ns .steps > li.step-three { margin-bottom: 0 !important; }
+.sec.ns + .slogan { margin-top: 21px !important; }
