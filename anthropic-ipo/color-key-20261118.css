@@ -327,3 +327,32 @@ body .simval.px { font-size: 16px; }
 .siminp .spin .sp { width: 20px !important; height: 16px !important; font-size: 14px !important; line-height: 16px !important; right: 5px !important; }
 .siminp .spin .sp.up { top: calc(50% - 17px) !important; } .siminp .spin .sp.dn { top: calc(50% + 1px) !important; }
 .siminp input[type=number] { padding-right: 28px !important; }
+/* ===== Astra 2026-11-19: every box uses the broker boxes' style =====
+   gray label: SM 12px regular, #a9a6cf, 1px letter-spacing, capitals
+   white body: SM 15.5px regular, --ink */
+.dc > span,
+.did .plan .pr > span, .did .plan .rung li > b,
+.lc .pr > span,
+.siminp label, .simrow label, .simdrag {
+  font-family: SM, monospace !important; font-size: 12px !important; font-weight: 400 !important;
+  color: #a9a6cf !important; letter-spacing: 1px !important; text-transform: uppercase !important;
+}
+.did .plan .pr > b, .did .plan .rung li > span,
+.lc .pr > b, .lc .pr .c3u,
+.apr .ad, .simtot, .ordc, .apr .ap, .apr .am {
+  font-family: SM, monospace !important; font-size: 15.5px !important; font-weight: 400 !important; line-height: 1.5 !important;
+}
+.did .plan .pr > b, .did .plan .rung li > span, .lc .pr > b, .lc .pr .c3u, .apr .ad, .simtot, .ordc { color: var(--ink) !important; }
+.simtot strong { font-weight: 400 !important; }
+.lc .pr .c4, .lc .pr .c2 { color: var(--ink) !important; }
+/* Astra's boxes (04): label on its own line above the value, like the broker boxes */
+.did .plan .pr { display: block !important; margin-top: 6px; }
+.did .plan .pr > span { display: block !important; text-align: left !important; margin-bottom: 2px; }
+.did .plan .pr > b { display: block !important; text-align: left !important; }
+.did .plan .rung { column-gap: 6px !important; margin-top: 10px !important; }
+/* 05.01 rows: wider number columns for the bigger text */
+.lc .pr { grid-template-columns: 1fr 4ch 7ch 9ch !important; align-items: baseline; }
+.did .plan .pr > b { justify-self: start !important; justify-content: flex-start !important; text-align: left !important; margin-left: 0 !important; }
+.lc .pr { grid-template-columns: 1fr 5ch 7ch 9ch !important; column-gap: 6px !important; }
+.lc .pr .c2 { text-align: right !important; }
+.did .plan .rung { align-items: baseline !important; justify-content: start !important; }
