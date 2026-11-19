@@ -457,3 +457,12 @@ sup { vertical-align: .45em !important; line-height: 0 !important; }
 .ns .nsrow .step-three .mbot { margin: 0 !important; }
 .mbot .mfig { position: relative; }
 .mbot .bub, .ns .mbot .bub { position: relative !important; top: auto !important; bottom: auto !important; left: auto !important; margin: 0 auto 34px !important; }
+/* step three: paragraph full width; below it, centered, bubble on the left pointing right at the girl (Astra, 2026-11-18) */
+.step-three-layout { display: block !important; }
+.ns .nsrow .step-three .mbot { width: auto !important; margin: 26px 0 0 !important; display: flex !important; justify-content: center; }
+.step-three .mbot .mwrap { width: auto !important; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; }
+.step-three .mbot .mfig { width: 280px; flex: 0 0 280px; }
+.step-three .mbot .bub, .ns .step-three .mbot .bub { margin: 0 40px 0 0 !important; flex: 0 0 232px; }
+.ns .step-three .mbot .bub:after { left: auto !important; right: -30px !important; top: 50% !important; bottom: auto !important; width: 30px !important; height: 40px !important; margin: -20px 0 0 0 !important; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 40'%3E%3Cpath d='M0 3 L27 20 L0 37 Z' fill='%231d2752'/%3E%3Cpath d='M0 3 L27 20 L0 37' fill='none' stroke='%23ff3fd0' stroke-width='3' stroke-linecap='round' stroke-linejoin='miter'/%3E%3C/svg%3E") no-repeat center/100% 100% !important; }
+/* 05 › 03 holding table: TIME and PER SHARE sit on the same line as the two "shares" headers (Astra, 2026-11-18) */
+.lt4 > .hd { align-self: end; }
