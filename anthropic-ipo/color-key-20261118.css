@@ -274,3 +274,6 @@ body .simval.px { font-size: 16px; }
 .lc .ph > span:first-child { white-space: nowrap; font-size: 13px; }
 /* broker box text = the page's plain white body text (gray labels unchanged) */
 .brokers .bv, .brokers .bv.s, .brokers .pen { font-family: SM, monospace !important; font-size: 15.5px !important; font-weight: 400 !important; color: var(--ink) !important; line-height: 1.5 !important; letter-spacing: normal !important; }
+/* market-cap chips: closer to the axis, clear space above the $/share row */
+.two .lbs { margin-top: 12px !important; }
+.two .lb .x { margin-bottom: 8px; line-height: 1.2; }
