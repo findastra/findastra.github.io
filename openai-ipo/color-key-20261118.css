@@ -1,0 +1,532 @@
+/* Semantic key: values keep their meaning inside every card and heading. */
+:root {
+  --price: #8dffb8;
+  --price-border: #3ddc84;
+  --shares: #cfe7ff;
+  --shares-border: #6fb6ff;
+  --market-cap: #cfdcff;
+  --market-cap-border: #5b8cff;
+  --expected: #f8ffa6;
+  --negative: #ff6b7a;
+  --day-of: #ff5fd8;
+}
+/* One numeric face, weight, and size within each context, not the heading face. */
+body .px, body .sx, body .mc {
+  display: inline-block;
+  font-family: SM, monospace;
+  font-weight: 700;
+  font-size: 1em;
+  font-style: normal;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+  text-shadow: none;
+  -webkit-text-stroke: 0;
+  -webkit-text-fill-color: currentColor;
+  border-width: 1.5px;
+  border-radius: 6px;
+  padding: 0 5px 1px !important;
+  line-height: 1.3 !important;
+}
+body .px, body .px.live.dn { color: var(--price) !important; border-color: var(--price-border); background: rgba(61,220,132,.16); }
+body .sx { color: var(--shares) !important; border-color: var(--shares-border); background: rgba(111,182,255,.18); }
+body .mc { color: var(--market-cap) !important; border-color: var(--market-cap-border); background: rgba(70,110,255,.22); }
+/* Nested emphasis and rolling digits must not inherit card-label colors. */
+body :is(.px,.sx,.mc) :is(span,b,strong,em) { color: inherit !important; font: inherit; text-shadow: none; -webkit-text-fill-color: currentColor; }
+body .dc .sx { font-size: 13px; }
+body .h :is(.px,.sx,.mc), body .ph :is(.px,.sx,.mc), body .ot :is(.px,.sx,.mc) { font-size: 13px; }
+body .lb .ps2 .px, body .tiers .px, body .rung .px { font-size: 12.5px; }
+body .simval.px { font-size: 16px; }
+/* .lot was also a stroked display word; it must never stroke a whole plan. */
+.plan.lot { -webkit-text-stroke: 0; }
+.did .dcol .plan.lot .ph { -webkit-text-fill-color: currentColor; }
+.did .dcol .plan.lot.dim, .plan.lc.fid { opacity: 1; }
+.plan .pr > b.exp3 { color: var(--ink); }
+.did .plan .ph i.exp, .plan .ph i.exp { color: var(--expected); border-color: var(--expected); border-style: dashed; }
+.dc .miss, .plan .ph i.missc, .did .plan .ph i.missc, .lc .ph i.missc { color: var(--negative); border-color: var(--negative); }
+.dc .miss.hit, .lc .ph i.hitc { color: var(--price); border-color: var(--price-border); }
+.lc .hotr { background: rgba(248,255,166,.08); }
+.apr .apick { color: var(--expected); border-color: var(--expected); }
+/* Broker identity is confined to its name; a total is not a share price. */
+.lt4 .sfh, .lt4 .sfv, .sfc .v { color: var(--ink); }
+.sfc i { background: var(--lav); }
+.lt4 .hd { color: var(--lav); }
+.lt4 .sfh .k-sofi { color: #29b6d8; }
+.brokers .bv { font-family: SM, monospace; font-weight: 700; font-size: 16px; color: var(--ink); line-height: 1.45; }
+.brokers .bn { font-size: 24px; }
+.brokers .bl { font-size: 12px; }
+.brokers .take { color: var(--lav); }
+/* Prices stay green in inputs, chart axes, lines, and output cards. */
+.siminp input.b, .siminp input.n { color: var(--ink); border-color: #3a4680; }
+.siminp input.l { color: var(--price); border-color: var(--price-border); }
+.siminp input { position: static; display: block; margin: 0; box-shadow: none; }
+.sim.big .simchart .lm.on { stroke-dasharray: none; }
+.sim.big .simchart .ip { stroke-dasharray: 2 5; }
+.sim.big .simchart .lm { stroke-dasharray: 8 5; }
+.ordc { opacity: 1; }
+.ordc.hit { border-color: var(--price-border); box-shadow: none; background: rgba(61,220,132,.06); }
+.ordc .ok { color: var(--price); }
+.ordc .no { color: var(--negative); }
+.simtot strong { font: 700 15px SM, monospace; color: var(--ink); }
+.simleg { font-size: 12px; line-height: 1.5; margin-top: 8px; }
+.simleg .lp { border-top: 3px solid var(--price-border); }
+.simleg .li { border-top: 2px dotted var(--price-border); }
+.simleg .ll { border-top: 2px dashed var(--price-border); }
+.simleg .filled { border-top: 2px solid var(--price-border); }
+.maxp b { color: var(--price); }
+.tl.row :is(.ev,.nowev) .pb .px.live.dn::before { border-bottom-color: var(--price-border); }
+/* Date and time colors follow the existing Tuesday / Wednesday / Thursday key. */
+.dt { color: var(--mut); font-family: SM, monospace; font-weight: 400; }
+.dt.d0 { color: var(--lav); }
+.dt.d1 { color: var(--mint); }
+.dt.d2 { color: var(--day-of); }
+@media (prefers-reduced-motion: reduce) { .tl .tlband, .tbd { animation: none; } }
+
+/* Lottery terminology follows the mint lottery panels, not share-count orange. */
+.h .lot, .lotw { color: var(--mint); -webkit-text-stroke: 0; }
+.two .sh2 { color: var(--lav); }
+.two .col:first-child > .sh2:first-child { color: var(--mint); }
+/* Projection scenarios retain their distinct annotation and bar colors. */
+.ch .c:nth-child(1) { --scenario: #6fb6ff; }
+.ch .c:nth-child(2) { --scenario: var(--mint); }
+.ch .c:nth-child(3) { --scenario: #ff3fd0; }
+.c i.h1, .c i.h5, .c i.h10 { --bc: var(--scenario); }
+.note.n1, .note.n5, .note.n10, .ch .c .v { color: var(--scenario); }
+.note .ao { color: inherit; }
+.c .v, .sfc .v { font: 700 13px SM, monospace; color: var(--ink); }
+.hitfn, .lo-fn, .simdrag { font-size: 12px; }
+.lt4 .hd { font-size: 12px; }
+
+.sim.big[data-mode="dca"] .simchart :is(.dr,.d0) { fill: var(--bg); stroke: var(--price-border); stroke-width: 2; }
+.sim.big[data-mode="dca"] .simchart .buy { fill: var(--price); }
+.simleg .buy-dot { width: 8px; height: 8px; background: var(--price); border-radius: 50%; }
+
+/* Step three and the illustration share a row. */
+.step-three-layout { display: grid; grid-template-columns: minmax(0,1fr) 280px; gap: 28px; align-items: start; }
+.ns .nsrow .step-three .mbot { grid-column: auto !important; grid-row: auto !important; margin: 145px 0 0 !important; width: 280px; }
+.ex b.day-label { color: var(--lav); font-family: Blk; font-weight: 400; letter-spacing: .5px; }
+/* Shared tracks align every broker and its investment cards exactly. */
+.brokers, .did { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.did .dcol { min-width: 0; }
+.did .dc, .did .plan { width: 100%; min-width: 0; }
+.did .dc { padding-inline: 12px; }
+.dc .miss { font-size: 11.5px; }
+/* Dates remain white and underlined; event times retain their day colors. */
+.dt, .dt.d0, .dt.d1, .dt.d2 { color: #f4f4ff; text-decoration: underline; }
+/* Restore the original chart distinction: pink path, dashed buy limits. */
+.sim.big .simchart .pl { stroke: #ff5fd8; }
+.sim.big .simchart .ip { stroke: var(--peach); stroke-dasharray: 7 5; }
+.sim.big .simchart .lm { stroke: var(--expected); stroke-dasharray: 7 5; }
+.sim.big .simchart .lm.on { stroke: var(--price); stroke-dasharray: 7 5; }
+.sim.big .simchart .ll { fill: var(--expected); }
+.sim.big .simchart .ll.on { fill: var(--price); }
+.sim.big .simchart .price-axis, .sim.big .simchart .ipo-label { fill: var(--mut); }
+.sim.big .simchart .dr, .sim.big .simchart .d0 { fill: #ff5fd8; }
+.sim.big[data-mode="dca"] .simchart :is(.dr,.d0) { fill: var(--bg); stroke: #ff5fd8; }
+.sim.big[data-mode="dca"] .simchart .buy { fill: var(--price); stroke: var(--bg); }
+.simleg .lp { border-top: 3px solid #ff5fd8; }
+.simleg .li { border-top: 2px dashed var(--peach); }
+.simleg .ll { border-top: 2px dashed var(--expected); }
+.simleg .filled { border-top: 2px dashed var(--price); }
+
+/* Shared content rows keep headings level despite different amounts of copy. */
+.brokers { row-gap: 0; }
+.brokers > .b { display: grid; grid-row: span 8; grid-template-rows: subgrid; align-items: start; row-gap: 0; }
+.brokers .bn { padding-bottom: 6px; }
+.brokers .bl { margin-top: 16px; margin-bottom: 5px; }
+.brokers .bv, .brokers .pen { margin: 0; }
+.brokers .take { align-self: end; margin-top: 20px; }
+/* Match the two investment stacks, including the bottoms of their result blocks. */
+.did { grid-template-rows: repeat(4, auto); row-gap: 10px; align-items: stretch; }
+.did > div:not(.dcol) { display: none; }
+.did > .dcol { display: grid; grid-template-rows: subgrid; grid-row: 1 / span 4; gap: 10px; }
+.did > .dcol:first-child { grid-column: 1; }
+.did > .dcol:last-child { grid-column: 4; }
+.did .plan { padding: 12px; }
+.did .plan .ph { margin-bottom: 10px; }
+.did .plan .pr { display: grid; grid-template-columns: 5ch minmax(0, 1fr); column-gap: 6px; align-items: baseline; padding-block: 3px; line-height: 1.5; }
+.did .plan .pr > span { text-align: left; }
+.did .plan .pr > b { text-align: right; min-width: 0; font-variant-numeric: tabular-nums; }
+.did .plan .pr .px, .did .plan .pr .sx { margin-right: 0; }
+.did .plan.dob { display: flex; flex-direction: column; }
+.did .plan-results { margin-top: auto; padding-top: 10px; }
+.did .plan .fill-row { border-top: 1px solid rgba(255,95,216,.35); margin-top: 7px; padding-top: 9px; }
+.did .plan .rung { margin-top: 8px; }
+.did .plan .rung li { padding-block: 3px; }
+
+/* Section numbers use precisely the same type metrics as their titles. */
+.sec > .n, .sec > div > .h { font-family: Blk; font-size: 19px; font-weight: 400; line-height: 1.4; letter-spacing: .5px; }
+.sec > .n { align-self: start; color: #ff3fd0; }
+.h .subn, .apr .at .an { font: inherit; letter-spacing: inherit; vertical-align: baseline; }
+
+.tl .broker-line { display: block; white-space: nowrap; }
+
+/* Times use the same display type as the guide subtitle, everywhere. */
+.tl .ev .t, body .tm { font-family: Blk; font-size: 14.5px; font-weight: 400; font-style: normal; letter-spacing: .5px; line-height: 1.3; }
+
+.tagline { font-size: 19px; font-weight: 400; line-height: 1.4; letter-spacing: .5px; }
+.tagline .pk { font-weight: 400; }
+
+.tagline i { margin-inline: 7px; }
+
+/* Keep the projection copy anchored to its chart rather than floating mid-column. */
+.two { column-gap: 18px; }
+.two > .col:last-child { align-self: start; }
+.two > .col:last-child > .p { text-align: right; }
+.two .ch { margin-top: 24px; }
+
+/* Compare all three purchase methods side by side. */
+.apr { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 14px; align-items: start; }
+.apr .ac { min-width: 0; padding: 12px; }
+.ac .sim.big .siminp { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.ac .siminp input { min-width: 0; }
+.ac .simrow { flex-wrap: wrap; gap: 6px; }
+.ac .simrow label { flex-basis: 100%; }
+.ac .simrow input { min-width: 0; width: 0; }
+.ac .ordcards { grid-template-columns: 1fr; gap: 8px; }
+.ac .ordc { padding: 8px; }
+.ac .simleg { gap: 4px 10px; }
+.ac .simtot, .ac .simtot strong { font-size: 13px; }
+
+/* Compact the numbers section around its actual table and chart content. */
+.two { grid-template-columns: minmax(0, 365fr) minmax(0, 340fr); max-width: 729px; column-gap: 24px; }
+.two > .col { min-width: 0; }
+.locards .lc { padding: 10px; }
+.lc .pr { grid-template-columns: minmax(0, 1fr) 4ch 5.5ch 8ch; column-gap: 4px; }
+.two .ch { height: 270px; margin-top: 16px; }
+.two .sfb { height: 90px; }
+.two .lt4 { column-gap: 6px; }
+
+/* Reserve the same control rows so the three charts share a horizontal baseline. */
+.apr .at { min-height: 40px; }
+.apr .ad { min-height: 61px; }
+.ac .sim.big .siminp { min-height: 130px; align-content: start; }
+.ac .simrow { min-height: 53px; }
+.ac .simdrag { min-height: 36px; }
+
+/* One pink family; border patterns identify the purchase stage. */
+.did .dc { border: 2px solid #ff3fd0; }
+.did .dcol .plan.lot, .plan.lc.sofi, .plan.lc.fid {
+  position: relative; border: 2px solid transparent !important;
+  background: rgba(255,63,208,.07) !important;
+  box-shadow: 0 0 12px rgba(255,63,208,.3) !important;
+}
+.lottery-outline { position: absolute; inset: -2px; width: calc(100% + 4px); height: calc(100% + 4px); pointer-events: none; overflow: visible; }
+.lottery-outline rect { fill: none; stroke: #ff3fd0; stroke-width: 2; stroke-dasharray: 20 8; }
+.did .dcol .plan.lot .ph, .plan.lc.sofi .ph, .plan.lc.fid .ph { color: #ff3fd0 !important; -webkit-text-fill-color: currentColor; }
+.h .lot, .lotw, .two .col:first-child > .sh2:first-child { color: #ff3fd0; }
+.locards .lc .ph { height: auto; min-height: 22px; align-items: start; gap: 8px; }
+.did .dcol .plan.dob, .apr .ac, .apr .ac.pick, .ordc, .ordc.hit { border: 2px dotted #ff3fd0 !important; }
+.did .dcol .plan.dob .ph, .apr .at, .ordc .ot { color: #ff3fd0 !important; }
+/* Both bar charts rise from their baseline with matching diagonal hatching. */
+.sfc i { width: 62%; margin-inline: auto; border: 2px solid #f4f4ff; border-bottom: 0; border-radius: 0; background: repeating-linear-gradient(135deg,#f4f4ff 0 3px,transparent 3px 9px); }
+.sfc .v { color: #f4f4ff; }
+
+.sfb { grid-template-rows: minmax(0, 1fr); }
+.sfc { min-height: 0; }
+
+/* The 52px number column is shared by every level of numbered heading. */
+.h:has(> .subn) { display: grid; grid-template-columns: 52px minmax(0,1fr); align-items: baseline; }
+.apr .at { display: grid; grid-template-columns: 52px minmax(0,1fr); align-items: baseline; align-content: start; min-height: 40px; }
+.apr .at .an { margin: 0; }
+.apr .at .apick { grid-column: 2; justify-self: start; }
+.ns .steps { margin-left: 52px; }
+.steps > li { position: relative; }
+.steps > li::marker { content: ''; }
+.steps > li::before { content: counter(list-item,decimal-leading-zero); position: absolute; left: -52px; width: 52px; font-family: Blk; font-weight: 400; color: var(--expected); }
+.request-count { display: block; margin-top: 4px; font: 700 12px/1.5 SM,monospace; }
+/* Large, separated dots remain visible when the page is scaled down. */
+.did .dcol .plan.dob, .apr .ac, .apr .ac.pick, .ordc, .ordc.hit { position: relative; border: 2px solid transparent !important; box-shadow: none !important; }
+.day-outline { position: absolute; inset: -2px; width: calc(100% + 4px); height: calc(100% + 4px); pointer-events: none; overflow: visible; }
+.day-outline rect { fill: none; stroke: #ff3fd0; stroke-width: 3; stroke-linecap: round; stroke-dasharray: .1 10; }
+
+/* Astra 2026-11-18: every number neon pink, sub-headings like the main headings */
+.sec > .n, .h .subn, .steps > li::before, .apr .at .an { color: #ff3fd0 !important; }
+.two .col > .sh2, .two .col:first-child > .sh2:first-child { color: var(--lav) !important; }
+/* Astra's Numbers: room between the two columns; right column ends where the Fidelity boxes end */
+.two { width: 848px !important; max-width: none !important; grid-template-columns: 1fr 1fr !important; column-gap: 56px !important; }
+/* the full tagline (our wording) fits the page width */
+.tagline { font-size: 15.2px !important; }
+/* every chart dot pink (DCA buys too) */
+.sim.big .simchart .buy, .sim.big .simchart .dr, .sim.big .simchart .d0 { fill: #ff5fd8 !important; }
+.simleg .buy-dot { background: #ff5fd8 !important; border-color: #ff5fd8 !important; }
+/* order 1/2/3 cards: plain faded line, not the dotted border of the card they sit in */
+.ordc .day-outline { display: none !important; }
+.ordc, .ordc.hit { border: 1.5px solid rgba(255,63,208,.35) !important; }
+/* link arrow in each broker box's bottom-right corner (Take Me removed) */
+.brokers .b .lnk { position: absolute; right: 14px; bottom: 10px; font-family: SM, monospace; font-weight: 700; font-size: 26px; line-height: 1; color: var(--lav); }
+/* Astra 2026-11-18: less space under broker names; $3K/$25K same size as the names; all of them glow */
+.brokers .bn { padding-bottom: 0 !important; line-height: 1.1; }
+.brokers .bn + .bl { margin-top: 6px !important; }
+.dc em { font-size: 38px !important; line-height: 1.1 !important; }
+.brokers .bn span, .dc em { text-shadow: 0 0 9px color-mix(in srgb, currentColor 65%, transparent) !important; }
+/* HIT green, MISSED red in Astra's IPO lottery boxes, same as section 05 */
+.did .plan .ph i.hitc { color: rgb(141,255,184) !important; border-color: rgb(61,220,132) !important; }
+.did .plan .ph i.missc { color: rgb(255,107,122) !important; border-color: rgb(255,107,122) !important; }
+/* link arrows: broker's own color, twice the size, glowing, underlined */
+.brokers .b .lnk { font-size: 52px !important; right: 12px !important; bottom: 8px !important; text-decoration: underline; text-decoration-thickness: 4px; text-underline-offset: 6px; text-shadow: 0 0 9px color-mix(in srgb, currentColor 65%, transparent); }
+.brokers .b:nth-child(1) .lnk { color: #29b6d8 !important; }
+.brokers .b:nth-child(2) .lnk { color: #ccff00 !important; }
+.brokers .b:nth-child(3) .lnk { color: #bd8aff !important; }
+.brokers .b:nth-child(4) .lnk { color: #4caf3f !important; }
+/* box titles stay on one line */
+.lc .ph > span:first-child { white-space: nowrap; font-size: 13px; }
+/* broker box text = the page's plain white body text (gray labels unchanged) */
+.brokers .bv, .brokers .bv.s, .brokers .pen { font-family: SM, monospace !important; font-size: 15.5px !important; font-weight: 400 !important; color: var(--ink) !important; line-height: 1.5 !important; letter-spacing: normal !important; }
+/* market-cap chips: closer to the axis, clear space above the $/share row */
+.two .lbs { margin-top: 12px !important; }
+.two .lb .x { margin-bottom: 8px; line-height: 1.2; }
+/* "$1.5 trillion market cap", styled like the "/share" row below it */
+.two .lb .x { white-space: nowrap; }
+.two .lb .x .mcl { font-family: SM, monospace; font-size: 11px; color: var(--mut); margin-left: 3px; }
+.two .lb .x { display: flex; flex-direction: column; align-items: center; gap: 2px; margin-bottom: 6px !important; }
+.two .lb .x .mcl { margin-left: 0; }
+/* Astra's boxes: labels right-aligned, values left-aligned, one shared dividing line in every box */
+.did .plan .pr { display: grid !important; grid-template-columns: 6ch 1fr !important; column-gap: 8px !important; justify-content: start !important; }
+.did .plan .pr > span { text-align: right !important; }
+.did .plan .pr > b { text-align: left !important; justify-self: start !important; }
+/* broker arrows removed: boxes end after the penalty text */
+.brokers .b { padding-bottom: 16px !important; }
+.brokers .pen { flex: 0 !important; }
+.did .plan .pr { grid-template-columns: 47px 1fr !important; }
+/* T1-T3: their own small table, centered in the box */
+.did .plan .rung { display: grid !important; grid-template-columns: repeat(3, max-content); justify-content: center; column-gap: 8px; row-gap: 3px; margin: 8px 0 !important; }
+.did .plan .rung li { display: contents !important; }
+.did .plan .rung li > b { text-align: right; }
+.did .plan .rung .tn { text-align: left !important; white-space: nowrap; }
+.did .plan .pr { column-gap: 6px !important; }
+/* Astra 2026-11-18 (later): labels left-aligned, values right-aligned */
+.did .plan .pr { grid-template-columns: auto 1fr !important; column-gap: 8px !important; }
+.did .plan .pr > span { text-align: left !important; }
+.did .plan .pr > b { text-align: right !important; justify-self: end !important; }
+/* option cards: no numbers; DAY-OF BUY like the other boxes, method name below in lavender */
+.apr .at { display: block !important; min-height: 0 !important; }
+.apr .at .atk { display: block; color: #ff3fd0; }
+.apr .at .method-name { display: block; color: var(--lav) !important; margin-top: 2px; }
+/* sub-sections: number hangs to the left like the main section numbers, so body text starts under the heading words */
+.lt4 > span:not(.hd) { white-space: nowrap; }
+/* sub-sections: number starts under the section heading; body text starts under the sub-heading words */
+.two { column-gap: 48px !important; }
+.two .col > :not(.sh2) { margin-left: 52px !important; }
+.two .col > :not(.sh2) { width: auto !important; max-width: calc(100% - 52px) !important; box-sizing: border-box; }
+.lc .ph, .lc .ph > span:first-child { font-size: 14px !important; letter-spacing: .5px !important; }
+.two .lbs { column-gap: 6px !important; gap: 6px !important; } .two .lb .mc { font-size: 12px !important; padding: 0 4px !important; }
+/* IPO lottery box titles: white dot between */
+.lc .ph .dotw { color: #fff; }
+/* calculator number boxes: no native white spinners; neon up/down arrows in the box's own border color */
+.siminp input.b, .siminp input.n { border-color: #7c86e0 !important; }
+.siminp input { -moz-appearance: textfield; appearance: textfield; padding-right: 26px !important; }
+.siminp input::-webkit-inner-spin-button, .siminp input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+.siminp .spin { position: relative; display: block; }
+.siminp .spin .sp { position: absolute; right: 6px; width: 16px; height: 14px; padding: 0; border: 0; background: none; font-size: 10px; line-height: 14px; cursor: pointer; opacity: 0; transition: opacity .15s; }
+.siminp .spin .sp.up { top: calc(50% - 15px); } .siminp .spin .sp.dn { top: calc(50% + 1px); }
+.siminp .spin:hover .sp, .siminp .spin:focus-within .sp { opacity: 1; }
+.siminp .spin:has(input.b) .sp, .siminp .spin:has(input.n) .sp { color: #7c86e0; text-shadow: 0 0 6px rgba(124,134,224,.8); }
+.siminp .spin:has(input.l) .sp { color: var(--price-border); text-shadow: 0 0 6px var(--price-border); }
+/* 05.02 text left-aligned inside the right-hand column */
+.two > .col:last-child > .p { text-align: left !important; }
+.siminp .spin .sp { width: 20px !important; height: 16px !important; font-size: 14px !important; line-height: 16px !important; right: 5px !important; }
+.siminp .spin .sp.up { top: calc(50% - 17px) !important; } .siminp .spin .sp.dn { top: calc(50% + 1px) !important; }
+.siminp input { padding-right: 28px !important; }
+/* ===== Astra 2026-11-19: every box uses the broker boxes' style =====
+   gray label: SM 12px regular, #a9a6cf, 1px letter-spacing, capitals
+   white body: SM 15.5px regular, --ink */
+.dc > span,
+.did .plan .pr > span, .did .plan .rung li > b,
+.lc .pr > span,
+.siminp label, .simrow label, .simdrag {
+  font-family: SM, monospace !important; font-size: 12px !important; font-weight: 400 !important;
+  color: #a9a6cf !important; letter-spacing: 1px !important; text-transform: uppercase !important;
+}
+.did .plan .pr > b, .did .plan .rung li > span,
+.lc .pr > b, .lc .pr .c3u,
+.apr .ad, .simtot, .ordc, .apr .ap, .apr .am {
+  font-family: SM, monospace !important; font-size: 15.5px !important; font-weight: 400 !important; line-height: 1.5 !important;
+}
+.did .plan .pr > b, .did .plan .rung li > span, .lc .pr > b, .lc .pr .c3u, .apr .ad, .simtot, .ordc { color: var(--ink) !important; }
+.simtot strong { font-weight: 400 !important; }
+.lc .pr .c4, .lc .pr .c2 { color: var(--ink) !important; }
+/* Astra's boxes (04): label on its own line above the value, like the broker boxes */
+.did .plan .pr { display: block !important; margin-top: 6px; }
+.did .plan .pr > span { display: block !important; text-align: left !important; margin-bottom: 2px; }
+.did .plan .pr > b { display: block !important; text-align: left !important; }
+.did .plan .rung { column-gap: 6px !important; margin-top: 10px !important; }
+/* 05.01 rows: wider number columns for the bigger text */
+.lc .pr { grid-template-columns: 1fr 4ch 7ch 9ch !important; align-items: baseline; }
+.did .plan .pr > b { justify-self: start !important; justify-content: flex-start !important; text-align: left !important; margin-left: 0 !important; }
+.lc .pr { grid-template-columns: 1fr 5ch 7ch 9ch !important; column-gap: 6px !important; }
+.lc .pr .c2 { text-align: right !important; }
+.did .plan .rung { align-items: baseline !important; justify-content: start !important; }
+/* more room between DAY-OF BUY and the method name */
+.apr .at .method-name { margin-top: 8px !important; }
+/* ASTRA WIRED: same as the IPO LOTTERY header below it */
+.dc > span { font-family: Blk !important; font-size: 14px !important; font-weight: 400 !important; letter-spacing: .5px !important; color: #ff3fd0 !important; text-transform: uppercase !important; }
+/* same 22px gap under ASTRA'S NUMBERS as between its sub-sections */
+.two { margin-top: 22px !important; }
+/* scrollbar: no white browser bar; the footer's Claude logo (28px) rides the right edge on the page's blue */
+html { scrollbar-width: none; } html::-webkit-scrollbar { display: none; }
+#cscroll { position: fixed; right: 6px; top: 4px; width: 28px; height: 28px; z-index: 60; cursor: grab; touch-action: none; background: url(claude-spark.png) center / contain no-repeat; filter: drop-shadow(0 0 4px rgba(217,119,87,.6)); }
+#cscroll.on { cursor: grabbing; }
+@media print { #cscroll { display: none; } }
+/* 05.01: money put toward the IPO lottery, above the fills */
+.lc .pr.inv { display: grid !important; grid-template-columns: 1fr auto !important; margin: 2px 0 6px; padding-bottom: 6px; border-bottom: 1px solid rgba(255,63,208,.25); }
+.lc .pr.inv > b { text-align: right !important; }
+/* more room between the shares column and the money column */
+.lc .pr:not(.inv) { grid-template-columns: 1fr 5ch 7ch 11.5ch !important; column-gap: 6px !important; }
+.apr .at .atk .dotw { color: #fff; } .apr .at .atk .k-sofi { color: #29b6d8 !important; } .apr .at .atk .k-fid { color: #4caf3f !important; }
+.h .hsub { font-family: SM, monospace; font-size: 15.5px; font-weight: 400; letter-spacing: normal; text-transform: none; color: var(--ink); margin-left: 10px; }
+/* ===== Astra 2026-11-19: nothing on the page smaller than the body text (15.5px). Formatting pass comes next. ===== */
+.tagline, .tagline i, .tagline b,
+.tlmid span, .lab, .lab *, .tl .ev .t, .pb small, .pb .px, .rd, .dg, .tm, .dt, .broker-line,
+.ex li .tm, .maxp, .maxp b,
+.brokers .bl, .bv .tm,
+.dc > span, .ph, .ph *, .hitc, .missc,
+.lc .pr > span, .lc .pr *,
+.h .px, .lt4 > span, .lt4 small, .lt4 .hd, .lt4 .hd *, .lt4 .px, .lt4 .sx, .sfc .v, .sfc em,
+.ch .c .v, .lb .x .mc, .lb .x .mcl, .lb .ps2, .lb .ps2 .px, .lb .gr,
+.atk, .atk *, .method-name, .simtag, .simhow, .simhow *, .simdrag,
+.siminp label, .simrow label, .simrow label *, .simleg, .simleg span,
+.ordc .ot, .ordc .ot *, .simtot strong,
+.simchart text, .ladchart text, .spin .sp,
+.px, .sx, .mc, sup {
+  font-size: 15.5px !important;
+}
+sup { vertical-align: .45em !important; line-height: 0 !important; }
+/* leftovers: charts are drawn at about 0.76 scale, so their text is set larger to show at 15.5px */
+.sim.big .simchart svg text, .ladchart svg text { font-size: 20.5px !important; }
+.siminp .spin .sp.up, .siminp .spin .sp.dn { font-size: 15.5px !important; }
+.lc .ph > span:first-child, .lc .ph > span:first-child * { font-size: 15.5px !important; }
+/* "cap" sits to the right of each market-cap chip */
+.two .lb .x { flex-direction: row !important; align-items: baseline !important; justify-content: center; gap: 5px !important; }
+.two .lb .x .mcl { color: var(--mut); }
+/* 05.02: bars sit at the left of their columns; value, cap chip and $/share chip line up on each bar's left edge */
+.two .ch .c { align-items: flex-start !important; }
+.two .ch .c i { margin: 0 !important; }
+.two .ch .c .v { width: 62%; text-align: center; }
+.two .ch .note { left: 31% !important; }
+.two .lbs { column-gap: 16px !important; gap: 16px !important; }
+.two .lb { align-items: flex-start !important; text-align: left !important; }
+.two .lb .x { justify-content: flex-start !important; }
+.two .lb .ps2 { white-space: nowrap !important; }
+.two .ch { column-gap: 8px !important; gap: 8px !important; } .two .lbs { column-gap: 8px !important; gap: 8px !important; }
+/* percentages in neon yellow, regular weight (05.02 and 05.03) */
+.lt4 small, .two .lb .gr { color: #f8ffa6 !important; font-weight: 400 !important; font-family: SM, monospace !important; }
+/* 05.03: a little more room between columns */
+.lt4 { column-gap: 12px !important; }
+/* option cards: one field per row, one-line labels, inputs line up across the three cards */
+.apr .siminp { grid-template-columns: 1fr !important; row-gap: 8px !important; }
+.apr .siminp > div { display: grid; grid-template-columns: 1fr; }
+.apr .siminp label { white-space: nowrap !important; margin-bottom: 2px; }
+/* order cards: two lines, tighter */
+.ac .ordcards { gap: 6px !important; margin-top: 8px !important; }
+.ac .ordc { padding: 5px 10px !important; line-height: 1.35 !important; }
+.ordc .ot { display: flex; align-items: baseline; gap: 6px; margin-bottom: 1px; }
+.ordc .ot .ok, .ordc .ot .no { margin-left: auto; font-family: SM, monospace; font-size: 15.5px; font-weight: 400; letter-spacing: 0; text-transform: none; }
+.ordc .ot { white-space: nowrap !important; }
+/* option cards: Budget full width; the second row is three equal boxes (ladder: Order 1 / 2 / 3; single limit and DCA use one box of that same size) */
+.apr .siminp { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; column-gap: 8px !important; }
+.apr .siminp > div:first-child { grid-column: 1 / -1; }
+/* budget box: two input widths, not the whole row (Astra, 2026-11-18) */
+/* typed "ANT opens at" price stays the size of the old price pill */
+.simrow input.opv, .ac .simrow input.opv { flex: 0 0 4.4em; width: 4.4em; padding: 0 4px; line-height: 1.3; }
+/* chart keys share one height so Order 1 / Buy 1 line up; items stay packed at the top */
+.apr .ac .simleg { align-content: flex-start; }
+.apr .siminp > div:first-child .spin { max-width: calc((100% - 20px) / 3 * 2 + 10px); }
+.apr .siminp label { overflow: visible; }
+.apr .siminp > div:not(:first-child) label { width: 0; }
+.apr .siminp input { padding-left: 6px !important; padding-right: 20px !important; }
+.apr .siminp .spin .sp { right: 2px !important; width: 16px !important; }
+/* section 04 to 05: same 22px gap as 03 to 04 */
+.did .dcol { gap: 0 !important; }
+.did .dcol > :not(.dc) { display: none !important; }
+.did { margin-bottom: 22px !important; }
+.did { grid-template-rows: auto !important; row-gap: 0 !important; }
+.did .dcol { display: block !important; grid-row: auto !important; grid-template-rows: none !important; }
+/* day-of buy cards: all the same height; pros/cons sit at the bottom of each */
+.apr { align-items: stretch !important; }
+.apr .ac { display: flex !important; flex-direction: column; }
+.apr .ac .ap { margin-top: auto !important; padding-top: 10px; }
+.apr .ad { min-height: 0; }
+/* 05.02: "cap", "/share" and the values above the bars in the white body text */
+.two .lb .x .mcl, .two .lb .ps2 { color: var(--ink) !important; }
+.two .ch .c .v { font-family: SM, monospace !important; font-size: 15.5px !important; font-weight: 400 !important; color: var(--ink) !important; letter-spacing: normal !important; text-shadow: none !important; }
+/* timeline colors change exactly at the two midnight lines (19.328% and 59.664%) */
+.tl.row .tlline { background: linear-gradient(90deg, var(--lav) 0 19.328%, var(--mint) 19.328% 59.664%, #ff3fd0 59.664% 100%) !important; }
+/* speech bubble text matches the body paragraphs (Astra, 2026-11-18); bottom stays where it was */
+.mbot .bub, .ns .mbot .bub { font-family: SM, monospace !important; font-weight: 400 !important; font-size: 15.5px !important; line-height: 1.55 !important; color: var(--ink) !important; padding: 12px 14px !important; top: auto !important; bottom: calc(100% + 29px); }
+/* girl and bubble start level with the step-three text next to them (Astra, 2026-11-18): bubble in the flow, girl + Claude orb under it */
+.ns .nsrow .step-three .mbot { margin: 0 !important; }
+.mbot .mfig { position: relative; }
+.mbot .bub, .ns .mbot .bub { position: relative !important; top: auto !important; bottom: auto !important; left: auto !important; margin: 0 auto 34px !important; }
+/* step three: paragraph full width; below it, centered, bubble on the left pointing right at the girl (Astra, 2026-11-18) */
+.step-three-layout { display: block !important; }
+.ns .nsrow .step-three .mbot { width: auto !important; margin: 26px 0 0 !important; display: flex !important; justify-content: center; }
+.step-three .mbot .mwrap { width: auto !important; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; }
+.step-three .mbot .mfig { width: 280px; flex: 0 0 280px; }
+.step-three .mbot .bub, .ns .step-three .mbot .bub { margin: 0 40px 0 0 !important; flex: 0 0 232px; }
+.ns .step-three .mbot .bub:after { left: auto !important; right: -30px !important; top: 50% !important; bottom: auto !important; width: 30px !important; height: 40px !important; margin: -20px 0 0 0 !important; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 40'%3E%3Cpath d='M0 3 L27 20 L0 37 Z' fill='%231d2752'/%3E%3Cpath d='M0 3 L27 20 L0 37' fill='none' stroke='%23ff3fd0' stroke-width='3' stroke-linecap='round' stroke-linejoin='miter'/%3E%3C/svg%3E") no-repeat center/100% 100% !important; }
+/* 05 › 03 holding table: TIME and PER SHARE sit on the same line as the two "shares" headers (Astra, 2026-11-18) */
+.lt4 > .hd { align-self: end; }
+/* simulator inputs look exactly like the page's standard pills (Astra, 2026-11-18): green for prices, purple for budget and number of buys; each box fits its number */
+.sim.big .siminp .spin { display: inline-block !important; max-width: none !important; }
+.sim.big .siminp .sp { display: none !important; }
+.sim.big .siminp input, .sim.big .simrow input.opv { box-sizing: content-box !important; width: auto; min-width: 0 !important; flex: 0 0 auto !important; height: auto !important; font-family: SM, monospace !important; font-size: 15.5px !important; font-weight: 700 !important; line-height: 1.3 !important; padding: 0 5px 1px !important; border-radius: 6px !important; border: 1.5px solid #3ddc84 !important; background: rgba(61,220,132,.16) !important; color: #8dffb8 !important; text-align: left !important; }
+.sim.big .siminp input.b, .sim.big .siminp input.n { border-color: rgb(124,134,224) !important; background: rgba(124,134,224,.16) !important; color: var(--ink) !important; }
+.apr .siminp > div { justify-items: start; }
+.apr .ac .sim.big .siminp { min-height: 0; }
+/* pros and cons sit right under each description (Astra, 2026-11-18) */
+.apr .ac .ap { margin-top: 0 !important; padding-top: 0 !important; }
+.apr .ac .adx { margin-bottom: 10px; }
+/* each input sits to the right of its label, one line each (Astra, 2026-11-18) */
+.apr .ac .sim.big .siminp { display: flex !important; flex-wrap: wrap; align-items: center; column-gap: 6px !important; row-gap: 8px !important; }
+.apr .ac .sim.big .siminp > div { display: flex !important; align-items: center; gap: 8px; }
+.apr .ac .sim.big .siminp > div { flex-basis: 100%; }
+.apr .ac .sim.big .siminp label { margin: 0 !important; white-space: nowrap; }
+.apr .ac .sim.big .siminp label.grp-h { display: block !important; visibility: visible !important; }
+.apr .ac .sim.big .siminp > div:not(:first-child) label { width: auto !important; overflow: visible !important; }
+.apr .ac .sim.big .siminp { margin-bottom: 0 !important; }
+/* space under the girl matches the space under the ANTHROPIC IPO title (Astra, 2026-11-19) */
+.sec.ns, .sec.ns .steps > li.step-three { margin-bottom: 0 !important; }
+.sec.ns + .slogan { margin-top: 21px !important; }
+/* share pill to the word "shares": one small, equal gap everywhere, never split across lines (Astra, 2026-11-19) */
+.shq { white-space: nowrap; }
+body .shq > .sx { margin-right: 6px !important; }
+/* 05 › 01 rows: pill and "shares" share one right-aligned cell, so the gap no longer depends on the number's width */
+.lc .pr:not(.inv) { grid-template-columns: 1fr auto 11.5ch !important; }
+
+/* LIVE badge before the tagline: red box with a blinking recording dot (Astra, 2026-11-19) */
+.tagline .livebx { display: inline-flex; align-items: center; gap: 7px; padding: 2px 9px 2px 7px; margin-right: 6px; border: 2px solid #ff3b4e; border-radius: 6px; color: #ff3b4e !important; background: rgba(255,59,78,.10); box-shadow: 0 0 10px rgba(255,59,78,.35); line-height: 1.2; vertical-align: middle; }
+.tagline .livebx .rec { width: 10px; height: 10px; border-radius: 50%; background: #ff3b4e; box-shadow: 0 0 8px #ff3b4e; animation: recblink 1.2s ease-in-out infinite; }
+@keyframes recblink { 0%,100% { opacity: 1; } 50% { opacity: .2; } }
+@media print { .tagline .livebx .rec { animation: none; } }
+
+/* market projections: four caps, $1.5T / $2T / $3T / $5T (Astra 2026-11-19) */
+.two .ch.ch4, .two .lbs.lbs4 { grid-template-columns: repeat(4, 1fr) !important; }
+.ch.ch4 .c:nth-child(4) { --scenario: #b9a4ff; }
+.ch.ch4 .note .hw { font-size: 22px; }
+.two .lbs.lbs4 .lb { min-width: 0; }
+.two .lbs.lbs4 .lb .x, .two .lbs.lbs4 .lb .ps2 { margin-bottom: 4px !important; }
+
+/* lottery badges stay on one line (MISSED BUY IN) */
+.lc .ph i { white-space: nowrap; flex-shrink: 0; }
+/* small frowny face to the right of the SoFi 0 AWARDED badge */
+.lc .ph .frown { margin-left: 5px; font-family: "Segoe UI Symbol", sans-serif; font-size: 15px; line-height: 1; color: #ff7a8a; flex-shrink: 0; }
+.lc .ph:has(.frown) { justify-content: flex-start; }
+.lc .ph:has(.frown) i { margin-left: auto; }
+/* live Boise clock under the LIVE box (Astra 2026-11-19) */
+.tagline .livewrap { position: relative; display: inline-block; vertical-align: middle; }
+.tagline .liveclock { position: absolute; top: calc(100% + 5px); left: 0; font-family: SM, monospace; font-size: 12px; letter-spacing: .3px; color: #ff7a8a; white-space: nowrap; font-variant-numeric: tabular-nums; }
+/* date under each projection bar (Astra 2026-11-19) */
+.two .lbs.lbs4 .lb .lbd { display: block; margin-bottom: 6px; font-family: SM, monospace; font-size: 12px; line-height: 1.25; color: var(--ink); }
+/* Astra's own notes as bullets under steps 06 › 01 and 06 › 02 (Astra 2026-11-19) */
+.steps .astb { margin: 6px 0 0; padding-left: 20px; list-style: disc; }
+.steps .astb li { margin: 0; padding: 0; line-height: 1.85 !important; }
+.steps .astb li::marker { color: #ff5fd8; }
+/* Budget / Max price words match the input labels in the option cards */
+.steps .astb .inl { font-family: SM, monospace; font-size: 15.5px; font-weight: 400; color: rgb(169, 166, 207); text-transform: uppercase; letter-spacing: 1px; }
+/* pick-your-own dates for scheduled buys (Astra 2026-11-19) */
+.apr .ac .sim.big .dtrow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin-top: 8px; }
+.apr .ac .sim.big .dtrow label { font-family: SM, monospace; font-size: 15.5px; font-weight: 400; color: rgb(169, 166, 207); text-transform: uppercase; letter-spacing: 1px; margin: 0; }
+.apr .ac .sim.big .dtrow .dts { display: flex; flex-wrap: wrap; gap: 6px; }
+.ordc .ot input.dt { box-sizing: content-box; width: 5ch; font-family: SM, monospace; font-size: 15.5px; font-weight: 700; line-height: 1.3; padding: 0 5px 1px; border-radius: 6px; border: 1.5px solid #e9f25c; background: rgba(248,255,166,.14); color: #f8ffa6; text-align: center; }
+.ordc .ot .bdt { font-family: SM, monospace; font-size: 13px; font-weight: 400; color: var(--mut); margin-left: 4px; }
+.ordc .ot input.dt { margin: 0 2px 0 4px; font-size: 13px; vertical-align: baseline; }
