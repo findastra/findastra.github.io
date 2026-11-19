@@ -171,7 +171,7 @@ body .simval.px { font-size: 16px; }
 /* Keep the projection copy anchored to its chart rather than floating mid-column. */
 .two { column-gap: 18px; }
 .two > .col:last-child { align-self: start; }
-.two > .col:last-child > .p { text-align: right; }
+.two > .col:last-child > .p { text-align: left; }
 .two .ch { margin-top: 24px; }
 
 /* Compare all three purchase methods side by side. */
