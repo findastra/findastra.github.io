@@ -426,6 +426,10 @@ sup { vertical-align: .45em !important; line-height: 0 !important; }
 .apr .siminp { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; column-gap: 8px !important; }
 .apr .siminp > div:first-child { grid-column: 1 / -1; }
 /* budget box: two input widths, not the whole row (Astra, 2026-11-18) */
+/* typed "ANT opens at" price stays the size of the old price pill */
+.simrow input.opv, .ac .simrow input.opv { flex: 0 0 4.4em; width: 4.4em; padding: 0 4px; line-height: 1.3; }
+/* chart keys share one height so Order 1 / Buy 1 line up; items stay packed at the top */
+.apr .ac .simleg { align-content: flex-start; }
 .apr .siminp > div:first-child .spin { max-width: calc((100% - 20px) / 3 * 2 + 10px); }
 .apr .siminp label { overflow: visible; }
 .apr .siminp > div:not(:first-child) label { width: 0; }
