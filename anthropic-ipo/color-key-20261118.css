@@ -521,3 +521,5 @@ body .shq > .sx { margin-right: 6px !important; }
 .steps .astb { margin: 6px 0 0; padding-left: 20px; list-style: disc; }
 .steps .astb li { margin: 0; padding: 0; line-height: 1.85 !important; }
 .steps .astb li::marker { color: #ff5fd8; }
+/* Budget / Max price words match the input labels in the option cards */
+.steps .astb .inl { font-family: SM, monospace; font-size: 15.5px; font-weight: 400; color: rgb(169, 166, 207); text-transform: uppercase; letter-spacing: 1px; }
