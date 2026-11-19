@@ -408,3 +408,7 @@ sup { vertical-align: .45em !important; line-height: 0 !important; }
 .two .lb .x { justify-content: flex-start !important; }
 .two .lb .ps2 { white-space: nowrap !important; }
 .two .ch { column-gap: 8px !important; gap: 8px !important; } .two .lbs { column-gap: 8px !important; gap: 8px !important; }
+/* percentages in neon yellow, regular weight (05.02 and 05.03) */
+.lt4 small, .two .lb .gr { color: #f8ffa6 !important; font-weight: 400 !important; font-family: SM, monospace !important; }
+/* 05.03: a little more room between columns */
+.lt4 { column-gap: 12px !important; }
