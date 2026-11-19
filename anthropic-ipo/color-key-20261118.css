@@ -487,3 +487,8 @@ sup { vertical-align: .45em !important; line-height: 0 !important; }
 /* space under the girl matches the space under the ANTHROPIC IPO title (Astra, 2026-11-19) */
 .sec.ns, .sec.ns .steps > li.step-three { margin-bottom: 0 !important; }
 .sec.ns + .slogan { margin-top: 21px !important; }
+/* share pill to the word "shares": one small, equal gap everywhere, never split across lines (Astra, 2026-11-19) */
+.shq { white-space: nowrap; }
+body .shq > .sx { margin-right: 6px !important; }
+/* 05 › 01 rows: pill and "shares" share one right-aligned cell, so the gap no longer depends on the number's width */
+.lc .pr:not(.inv) { grid-template-columns: 1fr auto 11.5ch !important; }
