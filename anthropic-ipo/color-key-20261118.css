@@ -260,3 +260,6 @@ body .simval.px { font-size: 16px; }
 .brokers .bn + .bl { margin-top: 6px !important; }
 .dc em { font-size: 38px !important; line-height: 1.1 !important; }
 .brokers .bn span, .dc em { text-shadow: 0 0 9px color-mix(in srgb, currentColor 65%, transparent) !important; }
+/* HIT green, MISSED red in Astra's IPO lottery boxes, same as section 05 */
+.did .plan .ph i.hitc { color: rgb(141,255,184) !important; border-color: rgb(61,220,132) !important; }
+.did .plan .ph i.missc { color: rgb(255,107,122) !important; border-color: rgb(255,107,122) !important; }
