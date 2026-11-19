@@ -373,3 +373,25 @@ html { scrollbar-width: none; } html::-webkit-scrollbar { display: none; }
 /* more room between the shares column and the money column */
 .lc .pr:not(.inv) { grid-template-columns: 1fr 5ch 7ch 11.5ch !important; column-gap: 6px !important; }
 .apr .at .atk .dotw { color: #fff; } .apr .at .atk .k-sofi { color: #29b6d8 !important; } .apr .at .atk .k-fid { color: #4caf3f !important; }
+.h .hsub { font-family: SM, monospace; font-size: 15.5px; font-weight: 400; letter-spacing: normal; text-transform: none; color: var(--ink); margin-left: 10px; }
+/* ===== Astra 2026-11-19: nothing on the page smaller than the body text (15.5px). Formatting pass comes next. ===== */
+.tagline, .tagline i, .tagline b,
+.tlmid span, .lab, .lab *, .tl .ev .t, .pb small, .pb .px, .rd, .dg, .tm, .dt, .broker-line,
+.ex li .tm, .maxp, .maxp b,
+.brokers .bl, .bv .tm,
+.dc > span, .ph, .ph *, .hitc, .missc,
+.lc .pr > span, .lc .pr *,
+.h .px, .lt4 > span, .lt4 small, .lt4 .hd, .lt4 .hd *, .lt4 .px, .lt4 .sx, .sfc .v, .sfc em,
+.ch .c .v, .lb .x .mc, .lb .x .mcl, .lb .ps2, .lb .ps2 .px, .lb .gr,
+.atk, .atk *, .method-name, .simtag, .simhow, .simhow *, .simdrag,
+.siminp label, .simrow label, .simrow label *, .simleg, .simleg span,
+.ordc .ot, .ordc .ot *, .simtot strong,
+.simchart text, .ladchart text, .spin .sp,
+.px, .sx, .mc, sup {
+  font-size: 15.5px !important;
+}
+sup { vertical-align: .45em !important; line-height: 0 !important; }
+/* leftovers: charts are drawn at about 0.76 scale, so their text is set larger to show at 15.5px */
+.sim.big .simchart svg text, .ladchart svg text { font-size: 20.5px !important; }
+.siminp .spin .sp.up, .siminp .spin .sp.dn { font-size: 15.5px !important; }
+.lc .ph > span:first-child, .lc .ph > span:first-child * { font-size: 15.5px !important; }
