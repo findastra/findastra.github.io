@@ -356,3 +356,7 @@ body .simval.px { font-size: 16px; }
 .lc .pr { grid-template-columns: 1fr 5ch 7ch 9ch !important; column-gap: 6px !important; }
 .lc .pr .c2 { text-align: right !important; }
 .did .plan .rung { align-items: baseline !important; justify-content: start !important; }
+/* more room between DAY-OF BUY and the method name */
+.apr .at .method-name { margin-top: 8px !important; }
+/* ASTRA WIRED: same as the IPO LOTTERY header below it */
+.dc > span { font-family: Blk !important; font-size: 14px !important; font-weight: 400 !important; letter-spacing: .5px !important; color: #ff3fd0 !important; text-transform: uppercase !important; }
