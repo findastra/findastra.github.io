@@ -270,3 +270,10 @@ body .simval.px { font-size: 16px; }
 .brokers .b:nth-child(2) .lnk { color: #ccff00 !important; }
 .brokers .b:nth-child(3) .lnk { color: #bd8aff !important; }
 .brokers .b:nth-child(4) .lnk { color: #4caf3f !important; }
+/* box titles stay on one line */
+.lc .ph > span:first-child { white-space: nowrap; font-size: 13px; }
+/* broker box text = the page's plain white body text (gray labels unchanged) */
+.brokers .bv, .brokers .bv.s, .brokers .pen { font-family: SM, monospace !important; font-size: 15.5px !important; font-weight: 400 !important; color: var(--ink) !important; line-height: 1.5 !important; letter-spacing: normal !important; }
+/* market-cap chips: closer to the axis, clear space above the $/share row */
+.two .lbs { margin-top: 12px !important; }
+.two .lb .x { margin-bottom: 8px; line-height: 1.2; }
