@@ -303,6 +303,10 @@ body .simval.px { font-size: 16px; }
 .apr .at .atk { display: block; color: #ff3fd0; }
 .apr .at .method-name { display: block; color: var(--lav) !important; margin-top: 2px; }
 /* sub-sections: number hangs to the left like the main section numbers, so body text starts under the heading words */
-.two .col > .sh2 { margin-left: -52px !important; }
-.two { column-gap: 72px !important; }
 .lt4 > span:not(.hd) { white-space: nowrap; }
+/* sub-sections: number starts under the section heading; body text starts under the sub-heading words */
+.two { column-gap: 48px !important; }
+.two .col > :not(.sh2) { margin-left: 52px !important; }
+.two .col > :not(.sh2) { width: auto !important; max-width: calc(100% - 52px) !important; box-sizing: border-box; }
+.lc .ph, .lc .ph > span:first-child { font-size: 12px !important; letter-spacing: 0 !important; }
+.two .lbs { column-gap: 6px !important; gap: 6px !important; } .two .lb .mc { font-size: 12px !important; padding: 0 4px !important; }
