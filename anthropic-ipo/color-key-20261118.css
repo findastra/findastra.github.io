@@ -412,3 +412,13 @@ sup { vertical-align: .45em !important; line-height: 0 !important; }
 .lt4 small, .two .lb .gr { color: #f8ffa6 !important; font-weight: 400 !important; font-family: SM, monospace !important; }
 /* 05.03: a little more room between columns */
 .lt4 { column-gap: 12px !important; }
+/* option cards: one field per row, one-line labels, inputs line up across the three cards */
+.apr .siminp { grid-template-columns: 1fr !important; row-gap: 8px !important; }
+.apr .siminp > div { display: grid; grid-template-columns: 1fr; }
+.apr .siminp label { white-space: nowrap !important; margin-bottom: 2px; }
+/* order cards: two lines, tighter */
+.ac .ordcards { gap: 6px !important; margin-top: 8px !important; }
+.ac .ordc { padding: 5px 10px !important; line-height: 1.35 !important; }
+.ordc .ot { display: flex; align-items: baseline; gap: 6px; margin-bottom: 1px; }
+.ordc .ot .ok, .ordc .ot .no { margin-left: auto; font-family: SM, monospace; font-size: 15.5px; font-weight: 400; letter-spacing: 0; text-transform: none; }
+.ordc .ot { white-space: nowrap !important; }
