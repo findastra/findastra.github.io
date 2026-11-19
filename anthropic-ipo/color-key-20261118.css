@@ -425,6 +425,8 @@ sup { vertical-align: .45em !important; line-height: 0 !important; }
 /* option cards: Budget full width; the second row is three equal boxes (ladder: Order 1 / 2 / 3; single limit and DCA use one box of that same size) */
 .apr .siminp { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; column-gap: 8px !important; }
 .apr .siminp > div:first-child { grid-column: 1 / -1; }
+/* budget box: two input widths, not the whole row (Astra, 2026-11-18) */
+.apr .siminp > div:first-child .spin { max-width: calc((100% - 20px) / 3 * 2 + 10px); }
 .apr .siminp label { overflow: visible; }
 .apr .siminp > div:not(:first-child) label { width: 0; }
 .apr .siminp input { padding-left: 6px !important; padding-right: 20px !important; }
