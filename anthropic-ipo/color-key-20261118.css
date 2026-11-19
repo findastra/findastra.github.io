@@ -517,3 +517,7 @@ body .shq > .sx { margin-right: 6px !important; }
 .tagline .liveclock { position: absolute; top: calc(100% + 5px); left: 0; font-family: SM, monospace; font-size: 12px; letter-spacing: .3px; color: #ff7a8a; white-space: nowrap; font-variant-numeric: tabular-nums; }
 /* date under each projection bar (Astra 2026-11-19) */
 .two .lbs.lbs4 .lb .lbd { display: block; margin-bottom: 6px; font-family: SM, monospace; font-size: 12px; line-height: 1.25; color: var(--ink); }
+/* Astra's own notes as bullets under steps 06 › 01 and 06 › 02 (Astra 2026-11-19) */
+.steps .astb { margin: 6px 0 0; padding-left: 20px; list-style: disc; }
+.steps .astb li { margin: 0; padding: 0; line-height: 1.85 !important; }
+.steps .astb li::marker { color: #ff5fd8; }
