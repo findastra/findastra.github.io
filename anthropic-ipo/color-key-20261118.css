@@ -372,3 +372,4 @@ html { scrollbar-width: none; } html::-webkit-scrollbar { display: none; }
 .lc .pr.inv > b { text-align: right !important; }
 /* more room between the shares column and the money column */
 .lc .pr:not(.inv) { grid-template-columns: 1fr 5ch 7ch 11.5ch !important; column-gap: 6px !important; }
+.apr .at .atk .dotw { color: #fff; } .apr .at .atk .k-sofi { color: #29b6d8 !important; } .apr .at .atk .k-fid { color: #4caf3f !important; }
