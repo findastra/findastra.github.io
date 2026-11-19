@@ -512,3 +512,6 @@ body .shq > .sx { margin-right: 6px !important; }
 .lc .ph .frown { margin-left: 5px; font-family: "Segoe UI Symbol", sans-serif; font-size: 15px; line-height: 1; color: #ff7a8a; flex-shrink: 0; }
 .lc .ph:has(.frown) { justify-content: flex-start; }
 .lc .ph:has(.frown) i { margin-left: auto; }
+/* live Boise clock under the LIVE box (Astra 2026-11-19) */
+.tagline .livewrap { position: relative; display: inline-block; vertical-align: middle; }
+.tagline .liveclock { position: absolute; top: calc(100% + 5px); left: 0; font-family: SM, monospace; font-size: 12px; letter-spacing: .3px; color: #ff7a8a; white-space: nowrap; font-variant-numeric: tabular-nums; }
