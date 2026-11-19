@@ -425,6 +425,12 @@ sup { vertical-align: .45em !important; line-height: 0 !important; }
 /* option cards: Budget full width; the second row is three equal boxes (ladder: Order 1 / 2 / 3; single limit and DCA use one box of that same size) */
 .apr .siminp { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; column-gap: 8px !important; }
 .apr .siminp > div:first-child { grid-column: 1 / -1; }
+/* budget box: two input widths, not the whole row (Astra, 2026-11-18) */
+/* typed "ANT opens at" price stays the size of the old price pill */
+.simrow input.opv, .ac .simrow input.opv { flex: 0 0 4.4em; width: 4.4em; padding: 0 4px; line-height: 1.3; }
+/* chart keys share one height so Order 1 / Buy 1 line up; items stay packed at the top */
+.apr .ac .simleg { align-content: flex-start; }
+.apr .siminp > div:first-child .spin { max-width: calc((100% - 20px) / 3 * 2 + 10px); }
 .apr .siminp label { overflow: visible; }
 .apr .siminp > div:not(:first-child) label { width: 0; }
 .apr .siminp input { padding-left: 6px !important; padding-right: 20px !important; }
@@ -445,3 +451,18 @@ sup { vertical-align: .45em !important; line-height: 0 !important; }
 .two .ch .c .v { font-family: SM, monospace !important; font-size: 15.5px !important; font-weight: 400 !important; color: var(--ink) !important; letter-spacing: normal !important; text-shadow: none !important; }
 /* timeline colors change exactly at the two midnight lines (19.328% and 59.664%) */
 .tl.row .tlline { background: linear-gradient(90deg, var(--lav) 0 19.328%, var(--mint) 19.328% 59.664%, #ff3fd0 59.664% 100%) !important; }
+/* speech bubble text matches the body paragraphs (Astra, 2026-11-18); bottom stays where it was */
+.mbot .bub, .ns .mbot .bub { font-family: SM, monospace !important; font-weight: 400 !important; font-size: 15.5px !important; line-height: 1.55 !important; color: var(--ink) !important; padding: 12px 14px !important; top: auto !important; bottom: calc(100% + 29px); }
+/* girl and bubble start level with the step-three text next to them (Astra, 2026-11-18): bubble in the flow, girl + Claude orb under it */
+.ns .nsrow .step-three .mbot { margin: 0 !important; }
+.mbot .mfig { position: relative; }
+.mbot .bub, .ns .mbot .bub { position: relative !important; top: auto !important; bottom: auto !important; left: auto !important; margin: 0 auto 34px !important; }
+/* step three: paragraph full width; below it, centered, bubble on the left pointing right at the girl (Astra, 2026-11-18) */
+.step-three-layout { display: block !important; }
+.ns .nsrow .step-three .mbot { width: auto !important; margin: 26px 0 0 !important; display: flex !important; justify-content: center; }
+.step-three .mbot .mwrap { width: auto !important; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; }
+.step-three .mbot .mfig { width: 280px; flex: 0 0 280px; }
+.step-three .mbot .bub, .ns .step-three .mbot .bub { margin: 0 40px 0 0 !important; flex: 0 0 232px; }
+.ns .step-three .mbot .bub:after { left: auto !important; right: -30px !important; top: 50% !important; bottom: auto !important; width: 30px !important; height: 40px !important; margin: -20px 0 0 0 !important; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 40'%3E%3Cpath d='M0 3 L27 20 L0 37 Z' fill='%231d2752'/%3E%3Cpath d='M0 3 L27 20 L0 37' fill='none' stroke='%23ff3fd0' stroke-width='3' stroke-linecap='round' stroke-linejoin='miter'/%3E%3C/svg%3E") no-repeat center/100% 100% !important; }
+/* 05 › 03 holding table: TIME and PER SHARE sit on the same line as the two "shares" headers (Astra, 2026-11-18) */
+.lt4 > .hd { align-self: end; }
