@@ -215,7 +215,7 @@ body{padding-bottom:64px}
 .px,.sx,.mc{line-height:1.12!important;padding-top:0!important;padding-bottom:1px!important;margin:1px 2px;vertical-align:baseline}.p,.ex li,.steps>li,.s2sub{line-height:1.85!important}
 .dt{white-space:nowrap;text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:3px}
 </style>
-<link rel="stylesheet" href="color-key-20261118.css?v=20261119h">
+<link rel="stylesheet" href="color-key-20261118.css?v=20261119i">
 </head><body>
 <div id="tw"><div id="title" class="stack"><span class="l1">ANTHROPIC IPO</span><span class="l2">ANTHROPIC IPO</span><span class="l3">ANTHROPIC IPO</span></div></div>
 <div class="tagline">THE BEGINNER'S FIELD GUIDE<i>/</i>SHARES<i>/</i>ALLOCATIONS<i>/</i>BROKERS<i>/</i><b class="pk">ASTRA'S ACTUAL INVESTMENT NUMBERS</b></div>
@@ -309,4 +309,13 @@ function end(){if(drag===null)return;drag=null;lock=null;run()}window.addEventLi
 el.querySelectorAll("input").forEach(function(i){i.addEventListener("input",run)});addEventListener("resize",run);run()})})();</script>
 
 <script>(function(){document.querySelectorAll('.siminp input[type=number]').forEach(function(i){var w=document.createElement('span');w.className='spin';i.parentNode.insertBefore(w,i);w.appendChild(i);[['up','\u25B2',1],['dn','\u25BC',-1]].forEach(function(d){var b=document.createElement('button');b.type='button';b.className='sp '+d[0];b.tabIndex=-1;b.setAttribute('aria-label',d[0]=='up'?'Increase':'Decrease');b.textContent=d[1];b.addEventListener('click',function(){d[2]>0?i.stepUp():i.stepDown();i.dispatchEvent(new Event('input',{bubbles:true}))});w.appendChild(b)})})})();</script>
+<script>(function(){/* Claude logo as the page scrollbar (Astra 2026-11-19) */
+var d=document.documentElement,k=document.createElement('div');k.id='cscroll';k.setAttribute('aria-hidden','true');document.body.appendChild(k);
+function z(){return parseFloat(d.style.zoom)||1}
+function max(){return Math.max(1,d.scrollHeight*z()-innerHeight)}
+function place(){var vh=innerHeight/z(),r=Math.min(1,Math.max(0,scrollY/max()));k.style.top=(4+r*(vh-36))+'px';k.style.display=d.scrollHeight*z()>innerHeight+2?'block':'none'}
+var drag=null;k.addEventListener('pointerdown',function(e){drag={y:e.clientY,s:scrollY};k.setPointerCapture(e.pointerId);k.classList.add('on');e.preventDefault()});
+k.addEventListener('pointermove',function(e){if(!drag)return;var vh=innerHeight/z();scrollTo(0,drag.s+(e.clientY-drag.y)/(vh-36)*max())});
+function up(){drag=null;k.classList.remove('on')}k.addEventListener('pointerup',up);k.addEventListener('pointercancel',up);
+addEventListener('scroll',place,{passive:true});addEventListener('resize',place);place();setTimeout(place,500)})();</script>
 </body></html>

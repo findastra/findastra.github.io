@@ -362,3 +362,8 @@ body .simval.px { font-size: 16px; }
 .dc > span { font-family: Blk !important; font-size: 14px !important; font-weight: 400 !important; letter-spacing: .5px !important; color: #ff3fd0 !important; text-transform: uppercase !important; }
 /* same 22px gap under ASTRA'S NUMBERS as between its sub-sections */
 .two { margin-top: 22px !important; }
+/* scrollbar: no white browser bar; the footer's Claude logo (28px) rides the right edge on the page's blue */
+html { scrollbar-width: none; } html::-webkit-scrollbar { display: none; }
+#cscroll { position: fixed; right: 6px; top: 4px; width: 28px; height: 28px; z-index: 60; cursor: grab; touch-action: none; background: url(claude-spark.png) center / contain no-repeat; filter: drop-shadow(0 0 4px rgba(217,119,87,.6)); }
+#cscroll.on { cursor: grabbing; }
+@media print { #cscroll { display: none; } }
