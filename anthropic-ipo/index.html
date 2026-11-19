@@ -287,7 +287,7 @@ var n=document.getElementById("now");if(n)n.style.top=L+1.5+"px"}
 lay();document.fonts&&document.fonts.ready.then(lay);addEventListener("load",lay)})();</script>
 
 <script>(function(){var NS="http://www.w3.org/2000/svg",IPO=83;function mk(n,a){var e=document.createElementNS(NS,n);for(var k in a)e.setAttribute(k,a[k]);return e}function $(n){return "$"+Math.round(n).toLocaleString("en-US")}
-var DAY={x:["8 AM","9 AM","10 AM","11 AM","12 PM","1 PM","2 PM"],f:[1,1.08,.95,.86,.92,1,1.04]},WK={x:["Day 1","Week 1","Week 2","Week 3","Week 4","Week 5","Week 6","Week 7","Week 8"],f:[1,.93,.97,1.05,1.1,1.02,1.08,1.12,1.06]};
+var DAY={x:["8 AM","9 AM","10 AM","11 AM","12 PM","1 PM","2 PM"],f:[1,1.08,.95,.86,.92,1,1.04]},WK={x:["Day 1","7","14","21","28","35","42","49","56"],f:[1,.93,.97,1.05,1.1,1.02,1.08,1.12,1.06]};
 document.querySelectorAll(".sim.big").forEach(function(el){var mode=el.dataset.mode,box=el.querySelector(".simchart"),out=el.querySelector(".simtot"),cards=el.querySelector(".ordcards"),F=(mode=="dca"?WK:DAY).f.slice(),drag=null,lock=null,svg=null;
 function run(){var O=+el.querySelector(".op").value;el.querySelector(".opv").textContent="$"+O;var B=Math.max(0,(+String(el.querySelector(".b").value).replace(/[^0-9.]/g,"")||0)),L=[].map.call(el.querySelectorAll(".l"),function(i){return (+String(i.value).replace(/[^0-9.]/g,"")||0)||0}),N=mode=="dca"?Math.max(1,Math.min(9,Math.round((+String(el.querySelector(".n").value).replace(/[^0-9.]/g,"")||0)||1))):0;
 var X0=mode=="dca"?WK.x.slice(0,Math.max(N,2)):DAY.x,path=X0.map(function(_,i){return Math.round(O*F[i]*100)/100}),low=Math.min.apply(null,path);
