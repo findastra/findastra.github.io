@@ -498,3 +498,12 @@ body .shq > .sx { margin-right: 6px !important; }
 .tagline .livebx .rec { width: 10px; height: 10px; border-radius: 50%; background: #ff3b4e; box-shadow: 0 0 8px #ff3b4e; animation: recblink 1.2s ease-in-out infinite; }
 @keyframes recblink { 0%,100% { opacity: 1; } 50% { opacity: .2; } }
 @media print { .tagline .livebx .rec { animation: none; } }
+
+/* market projections: four caps, $1.5T / $2T / $3T / $5T (Astra 2026-11-19) */
+.two .ch.ch4, .two .lbs.lbs4 { grid-template-columns: repeat(4, 1fr) !important; }
+.ch.ch4 .c:nth-child(4) { --scenario: #b9a4ff; }
+.ch.ch4 .note .hw { font-size: 22px; }
+.two .lbs.lbs4 .lb { min-width: 0; }
+.two .lbs.lbs4 .lb .x { gap: 3px !important; }
+.two .lbs.lbs4 .lb .ps2 { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
+.two .lbs.lbs4 .lb .x { flex-direction: column !important; align-items: flex-start !important; gap: 2px !important; }
