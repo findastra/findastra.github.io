@@ -252,3 +252,6 @@ body .simval.px { font-size: 16px; }
 /* order 1/2/3 cards: plain faded line, not the dotted border of the card they sit in */
 .ordc .day-outline { display: none !important; }
 .ordc, .ordc.hit { border: 1.5px solid rgba(255,63,208,.35) !important; }
+/* link arrow in each broker box's bottom-right corner (Take Me removed) */
+.brokers .b { padding-bottom: 44px; }
+.brokers .b .lnk { position: absolute; right: 14px; bottom: 10px; font-family: SM, monospace; font-weight: 700; font-size: 26px; line-height: 1; color: var(--lav); }
