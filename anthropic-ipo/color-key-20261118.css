@@ -298,3 +298,7 @@ body .simval.px { font-size: 16px; }
 .did .plan .pr { grid-template-columns: auto 1fr !important; column-gap: 8px !important; }
 .did .plan .pr > span { text-align: left !important; }
 .did .plan .pr > b { text-align: right !important; justify-self: end !important; }
+/* option cards: no numbers; DAY-OF BUY like the other boxes, method name below in lavender */
+.apr .at { display: block !important; min-height: 0 !important; }
+.apr .at .atk { display: block; color: #ff3fd0; }
+.apr .at .method-name { display: block; color: var(--lav) !important; margin-top: 2px; }
