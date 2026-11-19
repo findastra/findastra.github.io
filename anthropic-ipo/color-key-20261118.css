@@ -255,3 +255,8 @@ body .simval.px { font-size: 16px; }
 /* link arrow in each broker box's bottom-right corner (Take Me removed) */
 .brokers .b { padding-bottom: 44px; }
 .brokers .b .lnk { position: absolute; right: 14px; bottom: 10px; font-family: SM, monospace; font-weight: 700; font-size: 26px; line-height: 1; color: var(--lav); }
+/* Astra 2026-11-18: less space under broker names; $3K/$25K same size as the names; all of them glow */
+.brokers .bn { padding-bottom: 0 !important; line-height: 1.1; }
+.brokers .bn + .bl { margin-top: 6px !important; }
+.dc em { font-size: 24px !important; line-height: 1.15 !important; }
+.brokers .bn span, .dc em { text-shadow: 0 0 9px color-mix(in srgb, currentColor 65%, transparent) !important; }
