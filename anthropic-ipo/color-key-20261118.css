@@ -263,3 +263,10 @@ body .simval.px { font-size: 16px; }
 /* HIT green, MISSED red in Astra's IPO lottery boxes, same as section 05 */
 .did .plan .ph i.hitc { color: rgb(141,255,184) !important; border-color: rgb(61,220,132) !important; }
 .did .plan .ph i.missc { color: rgb(255,107,122) !important; border-color: rgb(255,107,122) !important; }
+/* link arrows: broker's own color, twice the size, glowing, underlined */
+.brokers .b { padding-bottom: 72px !important; }
+.brokers .b .lnk { font-size: 52px !important; right: 12px !important; bottom: 8px !important; text-decoration: underline; text-decoration-thickness: 4px; text-underline-offset: 6px; text-shadow: 0 0 9px color-mix(in srgb, currentColor 65%, transparent); }
+.brokers .b:nth-child(1) .lnk { color: #29b6d8 !important; }
+.brokers .b:nth-child(2) .lnk { color: #ccff00 !important; }
+.brokers .b:nth-child(3) .lnk { color: #bd8aff !important; }
+.brokers .b:nth-child(4) .lnk { color: #4caf3f !important; }
