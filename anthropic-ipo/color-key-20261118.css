@@ -483,3 +483,4 @@ sup { vertical-align: .45em !important; line-height: 0 !important; }
 .apr .ac .sim.big .siminp label { margin: 0 !important; white-space: nowrap; }
 .apr .ac .sim.big .siminp label.grp-h { display: block !important; visibility: visible !important; }
 .apr .ac .sim.big .siminp > div:not(:first-child) label { width: auto !important; overflow: visible !important; }
+.apr .ac .sim.big .siminp { margin-bottom: 0 !important; }

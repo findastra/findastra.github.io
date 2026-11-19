@@ -324,6 +324,8 @@ k.addEventListener('pointermove',function(e){if(!drag)return;var vh=innerHeight/
 function up(){drag=null;k.classList.remove('on')}k.addEventListener('pointerup',up);k.addEventListener('pointercancel',up);
 addEventListener('scroll',place,{passive:true});addEventListener('resize',place);place();setTimeout(place,500)})();</script>
 <script>(function(){/* line up the three option cards' charts: equal heights for the parts above them */
-var parts=['.at','.adx','.siminp','.simrow','.simdrag','.simleg'];function eq(){parts.forEach(function(p){var els=[].slice.call(document.querySelectorAll('.apr .ac '+p));els.forEach(function(e){e.style.minHeight=''});var m=Math.max.apply(null,els.map(function(e){return e.offsetHeight}));els.forEach(function(e){e.style.minHeight=m+'px'})})}
+var parts=['.at','.simrow','.simdrag','.simleg'];function eq(){parts.forEach(function(p){var els=[].slice.call(document.querySelectorAll('.apr .ac '+p));els.forEach(function(e){e.style.minHeight=''});var m=Math.max.apply(null,els.map(function(e){return e.offsetHeight}));els.forEach(function(e){e.style.minHeight=m+'px'})});
+/* description, pros/cons and inputs run on with no gap; the space goes above "ANT opens at" so it and the charts stay level */
+var rows=[].slice.call(document.querySelectorAll('.apr .ac .simrow'));function top(e){var t=0,n=e;while(n&&!n.classList.contains('ac')){t+=n.offsetTop;n=n.offsetParent}return t}rows.forEach(function(r){r.style.marginTop=''});var tops=rows.map(top),mt=Math.max.apply(null,tops);rows.forEach(function(r,i){r.style.marginTop=(12+mt-tops[i])+'px'})}
 addEventListener('load',eq);addEventListener('resize',eq);eq()})();</script>
 </body></html>
