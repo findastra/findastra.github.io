@@ -2055,11 +2055,13 @@
     const button = el('button', 'rabbit-grid'), cv = el('canvas');
     button.type = 'button'; button.setAttribute('aria-label', 'Catch the pixel rabbit to change the rain colors');
     cv.setAttribute('aria-hidden', 'true'); button.append(cv); lane.append(button);
-    // 3 px cells, each a 2 px dot (Astra, 2026-11-13); a beat every 25 ms, so it crosses the screen in a few seconds
-    // (Astra, 2026-11-13: "much faster across the screen ... he's hard to catch")
-    const ctx = cv.getContext('2d'), CELL = 3, ROWS = 14, STEP = 25;
+    // 3 px cells, each a 2 px dot (Astra, 2026-11-13); a beat every 8 ms (was 25), the Ghost in the Walls rabbit's speed
+    // (Astra, 2026-11-20: "3x faster"; then "it needs to be on ... my portfolio bio")
+    const ctx = cv.getContext('2d'), CELL = 3, ROWS = 14, STEP = 8;
     let cols = 1, x = 0, lift = 0, pose = POSES.sit, blink = 0, running = reduced, visible = false, timer = 0, raf = 0, last = 0, acc = 0;
     let state = 'sit', n = 0, wait = 3, hop = null;
+    // every 3rd run it stops once, about half a second, partway across (Astra, 2026-11-20)
+    let runs = 0, longPause = false, still = false;
     const rnd = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
     const top = () => ROWS - H - lift;
     const draw = () => {
@@ -2089,13 +2091,13 @@
       const d = dash ? rnd(14, 20) : rnd(8, 14), big = d > 11;
       hop = { from: x, d, air: big ? 4 : 3, h: dash ? rnd(1, 2) : big ? rnd(3, 4) : rnd(2, 3), crouch: dash ? 0 : 1 };
       if (dash) dash--;
-      state = 'hop'; n = 0;
+      state = 'hop'; n = 0; still = false;
     };
     const beat = () => {
       n++; blink = 0;
       if (state === 'sit') {
         lift = 0; pose = POSES.sit;
-        if (wait >= 10) { const m = n % 9; if (m === 4 || m === 5) pose = POSES.ear; if (n % 11 === 7) blink = 1; }   // a freeze: an ear twitches, it blinks
+        if (wait >= 10 && !still) { const m = n % 9; if (m === 4 || m === 5) pose = POSES.ear; if (n % 11 === 7) blink = 1; }   // a freeze: an ear twitches, it blinks
         if (n >= wait) startHop();
         return;
       }
@@ -2110,6 +2112,7 @@
       state = 'sit'; n = 0; pose = POSES.sit;
       // then: in a dash, straight on; mostly a tiny hitch; now and then a quick freeze (a quarter to half a second)
       const roll = Math.random(); wait = dash ? 1 : roll < .8 ? rnd(1, 3) : rnd(10, 20);
+      if (longPause && x > cols * .35) { longPause = false; still = true; dash = 0; wait = Math.round(500 / STEP); }
     };
     function tick(now) {
       raf = 0;
@@ -2121,12 +2124,35 @@
       if (moved) draw();
       raf = requestAnimationFrame(tick);
     }
-    function run() { if (!visible || document.hidden) return schedule(1000); running = true; acc = 0; last = 0; x = -W; lift = 0; pose = POSES.sit; state = 'sit'; n = 0; wait = 1; if (!raf) raf = requestAnimationFrame(tick); }
+    function run() { if (!visible || document.hidden) return schedule(1000); running = true; runs++; longPause = runs % 3 === 0; acc = 0; last = 0; x = -W; lift = 0; pose = POSES.sit; state = 'sit'; n = 0; wait = 1; if (!raf) raf = requestAnimationFrame(tick); }
     new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; if (visible && running && !raf && !reduced) raf = requestAnimationFrame(tick); }).observe(lane);
     document.addEventListener('visibilitychange', () => { if (!document.hidden && visible && running && !raf && !reduced) raf = requestAnimationFrame(tick); });
     // Catching it: the lane lies over the bottom of the terminal and the portrait, so it lets clicks through and the page
     // listens instead; only a click on the bunny itself counts. The button stays for the keyboard (Enter or Space).
-    const caught = () => { palette = (palette + 1) % PALETTES.length; if (reduced) draw(); else stop(); };
+    // Caught: its dots burst outward and fall away, then the rain changes (Astra, 2026-11-20, from Ghost in the Walls)
+    const burst = () => {
+      const r = cv.getBoundingClientRect(), p = Math.max(2, CELL - 1), y = top();
+      const cx = r.left + (x + W / 2) * CELL, cy = r.top + (y + H / 2) * CELL, parts = [];
+      const add = (c, rr) => {
+        const sx = r.left + (x + c) * CELL, sy = r.top + (y + rr) * CELL;
+        const ang = Math.atan2(sy - cy, sx - cx) + (Math.random() - .5) * .9, spd = 2 + Math.random() * 5;
+        parts.push({ x: sx, y: sy, vx: Math.cos(ang) * spd + (Math.random() - .5) * 1.5, vy: Math.sin(ang) * spd - (1.5 + Math.random() * 2) });
+      };
+      for (const [c, rr] of pose.px) add(c, rr);
+      if (pose.tail) add(pose.tail[0], pose.tail[1]);
+      const bc = el('canvas', 'rabbit-burst-cv'), bx = bc.getContext('2d');
+      bc.width = innerWidth; bc.height = innerHeight; bc.style.left = '0'; bc.style.top = '0';
+      bc.setAttribute('aria-hidden', 'true'); document.body.append(bc);
+      const dur = 650, t0 = performance.now();
+      const frame = (now) => {
+        const e = now - t0, k = Math.max(0, 1 - e / dur);
+        bx.clearRect(0, 0, bc.width, bc.height); bx.shadowColor = 'rgba(255,255,255,.6)'; bx.shadowBlur = 5; bx.fillStyle = '#fff'; bx.globalAlpha = k;
+        for (const q of parts) { q.vy += .3; q.x += q.vx; q.y += q.vy; bx.fillRect(q.x, q.y, p, p); }
+        if (e < dur) requestAnimationFrame(frame); else bc.remove();
+      };
+      requestAnimationFrame(frame);
+    };
+    const caught = () => { if (!reduced) burst(); palette = (palette + 1) % PALETTES.length; if (reduced) draw(); else stop(); };
     button.addEventListener('click', (event) => { if (running && !event.detail) caught(); });
     document.addEventListener('click', (event) => {
       if (!running || !event.detail) return;
