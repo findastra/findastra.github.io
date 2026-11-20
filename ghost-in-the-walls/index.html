@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ghost in the Walls</title>
+<!--
+  Ghost in the Walls — the rabbit page (step 2 of the portal)
+  By Astra. · 2026-11-20 · the address the WiFi portal opens
+  Flow: WiFi portal -> THIS page (findastra.github.io/ghost-in-the-walls/) -> catch the rabbit -> Ghost Protocol.
+
+  Pitch black. The white pixel rabbit hops across the bottom. Catch it -> Ghost Protocol (no interstitial).
+  The rabbit is the REAL one from Astra's portfolio (findastra.github.io, cyber.js). Astra's notes, kept:
+    2026-11-12: no grid behind it, hops like a bunny. 2026-11-13: half the size; "supposed to be white";
+    drawn in dots with a gap round every cell; "much faster ... he's hard to catch".
+  Self-contained; needs no internet.
+-->
+<style>
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0}
+  body{background:#000;overflow:hidden;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+  #rabbit-lane{position:fixed;left:0;bottom:10px;width:100%;height:70px;pointer-events:none}
+  #rabbit-lane .rabbit-grid{position:absolute;left:0;bottom:0;margin:0;padding:0;border:0;background:transparent}
+  #rabbit-lane canvas{display:block}
+  #burst{position:fixed;inset:0;z-index:50;pointer-events:none}
+</style>
+</head>
+<body>
+  <div id="rabbit-lane"></div>
+
+<script>
+(function(){
+  const $  = (id) => document.getElementById(id);
+  const el = (t, c) => { const e = document.createElement(t); if (c) e.className = c; return e; };
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // DEPLOY: where catching the rabbit sends them. Confirm the live Ghost Protocol URL.
+  const GHOST_PROTOCOL = 'https://findastra.github.io/ghost-protocol/';
+
+  const lane = $('rabbit-lane'); if (!lane) return;
+
+  const sprite = (rows) => { const px = []; let eye = null, tail = null; rows.forEach((line, r) => [...line].forEach((ch, c) => { if (ch === '#') px.push([c, r]); else if (ch === 'o') eye = [c, r]; else if (ch === 't') tail = [c, r]; })); return { px, eye, tail }; };
+  const POSES = {
+    sit:    sprite(['........#.#.', '........#.#.', '........#.#.', '.......#####', '..###..##o##', '.#####.#####', 't##########.', '###########.', '.##########.', '..###...##..']),
+    ear:    sprite(['........#...', '........#...', '........#.#.', '.......#####', '..###..##o##', '.#####.#####', 't##########.', '###########.', '.##########.', '..###...##..']),
+    crouch: sprite(['............', '............', '......##....', '.......###..', '.......#####', '.####..##o##', 't###########', '############', '############', '.###....###.']),
+    rise:   sprite(['........##..', '.........###', '........####', '.......##o##', '.....#######', '...########.', '..#######.#.', '.t####.#....', '###.........', '#...........']),
+    peak:   sprite(['............', '............', '.......##...', '........####', '........##o#', 't###########', '############', '.########.#.', '#.........#.', '............']),
+    fall:   sprite(['............', '##....##....', '.###...###..', '..#########.', '..t######o##', '....########', '.....######.', '......#..##.', '.........##.', '..........#.']),
+  };
+  const W = 12, H = 10;
+  const button = el('button', 'rabbit-grid'), cv = el('canvas');
+  button.type = 'button'; button.setAttribute('aria-label', 'Catch the white rabbit');
+  cv.setAttribute('aria-hidden', 'true'); button.append(cv); lane.append(button);
+
+  const ctx = cv.getContext('2d'), CELL = 5, ROWS = 14, STEP = 8;   // STEP 25->8: ~3x faster across (Astra, 2026-11-20)
+  let cols = 1, x = 0, lift = 0, pose = POSES.sit, blink = 0, running = reduced, visible = false, timer = 0, raf = 0, last = 0, acc = 0;
+  let state = 'sit', n = 0, wait = 3, hop = null, done = false;
+  const rnd = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+  const top = () => ROWS - H - lift;
+
+  const draw = () => {
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    if (!running) return;
+    const y = top();
+    const cell = (c, r, color) => { const col = x + c, row = y + r; if (col < 0 || col >= cols || row < 0 || row >= ROWS) return; ctx.fillStyle = color; ctx.fillRect(col * CELL, row * CELL, CELL - 1, CELL - 1); };
+    ctx.shadowColor = 'rgba(255,255,255,.5)'; ctx.shadowBlur = 5;
+    for (const [c, r] of pose.px) cell(c, r, '#ffffff');
+    if (pose.tail) cell(pose.tail[0], pose.tail[1], '#ffffff');
+    ctx.shadowBlur = 0;
+    if (pose.eye) cell(pose.eye[0], pose.eye[1], blink ? '#ffffff' : '#060708');
+  };
+
+  const fit = () => { cols = Math.max(16, Math.floor(lane.clientWidth / CELL)); cv.width = cols * CELL; cv.height = ROWS * CELL; cv.style.width = cols * CELL + 'px'; if (reduced) x = Math.floor(cols * .25); draw(); };
+  new ResizeObserver(fit).observe(lane); fit();
+
+  const schedule = (ms) => { clearTimeout(timer); timer = setTimeout(run, ms); };
+  // comes around ~3x less often (Astra, 2026-11-20): longer rest between crossings
+  const stop = () => { running = false; cancelAnimationFrame(raf); raf = 0; draw(); if (!reduced && !done) schedule(1500 + Math.random() * 3600); };
+
+  let dash = 0;
+  const startHop = () => {
+    if (!dash && Math.random() < .2) dash = rnd(3, 7);
+    const d = dash ? rnd(14, 20) : rnd(8, 14), big = d > 11;
+    hop = { from: x, d, air: big ? 4 : 3, h: dash ? rnd(1, 2) : big ? rnd(3, 4) : rnd(2, 3), crouch: dash ? 0 : 1 };
+    if (dash) dash--;
+    state = 'hop'; n = 0;
+  };
+  const beat = () => {
+    n++; blink = 0;
+    if (state === 'sit') {
+      lift = 0; pose = POSES.sit;
+      if (wait >= 10) { const m = n % 9; if (m === 4 || m === 5) pose = POSES.ear; if (n % 11 === 7) blink = 1; }
+      if (n >= wait) startHop();
+      return;
+    }
+    const k = n - hop.crouch;
+    if (k <= 0) { pose = POSES.crouch; lift = 0; return; }
+    if (k <= hop.air) {
+      const t = k / (hop.air + 1);
+      x = hop.from + Math.round(hop.d * t); lift = Math.round(hop.h * 4 * t * (1 - t));
+      pose = t < .4 ? POSES.rise : t < .65 ? POSES.peak : POSES.fall; return;
+    }
+    if (k === hop.air + 1) { x = hop.from + hop.d; lift = 0; pose = POSES.crouch; return; }
+    state = 'sit'; n = 0; pose = POSES.sit;
+    const roll = Math.random(); wait = dash ? 1 : roll < .8 ? rnd(1, 3) : rnd(10, 20);
+  };
+
+  function tick(now) {
+    raf = 0;
+    if (!running || !visible || document.hidden || reduced) { last = 0; return; }
+    acc += last ? Math.min(200, now - last) : 0; last = now;
+    let moved = false;
+    while (acc >= STEP) { acc -= STEP; beat(); moved = true; }
+    if (x >= cols) return stop();
+    if (moved) draw();
+    raf = requestAnimationFrame(tick);
+  }
+  function run() { if (done) return; if (!visible || document.hidden) return schedule(1000); running = true; acc = 0; last = 0; x = -W; lift = 0; pose = POSES.sit; state = 'sit'; n = 0; wait = 1; if (!raf) raf = requestAnimationFrame(tick); }
+
+  new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; if (visible && running && !raf && !reduced) raf = requestAnimationFrame(tick); }).observe(lane);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden && visible && running && !raf && !reduced) raf = requestAnimationFrame(tick); });
+
+  // Catching it: the bunny's pixels BURST outward, then Ghost Protocol opens (Astra, 2026-11-20)
+  const burst = () => {
+    if (done) return; done = true;
+    running = false; cancelAnimationFrame(raf); raf = 0; clearTimeout(timer);
+    const r = cv.getBoundingClientRect(), p = Math.max(3, CELL - 1);
+    const cxp = r.left + (x + W / 2) * CELL, cyp = r.top + (top() + H / 2) * CELL;
+    const parts = [];
+    const add = (c, rr) => {
+      const sx = r.left + (x + c) * CELL, sy = r.top + (top() + rr) * CELL;
+      const ang = Math.atan2(sy - cyp, sx - cxp) + (Math.random() - .5) * 0.9, spd = 3 + Math.random() * 7;
+      parts.push({ x: sx, y: sy, vx: Math.cos(ang) * spd + (Math.random() - .5) * 2, vy: Math.sin(ang) * spd - (2 + Math.random() * 3) });
+    };
+    for (const [c, rr] of pose.px) add(c, rr);
+    if (pose.tail) add(pose.tail[0], pose.tail[1]);
+    lane.style.display = 'none';
+    const bc = document.createElement('canvas'); bc.id = 'burst'; document.body.appendChild(bc);
+    const bx = bc.getContext('2d'); bc.width = innerWidth; bc.height = innerHeight;
+    const dur = 650, t0 = performance.now();
+    const step = (now) => {
+      const e = now - t0, k = Math.max(0, 1 - e / dur);
+      bx.clearRect(0, 0, bc.width, bc.height);
+      bx.shadowColor = 'rgba(255,255,255,.6)'; bx.shadowBlur = 6; bx.fillStyle = '#fff';
+      for (const q of parts) { q.vy += 0.4; q.x += q.vx; q.y += q.vy; bx.globalAlpha = k; bx.fillRect(q.x, q.y, p, p); }
+      bx.globalAlpha = 1;
+      if (e < dur) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+    setTimeout(() => { if (GHOST_PROTOCOL) location.href = GHOST_PROTOCOL; }, 700);
+  };
+  button.addEventListener('click', (event) => { if (running && !event.detail) burst(); });
+  document.addEventListener('click', (event) => {
+    if (!running || !event.detail) return;
+    const r = cv.getBoundingClientRect(), col = (event.clientX - r.left) / CELL, row = (event.clientY - r.top) / CELL;
+    if (col < x - 1 || col > x + W + 1 || row < top() - 1 || row > top() + H + 1) return;
+    event.preventDefault(); burst();
+  }, true);
+
+  if (!reduced) schedule(900); else draw();
+})();
+</script>
+</body>
+</html>
