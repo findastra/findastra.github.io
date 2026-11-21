@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://findastra.github.io/sitemap.xml
