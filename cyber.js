@@ -324,7 +324,9 @@
   const PETOS_REPOS = new Set(['astras-pet-os', 'startup-star', 'the-kennel', 'the-shed', 'vet-clinic', 'the-police-station', 'iron-gates', 'the-recovery-room', 'ai-doghouse', 'findastra']);
   // The rest, in the profile README's groups: Discord by name, Web & More is everything else
   // Ableton Live Discord Presence is a Discord app too (Astra, 2026-11-13: it goes under Discord, not Web & More)
-  const DISCORD = new Set(['moodglass', 'ai-discord-presence', 'openai-discord-presence', 'anthropic-discord-presence', 'ableton-live-discord-presence']);
+  // The IPO countdowns are Discord profile cards too, as in the profile README's Discord group (Claude, 2026-11-23 portfolio audit)
+  const DISCORD = new Set(['moodglass', 'ai-discord-presence', 'openai-discord-presence', 'anthropic-discord-presence', 'ableton-live-discord-presence',
+    'ai-ipo-countdown', 'anthropic-ipo-countdown', 'openai-ipo-countdown']);
   // the Star Window is the Photo Star now, so only the Photo Star gets a Polaroid (Astra, 2026-10-27)
   const HIDDEN = new Set(['astras-star-window']);
   const isOther = (r) => !/^pet-program-\d+$/.test(r.name) && !WORLD_REPOS.has(r.name) && !PETOS_REPOS.has(r.name) && !petByRepo[r.name] && !HIDDEN.has(r.name);
@@ -902,7 +904,7 @@
     return [{ src: TRANSPARENT_GALAXY[brand], cap: (brand === 'openai' ? 'OpenAI' : 'Anthropic') + ' official galaxy artwork', galaxy: brand, transparent: true, clear: true }, all[0]].filter(Boolean);
   };
   // what kind of thing each one is, for the line under its title (Astra, 2026-10-29: "title, type of software, language, date")
-  const TYPES = { 'ai-discord-presence': 'Discord app', 'openai-discord-presence': 'Discord app', 'anthropic-discord-presence': 'Discord app', 'ableton-live-discord-presence': 'Discord app', moodglass: 'Discord plugin', spoonfed: 'Web app' };
+  const TYPES = { 'ai-discord-presence': 'Discord app', 'openai-discord-presence': 'Discord app', 'anthropic-discord-presence': 'Discord app', 'ableton-live-discord-presence': 'Discord app', 'ai-ipo-countdown': 'Discord app', 'anthropic-ipo-countdown': 'Discord app', 'openai-ipo-countdown': 'Discord app', moodglass: 'Discord plugin', spoonfed: 'Web app' };
   // Iris is autofiction: half real, half made up, written as the person is being made (Astra, 2026-10-29)
   const typeOf = (r) => TYPES[r.name] || (/^iris/i.test(r.name) ? 'Autofiction' : 'Website');
   // the two presence apps' code lives in ai-discord-presence now, so GitHub gives their own repos no language
