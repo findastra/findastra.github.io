@@ -326,7 +326,11 @@
   // Ableton Live Discord Presence is a Discord app too (Astra, 2026-11-13: it goes under Discord, not Web & More)
   // The IPO countdowns are Discord profile cards too, as in the profile README's Discord group (Claude, 2026-11-23 portfolio audit)
   const DISCORD = new Set(['moodglass', 'ai-discord-presence', 'openai-discord-presence', 'anthropic-discord-presence', 'ableton-live-discord-presence',
-    'ai-ipo-countdown', 'anthropic-ipo-countdown', 'openai-ipo-countdown']);
+    'ai-ipo-countdown', 'anthropic-ipo-countdown', 'openai-ipo-countdown', 'anthropic-ipo-guide', 'openai-ipo-guide']);
+  // the IPO cards sit together at the end of Discord, each countdown followed by its guide (Astra, 2026-11-23: "Anthropic IPO
+  // countdown, and then Anthropic IPO guide, and then OpenAI IPO countdown, and OpenAI IPO guide, in that order"); the
+  // package that holds both countdowns goes just before them
+  const IPO_ORDER = ['ai-ipo-countdown', 'anthropic-ipo-countdown', 'anthropic-ipo-guide', 'openai-ipo-countdown', 'openai-ipo-guide'];
   // the Star Window is the Photo Star now, so only the Photo Star gets a Polaroid (Astra, 2026-10-27)
   const HIDDEN = new Set(['astras-star-window']);
   const isOther = (r) => !/^pet-program-\d+$/.test(r.name) && !WORLD_REPOS.has(r.name) && !PETOS_REPOS.has(r.name) && !petByRepo[r.name] && !HIDDEN.has(r.name);
@@ -834,6 +838,8 @@
     { src: 'art/projects/ableton-live-discord-presence-app-20261113.png', cap: 'Ableton Live Discord Presence · the app', fit: 'contain', bg: '#02050a', fill: '#02050a' },
   ];
   // Spoonfed: the app itself, from its README (Astra, 2026-11-13: it goes in Web & More where Ableton was)
+  for (const [key, dir, who] of [['anthropic-ipo-guide', 'anthropic-ipo', 'Anthropic'], ['openai-ipo-guide', 'openai-ipo', 'OpenAI']])
+    SITE_PICS[key] = [{ src: dir + '/preview.png', cap: who + ' IPO guide', fit: 'contain', bg: '#1a1f4a', fill: '#1a1f4a' }];
   SITE_PICS.spoonfed = [{ src: 'art/projects/spoonfed-page-20261113.png', cap: 'Spoonfed: Feed me', fit: 'contain', bg: '#2a2018', fill: '#2a2018' }];
   // Photostar is one word (Astra, 2026-10-29)
   const NAMES = { 'astras-photostar': "Astra's Photostar" };
@@ -904,7 +910,7 @@
     return [{ src: TRANSPARENT_GALAXY[brand], cap: (brand === 'openai' ? 'OpenAI' : 'Anthropic') + ' official galaxy artwork', galaxy: brand, transparent: true, clear: true }, all[0]].filter(Boolean);
   };
   // what kind of thing each one is, for the line under its title (Astra, 2026-10-29: "title, type of software, language, date")
-  const TYPES = { 'ai-discord-presence': 'Discord app', 'openai-discord-presence': 'Discord app', 'anthropic-discord-presence': 'Discord app', 'ableton-live-discord-presence': 'Discord app', 'ai-ipo-countdown': 'Discord app', 'anthropic-ipo-countdown': 'Discord app', 'openai-ipo-countdown': 'Discord app', moodglass: 'Discord plugin', spoonfed: 'Web app' };
+  const TYPES = { 'ai-discord-presence': 'Discord app', 'openai-discord-presence': 'Discord app', 'anthropic-discord-presence': 'Discord app', 'ableton-live-discord-presence': 'Discord app', 'ai-ipo-countdown': 'Discord app', 'anthropic-ipo-countdown': 'Discord app', 'openai-ipo-countdown': 'Discord app', 'anthropic-ipo-guide': 'Guide', 'openai-ipo-guide': 'Guide', moodglass: 'Discord plugin', spoonfed: 'Web app' };
   // Iris is autofiction: half real, half made up, written as the person is being made (Astra, 2026-10-29)
   const typeOf = (r) => TYPES[r.name] || (/^iris/i.test(r.name) ? 'Autofiction' : 'Website');
   // the two presence apps' code lives in ai-discord-presence now, so GitHub gives their own repos no language
@@ -913,6 +919,10 @@
   // (Ableton Live Discord Presence's made date, the place that Polaroid had in Web & More)
   const SPOONFED = { name: 'spoonfed', created_at: '2026-10-11T19:28:44Z', language: 'TypeScript', description: 'Feed me: picks a real place to eat near you.',
     link: 'https://findastra.github.io/spoonfed/', slot: '2026-11-03T03:47:32Z' };
+  // Astra's two IPO field guides are pages on this site, not repos: a Polaroid each, next to its countdown (Astra, 2026-11-23)
+  const GUIDES = [
+    { name: 'anthropic-ipo-guide', created_at: '2026-11-16T12:00:00Z', language: 'HTML', description: "Astra's field guide to Anthropic's IPO: shares, the IPO lottery, brokers and the timeline.", link: 'https://findastra.github.io/anthropic-ipo/' },
+    { name: 'openai-ipo-guide', created_at: '2026-11-19T12:00:00Z', language: 'HTML', description: "Astra's field guide to OpenAI's IPO: shares, the IPO lottery, brokers and where it stands.", link: 'https://findastra.github.io/openai-ipo/' }];
   const extraCard = (r) => {
     // r.link: a project whose repo is private (Spoonfed): its website only, no GitHub sticker
     const repoUrl = r.link ? null : 'https://github.com/findastra/' + r.name, site = r.link || websiteOf(r), shot = SHOTS[r.name];
@@ -1602,11 +1612,12 @@
     // Discord and Web & More, newest first
     // Spoonfed is a pet with a private repo, so GitHub's public list leaves it out; it gets its own Polaroid in Web & More,
     // in the place Ableton Live's had before it moved to Discord (Astra, 2026-11-13), its name linking to the app itself
-    const extras = [SPOONFED].filter((r) => shown(`${r.name} ${r.description}`));
+    const extras = [SPOONFED, ...GUIDES].filter((r) => shown(`${r.name} ${r.description}`));
     const slot = (r) => String(r.slot || made(r));
     const others = [...repos.filter(isOther), ...extras].filter((r) => shown(`${r.name} ${r.description}`)).sort((a, b) => slot(a).localeCompare(slot(b))); // oldest first, so the newest (Iris) is last
     // AI Discord Presence first, then the rest in the order they were made (Astra, 2026-10-29)
-    $('discord-list').replaceChildren(...others.filter((r) => DISCORD.has(r.name)).sort((a, b) => (b.name === 'ai-discord-presence') - (a.name === 'ai-discord-presence')).map(extraCard));
+    const rankD = (r) => r.name === 'ai-discord-presence' ? -1 : IPO_ORDER.includes(r.name) ? 100 + IPO_ORDER.indexOf(r.name) : 0;
+    $('discord-list').replaceChildren(...others.filter((r) => DISCORD.has(r.name)).sort((a, b) => rankD(a) - rankD(b)).map(extraCard));
     $('web-list').replaceChildren(...others.filter((r) => !DISCORD.has(r.name)).map(extraCard));
     for (const ch of document.querySelectorAll('.chapter')) ch.classList.toggle('empty', !!query && !ch.querySelector('.polaroid, .mini'));
   }
