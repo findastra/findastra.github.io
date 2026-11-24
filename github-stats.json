@@ -9,7 +9,7 @@
  },
  "contributions": {
   "lastYear": 6615,
-  "streak": 50,
+  "streak": 0,
   "bestStreak": 50,
   "days": [
    {
@@ -1839,6 +1839,11 @@
    },
    {
     "date": "2026-11-23",
+    "count": 0,
+    "level": 0
+   },
+   {
+    "date": "2026-11-24",
     "count": 0,
     "level": 0
    }
