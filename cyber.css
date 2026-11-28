@@ -656,7 +656,9 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 .polaroid .flip.prev { left: var(--corner); } .polaroid .flip.next { right: var(--corner); }
 .polaroid .flip:hover, .polaroid .flip:focus-visible { color: #151515; text-shadow: 0 0 6px var(--c), 0 0 12px var(--c); outline: none; }
 /* the writing strip runs the frame's full width, under the side strips, so the sides are one white all the way down */
-.polaroid .note { display: grid; align-content: center; gap: 3px; min-height: 86px; margin: -1px calc(-1 * var(--edge-w)) 0; padding: 11px calc(6px + var(--edge-w)) 14px; color: #151515; background: #f2f2f2; }
+/* the top padding clears the GitHub and flip stickers, which hang up to 30px into the strip, so a long title never runs under them
+   (Claude, 2026-11-27, from Astra's phone spacing check) */
+.polaroid .note { display: grid; align-content: center; gap: 3px; min-height: 86px; margin: -1px calc(-1 * var(--edge-w)) 0; padding: 30px calc(6px + var(--edge-w)) 14px; color: #151515; background: #f2f2f2; }
 .note .title { font: 1.35rem/1.05 "Permanent Marker", cursive; color: #151515; text-decoration: none; overflow-wrap: anywhere; rotate: -1.5deg; }
 /* the name links to GitHub: on hover it glows in the section's color, the tape's, with no box behind it (Astra, 2026-10-29) */
 .polaroid a.title:hover, .polaroid a.title:focus-visible { background: none; color: color-mix(in srgb, var(--c) 78%, #000); outline: none;
@@ -1005,6 +1007,19 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
 .footer-icons svg { width: 22px; height: 22px; fill: currentColor; }
 .footer-star { display: block; line-height: 0; }
 .footer-star img { width: 48px; height: 48px; }
+/* the Spotify stars (Astra, 2026-11-23), copied from her IPO guides' footer: the album star tilted left, the play star over it,
+   the green Spotify star tilted right, each overlapping the one before; Spotify's own small play button shows through the
+   middle of the play star. They keep their colors, like the photo star beside them */
+.spotify-stars { display: flex; align-items: center; margin-right: 6px; }
+.spotify-stars .ss-album { width: 58px; height: 58px; display: block; rotate: -17deg; position: relative; z-index: 1; }
+.spotify-stars .ss-play, .spotify-stars .ss-link { position: relative; display: block; width: 58px; height: 58px; flex: none; }
+.spotify-stars .ss-play { margin-left: -11px; z-index: 2; cursor: pointer; }
+.spotify-stars .ss-link { margin-left: -15px; z-index: 1; rotate: 14deg; }
+.spotify-stars .ss-play svg, .spotify-stars .ss-link svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; }
+.spotify-stars .ss-play svg { z-index: 2; }
+.spotify-stars .ss-play:focus-visible, .spotify-stars .ss-link:focus-visible { outline: 2px solid #d994c6; outline-offset: 2px; }
+#ss-embedw { position: absolute; left: 18px; top: 21px; width: 21px; height: 21px; border-radius: 50%; overflow: hidden; z-index: 1; }
+#ss-embedw iframe { position: absolute; left: -264px; top: -43px; width: 300px; height: 80px; border: 0; }
 
 @media (max-width: 900px) {
   .hero { grid-template-columns: var(--sq); gap: 32px; }
@@ -1033,6 +1048,9 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
   .term-actions { flex-wrap: nowrap; gap: 5px; padding: 6px 8px 10px; }
   .term-actions .btn { flex: 0 1 auto; min-width: 0; white-space: nowrap; padding: 4px 5px; font-size: 9.5px; }
   .board { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  /* the headshot above the words on a phone, as its comment above says, so her name and title get the card's whole width
+     instead of one or two words a line beside the picture (Claude, 2026-11-27, from Astra's phone spacing check) */
+  .contact .headshot { float: none; display: block; width: 128px; margin: 4px auto 16px; }
   /* the Sparkle creator on a phone: the sparkle on top, its four squares in a full-width two by two below, so the words fit
      (Astra, 2026-10-29: "those squares look a little weird here on the phone") */
   .spark-row { grid-template-columns: 1fr; justify-items: center; }
@@ -1055,6 +1073,8 @@ body.unmasked .block h2 { color: #050505; -webkit-text-stroke: 0; background: no
   .footer-group::before, .footer-sparkle { margin-right: 0; }
   .footer-sparkle { margin: 0; }
   .footer-star img { width: 40px; height: 40px; }
+  /* the Spotify stars get their own row on a phone, above By Astra ✦ star ✦ Find Out More (Claude, 2026-11-27) */
+  .spotify-stars { flex: 0 0 100%; justify-content: center; margin: 0 0 6px; }
   .lab-group select { width: 100%; }
   #labRand, #labSave, #labLibBtn, #labPng { padding: 6px 7px; font-size: 10.5px; }
   #labRand { order: 0; }
